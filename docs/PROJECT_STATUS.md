@@ -6,7 +6,7 @@ Rowszein's Delight Management System
 
 ## Current Phase
 
-Products
+Recipes
 
 ## Completed
 
@@ -25,13 +25,20 @@ Products
   - Delete with confirmation
   - Toast notifications
 
+* Products (Backend + Frontend)
+  - Product model (name, description, price, image, availability)
+  - Full CRUD endpoints
+  - Paginated list with image and availability badge
+  - Create / Edit form with image upload and preview
+  - Delete with confirmation
+  - Toast notifications
+
 ## In Progress
 
 None
 
 ## Not Started
 
-* Products
 * Recipes
 * Expenses
 * Sales
@@ -39,7 +46,7 @@ None
 
 ## Current Task
 
-Build Products module — backend first
+Build Recipes module — backend first
 
 ## Last Decisions
 
@@ -49,10 +56,11 @@ Build Products module — backend first
 * React + Vite + TypeScript + TailwindCSS
 * Admin and Staff roles only
 * CookieJWTAuthentication custom authenticator
+* multipart/form-data for image uploads
 
 ## Next Task
 
-Build Recipes module
+Build Expenses module
 
 ## Blockers
 
