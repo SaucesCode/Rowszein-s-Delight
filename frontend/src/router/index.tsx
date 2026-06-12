@@ -4,6 +4,8 @@ import MainLayout from "@/layouts/MainLayout";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import LoginPage from "@/pages/LoginPage";
 import DashboardPage from "@/pages/DashboardPage";
+import IngredientsPage from "@/pages/IngredientsPage";
+import IngredientFormPage from "@/pages/IngredientFormPage";
 
 const router = createBrowserRouter([
   {
@@ -15,7 +17,12 @@ const router = createBrowserRouter([
     children: [
       {
         element: <MainLayout />,
-        children: [{ path: "/dashboard", element: <DashboardPage /> }],
+        children: [
+          { path: "/dashboard", element: <DashboardPage /> },
+          { path: "/ingredients", element: <IngredientsPage /> },
+          { path: "/ingredients/new", element: <IngredientFormPage /> },
+          { path: "/ingredients/:id/edit", element: <IngredientFormPage /> },
+        ],
       },
     ],
   },

@@ -1,1 +1,68 @@
+# ======================
+# Python
+# ======================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# ======================
+# Virtual Environment
+# ======================
+venv/
+env/
+ENV/
+.venv/
+
+# ======================
+# Django stuff
+# ======================
+*.log
+*.pot
+*.pyc
+db.sqlite3
+media/
+
+# If you're using SQLite locally, ignore it:
+db.sqlite3-journal
+
+# ======================
+# Environment variables
+# ======================
 .env
+.env.*
+!.env.example
+
+# ======================
+# Django migrations (optional - usually NOT ignored)
+# (Only ignore if you're regenerating migrations often)
+# ======================
+# */migrations/*.pyc
+# */migrations/__pycache__/
+
+# ======================
+# Static files (if collected locally)
+# ======================
+staticfiles/
+
+# ======================
+# IDE / Editor
+# ======================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ======================
+# OS files
+# ======================
+.DS_Store
+Thumbs.db
+
+# ======================
+# Testing / Coverage
+# ======================
+htmlcov/
+.coverage
+.pytest_cache/

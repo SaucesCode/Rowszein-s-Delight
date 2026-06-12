@@ -6,7 +6,7 @@ Rowszein's Delight Management System
 
 ## Current Phase
 
-Ingredients
+Products
 
 ## Completed
 
@@ -17,13 +17,20 @@ Ingredients
   - Protected routes
   - Login page with validation
 
+* Ingredients (Backend + Frontend)
+  - Ingredient model (name, quantity, unit, cost per unit, supplier)
+  - Full CRUD endpoints
+  - Paginated list
+  - Create / Edit form with validation
+  - Delete with confirmation
+  - Toast notifications
+
 ## In Progress
 
 None
 
 ## Not Started
 
-* Ingredients
 * Products
 * Recipes
 * Expenses
@@ -32,7 +39,7 @@ None
 
 ## Current Task
 
-Build Ingredients module — backend first
+Build Products module — backend first
 
 ## Last Decisions
 
@@ -45,7 +52,7 @@ Build Ingredients module — backend first
 
 ## Next Task
 
-Build Products module
+Build Recipes module
 
 ## Blockers
 
