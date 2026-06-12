@@ -5,6 +5,7 @@
 This document defines how AI must be used throughout the development of the Rowszein's Delight Management System.
 
 Its goal is to ensure:
+
 - Fast development
 - Consistent architecture
 - No over-engineering
@@ -34,6 +35,7 @@ The AI is ONLY allowed to:
 Only one module can be worked on at a time.
 
 Example modules:
+
 - Authentication
 - Ingredients
 - Products
@@ -73,7 +75,7 @@ Frontend must always follow this order:
 6. Styling
 
 ❌ NO direct API calls inside components  
-❌ NO business logic inside UI components  
+❌ NO business logic inside UI components
 
 ---
 
@@ -82,6 +84,7 @@ Frontend must always follow this order:
 AI must always prefer the simplest solution.
 
 Avoid:
+
 - unnecessary abstraction layers
 - premature optimization
 - excessive folder splitting
@@ -97,12 +100,14 @@ If two solutions exist:
 A feature is ONLY considered complete if:
 
 ### Backend:
+
 - Model exists
 - Serializer exists
 - API endpoints working
 - Tested in DRF or Postman
 
 ### Frontend:
+
 - API connected
 - Data displayed correctly
 - Forms working
@@ -122,6 +127,7 @@ Every module must follow this exact flow:
 ## STEP 1: ANALYSIS
 
 AI must first explain:
+
 - Why the feature exists
 - What problem it solves
 - Required database models
@@ -133,12 +139,14 @@ AI must first explain:
 ## STEP 2: BACKEND BUILD
 
 AI must generate:
+
 - Django models
 - serializers.py
 - views.py
 - urls.py
 
 Rules:
+
 - Keep views thin
 - Business logic stays in models/services if needed
 - No unnecessary complexity
@@ -148,6 +156,7 @@ Rules:
 ## STEP 3: API VALIDATION
 
 Before frontend:
+
 - Confirm API structure
 - Confirm request/response format
 - Confirm authentication rules
@@ -157,6 +166,7 @@ Before frontend:
 ## STEP 4: FRONTEND SERVICE LAYER
 
 Must create:
+
 - Axios service file inside feature or services folder
 - No API logic in components
 
@@ -165,6 +175,7 @@ Must create:
 ## STEP 5: FRONTEND HOOKS
 
 Use React Query for:
+
 - fetching data
 - caching
 - mutations
@@ -182,6 +193,7 @@ Use React Query for:
 ## STEP 7: UX FINALIZATION
 
 Add:
+
 - react-hot-toast notifications
 - loading states
 - error handling
@@ -204,9 +216,23 @@ Add:
 All API responses must follow:
 
 ## Success Response:
+
 ```json
 {
   "success": true,
   "data": {},
   "message": ""
 }
+
+---
+
+## DATABASE + PERFORMANCE RULES:
+
+- All Django list queries MUST use pagination
+- Use Django REST Framework pagination classes
+- Always optimize queries using:
+  - select_related (for ForeignKey)
+  - prefetch_related (for ManyToMany)
+
+- NEVER return unpaginated list endpoints unless explicitly required
+```
