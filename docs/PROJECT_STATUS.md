@@ -6,14 +6,18 @@ Rowszein's Delight Management System
 
 ## Current Phase
 
-Authentication
+Ingredients
 
 ## Completed
 
-None
+* Authentication (Backend + Frontend)
+  - Custom User model (Admin + Staff roles)
+  - JWT stored in HttpOnly cookies
+  - Login / Logout / Me endpoints
+  - Protected routes
+  - Login page with validation
 
-
-## In Progres
+## In Progress
 
 None
 
@@ -28,19 +32,20 @@ None
 
 ## Current Task
 
-Create React frontend and connect to authentication API
+Build Ingredients module — backend first
 
 ## Last Decisions
 
 * Django REST Framework
 * PostgreSQL
-* JWT Authentication
-* React + Vite + TailwindCSS
+* JWT in HttpOnly Cookies
+* React + Vite + TypeScript + TailwindCSS
 * Admin and Staff roles only
+* CookieJWTAuthentication custom authenticator
 
 ## Next Task
 
-Create Accounts app and custom User model.
+Build Products module
 
 ## Blockers
 
