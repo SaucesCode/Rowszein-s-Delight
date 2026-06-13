@@ -119,3 +119,20 @@ Possible Version 2 features:
 * User management (admin creates staff accounts)
 * Export to PDF / CSV
 * Mobile responsive improvements
+
+## Version 2 Scope
+
+Features to build:
+
+1. Inventory Deduction on Sale
+2. Low Stock Alerts
+3. Profit Margin per Product
+4. Dashboard Date Picker
+5. Date Range Filtering
+6. Export to PDF / CSV
+7. Mobile Responsive UI
+
+## After Version 2
+
+* Frontend redesign
+* Shop landing page
