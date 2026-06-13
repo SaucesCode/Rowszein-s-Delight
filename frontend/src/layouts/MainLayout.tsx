@@ -1,12 +1,13 @@
 import { Outlet, NavLink } from "react-router-dom";
 import { useLogout } from "@/hooks/useAuth";
-import { LayoutDashboard, Package, ShoppingBag } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingBag, BookOpen } from "lucide-react";
 import { clsx } from "clsx";
 
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/ingredients", label: "Ingredients", icon: Package },
   { to: "/products", label: "Products", icon: ShoppingBag },
+  { to: "/recipes", label: "Recipes", icon: BookOpen },
 ];
 
 export default function MainLayout() {

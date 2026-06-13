@@ -6,7 +6,7 @@ Rowszein's Delight Management System
 
 ## Current Phase
 
-Recipes
+Expenses
 
 ## Completed
 
@@ -33,20 +33,27 @@ Recipes
   - Delete with confirmation
   - Toast notifications
 
+* Recipes (Backend + Frontend)
+  - Recipe model (one-to-one with Product)
+  - RecipeIngredient model (ingredient + quantity)
+  - Production cost calculated automatically
+  - Dynamic ingredient rows in form
+  - Full CRUD endpoints
+  - Toast notifications
+
 ## In Progress
 
 None
 
 ## Not Started
 
-* Recipes
 * Expenses
 * Sales
 * Dashboard
 
 ## Current Task
 
-Build Recipes module — backend first
+Build Expenses module — backend first
 
 ## Last Decisions
 
@@ -57,10 +64,11 @@ Build Recipes module — backend first
 * Admin and Staff roles only
 * CookieJWTAuthentication custom authenticator
 * multipart/form-data for image uploads
+* useFieldArray for dynamic form rows
 
 ## Next Task
 
-Build Expenses module
+Build Sales module
 
 ## Blockers
 

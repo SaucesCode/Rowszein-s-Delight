@@ -8,6 +8,8 @@ import IngredientsPage from "@/pages/IngredientsPage";
 import IngredientFormPage from "@/pages/IngredientFormPage";
 import ProductsPage from "@/pages/ProductsPage";
 import ProductFormPage from "@/pages/ProductFormPage";
+import RecipesPage from "@/pages/RecipesPage";
+import RecipeFormPage from "@/pages/RecipeFormPage";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +29,9 @@ const router = createBrowserRouter([
           { path: "/products", element: <ProductsPage /> },
           { path: "/products/new", element: <ProductFormPage /> },
           { path: "/products/:id/edit", element: <ProductFormPage /> },
+          { path: "/recipes", element: <RecipesPage /> },
+          { path: "/recipes/new", element: <RecipeFormPage /> },
+          { path: "/recipes/:id/edit", element: <RecipeFormPage /> },
         ],
       },
     ],
