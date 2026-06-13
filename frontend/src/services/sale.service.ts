@@ -1,9 +1,15 @@
 import api from "./api";
 import type { SalePayload } from "@/types/sale.types";
 
+export interface SaleFilters {
+  page?: number;
+  date_from?: string;
+  date_to?: string;
+}
+
 export const saleService = {
-  getAll: async (page = 1) => {
-    const response = await api.get("/sales/", { params: { page } });
+  getAll: async (filters: SaleFilters = {}) => {
+    const response = await api.get("/sales/", { params: filters });
     return response.data;
   },
 

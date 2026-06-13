@@ -1,13 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { expenseService } from "@/services/expense.service";
+import type { ExpenseFilters } from "@/services/expense.service";
 import type { ExpensePayload } from "@/types/expense.types";
 import toast from "react-hot-toast";
 
-export function useExpenses(page = 1) {
+export function useExpenses(filters: ExpenseFilters = {}) {
   return useQuery({
-    queryKey: ["expenses", page],
-    queryFn: () => expenseService.getAll(page),
+    queryKey: ["expenses", filters],
+    queryFn: () => expenseService.getAll(filters),
   });
 }
 

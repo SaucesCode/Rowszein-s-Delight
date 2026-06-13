@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useDashboard } from "@/hooks/useDashboard";
 import {
   AreaChart,
@@ -9,8 +10,11 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, AlertTriangle } from "lucide-react";
 import { clsx } from "clsx";
+import { useNavigate } from "react-router-dom";
+
+type Period = "this_week" | "this_month" | "this_quarter" | "this_year" | "custom";
 
 interface StatCardProps {
   label: string;
@@ -46,37 +50,143 @@ function StatCard({ label, value, sub, trend }: StatCardProps) {
 }
 
 function formatPeso(value: number) {
-  return `₱${value.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `₱${value.toLocaleString("en-PH", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
 }
 
+function getDateRange(period: Period): { date_from: string; date_to: string } {
+  const today = new Date();
+  const fmt = (d: Date) => d.toISOString().split("T")[0];
+
+  switch (period) {
+    case "this_week": {
+      const day = today.getDay();
+      const monday = new Date(today);
+      monday.setDate(today.getDate() - (day === 0 ? 6 : day - 1));
+      return { date_from: fmt(monday), date_to: fmt(today) };
+    }
+    case "this_month": {
+      const from = new Date(today.getFullYear(), today.getMonth(), 1);
+      return { date_from: fmt(from), date_to: fmt(today) };
+    }
+    case "this_quarter": {
+      const quarter = Math.floor(today.getMonth() / 3);
+      const from = new Date(today.getFullYear(), quarter * 3, 1);
+      return { date_from: fmt(from), date_to: fmt(today) };
+    }
+    case "this_year": {
+      const from = new Date(today.getFullYear(), 0, 1);
+      return { date_from: fmt(from), date_to: fmt(today) };
+    }
+    default:
+      return { date_from: "", date_to: "" };
+  }
+}
+
+const PERIODS: { value: Period; label: string }[] = [
+  { value: "this_week", label: "This Week" },
+  { value: "this_month", label: "This Month" },
+  { value: "this_quarter", label: "This Quarter" },
+  { value: "this_year", label: "This Year" },
+  { value: "custom", label: "Custom" },
+];
+
 export default function DashboardPage() {
-  const { data, isLoading, isError } = useDashboard();
+  const navigate = useNavigate();
+  const [period, setPeriod] = useState<Period>("this_year");
+  const [customFrom, setCustomFrom] = useState("");
+  const [customTo, setCustomTo] = useState("");
 
-  if (isLoading) {
-    return <p className="text-sm text-slate-500">Loading dashboard...</p>;
-  }
+  const filters =
+    period === "custom" ? { date_from: customFrom, date_to: customTo } : getDateRange(period);
 
-  if (isError) {
-    return <p className="text-sm text-red-500">Failed to load dashboard.</p>;
-  }
+  const { data, isLoading, isError } = useDashboard(filters);
 
-  const { totals, this_month, best_selling, chart_data } = data;
+  if (isLoading) return <p className="text-sm text-slate-500">Loading dashboard...</p>;
+  if (isError) return <p className="text-sm text-red-500">Failed to load dashboard.</p>;
+
+  const { totals, this_month, best_selling, chart_data, low_stock } = data;
 
   const profitTrend =
     this_month.profit > 0 ? "up" : this_month.profit < 0 ? "down" : "neutral";
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-xl font-semibold text-slate-800">Dashboard</h1>
-        <p className="text-sm text-slate-500 mt-1">Business performance overview</p>
+      {/* Header + Period Picker */}
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-xl font-semibold text-slate-800">Dashboard</h1>
+          <p className="text-sm text-slate-500 mt-1">Business performance overview</p>
+        </div>
+
+        <div className="flex items-center gap-2 flex-wrap justify-end">
+          {PERIODS.map(p => (
+            <button
+              key={p.value}
+              onClick={() => setPeriod(p.value)}
+              className={clsx(
+                "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
+                period === p.value
+                  ? "bg-slate-800 text-white"
+                  : "bg-white border text-slate-600 hover:bg-slate-50",
+              )}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Overall Stats */}
+      {/* Custom date range */}
+      {period === "custom" && (
+        <div className="flex items-center gap-3 bg-white border rounded-xl px-4 py-3">
+          <div className="flex items-center gap-2">
+            <label className="text-sm text-slate-600">From</label>
+            <input
+              type="date"
+              value={customFrom}
+              onChange={e => setCustomFrom(e.target.value)}
+              className="border rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-sm text-slate-600">To</label>
+            <input
+              type="date"
+              value={customTo}
+              onChange={e => setCustomTo(e.target.value)}
+              className="border rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+            />
+          </div>
+          <p className="text-xs text-slate-400 ml-2">
+            Showing {filters.date_from} → {filters.date_to}
+          </p>
+        </div>
+      )}
+
+      {/* Low stock alert */}
+      {low_stock?.length > 0 && (
+        <div
+          className="flex items-start gap-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl px-4 py-3 cursor-pointer hover:bg-amber-100 transition-colors"
+          onClick={() => navigate("/ingredients")}
+        >
+          <AlertTriangle size={16} className="shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-medium">
+              {low_stock.length} ingredient{low_stock.length !== 1 ? "s are" : " is"} running
+              low
+            </p>
+            <p className="text-xs mt-0.5">{low_stock.map((i: any) => i.name).join(", ")}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Filtered Totals */}
       <div>
         <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-3">
-          All Time
+          {PERIODS.find(p => p.value === period)?.label ?? "Selected Period"}
         </p>
         <div className="grid grid-cols-3 gap-4">
           <StatCard label="Total Sales" value={formatPeso(totals.total_sales)} />
@@ -114,11 +224,8 @@ export default function DashboardPage() {
 
       {/* Chart + Best Selling */}
       <div className="grid grid-cols-3 gap-4">
-        {/* Monthly Chart */}
         <div className="col-span-2 bg-white rounded-xl border p-5">
-          <p className="text-sm font-semibold text-slate-800 mb-4">
-            Monthly Overview ({new Date().getFullYear()})
-          </p>
+          <p className="text-sm font-semibold text-slate-800 mb-4">Monthly Overview</p>
           <ResponsiveContainer width="100%" height={260}>
             <AreaChart data={chart_data}>
               <defs>
@@ -150,11 +257,7 @@ export default function DashboardPage() {
               />
               <Tooltip
                 formatter={(value: number) => formatPeso(value)}
-                contentStyle={{
-                  fontSize: 12,
-                  borderRadius: 8,
-                  border: "1px solid #e2e8f0",
-                }}
+                contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #e2e8f0" }}
               />
               <Legend wrapperStyle={{ fontSize: 12 }} />
               <Area
@@ -185,10 +288,8 @@ export default function DashboardPage() {
           </ResponsiveContainer>
         </div>
 
-        {/* Best Selling */}
         <div className="bg-white rounded-xl border p-5">
           <p className="text-sm font-semibold text-slate-800 mb-4">Top Products</p>
-
           {best_selling.length === 0 ? (
             <p className="text-sm text-slate-400">No sales data yet.</p>
           ) : (

@@ -1,15 +1,35 @@
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from datetime import datetime
 
 from .models import Expense
 from .serializers import ExpenseSerializer
 
 
+def parse_date(value):
+    try:
+        return datetime.strptime(value, '%Y-%m-%d').date()
+    except (ValueError, TypeError):
+        return None
+
+
 class ExpenseListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ExpenseSerializer
-    queryset = Expense.objects.all()
+
+    def get_queryset(self):
+        queryset = Expense.objects.all()
+
+        date_from = parse_date(self.request.query_params.get('date_from'))
+        date_to = parse_date(self.request.query_params.get('date_to'))
+
+        if date_from:
+            queryset = queryset.filter(date__gte=date_from)
+        if date_to:
+            queryset = queryset.filter(date__lte=date_to)
+
+        return queryset
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)

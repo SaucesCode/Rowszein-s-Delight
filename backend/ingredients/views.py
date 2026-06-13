@@ -1,8 +1,10 @@
 from rest_framework import generics, status
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Ingredient
+from django.db import models
 from .serializers import IngredientSerializer
 
 
@@ -75,3 +77,22 @@ class IngredientDetailView(generics.RetrieveUpdateDestroyAPIView):
             'data': None,
             'message': 'Ingredient deleted successfully.',
         }, status=status.HTTP_200_OK)
+
+
+class LowStockIngredientView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # Get all ingredients where quantity <= minimum_stock
+        # Exclude ingredients where minimum_stock is 0 (not configured)
+        low_stock = Ingredient.objects.filter(
+            minimum_stock__gt=0,
+            quantity__lte=models.F('minimum_stock'),
+        )
+
+        serializer = IngredientSerializer(low_stock, many=True)
+        return Response({
+            'success': True,
+            'data': serializer.data,
+            'message': '',
+        })

@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useIngredients, useDeleteIngredient } from "@/hooks/useIngredients";
 import type { Ingredient } from "@/types/ingredient.types";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Pencil, Trash2, Plus, AlertTriangle } from "lucide-react";
+import { clsx } from "clsx";
 
 export default function IngredientsPage() {
   const [page, setPage] = useState(1);
@@ -12,6 +13,7 @@ export default function IngredientsPage() {
 
   const ingredients: Ingredient[] = data?.data?.results ?? [];
   const totalPages = Math.ceil((data?.data?.count ?? 0) / 20);
+  const lowStockCount = ingredients.filter(i => i.is_low_stock).length;
 
   const handleDelete = (id: number) => {
     if (!window.confirm("Are you sure you want to delete this ingredient?")) return;
@@ -33,6 +35,17 @@ export default function IngredientsPage() {
           Add Ingredient
         </button>
       </div>
+
+      {/* Low stock warning banner */}
+      {lowStockCount > 0 && (
+        <div className="flex items-center gap-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl px-4 py-3 mb-4">
+          <AlertTriangle size={16} className="shrink-0" />
+          <p className="text-sm font-medium">
+            {lowStockCount} ingredient{lowStockCount !== 1 ? "s are" : " is"} running low on
+            stock.
+          </p>
+        </div>
+      )}
 
       {isLoading && <p className="text-sm text-slate-500">Loading...</p>}
 
@@ -59,6 +72,7 @@ export default function IngredientsPage() {
                   <th className="px-4 py-3 font-medium">Name</th>
                   <th className="px-4 py-3 font-medium">Quantity</th>
                   <th className="px-4 py-3 font-medium">Unit</th>
+                  <th className="px-4 py-3 font-medium">Min Stock</th>
                   <th className="px-4 py-3 font-medium">Cost/Unit</th>
                   <th className="px-4 py-3 font-medium">Supplier</th>
                   <th className="px-4 py-3 font-medium">Actions</th>
@@ -66,10 +80,29 @@ export default function IngredientsPage() {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {ingredients.map(ingredient => (
-                  <tr key={ingredient.id} className="hover:bg-slate-50">
-                    <td className="px-4 py-3 font-medium text-slate-800">{ingredient.name}</td>
+                  <tr
+                    key={ingredient.id}
+                    className={clsx(
+                      "hover:bg-slate-50",
+                      ingredient.is_low_stock && "bg-amber-50 hover:bg-amber-50",
+                    )}
+                  >
+                    <td className="px-4 py-3 font-medium text-slate-800">
+                      <div className="flex items-center gap-2">
+                        {ingredient.name}
+                        {ingredient.is_low_stock && (
+                          <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-medium">
+                            <AlertTriangle size={10} />
+                            Low
+                          </span>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-4 py-3 text-slate-600">{ingredient.quantity}</td>
                     <td className="px-4 py-3 text-slate-600">{ingredient.unit}</td>
+                    <td className="px-4 py-3 text-slate-600">
+                      {ingredient.minimum_stock > 0 ? ingredient.minimum_stock : "—"}
+                    </td>
                     <td className="px-4 py-3 text-slate-600">
                       ₱{Number(ingredient.cost_per_unit).toFixed(2)}
                     </td>

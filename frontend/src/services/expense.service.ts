@@ -1,9 +1,15 @@
 import api from "./api";
-import type { ExpensePayload } from "@/types/expense.types";
+import type{ ExpensePayload } from "@/types/expense.types";
+
+export interface ExpenseFilters {
+  page?: number;
+  date_from?: string;
+  date_to?: string;
+}
 
 export const expenseService = {
-  getAll: async (page = 1) => {
-    const response = await api.get("/expenses/", { params: { page } });
+  getAll: async (filters: ExpenseFilters = {}) => {
+    const response = await api.get("/expenses/", { params: filters });
     return response.data;
   },
 

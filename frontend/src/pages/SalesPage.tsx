@@ -2,12 +2,21 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSales, useDeleteSale } from "@/hooks/useSales";
 import type { Sale } from "@/types/sale.types";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Pencil, Trash2, Plus, X } from "lucide-react";
 
 export default function SalesPage() {
-  const [page, setPage] = useState(1);
   const navigate = useNavigate();
-  const { data, isLoading, isError } = useSales(page);
+  const [page, setPage] = useState(1);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+
+  const filters = {
+    page,
+    ...(dateFrom && { date_from: dateFrom }),
+    ...(dateTo && { date_to: dateTo }),
+  };
+
+  const { data, isLoading, isError } = useSales(filters);
   const deleteSale = useDeleteSale();
 
   const sales: Sale[] = data?.data?.results ?? [];
@@ -17,6 +26,14 @@ export default function SalesPage() {
     if (!window.confirm("Are you sure you want to delete this sale?")) return;
     deleteSale.mutate(id);
   };
+
+  const clearFilters = () => {
+    setDateFrom("");
+    setDateTo("");
+    setPage(1);
+  };
+
+  const hasFilters = !!dateFrom || !!dateTo;
 
   return (
     <div>
@@ -34,19 +51,59 @@ export default function SalesPage() {
         </button>
       </div>
 
-      {isLoading && <p className="text-sm text-slate-500">Loading...</p>}
+      {/* Date filters */}
+      <div className="flex items-center gap-3 mb-4 bg-white border rounded-xl px-4 py-3">
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-slate-600">From</label>
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={e => {
+              setDateFrom(e.target.value);
+              setPage(1);
+            }}
+            className="border rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-slate-600">To</label>
+          <input
+            type="date"
+            value={dateTo}
+            onChange={e => {
+              setDateTo(e.target.value);
+              setPage(1);
+            }}
+            className="border rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+          />
+        </div>
+        {hasFilters && (
+          <button
+            onClick={clearFilters}
+            className="flex items-center gap-1 text-sm text-slate-500 hover:text-slate-800 ml-2"
+          >
+            <X size={14} />
+            Clear
+          </button>
+        )}
+      </div>
 
+      {isLoading && <p className="text-sm text-slate-500">Loading...</p>}
       {isError && <p className="text-sm text-red-500">Failed to load sales.</p>}
 
       {!isLoading && !isError && sales.length === 0 && (
         <div className="text-center py-16 text-slate-400">
-          <p className="text-sm">No sales recorded yet.</p>
-          <button
-            onClick={() => navigate("/sales/new")}
-            className="mt-2 text-sm text-slate-600 underline"
-          >
-            Record your first sale
-          </button>
+          <p className="text-sm">
+            {hasFilters ? "No sales found for selected dates." : "No sales recorded yet."}
+          </p>
+          {!hasFilters && (
+            <button
+              onClick={() => navigate("/sales/new")}
+              className="mt-2 text-sm text-slate-600 underline"
+            >
+              Record your first sale
+            </button>
+          )}
         </div>
       )}
 
@@ -74,8 +131,7 @@ export default function SalesPage() {
                       })}
                     </td>
                     <td className="px-4 py-3 text-slate-600">
-                      {sale.sale_items.length} item
-                      {sale.sale_items.length !== 1 ? "s" : ""}
+                      {sale.sale_items.length} item{sale.sale_items.length !== 1 ? "s" : ""}
                     </td>
                     <td className="px-4 py-3 text-slate-500 max-w-xs truncate">
                       {sale.notes || "—"}

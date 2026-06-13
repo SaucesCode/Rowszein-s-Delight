@@ -19,6 +19,13 @@ export function useIngredient(id: number) {
   });
 }
 
+export function useLowStockIngredients() {
+  return useQuery({
+    queryKey: ["ingredients", "low-stock"],
+    queryFn: ingredientService.getLowStock,
+  });
+}
+
 export function useCreateIngredient() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();

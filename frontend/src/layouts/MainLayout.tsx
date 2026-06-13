@@ -7,6 +7,7 @@ import {
   BookOpen,
   Receipt,
   ShoppingCart,
+  TrendingUp,
 } from "lucide-react";
 import { clsx } from "clsx";
 
@@ -17,6 +18,7 @@ const navItems = [
   { to: "/recipes", label: "Recipes", icon: BookOpen },
   { to: "/expenses", label: "Expenses", icon: Receipt },
   { to: "/sales", label: "Sales", icon: ShoppingCart },
+  { to: "/profit-margins", label: "Profit Margins", icon: TrendingUp },
 ];
 
 export default function MainLayout() {

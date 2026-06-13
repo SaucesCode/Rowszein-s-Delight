@@ -1,13 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { saleService } from "@/services/sale.service";
+import type { SaleFilters } from "@/services/sale.service";
 import type { SalePayload } from "@/types/sale.types";
 import toast from "react-hot-toast";
 
-export function useSales(page = 1) {
+export function useSales(filters: SaleFilters = {}) {
   return useQuery({
-    queryKey: ["sales", page],
-    queryFn: () => saleService.getAll(page),
+    queryKey: ["sales", filters],
+    queryFn: () => saleService.getAll(filters),
   });
 }
 

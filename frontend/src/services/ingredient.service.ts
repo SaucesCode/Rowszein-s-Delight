@@ -12,6 +12,11 @@ export const ingredientService = {
     return response.data.data as Ingredient;
   },
 
+  getLowStock: async () => {
+    const response = await api.get("/ingredients/low-stock/");
+    return response.data.data as Ingredient[];
+  },
+
   create: async (payload: IngredientPayload) => {
     const response = await api.post("/ingredients/", payload);
     return response.data;

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useExpenses, useDeleteExpense } from "@/hooks/useExpenses";
 import type { Expense } from "@/types/expense.types";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Pencil, Trash2, Plus, X } from "lucide-react";
 import { clsx } from "clsx";
 
 const CATEGORY_STYLES: Record<string, string> = {
@@ -14,9 +14,18 @@ const CATEGORY_STYLES: Record<string, string> = {
 };
 
 export default function ExpensesPage() {
-  const [page, setPage] = useState(1);
   const navigate = useNavigate();
-  const { data, isLoading, isError } = useExpenses(page);
+  const [page, setPage] = useState(1);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+
+  const filters = {
+    page,
+    ...(dateFrom && { date_from: dateFrom }),
+    ...(dateTo && { date_to: dateTo }),
+  };
+
+  const { data, isLoading, isError } = useExpenses(filters);
   const deleteExpense = useDeleteExpense();
 
   const expenses: Expense[] = data?.data?.results ?? [];
@@ -26,6 +35,14 @@ export default function ExpensesPage() {
     if (!window.confirm("Are you sure you want to delete this expense?")) return;
     deleteExpense.mutate(id);
   };
+
+  const clearFilters = () => {
+    setDateFrom("");
+    setDateTo("");
+    setPage(1);
+  };
+
+  const hasFilters = !!dateFrom || !!dateTo;
 
   return (
     <div>
@@ -43,19 +60,61 @@ export default function ExpensesPage() {
         </button>
       </div>
 
-      {isLoading && <p className="text-sm text-slate-500">Loading...</p>}
+      {/* Date filters */}
+      <div className="flex items-center gap-3 mb-4 bg-white border rounded-xl px-4 py-3">
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-slate-600">From</label>
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={e => {
+              setDateFrom(e.target.value);
+              setPage(1);
+            }}
+            className="border rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-slate-600">To</label>
+          <input
+            type="date"
+            value={dateTo}
+            onChange={e => {
+              setDateTo(e.target.value);
+              setPage(1);
+            }}
+            className="border rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+          />
+        </div>
+        {hasFilters && (
+          <button
+            onClick={clearFilters}
+            className="flex items-center gap-1 text-sm text-slate-500 hover:text-slate-800 ml-2"
+          >
+            <X size={14} />
+            Clear
+          </button>
+        )}
+      </div>
 
+      {isLoading && <p className="text-sm text-slate-500">Loading...</p>}
       {isError && <p className="text-sm text-red-500">Failed to load expenses.</p>}
 
       {!isLoading && !isError && expenses.length === 0 && (
         <div className="text-center py-16 text-slate-400">
-          <p className="text-sm">No expenses recorded yet.</p>
-          <button
-            onClick={() => navigate("/expenses/new")}
-            className="mt-2 text-sm text-slate-600 underline"
-          >
-            Record your first expense
-          </button>
+          <p className="text-sm">
+            {hasFilters
+              ? "No expenses found for selected dates."
+              : "No expenses recorded yet."}
+          </p>
+          {!hasFilters && (
+            <button
+              onClick={() => navigate("/expenses/new")}
+              className="mt-2 text-sm text-slate-600 underline"
+            >
+              Record your first expense
+            </button>
+          )}
         </div>
       )}
 

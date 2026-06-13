@@ -1,12 +1,24 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.db.models import Sum, Count
+from django.db.models import Sum, F
 from django.db.models.functions import TruncMonth
 from django.utils import timezone
+from datetime import datetime, date
 
 from sales.models import Sale, SaleItem
 from expenses.models import Expense
+from ingredients.models import Ingredient
+from ingredients.serializers import IngredientSerializer
+from products.models import Product
+from recipes.models import Recipe
+
+
+def parse_date(value):
+    try:
+        return datetime.strptime(value, '%Y-%m-%d').date()
+    except (ValueError, TypeError):
+        return None
 
 
 class DashboardView(APIView):
@@ -16,18 +28,30 @@ class DashboardView(APIView):
         today = timezone.now().date()
         current_year = today.year
 
-        # --- Totals ---
-        total_sales = Sale.objects.aggregate(
-            total=Sum('total_amount')
-        )['total'] or 0
+        # --- Date filters ---
+        date_from = parse_date(request.query_params.get('date_from'))
+        date_to = parse_date(request.query_params.get('date_to'))
 
-        total_expenses = Expense.objects.aggregate(
-            total=Sum('amount')
-        )['total'] or 0
+        # Default to current year if no filters
+        if not date_from:
+            date_from = date(current_year, 1, 1)
+        if not date_to:
+            date_to = today
+
+        # --- Filtered Totals ---
+        total_sales = Sale.objects.filter(
+            date__gte=date_from,
+            date__lte=date_to,
+        ).aggregate(total=Sum('total_amount'))['total'] or 0
+
+        total_expenses = Expense.objects.filter(
+            date__gte=date_from,
+            date__lte=date_to,
+        ).aggregate(total=Sum('amount'))['total'] or 0
 
         net_profit = float(total_sales) - float(total_expenses)
 
-        # --- This month ---
+        # --- This month (always current month, unaffected by filter) ---
         monthly_sales = Sale.objects.filter(
             date__year=today.year,
             date__month=today.month,
@@ -40,9 +64,13 @@ class DashboardView(APIView):
 
         monthly_profit = float(monthly_sales) - float(monthly_expenses)
 
-        # --- Best selling products (top 5) ---
+        # --- Best selling (filtered) ---
         best_selling = (
             SaleItem.objects
+            .filter(
+                sale__date__gte=date_from,
+                sale__date__lte=date_to,
+            )
             .values('product__id', 'product__name')
             .annotate(
                 total_quantity=Sum('quantity'),
@@ -51,10 +79,10 @@ class DashboardView(APIView):
             .order_by('-total_quantity')[:5]
         )
 
-        # --- Monthly breakdown for current year ---
+        # --- Monthly chart (filtered year range) ---
         monthly_sales_chart = (
             Sale.objects
-            .filter(date__year=current_year)
+            .filter(date__gte=date_from, date__lte=date_to)
             .annotate(month=TruncMonth('date'))
             .values('month')
             .annotate(total=Sum('total_amount'))
@@ -63,14 +91,13 @@ class DashboardView(APIView):
 
         monthly_expenses_chart = (
             Expense.objects
-            .filter(date__year=current_year)
+            .filter(date__gte=date_from, date__lte=date_to)
             .annotate(month=TruncMonth('date'))
             .values('month')
             .annotate(total=Sum('amount'))
             .order_by('month')
         )
 
-        # Build chart data — all 12 months
         months = [
             'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
             'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
@@ -95,9 +122,20 @@ class DashboardView(APIView):
             for i in range(12)
         ]
 
+        # --- Low stock (unaffected by date filter) ---
+        low_stock = Ingredient.objects.filter(
+            minimum_stock__gt=0,
+            quantity__lte=F('minimum_stock'),
+        )
+        low_stock_data = IngredientSerializer(low_stock, many=True).data
+
         return Response({
             'success': True,
             'data': {
+                'filters': {
+                    'date_from': date_from.isoformat(),
+                    'date_to': date_to.isoformat(),
+                },
                 'totals': {
                     'total_sales': float(total_sales),
                     'total_expenses': float(total_expenses),
@@ -118,6 +156,51 @@ class DashboardView(APIView):
                     for item in best_selling
                 ],
                 'chart_data': chart_data,
+                'low_stock': low_stock_data,
             },
+            'message': '',
+        })
+
+
+class ProfitMarginView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        products = Product.objects.all().order_by('name')
+        result = []
+
+        for product in products:
+            selling_price = float(product.price)
+
+            try:
+                recipe = Recipe.objects.prefetch_related(
+                    'recipe_ingredients__ingredient'
+                ).get(product=product)
+                production_cost = float(recipe.production_cost)
+                has_recipe = True
+            except Recipe.DoesNotExist:
+                production_cost = 0
+                has_recipe = False
+
+            profit_per_unit = selling_price - production_cost
+            margin_percent = (
+                round((profit_per_unit / selling_price) * 100, 2)
+                if selling_price > 0 else 0
+            )
+
+            result.append({
+                'product_id': product.id,
+                'product_name': product.name,
+                'selling_price': selling_price,
+                'production_cost': production_cost,
+                'profit_per_unit': round(profit_per_unit, 2),
+                'margin_percent': margin_percent,
+                'has_recipe': has_recipe,
+                'is_available': product.is_available,
+            })
+
+        return Response({
+            'success': True,
+            'data': result,
             'message': '',
         })

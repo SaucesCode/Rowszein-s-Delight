@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import AuthLayout from "@/layouts/AuthLayout";
 import MainLayout from "@/layouts/MainLayout";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -14,6 +14,7 @@ import ExpensesPage from "@/pages/ExpensesPage";
 import ExpenseFormPage from "@/pages/ExpenseFormPage";
 import SalesPage from "@/pages/SalesPage";
 import SaleFormPage from "@/pages/SaleFormPage";
+import ProfitMarginsPage from "@/pages/ProfitMarginsPage";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ const router = createBrowserRouter([
       {
         element: <MainLayout />,
         children: [
+          { path: "/", element: <Navigate to="/dashboard" replace /> },
           { path: "/dashboard", element: <DashboardPage /> },
           { path: "/ingredients", element: <IngredientsPage /> },
           { path: "/ingredients/new", element: <IngredientFormPage /> },
@@ -42,13 +44,14 @@ const router = createBrowserRouter([
           { path: "/sales", element: <SalesPage /> },
           { path: "/sales/new", element: <SaleFormPage /> },
           { path: "/sales/:id/edit", element: <SaleFormPage /> },
+          { path: "/profit-margins", element: <ProfitMarginsPage /> },
         ],
       },
     ],
   },
   {
     path: "*",
-    element: <LoginPage />,
+    element: <Navigate to="/login" replace />,
   },
 ]);
 
