@@ -20,7 +20,9 @@ class SaleItemSerializer(serializers.ModelSerializer):
             'quantity',
             'unit_price',
             'subtotal',
+            'subtotal_amount',
         ]
+        read_only_fields = ['subtotal', 'subtotal_amount']
 
     def validate_quantity(self, value):
         if value <= 0:
@@ -66,7 +68,6 @@ class SaleSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         items_data = validated_data.pop('sale_items')
-
         sale = Sale.objects.create(**validated_data)
 
         SaleItem.objects.bulk_create([
@@ -75,6 +76,7 @@ class SaleSerializer(serializers.ModelSerializer):
                 product=item['product'],
                 quantity=item['quantity'],
                 unit_price=item['unit_price'],
+                subtotal_amount=item['quantity'] * item['unit_price'],
             )
             for item in items_data
         ])
@@ -97,6 +99,7 @@ class SaleSerializer(serializers.ModelSerializer):
                     product=item['product'],
                     quantity=item['quantity'],
                     unit_price=item['unit_price'],
+                    subtotal_amount=item['quantity'] * item['unit_price'],
                 )
                 for item in items_data
             ])

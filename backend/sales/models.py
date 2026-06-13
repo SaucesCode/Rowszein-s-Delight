@@ -41,6 +41,11 @@ class SaleItem(models.Model):
     )
     quantity = models.PositiveIntegerField()
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    subtotal_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+    )
 
     class Meta:
         unique_together = ['sale', 'product']
@@ -51,3 +56,7 @@ class SaleItem(models.Model):
     @property
     def subtotal(self):
         return self.quantity * self.unit_price
+
+    def save(self, *args, **kwargs):
+        self.subtotal_amount = self.quantity * self.unit_price
+        super().save(*args, **kwargs)

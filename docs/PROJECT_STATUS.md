@@ -6,7 +6,7 @@ Rowszein's Delight Management System
 
 ## Current Phase
 
-Dashboard
+MVP Complete ✅
 
 ## Completed
 
@@ -57,17 +57,24 @@ Dashboard
   - Full CRUD endpoints
   - Toast notifications
 
+* Dashboard (Backend + Frontend)
+  - All time totals (sales, expenses, net profit)
+  - This month breakdown
+  - Monthly area chart (sales vs expenses vs profit)
+  - Top 5 best selling products
+  - No new models — pure aggregation
+
 ## In Progress
 
 None
 
 ## Not Started
 
-* Dashboard
+None — MVP complete
 
 ## Current Task
 
-Build Dashboard module — backend first
+None
 
 ## Last Decisions
 
@@ -80,10 +87,12 @@ Build Dashboard module — backend first
 * multipart/form-data for image uploads
 * useFieldArray for dynamic form rows
 * unit_price stored at time of sale
+* subtotal_amount stored on SaleItem for aggregation
+* Pure aggregation dashboard — no extra models
 
 ## Next Task
 
-None — MVP complete after Dashboard
+Version 2 planning (post-MVP)
 
 ## Blockers
 
@@ -91,9 +100,9 @@ None
 
 ## Notes
 
-Version 1 focuses only on business operations.
+Version 1 MVP is complete.
 
-Do not build:
+Do NOT build in Version 1:
 
 * Payments
 * Loyalty Systems
@@ -101,3 +110,12 @@ Do not build:
 * Multi-Branch Support
 * Mobile Applications
 * Three.js Features
+
+Possible Version 2 features:
+
+* Inventory deduction on sale
+* Low stock alerts
+* Delivery tracking
+* User management (admin creates staff accounts)
+* Export to PDF / CSV
+* Mobile responsive improvements
