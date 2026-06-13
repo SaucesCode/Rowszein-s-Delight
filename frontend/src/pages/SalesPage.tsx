@@ -2,16 +2,24 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSales, useDeleteSale } from "@/hooks/useSales";
 import type { Sale } from "@/types/sale.types";
-import { Pencil, Trash2, Plus, X } from "lucide-react";
+import { Pencil, Trash2, Plus, X, Download } from "lucide-react";
+import { exportService } from "@/services/export.service";
+import toast from "react-hot-toast";
 
 export default function SalesPage() {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [exporting, setExporting] = useState(false);
 
   const filters = {
     page,
+    ...(dateFrom && { date_from: dateFrom }),
+    ...(dateTo && { date_to: dateTo }),
+  };
+
+  const exportFilters = {
     ...(dateFrom && { date_from: dateFrom }),
     ...(dateTo && { date_to: dateTo }),
   };
@@ -33,6 +41,19 @@ export default function SalesPage() {
     setPage(1);
   };
 
+  const handleExport = async (type: "csv" | "pdf") => {
+    setExporting(true);
+    try {
+      if (type === "csv") await exportService.salesCSV(exportFilters);
+      else await exportService.salesPDF(exportFilters);
+      toast.success(`Sales exported as ${type.toUpperCase()}.`);
+    } catch {
+      toast.error("Export failed.");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const hasFilters = !!dateFrom || !!dateTo;
 
   return (
@@ -42,13 +63,31 @@ export default function SalesPage() {
           <h1 className="text-xl font-semibold text-slate-800">Sales</h1>
           <p className="text-sm text-slate-500 mt-1">Track all revenue transactions</p>
         </div>
-        <button
-          onClick={() => navigate("/sales/new")}
-          className="flex items-center gap-2 bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-700"
-        >
-          <Plus size={16} />
-          Record Sale
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => handleExport("csv")}
+            disabled={exporting}
+            className="flex items-center gap-2 border px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+          >
+            <Download size={15} />
+            CSV
+          </button>
+          <button
+            onClick={() => handleExport("pdf")}
+            disabled={exporting}
+            className="flex items-center gap-2 border px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+          >
+            <Download size={15} />
+            PDF
+          </button>
+          <button
+            onClick={() => navigate("/sales/new")}
+            className="flex items-center gap-2 bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-700"
+          >
+            <Plus size={16} />
+            Record Sale
+          </button>
+        </div>
       </div>
 
       {/* Date filters */}

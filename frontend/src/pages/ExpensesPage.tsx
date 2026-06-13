@@ -2,8 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useExpenses, useDeleteExpense } from "@/hooks/useExpenses";
 import type { Expense } from "@/types/expense.types";
-import { Pencil, Trash2, Plus, X } from "lucide-react";
+import { Pencil, Trash2, Plus, X, Download } from "lucide-react";
 import { clsx } from "clsx";
+import { exportService } from "@/services/export.service";
+import toast from "react-hot-toast";
 
 const CATEGORY_STYLES: Record<string, string> = {
   ingredient: "bg-blue-100 text-blue-700",
@@ -18,9 +20,15 @@ export default function ExpensesPage() {
   const [page, setPage] = useState(1);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [exporting, setExporting] = useState(false);
 
   const filters = {
     page,
+    ...(dateFrom && { date_from: dateFrom }),
+    ...(dateTo && { date_to: dateTo }),
+  };
+
+  const exportFilters = {
     ...(dateFrom && { date_from: dateFrom }),
     ...(dateTo && { date_to: dateTo }),
   };
@@ -42,6 +50,19 @@ export default function ExpensesPage() {
     setPage(1);
   };
 
+  const handleExport = async (type: "csv" | "pdf") => {
+    setExporting(true);
+    try {
+      if (type === "csv") await exportService.expensesCSV(exportFilters);
+      else await exportService.expensesPDF(exportFilters);
+      toast.success(`Expenses exported as ${type.toUpperCase()}.`);
+    } catch {
+      toast.error("Export failed.");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const hasFilters = !!dateFrom || !!dateTo;
 
   return (
@@ -51,13 +72,31 @@ export default function ExpensesPage() {
           <h1 className="text-xl font-semibold text-slate-800">Expenses</h1>
           <p className="text-sm text-slate-500 mt-1">Track all business costs</p>
         </div>
-        <button
-          onClick={() => navigate("/expenses/new")}
-          className="flex items-center gap-2 bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-700"
-        >
-          <Plus size={16} />
-          Add Expense
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => handleExport("csv")}
+            disabled={exporting}
+            className="flex items-center gap-2 border px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+          >
+            <Download size={15} />
+            CSV
+          </button>
+          <button
+            onClick={() => handleExport("pdf")}
+            disabled={exporting}
+            className="flex items-center gap-2 border px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+          >
+            <Download size={15} />
+            PDF
+          </button>
+          <button
+            onClick={() => navigate("/expenses/new")}
+            className="flex items-center gap-2 bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-700"
+          >
+            <Plus size={16} />
+            Add Expense
+          </button>
+        </div>
       </div>
 
       {/* Date filters */}
