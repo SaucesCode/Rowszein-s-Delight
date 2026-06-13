@@ -6,7 +6,7 @@ Rowszein's Delight Management System
 
 ## Current Phase
 
-Expenses
+Dashboard
 
 ## Completed
 
@@ -41,19 +41,33 @@ Expenses
   - Full CRUD endpoints
   - Toast notifications
 
+* Expenses (Backend + Frontend)
+  - Expense model (category, amount, description, date)
+  - Full CRUD endpoints
+  - Paginated list with category badges
+  - Create / Edit form with date picker
+  - Delete with confirmation
+  - Toast notifications
+
+* Sales (Backend + Frontend)
+  - Sale model with SaleItem (product, quantity, unit price)
+  - Total amount auto-calculated from items
+  - Unit price auto-filled from product price
+  - Live total preview in form
+  - Full CRUD endpoints
+  - Toast notifications
+
 ## In Progress
 
 None
 
 ## Not Started
 
-* Expenses
-* Sales
 * Dashboard
 
 ## Current Task
 
-Build Expenses module — backend first
+Build Dashboard module — backend first
 
 ## Last Decisions
 
@@ -65,10 +79,11 @@ Build Expenses module — backend first
 * CookieJWTAuthentication custom authenticator
 * multipart/form-data for image uploads
 * useFieldArray for dynamic form rows
+* unit_price stored at time of sale
 
 ## Next Task
 
-Build Sales module
+None — MVP complete after Dashboard
 
 ## Blockers
 

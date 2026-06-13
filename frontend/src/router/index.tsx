@@ -10,6 +10,10 @@ import ProductsPage from "@/pages/ProductsPage";
 import ProductFormPage from "@/pages/ProductFormPage";
 import RecipesPage from "@/pages/RecipesPage";
 import RecipeFormPage from "@/pages/RecipeFormPage";
+import ExpensesPage from "@/pages/ExpensesPage";
+import ExpenseFormPage from "@/pages/ExpenseFormPage";
+import SalesPage from "@/pages/SalesPage";
+import SaleFormPage from "@/pages/SaleFormPage";
 
 const router = createBrowserRouter([
   {
@@ -32,6 +36,12 @@ const router = createBrowserRouter([
           { path: "/recipes", element: <RecipesPage /> },
           { path: "/recipes/new", element: <RecipeFormPage /> },
           { path: "/recipes/:id/edit", element: <RecipeFormPage /> },
+          { path: "/expenses", element: <ExpensesPage /> },
+          { path: "/expenses/new", element: <ExpenseFormPage /> },
+          { path: "/expenses/:id/edit", element: <ExpenseFormPage /> },
+          { path: "/sales", element: <SalesPage /> },
+          { path: "/sales/new", element: <SaleFormPage /> },
+          { path: "/sales/:id/edit", element: <SaleFormPage /> },
         ],
       },
     ],

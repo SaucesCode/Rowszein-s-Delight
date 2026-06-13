@@ -1,6 +1,13 @@
 import { Outlet, NavLink } from "react-router-dom";
 import { useLogout } from "@/hooks/useAuth";
-import { LayoutDashboard, Package, ShoppingBag, BookOpen } from "lucide-react";
+import {
+  LayoutDashboard,
+  Package,
+  ShoppingBag,
+  BookOpen,
+  Receipt,
+  ShoppingCart,
+} from "lucide-react";
 import { clsx } from "clsx";
 
 const navItems = [
@@ -8,6 +15,8 @@ const navItems = [
   { to: "/ingredients", label: "Ingredients", icon: Package },
   { to: "/products", label: "Products", icon: ShoppingBag },
   { to: "/recipes", label: "Recipes", icon: BookOpen },
+  { to: "/expenses", label: "Expenses", icon: Receipt },
+  { to: "/sales", label: "Sales", icon: ShoppingCart },
 ];
 
 export default function MainLayout() {
