@@ -2,87 +2,160 @@
 
 ## Purpose
 
-This document defines the user experience, visual design principles, and interface standards for the Rowszein's Delight Management System.
+This document defines the user experience, visual design standards, and interface rules for the Rowszein's Delight Owner Panel.
 
-The goal is to create a system that feels:
+Current scope:
 
-* Friendly
-* Simple
-* Modern
-* Easy to understand
-* Easy to navigate
-* Suitable for non-technical users
+* Owner Dashboard
+* Ingredients Management
+* Products Management
+* Recipes Management
+* Sales Management
+* Expenses Management
 
-The system should feel like a donut shop management platform, not corporate accounting software.
-
----
-
-# Design Philosophy
-
-The application should be approachable for business owners with little to no technical experience.
-
-Prioritize:
-
-1. Clarity
-2. Simplicity
-3. Readability
-4. Consistency
-5. Beauty
-
-Avoid:
-
-* Complex interfaces
-* Enterprise-style dashboards
-* Technical terminology
-* Cluttered screens
+The public customer website is NOT part of the current design phase and will be designed separately.
 
 ---
 
-# Target Users
+# Design Goal
 
-## Owner
+The application should feel like:
 
-The primary user.
+* A modern donut shop management system
+* Friendly and welcoming
+* Easy for non-technical users
+* Visually attractive
+* Consistent and predictable
 
-Responsibilities:
+The application should NOT feel like:
 
-* Manage products
-* Manage ingredients
-* Manage recipes
-* Record sales
-* Record expenses
-* Monitor profits
-
-The system should be optimized for a single owner.
-
----
-
-## Customer
-
-Visitors browsing products on the public website.
-
-Goals:
-
-* View donut flavors
-* Browse products easily
-* View product images
-* Learn about the business
-* Contact the shop
+* Accounting software
+* ERP software
+* Enterprise dashboards
+* Developer tools
 
 ---
 
-# Brand Identity
+# Design Personality
 
-## Personality
-
-The brand should feel:
+Brand characteristics:
 
 * Warm
 * Sweet
-* Friendly
 * Playful
 * Premium
-* Welcoming
+* Elegant
+* Friendly
+
+Every screen should reinforce the feeling of managing a dessert business.
+
+---
+
+# Design Priorities
+
+Priority order:
+
+1. Ease of use
+2. Clarity
+3. Consistency
+4. Mobile responsiveness
+5. Visual appeal
+6. Animations
+
+---
+
+# UI Framework
+
+Required:
+
+* shadcn/ui
+* Tailwind CSS
+* Lucide React
+
+Do not introduce additional component libraries.
+
+Avoid:
+
+* Material UI
+* Ant Design
+* Chakra UI
+* Bootstrap
+
+---
+
+# Shadcn First Rule
+
+The project uses shadcn/ui as the primary component library.
+
+Before creating a custom component:
+
+1. Check if shadcn/ui already provides it.
+2. Use the shadcn component directly whenever possible.
+3. Only create custom components when they represent a reusable business or layout pattern.
+
+Use directly from shadcn/ui:
+
+* Button
+* Input
+* Textarea
+* Select
+* Dialog
+* Sheet
+* DropdownMenu
+* Tooltip
+* Popover
+* Badge
+* Table
+* Tabs
+* Card
+* Skeleton
+
+Do not create wrappers around existing shadcn components.
+
+Bad:
+
+```text
+CustomButton
+CustomInput
+CustomCard
+CustomDialog
+```
+
+Good:
+
+```text
+Button
+Input
+Card
+Dialog
+```
+
+---
+
+# Design System Components
+
+Only create custom components when they represent business-specific UI.
+
+Approved custom components:
+
+```text
+PageContainer
+PageHeader
+
+DashboardStatCard
+
+ProductCard
+
+LowStockAlert
+
+EmptyState
+
+FormHelpText
+```
+
+Custom components should add business value.
+
+They should not simply wrap shadcn components.
 
 ---
 
@@ -94,12 +167,12 @@ The brand should feel:
 #FF6FAE
 ```
 
-Used for:
+Usage:
 
 * Primary buttons
-* Links
+* Active navigation
 * Highlights
-* Active states
+* Focus states
 
 ---
 
@@ -109,11 +182,11 @@ Used for:
 #FFD6E7
 ```
 
-Used for:
+Usage:
 
-* Background accents
-* Cards
-* Sections
+* Card accents
+* Section backgrounds
+* Dashboard highlights
 
 ---
 
@@ -123,9 +196,9 @@ Used for:
 #FFF8F0
 ```
 
-Used for:
+Usage:
 
-* Main backgrounds
+* Application background
 
 ---
 
@@ -135,10 +208,10 @@ Used for:
 #6B4226
 ```
 
-Used for:
+Usage:
 
-* Text
 * Headings
+* Important text
 
 ---
 
@@ -148,7 +221,7 @@ Used for:
 #FFFDFB
 ```
 
-Used for:
+Usage:
 
 * Cards
 * Forms
@@ -158,27 +231,23 @@ Used for:
 
 # Typography
 
-## Headings
-
-Font:
+Headings:
 
 ```text
 Poppins
 ```
 
----
-
-## Body Text
-
-Font:
+Body:
 
 ```text
 Inter
 ```
 
+No additional fonts allowed.
+
 ---
 
-# Icons
+# Icon System
 
 Use:
 
@@ -186,69 +255,126 @@ Use:
 Lucide React
 ```
 
-Icons should be used consistently.
-
 Examples:
 
 Dashboard:
-
-```text
 LayoutDashboard
-```
 
 Ingredients:
-
-```text
 Package
-```
 
 Products:
-
-```text
-Donut (custom icon or dessert icon)
-```
+CakeSlice
 
 Recipes:
-
-```text
 BookOpen
-```
 
 Sales:
-
-```text
 ShoppingCart
-```
 
 Expenses:
-
-```text
 Receipt
-```
-
-Settings:
-
-```text
-Settings
-```
 
 Logout:
-
-```text
 LogOut
-```
-
-Do NOT use emojis.
-
-Icons only.
 
 ---
 
-# Navigation
+# Emoji Policy
 
-Keep navigation simple.
+Emojis are strictly prohibited throughout the application.
 
-Sidebar Items:
+Do not use emojis in:
+
+* Navigation
+* Buttons
+* Cards
+* Forms
+* Dashboard Widgets
+* Tables
+* Empty States
+* Alerts
+* Notifications
+* Headers
+* Marketing Content
+
+Bad:
+
+```text
+🍩 Products
+💰 Sales
+📦 Ingredients
+```
+
+Good:
+
+```text
+Package Products
+ShoppingCart Sales
+Receipt Expenses
+```
+
+Use Lucide React icons exclusively.
+
+---
+
+# Icon Consistency Rules
+
+Only use:
+
+```text
+Lucide React
+```
+
+Never mix icon libraries.
+
+Do not use:
+
+* Emojis
+* Font Awesome
+* Heroicons
+* Material Icons
+* Bootstrap Icons
+
+Every icon must come from Lucide React.
+
+Consistency is more important than visual variety.
+
+---
+
+# AI Design Rule
+
+When generating designs:
+
+* Never use emojis.
+* Always use Lucide React icons.
+* Reuse existing patterns.
+* Reuse existing components.
+* Reuse existing layouts.
+* Reuse existing spacing.
+
+If no suitable icon exists, use text only.
+
+---
+
+# Owner Panel Layout
+
+Layout is fixed.
+
+All pages must use:
+
+```text
+Sidebar
+Navbar
+Page Header
+Content
+```
+
+No alternative layouts.
+
+---
+
+# Sidebar Structure
 
 ```text
 Dashboard
@@ -266,7 +392,11 @@ Expenses
 Logout
 ```
 
-Avoid nested menus.
+Rules:
+
+* No nested menus
+* No collapsible groups
+* No multi-level navigation
 
 Maximum depth:
 
@@ -276,22 +406,20 @@ Sidebar
 → Form
 ```
 
-Never deeper.
-
 ---
 
-# Dashboard Design
+# Dashboard Layout
 
 The dashboard should immediately answer:
 
 * How much was earned?
 * How much was spent?
 * What sells best?
-* What needs attention?
+* What requires attention?
 
 ---
 
-## Dashboard Cards
+## First Row
 
 Display:
 
@@ -302,7 +430,16 @@ Display:
 
 ---
 
-## Secondary Widgets
+## Second Row
+
+Display:
+
+* Sales Chart
+* Expense Chart
+
+---
+
+## Third Row
 
 Display:
 
@@ -312,39 +449,62 @@ Display:
 
 ---
 
-# Low Stock Alerts
+# Page Structure
 
-Always display important inventory warnings.
-
-Example:
+Every management page must follow:
 
 ```text
-Low Stock Alert
+Page Header
 
-Flour has only 2kg remaining.
+Description
+
+Primary Action Button
+
+Filters
+
+Content
+
+Pagination
 ```
+
+No exceptions.
 
 ---
 
 # Forms
 
-Forms must be easy for non-technical users.
+Forms should be beginner-friendly.
+
+Every field must include:
+
+* Label
+* Placeholder
+* Helper Text
+* Validation Message
 
 ---
 
-## Every Input Requires Help Text
-
-Example:
+Example
 
 Ingredient Name
+
+Helper Text:
 
 ```text
 Example: Flour
 ```
 
----
+Quantity
+
+Helper Text:
+
+```text
+Example: 10 kilograms available
+```
 
 Cost Per Unit
+
+Helper Text:
 
 ```text
 Example: ₱50 per kilogram
@@ -352,17 +512,25 @@ Example: ₱50 per kilogram
 
 ---
 
-Quantity
+# Tooltips
+
+Important fields must provide additional explanation.
+
+Use Lucide Info icon.
+
+Example:
+
+Production Cost
 
 ```text
-Example: 10kg available
+The total ingredient cost required to produce one item.
 ```
 
 ---
 
-## Validation
+# Validation Messages
 
-Validation must be immediate and understandable.
+Validation should be understandable.
 
 Bad:
 
@@ -378,29 +546,9 @@ Price must be greater than 0.
 
 ---
 
-# Tooltips
-
-Every important field should support contextual help.
-
-Use:
-
-```text
-Info Icon
-```
-
-Example:
-
-Production Cost
-
-```text
-The total ingredient cost required to produce this item.
-```
-
----
-
 # Tables
 
-All tables must include:
+Every table must include:
 
 * Search
 * Pagination
@@ -409,52 +557,33 @@ All tables must include:
 
 Optional:
 
-* Sorting
 * Filters
+* Sorting
 
 ---
 
-# Cards vs Tables
+# Product Display
 
-Prefer cards when displaying products.
+Products should use cards whenever possible.
 
-Use tables for:
+Each card displays:
 
-* Sales
-* Expenses
-* Ingredients
+* Image
+* Name
+* Price
+* Availability
+* Quick Actions
 
-Use cards for:
-
-* Products
-* Featured Items
-* Customer-facing content
-
----
-
-# Loading States
-
-Never display empty screens while data loads.
-
-Use:
-
-* Skeleton loaders
-* Placeholder cards
-
-Avoid:
-
-* Large loading spinners
+Avoid large product tables.
 
 ---
 
 # Empty States
 
-Every empty state should guide the user.
-
 Bad:
 
 ```text
-No Data Found
+No Data
 ```
 
 Good:
@@ -467,9 +596,22 @@ Create your first product to get started.
 
 ---
 
-# Toast Notifications
+# Loading States
 
 Use:
+
+* Skeletons
+* Placeholder cards
+
+Avoid:
+
+* Full-page spinners
+
+---
+
+# Toast Notifications
+
+Required:
 
 ```text
 react-hot-toast
@@ -487,7 +629,7 @@ Error:
 toast.error("Failed to create product")
 ```
 
-Do not use:
+Never use:
 
 ```js
 alert()
@@ -495,163 +637,112 @@ alert()
 
 ---
 
-# Mobile Experience
+# Responsive Design
 
-The system must be mobile-friendly.
+Must support:
+
+* Mobile
+* Tablet
+* Desktop
 
 Requirements:
 
-* Responsive layouts
 * Collapsible sidebar
 * Touch-friendly buttons
 * Horizontal table scrolling
 
 ---
 
-# Public Website
-
-The public website should be visually attractive and marketing-focused.
-
----
-
-## Goals
-
-Allow visitors to:
-
-* Browse donut flavors
-* View pricing
-* See product images
-* Learn about the brand
-
----
-
-# Hero Section
-
-Must contain:
-
-* Strong headline
-* Supporting description
-* Product imagery
-* Call-to-action button
-
-Example:
-
-```text
-Freshly Made Donuts Every Day
-
-Made with quality ingredients and crafted with care.
-```
-
-Buttons:
-
-```text
-View Flavors
-
-Contact Us
-```
-
----
-
-# Product Showcase
-
-Use large product cards.
-
-Each card should display:
-
-* Product Image
-* Product Name
-* Short Description
-* Price
-
----
-
-# Product Categories
-
-Examples:
-
-```text
-Classic
-
-Chocolate
-
-Premium
-
-Seasonal
-```
-
----
-
-# Image Usage
-
-Images are critical.
-
-Products should always have:
-
-* High-quality photos
-* Consistent image sizes
-* Optimized loading
-
----
-
 # Animations
 
-Animations should enhance the experience.
+Animations should enhance the interface.
 
 Allowed:
 
-* Fade transitions
 * Hover effects
-* Smooth scrolling
+* Fade transitions
+* Smooth page transitions
 * Card interactions
 
 Avoid:
 
 * Excessive motion
-* Distracting animations
-* Heavy effects
+* Distracting effects
 
 ---
 
-# Accessibility
+# Reusable Pattern Rule
 
-All forms must have:
+Before creating a new component, verify:
 
-* Labels
-* Focus states
-* Keyboard accessibility
+1. Does shadcn already provide this?
+2. Does an existing project component already solve this?
+3. Will this appear in multiple places?
 
-Buttons must clearly indicate actions.
+If the answer is no, do not create a reusable component.
+
+Avoid component bloat.
 
 ---
 
 # Consistency Rules
 
-Every page should follow the same structure:
+Always reuse existing:
 
-```text
-Page Header
+* Buttons
+* Cards
+* Forms
+* Tables
+* Dialogs
+* Layouts
 
-Description
+Never create a new pattern if an existing one already solves the problem.
 
-Primary Action Button
-
-Filters
-
-Content
-
-Pagination
-```
-
-Users should never have to learn a different layout for each page.
+Consistency is more important than creativity.
 
 ---
 
-# Final Principle
+# Future Public Website
 
-The system should feel like managing a modern donut shop.
+The current design phase only covers:
+
+```text
+Owner Dashboard
+Ingredients
+Products
+Recipes
+Sales
+Expenses
+```
+
+Do not design:
+
+```text
+Landing Page
+Customer Catalog
+Marketing Pages
+Public Website
+```
+
+until the Owner Panel design system is finalized and approved.
+
+---
+
+# Final Rule
+
+The owner should feel like they are managing a beautiful donut shop.
 
 Not accounting software.
 
 Not enterprise software.
 
-Every screen should be welcoming, intuitive, and visually aligned with the Rowszein's Delight brand.
+Every screen should feel:
+
+* Warm
+* Simple
+* Approachable
+* Consistent
+* Friendly
+* Professional
+
+Business owners should be able to understand the interface immediately without training.
