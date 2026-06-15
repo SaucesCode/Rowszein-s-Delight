@@ -4,16 +4,51 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useProduct, useCreateProduct, useUpdateProduct } from "@/hooks/useProducts";
-import { ImageOff } from "lucide-react";
+import { ImageOff, Upload } from "lucide-react";
+import SkeletonTable from "@/components/SkeletonTable";
 
 const productSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, "Product name is required"),
   description: z.string().optional(),
-  price: z.coerce.number().min(0.01, "Price must be greater than 0"),
+  price: z.coerce.number().min(0.01, "Price must be greater than ₱0"),
   is_available: z.boolean(),
 });
 
 type ProductForm = z.infer<typeof productSchema>;
+
+function Field({
+  label,
+  helper,
+  error,
+  required,
+  children,
+}: {
+  label: string;
+  helper?: string;
+  error?: string;
+  required?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label className="field-label">
+        {label}
+        {required && (
+          <span style={{ color: "#FF6FAE", marginLeft: 3 }} aria-hidden="true">
+            *
+          </span>
+        )}
+      </label>
+      {children}
+      {helper && !error && <p className="field-helper">{helper}</p>}
+      {error && (
+        <p className="field-error" role="alert">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
 
 export default function ProductFormPage() {
   const { id } = useParams();
@@ -45,9 +80,7 @@ export default function ProductFormPage() {
         price: product.price,
         is_available: product.is_available,
       });
-      if (product.image_url) {
-        setImagePreview(product.image_url);
-      }
+      if (product.image_url) setImagePreview(product.image_url);
     }
   }, [product, reset]);
 
@@ -70,110 +103,156 @@ export default function ProductFormPage() {
   const isPending = createProduct.isPending || updateProduct.isPending;
 
   if (isEdit && isLoading) {
-    return <p className="text-sm text-slate-500">Loading...</p>;
+    return <SkeletonTable rows={4} cols={2} showHeader />;
   }
 
   return (
-    <div className="max-w-lg">
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold text-slate-800">
-          {isEdit ? "Edit Product" : "Add Product"}
-        </h1>
-        <p className="text-sm text-slate-500 mt-1">
-          {isEdit ? "Update product details" : "Add a new product to your menu"}
-        </p>
-      </div>
-
+    <div className="max-w-400">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-white rounded-xl border p-6 space-y-4"
+        noValidate
+        className="card-surface p-6 space-y-5"
       >
-        {/* Image Upload */}
+        {/* Image upload */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
-            Image <span className="text-slate-400">(optional)</span>
+          <label className="field-label">
+            Product Image
+            <span className="font-body ml-1" style={{ color: "#A8A49B", fontWeight: 400 }}>
+              (optional)
+            </span>
           </label>
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-lg bg-slate-100 flex items-center justify-center overflow-hidden border">
+          <div className="flex items-center gap-4 mt-1">
+            {/* Preview box */}
+            <div
+              className="flex items-center justify-center rounded-xl overflow-hidden flex-shrink-0"
+              style={{
+                width: 64,
+                height: 64,
+                background: "#FFF0F7",
+                border: "1.5px dashed #FFD6E7",
+              }}
+            >
               {imagePreview ? (
-                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                <img
+                  src={imagePreview}
+                  alt="Product preview"
+                  className="w-full h-full object-cover"
+                />
               ) : (
-                <ImageOff size={20} className="text-slate-400" />
+                <ImageOff size={20} style={{ color: "#FF6FAE" }} aria-hidden="true" />
               )}
             </div>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="text-sm text-slate-500 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border file:text-sm file:text-slate-600 file:bg-white hover:file:bg-slate-50"
-            />
+
+            {/* Upload button */}
+            <label
+              className="btn-ghost cursor-pointer"
+              style={{ fontSize: 13, padding: "7px 14px" }}
+            >
+              <Upload size={14} aria-hidden="true" />
+              {imagePreview ? "Change image" : "Upload image"}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="sr-only"
+              />
+            </label>
           </div>
+          <p className="field-helper">PNG, JPG or WEBP. Recommended: square format.</p>
         </div>
 
         {/* Name */}
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
+        <Field
+          label="Product Name"
+          helper="Example: Chocolate Donut, Strawberry Cheesecake"
+          error={errors.name?.message}
+          required
+        >
           <input
             {...register("name")}
-            className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+            className="field-input mt-1"
             placeholder="e.g. Chocolate Donut"
+            autoFocus={!isEdit}
+            aria-invalid={!!errors.name}
           />
-          {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
-        </div>
+        </Field>
 
         {/* Description */}
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
-            Description <span className="text-slate-400">(optional)</span>
-          </label>
+        <Field
+          label="Description"
+          helper="Briefly describe the product — flavors, toppings, special notes"
+          error={errors.description?.message}
+        >
           <textarea
             {...register("description")}
             rows={3}
-            className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-300 resize-none"
-            placeholder="Describe the product..."
+            className="field-input mt-1"
+            style={{ resize: "none" }}
+            placeholder="Describe the product…"
           />
-        </div>
+        </Field>
 
         {/* Price */}
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Price (₱)</label>
+        <Field
+          label="Selling Price (₱)"
+          helper="The price shown to customers"
+          error={errors.price?.message}
+          required
+        >
           <input
             {...register("price")}
             type="number"
             step="0.01"
-            className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+            min="0"
+            className="field-input mt-1"
             placeholder="0.00"
+            aria-invalid={!!errors.price}
           />
-          {errors.price && <p className="text-xs text-red-500 mt-1">{errors.price.message}</p>}
-        </div>
+        </Field>
 
-        {/* Availability */}
-        <div className="flex items-center gap-3">
+        {/* Availability toggle */}
+        <div
+          className="flex items-center justify-between rounded-xl px-4 py-3"
+          style={{ background: "#FFF8F0", border: "1px solid #F5EDE0" }}
+        >
+          <div>
+            <p className="font-heading font-medium" style={{ fontSize: 13, color: "#6B4226" }}>
+              Available for sale
+            </p>
+            <p className="font-body" style={{ fontSize: 12, color: "#9B6644" }}>
+              Customers can order this product
+            </p>
+          </div>
+          <label className="relative inline-flex cursor-pointer items-center">
+            <input {...register("is_available")} type="checkbox" className="sr-only peer" />
+            <div
+              className="w-10 h-5 rounded-full peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:rounded-full after:h-4 after:w-4 after:transition-transform"
+              style={{
+                background: "var(--border)",
+              }}
+              aria-hidden="true"
+            />
+          </label>
+          {/* Simpler checkbox since Tailwind peer might need config */}
           <input
             {...register("is_available")}
             type="checkbox"
             id="is_available"
-            className="w-4 h-4 rounded border-slate-300"
+            className="w-4 h-4 rounded"
+            style={{ accentColor: "#FF6FAE" }}
           />
-          <label htmlFor="is_available" className="text-sm font-medium text-slate-700">
-            Available for sale
-          </label>
+          <style>{`input[type=checkbox] { display: none; } input[type=checkbox]:last-of-type { display: block; }`}</style>
         </div>
 
+        {/* Divider */}
+        <div style={{ borderTop: "1px solid #F5EDE0" }} />
+
         {/* Actions */}
-        <div className="flex items-center gap-3 pt-2">
-          <button
-            type="submit"
-            disabled={isPending}
-            className="bg-slate-800 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 disabled:opacity-50"
-          >
-            {isPending ? "Saving..." : isEdit ? "Update Product" : "Add Product"}
+        <div className="flex items-center gap-3 pt-1">
+          <button type="submit" disabled={isPending} className="btn-primary">
+            {isPending ? "Saving…" : isEdit ? "Update Product" : "Add Product"}
           </button>
-          <button
-            type="button"
-            onClick={() => navigate("/products")}
-            className="text-sm text-slate-500 hover:text-slate-800"
-          >
+          <button type="button" onClick={() => navigate("/products")} className="btn-ghost">
             Cancel
           </button>
         </div>

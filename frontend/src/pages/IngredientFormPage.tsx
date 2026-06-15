@@ -9,20 +9,76 @@ import {
   useUpdateIngredient,
 } from "@/hooks/useIngredients";
 import type { Unit } from "@/types/ingredient.types";
+import SkeletonTable from "@/components/SkeletonTable";
 
-const UNITS: Unit[] = ["kg", "g", "ml", "l", "pcs", "tbsp", "tsp", "cup"];
+/* ─────────────────────────────────────────────
+   CONSTANTS
+   ───────────────────────────────────────────── */
+const UNITS: { value: Unit; label: string }[] = [
+  { value: "kg", label: "Kilogram (kg)" },
+  { value: "g", label: "Gram (g)" },
+  { value: "l", label: "Liter (l)" },
+  { value: "ml", label: "Milliliter (ml)" },
+  { value: "cup", label: "Cup" },
+  { value: "tbsp", label: "Tablespoon (tbsp)" },
+  { value: "tsp", label: "Teaspoon (tsp)" },
+  { value: "pcs", label: "Pieces (pcs)" },
+];
 
+/* ─────────────────────────────────────────────
+   SCHEMA
+   ───────────────────────────────────────────── */
 const ingredientSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, "Ingredient name is required"),
   quantity: z.coerce.number().min(0, "Quantity cannot be negative"),
   unit: z.enum(["kg", "g", "ml", "l", "pcs", "tbsp", "tsp", "cup"]),
-  cost_per_unit: z.coerce.number().min(0.01, "Cost must be greater than 0"),
-  supplier: z.string().optional(),
+  cost_per_unit: z.coerce.number().min(0.01, "Cost per unit must be greater than ₱0"),
   minimum_stock: z.coerce.number().min(0, "Minimum stock cannot be negative"),
+  supplier: z.string().optional(),
 });
 
 type IngredientForm = z.infer<typeof ingredientSchema>;
 
+/* ─────────────────────────────────────────────
+   FIELD — reusable labeled input block
+   ───────────────────────────────────────────── */
+function Field({
+  label,
+  helper,
+  error,
+  required,
+  children,
+}: {
+  label: string;
+  helper?: string;
+  error?: string;
+  required?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label className="field-label">
+        {label}
+        {required && (
+          <span style={{ color: "#FF6FAE", marginLeft: 3 }} aria-hidden="true">
+            *
+          </span>
+        )}
+      </label>
+      {children}
+      {helper && !error && <p className="field-helper">{helper}</p>}
+      {error && (
+        <p className="field-error" role="alert">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   PAGE
+   ───────────────────────────────────────────── */
 export default function IngredientFormPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -66,123 +122,131 @@ export default function IngredientFormPage() {
   const isPending = createIngredient.isPending || updateIngredient.isPending;
 
   if (isEdit && isLoading) {
-    return <p className="text-sm text-slate-500">Loading...</p>;
+    return <SkeletonTable rows={4} cols={2} showHeader />;
   }
 
   return (
-    <div className="max-w-lg">
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold text-slate-800">
-          {isEdit ? "Edit Ingredient" : "Add Ingredient"}
-        </h1>
-        <p className="text-sm text-slate-500 mt-1">
-          {isEdit ? "Update ingredient details" : "Add a new ingredient to inventory"}
-        </p>
-      </div>
-
+    <div className="max-w-400">
+      {/* Form card */}
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-white rounded-xl border p-6 space-y-4"
+        noValidate
+        className="card-surface p-6 space-y-5"
       >
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
+        {/* Name */}
+        <Field
+          label="Ingredient Name"
+          helper="Example: All Purpose Flour, Chocolate Chips"
+          error={errors.name?.message}
+          required
+        >
           <input
             {...register("name")}
-            className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+            className="field-input mt-1"
             placeholder="e.g. All Purpose Flour"
+            autoFocus={!isEdit}
+            aria-invalid={!!errors.name}
           />
-          {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
-        </div>
+        </Field>
 
+        {/* Quantity + Unit */}
         <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Quantity</label>
+          <Field
+            label="Current Quantity"
+            helper="How much you currently have in stock"
+            error={errors.quantity?.message}
+            required
+          >
             <input
               {...register("quantity")}
               type="number"
               step="0.01"
-              className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+              min="0"
+              className="field-input mt-1"
               placeholder="0"
+              aria-invalid={!!errors.quantity}
             />
-            {errors.quantity && (
-              <p className="text-xs text-red-500 mt-1">{errors.quantity.message}</p>
-            )}
-          </div>
+          </Field>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Unit</label>
+          <Field
+            label="Unit"
+            helper="Measurement unit for this ingredient"
+            error={errors.unit?.message}
+            required
+          >
             <select
               {...register("unit")}
-              className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+              className="field-input mt-1"
+              aria-invalid={!!errors.unit}
             >
-              {UNITS.map(unit => (
-                <option key={unit} value={unit}>
-                  {unit}
+              {UNITS.map(u => (
+                <option key={u.value} value={u.value}>
+                  {u.label}
                 </option>
               ))}
             </select>
-            {errors.unit && <p className="text-xs text-red-500 mt-1">{errors.unit.message}</p>}
-          </div>
+          </Field>
         </div>
 
+        {/* Cost + Minimum stock */}
         <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              Cost per Unit (₱)
-            </label>
+          <Field
+            label="Cost per Unit (₱)"
+            helper="How much one unit costs to purchase"
+            error={errors.cost_per_unit?.message}
+            required
+          >
             <input
               {...register("cost_per_unit")}
               type="number"
               step="0.01"
-              className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+              min="0"
+              className="field-input mt-1"
               placeholder="0.00"
+              aria-invalid={!!errors.cost_per_unit}
             />
-            {errors.cost_per_unit && (
-              <p className="text-xs text-red-500 mt-1">{errors.cost_per_unit.message}</p>
-            )}
-          </div>
+          </Field>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              Minimum Stock
-            </label>
+          <Field
+            label="Minimum Stock"
+            helper="You'll get a low stock alert below this amount"
+            error={errors.minimum_stock?.message}
+          >
             <input
               {...register("minimum_stock")}
               type="number"
               step="0.01"
-              className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+              min="0"
+              className="field-input mt-1"
               placeholder="0"
+              aria-invalid={!!errors.minimum_stock}
             />
-            {errors.minimum_stock && (
-              <p className="text-xs text-red-500 mt-1">{errors.minimum_stock.message}</p>
-            )}
-          </div>
+          </Field>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
-            Supplier <span className="text-slate-400">(optional)</span>
-          </label>
+        {/* Supplier */}
+        <Field
+          label="Supplier"
+          helper="Optional — where you buy this ingredient"
+          error={errors.supplier?.message}
+        >
           <input
             {...register("supplier")}
-            className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
-            placeholder="e.g. SM Supermarket"
+            className="field-input mt-1"
+            placeholder="e.g. SM Supermarket, local market"
+            aria-invalid={!!errors.supplier}
           />
-        </div>
+        </Field>
 
-        <div className="flex items-center gap-3 pt-2">
-          <button
-            type="submit"
-            disabled={isPending}
-            className="bg-slate-800 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 disabled:opacity-50"
-          >
-            {isPending ? "Saving..." : isEdit ? "Update Ingredient" : "Add Ingredient"}
+        {/* Divider */}
+        <div style={{ borderTop: "1px solid #F5EDE0" }} />
+
+        {/* Actions */}
+        <div className="flex items-center gap-3 pt-1">
+          <button type="submit" disabled={isPending} className="btn-primary">
+            {isPending ? "Saving…" : isEdit ? "Update Ingredient" : "Add Ingredient"}
           </button>
-          <button
-            type="button"
-            onClick={() => navigate("/ingredients")}
-            className="text-sm text-slate-500 hover:text-slate-800"
-          >
+          <button type="button" onClick={() => navigate("/ingredients")} className="btn-ghost">
             Cancel
           </button>
         </div>
