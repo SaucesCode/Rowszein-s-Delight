@@ -1,99 +1,187 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useRecipes, useDeleteRecipe } from '@/hooks/useRecipes'
-import type { Recipe } from '@/types/recipe.types'
-import { Pencil, Trash2, Plus } from 'lucide-react'
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useRecipes, useDeleteRecipe } from "@/hooks/useRecipes";
+import type { Recipe } from "@/types/recipe.types";
+import { Plus, Pencil, Trash2, BookOpen } from "lucide-react";
+import PageHeader from "@/components/PageHeader";
+import EmptyState from "@/components/EmptyState";
+import SkeletonTable from "@/components/SkeletonTable";
+import ConfirmDialog from "@/components/ConfirmDialog";
+import Pagination from "@/components/Pagination";
 
 export default function RecipesPage() {
-  const [page, setPage] = useState(1)
-  const navigate = useNavigate()
-  const { data, isLoading, isError } = useRecipes(page)
-  const deleteRecipe = useDeleteRecipe()
+  const [page, setPage] = useState(1);
+  const [deleteTarget, setDeleteTarget] = useState<Recipe | null>(null);
+  const navigate = useNavigate();
 
-  const recipes: Recipe[] = data?.data?.results ?? []
-  const totalPages = Math.ceil((data?.data?.count ?? 0) / 20)
+  const { data, isLoading, isError } = useRecipes(page);
+  const deleteRecipe = useDeleteRecipe();
 
-  const handleDelete = (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this recipe?')) return
-    deleteRecipe.mutate(id)
-  }
+  const recipes: Recipe[] = data?.data?.results ?? [];
+  const totalPages = Math.ceil((data?.data?.count ?? 0) / 20);
+
+  const handleDeleteConfirm = () => {
+    if (!deleteTarget) return;
+    deleteRecipe.mutate(deleteTarget.id, {
+      onSettled: () => setDeleteTarget(null),
+    });
+  };
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-xl font-semibold text-slate-800">Recipes</h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Define ingredients and production cost per product
-          </p>
-        </div>
-        <button
-          onClick={() => navigate('/recipes/new')}
-          className="flex items-center gap-2 bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-700"
-        >
-          <Plus size={16} />
-          Add Recipe
-        </button>
-      </div>
-
-      {isLoading && <p className="text-sm text-slate-500">Loading...</p>}
-
-      {isError && <p className="text-sm text-red-500">Failed to load recipes.</p>}
-
-      {!isLoading && !isError && recipes.length === 0 && (
-        <div className="text-center py-16 text-slate-400">
-          <p className="text-sm">No recipes yet.</p>
+      <PageHeader
+        title="Recipes"
+        description="Define ingredients and production cost per product"
+        action={
           <button
-            onClick={() => navigate('/recipes/new')}
-            className="mt-2 text-sm text-slate-600 underline"
+            onClick={() => navigate("/recipes/new")}
+            className="btn-primary"
           >
-            Add your first recipe
+            <Plus size={15} aria-hidden="true" />
+            Add Recipe
           </button>
+        }
+      />
+
+      {isLoading && <SkeletonTable rows={5} cols={5} />}
+
+      {isError && (
+        <div className="card-surface p-6 text-center">
+          <p className="font-body" style={{ fontSize: 13, color: "#EF4444" }}>
+            Failed to load recipes. Please try refreshing the page.
+          </p>
         </div>
       )}
 
-      {recipes.length > 0 && (
+      {!isLoading && !isError && recipes.length === 0 && (
+        <div className="card-surface">
+          <EmptyState
+            icon={BookOpen}
+            title="No recipes yet"
+            description="Define a recipe for each product to calculate accurate production costs."
+            action={
+              <button
+                onClick={() => navigate("/recipes/new")}
+                className="btn-primary"
+              >
+                <Plus size={15} aria-hidden="true" />
+                Add Recipe
+              </button>
+            }
+          />
+        </div>
+      )}
+
+      {!isLoading && !isError && recipes.length > 0 && (
         <>
-          <div className="bg-white rounded-xl border overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-slate-50 text-slate-600 text-left">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Product</th>
-                  <th className="px-4 py-3 font-medium">Ingredients</th>
-                  <th className="px-4 py-3 font-medium">Production Cost</th>
-                  <th className="px-4 py-3 font-medium">Notes</th>
-                  <th className="px-4 py-3 font-medium">Actions</th>
+          <div
+            className="overflow-hidden overflow-x-auto"
+            style={{
+              background: "#FFFDFB",
+              border: "1px solid #E8E6E1",
+              borderRadius: 10,
+            }}
+          >
+            <table className="w-full text-sm" style={{ minWidth: 580 }}>
+              <thead>
+                <tr className="table-header-row">
+                  {["Product", "Ingredients", "Production Cost", "Notes", "Actions"].map(
+                    (col) => (
+                      <th
+                        key={col}
+                        className="px-4 py-3 text-left"
+                        style={{ whiteSpace: "nowrap" }}
+                      >
+                        {col}
+                      </th>
+                    ),
+                  )}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
-                {recipes.map((recipe) => (
-                  <tr key={recipe.id} className="hover:bg-slate-50">
-                    <td className="px-4 py-3 font-medium text-slate-800">
-                      {recipe.product_name}
+
+              <tbody>
+                {recipes.map((recipe, idx) => (
+                  <tr
+                    key={recipe.id}
+                    className="table-row-hover transition-colors"
+                    style={{
+                      borderBottom: "1px solid #F5EDE0",
+                      background: idx % 2 !== 0 ? "#FFF8F0" : undefined,
+                    }}
+                  >
+                    {/* Product name */}
+                    <td className="px-4 py-3.5">
+                      <span
+                        className="font-heading font-medium"
+                        style={{ fontSize: 13, color: "#6B4226" }}
+                      >
+                        {recipe.product_name}
+                      </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-600">
-                      {recipe.recipe_ingredients.length} ingredient
-                      {recipe.recipe_ingredients.length !== 1 ? 's' : ''}
+
+                    {/* Ingredient count */}
+                    <td className="px-4 py-3.5 font-body" style={{ fontSize: 13, color: "#7C7870" }}>
+                      <span
+                        className="badge badge-info"
+                        style={{ fontSize: 11 }}
+                      >
+                        {recipe.recipe_ingredients.length}{" "}
+                        {recipe.recipe_ingredients.length === 1 ? "ingredient" : "ingredients"}
+                      </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-600">
+
+                    {/* Production cost */}
+                    <td
+                      className="px-4 py-3.5 font-body"
+                      style={{ fontSize: 13, color: "#3D3A35", fontWeight: 500 }}
+                    >
                       ₱{Number(recipe.production_cost).toFixed(2)}
                     </td>
-                    <td className="px-4 py-3 text-slate-500 max-w-xs truncate">
-                      {recipe.notes || '—'}
+
+                    {/* Notes */}
+                    <td
+                      className="px-4 py-3.5 font-body max-w-xs"
+                      style={{ fontSize: 13, color: "#7C7870" }}
+                    >
+                      <span className="line-clamp-1">
+                        {recipe.notes || <span style={{ color: "#D1CEC7" }}>—</span>}
+                      </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
+
+                    {/* Actions */}
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center gap-1">
                         <button
                           onClick={() => navigate(`/recipes/${recipe.id}/edit`)}
-                          className="text-slate-500 hover:text-slate-800"
+                          className="rounded-lg p-1.5 transition-colors"
+                          style={{ color: "#A8A49B" }}
+                          onMouseOver={(e) => {
+                            (e.currentTarget as HTMLElement).style.background = "#FFF0F7";
+                            (e.currentTarget as HTMLElement).style.color = "#FF6FAE";
+                          }}
+                          onMouseOut={(e) => {
+                            (e.currentTarget as HTMLElement).style.background = "transparent";
+                            (e.currentTarget as HTMLElement).style.color = "#A8A49B";
+                          }}
+                          aria-label={`Edit ${recipe.product_name} recipe`}
                         >
-                          <Pencil size={15} />
+                          <Pencil size={14} aria-hidden="true" />
                         </button>
                         <button
-                          onClick={() => handleDelete(recipe.id)}
-                          className="text-slate-500 hover:text-red-500"
+                          onClick={() => setDeleteTarget(recipe)}
+                          className="rounded-lg p-1.5 transition-colors"
+                          style={{ color: "#A8A49B" }}
+                          onMouseOver={(e) => {
+                            (e.currentTarget as HTMLElement).style.background = "#FEF2F2";
+                            (e.currentTarget as HTMLElement).style.color = "#EF4444";
+                          }}
+                          onMouseOut={(e) => {
+                            (e.currentTarget as HTMLElement).style.background = "transparent";
+                            (e.currentTarget as HTMLElement).style.color = "#A8A49B";
+                          }}
+                          aria-label={`Delete ${recipe.product_name} recipe`}
                         >
-                          <Trash2 size={15} />
+                          <Trash2 size={14} aria-hidden="true" />
                         </button>
                       </div>
                     </td>
@@ -103,29 +191,24 @@ export default function RecipesPage() {
             </table>
           </div>
 
-          {totalPages > 1 && (
-            <div className="flex items-center justify-end gap-2 mt-4">
-              <button
-                onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                disabled={page === 1}
-                className="text-sm px-3 py-1 rounded border disabled:opacity-40"
-              >
-                Previous
-              </button>
-              <span className="text-sm text-slate-500">
-                Page {page} of {totalPages}
-              </span>
-              <button
-                onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-                disabled={page === totalPages}
-                className="text-sm px-3 py-1 rounded border disabled:opacity-40"
-              >
-                Next
-              </button>
-            </div>
-          )}
+          <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
         </>
       )}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete recipe?"
+        description={
+          deleteTarget
+            ? `The recipe for "${deleteTarget.product_name}" will be permanently deleted. Production cost calculations for this product will no longer be available.`
+            : ""
+        }
+        confirmLabel="Delete"
+        destructive
+        loading={deleteRecipe.isPending}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
-  )
+  );
 }
