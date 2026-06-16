@@ -6,7 +6,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useSale, useCreateSale, useUpdateSale } from "@/hooks/useSales";
 import { useProducts } from "@/hooks/useProducts";
 import { Plus, Trash2 } from "lucide-react";
+import SkeletonTable from "@/components/SkeletonTable";
 
+/* ─────────────────────────────────────────────
+   SCHEMA
+   ───────────────────────────────────────────── */
 const saleSchema = z.object({
   date: z.string().min(1, "Date is required"),
   notes: z.string().optional(),
@@ -15,7 +19,7 @@ const saleSchema = z.object({
       z.object({
         product: z.coerce.number().min(1, "Product is required"),
         quantity: z.coerce.number().min(1, "Quantity must be at least 1"),
-        unit_price: z.coerce.number().min(0.01, "Price must be greater than 0"),
+        unit_price: z.coerce.number().min(0.01, "Price must be greater than ₱0"),
       }),
     )
     .min(1, "At least one item is required"),
@@ -23,6 +27,46 @@ const saleSchema = z.object({
 
 type SaleForm = z.infer<typeof saleSchema>;
 
+/* ─────────────────────────────────────────────
+   FIELD — labeled input block
+   ───────────────────────────────────────────── */
+function Field({
+  label,
+  helper,
+  error,
+  required,
+  children,
+}: {
+  label: string;
+  helper?: string;
+  error?: string;
+  required?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label className="field-label">
+        {label}
+        {required && (
+          <span style={{ color: "#FF6FAE", marginLeft: 3 }} aria-hidden="true">
+            *
+          </span>
+        )}
+      </label>
+      {children}
+      {helper && !error && <p className="field-helper">{helper}</p>}
+      {error && (
+        <p className="field-error" role="alert">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   ORDER TOTAL — live computed total
+   ───────────────────────────────────────────── */
 function OrderTotal({ control }: { control: any }) {
   const items = useWatch({ control, name: "sale_items" });
   const total =
@@ -33,13 +77,23 @@ function OrderTotal({ control }: { control: any }) {
     }, 0) ?? 0;
 
   return (
-    <div className="flex items-center justify-end gap-2 pt-2 border-t">
-      <span className="text-sm font-medium text-slate-700">Total:</span>
-      <span className="text-base font-semibold text-slate-800">₱{total.toFixed(2)}</span>
+    <div
+      className="flex items-center justify-end gap-3 pt-3 mt-3"
+      style={{ borderTop: "1px solid #F5EDE0" }}
+    >
+      <span className="font-body" style={{ fontSize: 13, color: "#9B6644" }}>
+        Order Total
+      </span>
+      <span className="font-heading font-semibold" style={{ fontSize: 18, color: "#6B4226" }}>
+        ₱{total.toFixed(2)}
+      </span>
     </div>
   );
 }
 
+/* ─────────────────────────────────────────────
+   PAGE
+   ───────────────────────────────────────────── */
 export default function SaleFormPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -67,10 +121,7 @@ export default function SaleFormPage() {
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "sale_items",
-  });
+  const { fields, append, remove } = useFieldArray({ control, name: "sale_items" });
 
   useEffect(() => {
     if (sale) {
@@ -86,7 +137,7 @@ export default function SaleFormPage() {
     }
   }, [sale, reset]);
 
-  // Auto-fill unit price when product is selected
+  /* Auto-fill unit price when product is selected */
   const handleProductChange = (index: number, productId: number) => {
     const product = products.find((p: any) => p.id === productId);
     if (product) {
@@ -105,78 +156,118 @@ export default function SaleFormPage() {
   const isPending = createSale.isPending || updateSale.isPending;
 
   if (isEdit && saleLoading) {
-    return <p className="text-sm text-slate-500">Loading...</p>;
+    return <SkeletonTable rows={4} cols={2} showHeader />;
   }
 
   return (
-    <div className="max-w-2xl">
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold text-slate-800">
-          {isEdit ? "Edit Sale" : "Record Sale"}
-        </h1>
-        <p className="text-sm text-slate-500 mt-1">
-          {isEdit ? "Update sale details" : "Record a new sales transaction"}
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* Sale Info */}
-        <div className="bg-white rounded-xl border p-6 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
+    <div className="max-w-400">
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
+        {/* ── Sale info ── */}
+        <div className="card-surface p-6 space-y-5">
+          <Field
+            label="Sale Date"
+            helper="When did this sale take place?"
+            error={errors.date?.message}
+            required
+          >
             <input
               {...register("date")}
               type="date"
-              className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+              className="field-input mt-1"
+              aria-invalid={!!errors.date}
             />
-            {errors.date && <p className="text-xs text-red-500 mt-1">{errors.date.message}</p>}
-          </div>
+          </Field>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              Notes <span className="text-slate-400">(optional)</span>
-            </label>
+          <Field
+            label="Notes"
+            helper="Optional — e.g. Morning batch, walk-in customers, event order"
+          >
             <textarea
               {...register("notes")}
               rows={2}
-              className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-300 resize-none"
-              placeholder="e.g. Morning sales, walk-in customers..."
+              className="field-input mt-1"
+              style={{ resize: "none" }}
+              placeholder="Any notes about this sale…"
             />
-          </div>
+          </Field>
         </div>
 
-        {/* Sale Items */}
-        <div className="bg-white rounded-xl border p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-slate-800">Items</h2>
+        {/* ── Sale items ── */}
+        <div className="card-surface p-6">
+          {/* Section header */}
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <p
+                className="font-heading font-semibold"
+                style={{ fontSize: 14, color: "#6B4226" }}
+              >
+                Items Sold
+              </p>
+              <p className="field-helper" style={{ marginTop: 2 }}>
+                Add each product sold in this transaction
+              </p>
+            </div>
             <button
               type="button"
               onClick={() => append({ product: 0, quantity: 1, unit_price: 0 })}
-              className="flex items-center gap-1 text-sm text-slate-600 hover:text-slate-800"
+              className="btn-ghost"
+              style={{ fontSize: 12, padding: "5px 12px" }}
             >
-              <Plus size={14} />
+              <Plus size={13} aria-hidden="true" />
               Add Item
             </button>
           </div>
 
+          {/* List-level error */}
           {errors.sale_items?.root && (
-            <p className="text-xs text-red-500 mb-3">{errors.sale_items.root.message}</p>
+            <p className="field-error mb-3" role="alert">
+              {errors.sale_items.root.message}
+            </p>
           )}
 
-          <div className="space-y-3">
+          {/* Column labels */}
+          <div
+            className="grid gap-3 mb-2 px-1"
+            style={{ gridTemplateColumns: "1fr 80px 110px 32px" }}
+          >
+            {["Product", "Qty", "Unit Price (₱)", ""].map(label => (
+              <p
+                key={label}
+                className="font-heading"
+                style={{
+                  fontSize: 11,
+                  color: "#9B6644",
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.04em",
+                }}
+              >
+                {label}
+              </p>
+            ))}
+          </div>
+
+          {/* Rows */}
+          <div className="space-y-2.5">
             {fields.map((field, index) => (
-              <div key={field.id} className="flex items-start gap-3">
+              <div
+                key={field.id}
+                className="grid items-start gap-3"
+                style={{ gridTemplateColumns: "1fr 80px 110px 32px" }}
+              >
                 {/* Product */}
-                <div className="flex-1">
+                <div>
                   <select
                     {...register(`sale_items.${index}.product`)}
                     onChange={e => {
                       register(`sale_items.${index}.product`).onChange(e);
                       handleProductChange(index, Number(e.target.value));
                     }}
-                    className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+                    className="field-input"
+                    aria-label={`Product for item ${index + 1}`}
+                    aria-invalid={!!errors.sale_items?.[index]?.product}
                   >
-                    <option value={0}>Select product</option>
+                    <option value={0}>Select product…</option>
                     {products.map((p: any) => (
                       <option key={p.id} value={p.id}>
                         {p.name}
@@ -184,39 +275,44 @@ export default function SaleFormPage() {
                     ))}
                   </select>
                   {errors.sale_items?.[index]?.product && (
-                    <p className="text-xs text-red-500 mt-1">
+                    <p className="field-error mt-1" role="alert">
                       {errors.sale_items[index]?.product?.message}
                     </p>
                   )}
                 </div>
 
                 {/* Quantity */}
-                <div className="w-24">
+                <div>
                   <input
                     {...register(`sale_items.${index}.quantity`)}
                     type="number"
                     min="1"
-                    placeholder="Qty"
-                    className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+                    placeholder="1"
+                    className="field-input"
+                    aria-label={`Quantity for item ${index + 1}`}
+                    aria-invalid={!!errors.sale_items?.[index]?.quantity}
                   />
                   {errors.sale_items?.[index]?.quantity && (
-                    <p className="text-xs text-red-500 mt-1">
+                    <p className="field-error mt-1" role="alert">
                       {errors.sale_items[index]?.quantity?.message}
                     </p>
                   )}
                 </div>
 
-                {/* Unit Price */}
-                <div className="w-28">
+                {/* Unit price */}
+                <div>
                   <input
                     {...register(`sale_items.${index}.unit_price`)}
                     type="number"
                     step="0.01"
-                    placeholder="Price"
-                    className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+                    min="0"
+                    placeholder="0.00"
+                    className="field-input"
+                    aria-label={`Unit price for item ${index + 1}`}
+                    aria-invalid={!!errors.sale_items?.[index]?.unit_price}
                   />
                   {errors.sale_items?.[index]?.unit_price && (
-                    <p className="text-xs text-red-500 mt-1">
+                    <p className="field-error mt-1" role="alert">
                       {errors.sale_items[index]?.unit_price?.message}
                     </p>
                   )}
@@ -227,31 +323,42 @@ export default function SaleFormPage() {
                   type="button"
                   onClick={() => remove(index)}
                   disabled={fields.length === 1}
-                  className="mt-2 text-slate-400 hover:text-red-500 disabled:opacity-30"
+                  className="flex items-center justify-center rounded-lg transition-colors"
+                  style={{
+                    width: 32,
+                    height: 38,
+                    color: fields.length === 1 ? "#D1CEC7" : "#A8A49B",
+                    cursor: fields.length === 1 ? "not-allowed" : "pointer",
+                  }}
+                  onMouseOver={e => {
+                    if (fields.length > 1) {
+                      (e.currentTarget as HTMLElement).style.background = "#FEF2F2";
+                      (e.currentTarget as HTMLElement).style.color = "#EF4444";
+                    }
+                  }}
+                  onMouseOut={e => {
+                    (e.currentTarget as HTMLElement).style.background = "transparent";
+                    (e.currentTarget as HTMLElement).style.color =
+                      fields.length === 1 ? "#D1CEC7" : "#A8A49B";
+                  }}
+                  aria-label={`Remove item ${index + 1}`}
                 >
-                  <Trash2 size={15} />
+                  <Trash2 size={14} aria-hidden="true" />
                 </button>
               </div>
             ))}
           </div>
 
+          {/* Order total */}
           <OrderTotal control={control} />
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-3">
-          <button
-            type="submit"
-            disabled={isPending}
-            className="bg-slate-800 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 disabled:opacity-50"
-          >
-            {isPending ? "Saving..." : isEdit ? "Update Sale" : "Record Sale"}
+        {/* ── Actions ── */}
+        <div className="flex items-center gap-3 pt-1">
+          <button type="submit" disabled={isPending} className="btn-primary">
+            {isPending ? "Saving…" : isEdit ? "Update Sale" : "Record Sale"}
           </button>
-          <button
-            type="button"
-            onClick={() => navigate("/sales")}
-            className="text-sm text-slate-500 hover:text-slate-800"
-          >
+          <button type="button" onClick={() => navigate("/sales")} className="btn-ghost">
             Cancel
           </button>
         </div>
