@@ -1,6 +1,12 @@
 import { useProductMargins } from "@/hooks/useDashboard";
-import { clsx } from "clsx";
+import { TrendingUp } from "lucide-react";
+import EmptyState from "@/components/EmptyState";
+import SkeletonTable from "@/components/SkeletonTable";
+import PageHeader from "@/components/PageHeader";
 
+/* ─────────────────────────────────────────────
+   TYPES
+   ───────────────────────────────────────────── */
 interface ProductMargin {
   product_id: number;
   product_name: string;
@@ -12,21 +18,9 @@ interface ProductMargin {
   is_available: boolean;
 }
 
-function MarginBadge({ margin }: { margin: number }) {
-  const color =
-    margin >= 60
-      ? "bg-green-100 text-green-700"
-      : margin >= 30
-        ? "bg-yellow-100 text-yellow-700"
-        : "bg-red-100 text-red-700";
-
-  return (
-    <span className={clsx("px-2 py-1 rounded-full text-xs font-medium", color)}>
-      {margin.toFixed(1)}%
-    </span>
-  );
-}
-
+/* ─────────────────────────────────────────────
+   HELPERS
+   ───────────────────────────────────────────── */
 function formatPeso(value: number) {
   return `₱${value.toLocaleString("en-PH", {
     minimumFractionDigits: 2,
@@ -34,138 +28,219 @@ function formatPeso(value: number) {
   })}`;
 }
 
+/* ─────────────────────────────────────────────
+   MARGIN BADGE
+   ───────────────────────────────────────────── */
+function MarginBadge({ margin }: { margin: number }) {
+  const config =
+    margin >= 60
+      ? { cls: "badge-success", label: `${margin.toFixed(1)}%` }
+      : margin >= 30
+        ? { cls: "badge-warning", label: `${margin.toFixed(1)}%` }
+        : { cls: "badge-danger", label: `${margin.toFixed(1)}%` };
+
+  return <span className={`badge ${config.cls}`}>{config.label}</span>;
+}
+
+/* ─────────────────────────────────────────────
+   SUMMARY CARD
+   ───────────────────────────────────────────── */
+function SummaryCard({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="card-surface p-5">
+      <p className="font-body" style={{ fontSize: 12, color: "#9B6644", fontWeight: 500 }}>
+        {label}
+      </p>
+      <p
+        className="font-heading font-semibold mt-1"
+        style={{ fontSize: 22, color: "#6B4226", lineHeight: 1.2 }}
+      >
+        {value}
+      </p>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   PAGE
+   ───────────────────────────────────────────── */
 export default function ProfitMarginsPage() {
   const { data, isLoading, isError } = useProductMargins();
 
   const products: ProductMargin[] = data ?? [];
 
+  const productsWithRecipe = products.filter(p => p.has_recipe);
+
   const avgMargin =
-    products.filter(p => p.has_recipe).length > 0
-      ? products.filter(p => p.has_recipe).reduce((sum, p) => sum + p.margin_percent, 0) /
-        products.filter(p => p.has_recipe).length
+    productsWithRecipe.length > 0
+      ? productsWithRecipe.reduce((sum, p) => sum + p.margin_percent, 0) /
+        productsWithRecipe.length
       : 0;
+
+  const highMarginCount = productsWithRecipe.filter(p => p.margin_percent >= 60).length;
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold text-slate-800">Profit Margins</h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Selling price vs production cost per product
-        </p>
-      </div>
+      <PageHeader
+        title="Profit Margins"
+        description="Selling price vs production cost per product"
+      />
 
-      {/* Summary Cards */}
-      {products.length > 0 && (
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-xl border p-5">
-            <p className="text-sm text-slate-500 mb-1">Total Products</p>
-            <p className="text-2xl font-semibold text-slate-800">{products.length}</p>
-          </div>
-          <div className="bg-white rounded-xl border p-5">
-            <p className="text-sm text-slate-500 mb-1">With Recipe</p>
-            <p className="text-2xl font-semibold text-slate-800">
-              {products.filter(p => p.has_recipe).length}
-            </p>
-          </div>
-          <div className="bg-white rounded-xl border p-5">
-            <p className="text-sm text-slate-500 mb-1">Avg Margin</p>
-            <p className="text-2xl font-semibold text-slate-800">{avgMargin.toFixed(1)}%</p>
-          </div>
+      {/* Loading */}
+      {isLoading && <SkeletonTable rows={5} cols={6} />}
+
+      {/* Error */}
+      {isError && (
+        <div className="card-surface p-6 text-center">
+          <p className="font-body" style={{ fontSize: 13, color: "#EF4444" }}>
+            Failed to load profit margins. Please try refreshing the page.
+          </p>
         </div>
       )}
 
-      {isLoading && <p className="text-sm text-slate-500">Loading...</p>}
-
-      {isError && <p className="text-sm text-red-500">Failed to load profit margins.</p>}
-
+      {/* Empty */}
       {!isLoading && !isError && products.length === 0 && (
-        <div className="text-center py-16 text-slate-400">
-          <p className="text-sm">No products found.</p>
+        <div className="card-surface">
+          <EmptyState
+            icon={TrendingUp}
+            title="No products yet"
+            description="Add products and define their recipes to see profit margin calculations here."
+          />
         </div>
       )}
 
-      {products.length > 0 && (
-        <div className="bg-white rounded-xl border overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-slate-600 text-left">
-              <tr>
-                <th className="px-4 py-3 font-medium">Product</th>
-                <th className="px-4 py-3 font-medium">Selling Price</th>
-                <th className="px-4 py-3 font-medium">Production Cost</th>
-                <th className="px-4 py-3 font-medium">Profit / Unit</th>
-                <th className="px-4 py-3 font-medium">Margin</th>
-                <th className="px-4 py-3 font-medium">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {products.map(product => (
-                <tr key={product.product_id} className="hover:bg-slate-50">
-                  <td className="px-4 py-3 font-medium text-slate-800">
-                    {product.product_name}
-                  </td>
-                  <td className="px-4 py-3 text-slate-600">
-                    {formatPeso(product.selling_price)}
-                  </td>
-                  <td className="px-4 py-3 text-slate-600">
-                    {product.has_recipe ? (
-                      formatPeso(product.production_cost)
-                    ) : (
-                      <span className="text-slate-400 text-xs">No recipe</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    {product.has_recipe ? (
-                      <span
-                        className={clsx(
-                          "font-medium",
-                          product.profit_per_unit >= 0 ? "text-green-600" : "text-red-500",
-                        )}
-                      >
-                        {formatPeso(product.profit_per_unit)}
-                      </span>
-                    ) : (
-                      <span className="text-slate-400 text-xs">—</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    {product.has_recipe ? (
-                      <MarginBadge margin={product.margin_percent} />
-                    ) : (
-                      <span className="text-slate-400 text-xs">—</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={clsx(
-                        "px-2 py-1 rounded-full text-xs font-medium",
-                        product.is_available
-                          ? "bg-green-100 text-green-700"
-                          : "bg-slate-100 text-slate-500",
-                      )}
+      {!isLoading && !isError && products.length > 0 && (
+        <>
+          {/* Summary cards */}
+          <div className="grid grid-cols-2 gap-4 mb-6 sm:grid-cols-4">
+            <SummaryCard label="Total Products" value={products.length} />
+            <SummaryCard label="With Recipe" value={productsWithRecipe.length} />
+            <SummaryCard label="Avg Margin" value={`${avgMargin.toFixed(1)}%`} />
+            <SummaryCard label="High Margin (≥60%)" value={highMarginCount} />
+          </div>
+
+          {/* Table */}
+          <div
+            className="overflow-hidden overflow-x-auto"
+            style={{
+              background: "#FFFDFB",
+              border: "1px solid #E8E6E1",
+              borderRadius: 10,
+            }}
+          >
+            <table className="w-full text-sm" style={{ minWidth: 640 }}>
+              <thead>
+                <tr className="table-header-row">
+                  {[
+                    "Product",
+                    "Selling Price",
+                    "Production Cost",
+                    "Profit / Unit",
+                    "Margin",
+                    "Status",
+                  ].map(col => (
+                    <th
+                      key={col}
+                      className="px-4 py-3 text-left"
+                      style={{ whiteSpace: "nowrap" }}
                     >
-                      {product.is_available ? "Available" : "Unavailable"}
-                    </span>
-                  </td>
+                      {col}
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
 
-      {/* Legend */}
-      <div className="flex items-center gap-4 mt-4">
-        <p className="text-xs text-slate-400">Margin indicator:</p>
-        <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-          ≥ 60% Good
-        </span>
-        <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
-          30–59% Fair
-        </span>
-        <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
-          &lt; 30% Low
-        </span>
-      </div>
+              <tbody>
+                {products.map((product, idx) => (
+                  <tr
+                    key={product.product_id}
+                    className="table-row-hover transition-colors"
+                    style={{
+                      borderBottom: "1px solid #F5EDE0",
+                      background: idx % 2 !== 0 ? "#FFF8F0" : undefined,
+                    }}
+                  >
+                    {/* Product name */}
+                    <td className="px-4 py-3.5">
+                      <span
+                        className="font-heading font-medium"
+                        style={{ fontSize: 13, color: "#6B4226" }}
+                      >
+                        {product.product_name}
+                      </span>
+                    </td>
+
+                    {/* Selling price */}
+                    <td
+                      className="px-4 py-3.5 font-body"
+                      style={{ fontSize: 13, color: "#3D3A35", fontWeight: 500 }}
+                    >
+                      {formatPeso(product.selling_price)}
+                    </td>
+
+                    {/* Production cost */}
+                    <td className="px-4 py-3.5 font-body" style={{ fontSize: 13 }}>
+                      {product.has_recipe ? (
+                        <span style={{ color: "#3D3A35" }}>
+                          {formatPeso(product.production_cost)}
+                        </span>
+                      ) : (
+                        <span className="badge badge-neutral">No recipe</span>
+                      )}
+                    </td>
+
+                    {/* Profit per unit */}
+                    <td className="px-4 py-3.5 font-body" style={{ fontSize: 13 }}>
+                      {product.has_recipe ? (
+                        <span
+                          style={{
+                            fontWeight: 600,
+                            color: product.profit_per_unit >= 0 ? "#15803D" : "#B91C1C",
+                          }}
+                        >
+                          {formatPeso(product.profit_per_unit)}
+                        </span>
+                      ) : (
+                        <span style={{ color: "#D1CEC7" }}>—</span>
+                      )}
+                    </td>
+
+                    {/* Margin badge */}
+                    <td className="px-4 py-3.5">
+                      {product.has_recipe ? (
+                        <MarginBadge margin={product.margin_percent} />
+                      ) : (
+                        <span style={{ color: "#D1CEC7", fontSize: 13 }}>—</span>
+                      )}
+                    </td>
+
+                    {/* Availability */}
+                    <td className="px-4 py-3.5">
+                      <span
+                        className={
+                          product.is_available ? "badge badge-success" : "badge badge-neutral"
+                        }
+                      >
+                        {product.is_available ? "Available" : "Unavailable"}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Legend */}
+          <div className="flex flex-wrap items-center gap-3 mt-4">
+            <p className="font-body" style={{ fontSize: 12, color: "#A8A49B" }}>
+              Margin guide:
+            </p>
+            <span className="badge badge-success">≥ 60% Good</span>
+            <span className="badge badge-warning">30–59% Fair</span>
+            <span className="badge badge-danger">&lt; 30% Low</span>
+          </div>
+        </>
+      )}
     </div>
   );
 }

@@ -5,24 +5,170 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useExpense, useCreateExpense, useUpdateExpense } from "@/hooks/useExpenses";
 import type { ExpenseCategory } from "@/types/expense.types";
+import SkeletonTable from "@/components/SkeletonTable";
 
-const CATEGORIES: { value: ExpenseCategory; label: string }[] = [
-  { value: "ingredient", label: "Ingredient Purchase" },
-  { value: "packaging", label: "Packaging" },
-  { value: "utilities", label: "Utilities" },
-  { value: "transportation", label: "Transportation" },
-  { value: "other", label: "Other" },
+/* ─────────────────────────────────────────────
+   CONSTANTS
+   ───────────────────────────────────────────── */
+const CATEGORIES: { value: ExpenseCategory; label: string; helper: string }[] = [
+  {
+    value: "ingredient",
+    label: "Ingredient Purchase",
+    helper: "Raw materials bought for production",
+  },
+  {
+    value: "packaging",
+    label: "Packaging",
+    helper: "Boxes, bags, labels, wrapping materials",
+  },
+  {
+    value: "utilities",
+    label: "Utilities",
+    helper: "Electricity, water, gas, internet",
+  },
+  {
+    value: "transportation",
+    label: "Transportation",
+    helper: "Delivery, fuel, commute for business purposes",
+  },
+  {
+    value: "other",
+    label: "Other",
+    helper: "Any other business-related expense",
+  },
 ];
 
+/* ─────────────────────────────────────────────
+   SCHEMA
+   ───────────────────────────────────────────── */
 const expenseSchema = z.object({
   category: z.enum(["ingredient", "packaging", "utilities", "transportation", "other"]),
-  amount: z.coerce.number().min(0.01, "Amount must be greater than 0"),
+  amount: z.coerce.number().min(0.01, "Amount must be greater than ₱0"),
   description: z.string().optional(),
   date: z.string().min(1, "Date is required"),
 });
 
 type ExpenseForm = z.infer<typeof expenseSchema>;
 
+/* ─────────────────────────────────────────────
+   FIELD — reusable labeled block
+   ───────────────────────────────────────────── */
+function Field({
+  label,
+  helper,
+  error,
+  required,
+  children,
+}: {
+  label: string;
+  helper?: string;
+  error?: string;
+  required?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label className="field-label">
+        {label}
+        {required && (
+          <span style={{ color: "#FF6FAE", marginLeft: 3 }} aria-hidden="true">
+            *
+          </span>
+        )}
+      </label>
+      {children}
+      {helper && !error && <p className="field-helper">{helper}</p>}
+      {error && (
+        <p className="field-error" role="alert">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   CATEGORY SELECTOR — visual card grid
+   ───────────────────────────────────────────── */
+function CategorySelector({
+  value,
+  onChange,
+  error,
+}: {
+  value: ExpenseCategory;
+  onChange: (val: ExpenseCategory) => void;
+  error?: string;
+}) {
+  return (
+    <div>
+      <label className="field-label">
+        Category
+        <span style={{ color: "#FF6FAE", marginLeft: 3 }} aria-hidden="true">
+          *
+        </span>
+      </label>
+
+      <div
+        className="grid gap-2 mt-1"
+        style={{ gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))" }}
+        role="group"
+        aria-label="Expense category"
+      >
+        {CATEGORIES.map(cat => {
+          const isSelected = value === cat.value;
+          return (
+            <button
+              key={cat.value}
+              type="button"
+              onClick={() => onChange(cat.value)}
+              className="text-left transition-all"
+              style={{
+                padding: "10px 12px",
+                borderRadius: 10,
+                border: isSelected ? "2px solid #FF6FAE" : "1.5px solid #E8E6E1",
+                background: isSelected ? "#FFF0F7" : "#FFFDFB",
+                cursor: "pointer",
+                outline: "none",
+              }}
+              aria-pressed={isSelected}
+            >
+              <p
+                className="font-heading font-semibold"
+                style={{
+                  fontSize: 12,
+                  color: isSelected ? "#E5528A" : "#6B4226",
+                  lineHeight: 1.3,
+                }}
+              >
+                {cat.label}
+              </p>
+              <p
+                className="font-body mt-0.5"
+                style={{
+                  fontSize: 11,
+                  color: isSelected ? "#9B6644" : "#A8A49B",
+                  lineHeight: 1.4,
+                }}
+              >
+                {cat.helper}
+              </p>
+            </button>
+          );
+        })}
+      </div>
+
+      {error && (
+        <p className="field-error mt-1" role="alert">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   PAGE
+   ───────────────────────────────────────────── */
 export default function ExpenseFormPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -36,6 +182,8 @@ export default function ExpenseFormPage() {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<ExpenseForm>({
     resolver: zodResolver(expenseSchema),
@@ -44,6 +192,8 @@ export default function ExpenseFormPage() {
       date: new Date().toISOString().split("T")[0],
     },
   });
+
+  const selectedCategory = watch("category");
 
   useEffect(() => {
     if (expense) {
@@ -67,90 +217,85 @@ export default function ExpenseFormPage() {
   const isPending = createExpense.isPending || updateExpense.isPending;
 
   if (isEdit && isLoading) {
-    return <p className="text-sm text-slate-500">Loading...</p>;
+    return <SkeletonTable rows={4} cols={2} showHeader />;
   }
 
   return (
-    <div className="max-w-lg">
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold text-slate-800">
-          {isEdit ? "Edit Expense" : "Record Expense"}
-        </h1>
-        <p className="text-sm text-slate-500 mt-1">
-          {isEdit ? "Update expense details" : "Record a new business expense"}
-        </p>
-      </div>
-
+    <div className="max-w-400">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-white rounded-xl border p-6 space-y-4"
+        noValidate
+        className="card-surface p-6 space-y-5"
       >
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
-          <select
-            {...register("category")}
-            className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+        {/* Category */}
+        <CategorySelector
+          value={selectedCategory}
+          onChange={val => setValue("category", val)}
+          error={errors.category?.message}
+        />
+
+        {/* Divider */}
+        <div style={{ borderTop: "1px solid #F5EDE0" }} />
+
+        {/* Amount + Date */}
+        <div className="grid grid-cols-2 gap-4">
+          <Field
+            label="Amount (₱)"
+            helper="Total cost of this expense"
+            error={errors.amount?.message}
+            required
           >
-            {CATEGORIES.map(cat => (
-              <option key={cat.value} value={cat.value}>
-                {cat.label}
-              </option>
-            ))}
-          </select>
-          {errors.category && (
-            <p className="text-xs text-red-500 mt-1">{errors.category.message}</p>
-          )}
+            <input
+              {...register("amount")}
+              type="number"
+              step="0.01"
+              min="0"
+              className="field-input mt-1"
+              placeholder="0.00"
+              autoFocus={!isEdit}
+              aria-invalid={!!errors.amount}
+            />
+          </Field>
+
+          <Field
+            label="Date"
+            helper="When did this expense occur?"
+            error={errors.date?.message}
+            required
+          >
+            <input
+              {...register("date")}
+              type="date"
+              className="field-input mt-1"
+              aria-invalid={!!errors.date}
+            />
+          </Field>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Amount (₱)</label>
-          <input
-            {...register("amount")}
-            type="number"
-            step="0.01"
-            className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
-            placeholder="0.00"
-          />
-          {errors.amount && (
-            <p className="text-xs text-red-500 mt-1">{errors.amount.message}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
-          <input
-            {...register("date")}
-            type="date"
-            className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
-          />
-          {errors.date && <p className="text-xs text-red-500 mt-1">{errors.date.message}</p>}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
-            Description <span className="text-slate-400">(optional)</span>
-          </label>
+        {/* Description */}
+        <Field
+          label="Description"
+          helper="Optional — briefly describe what this expense was for"
+          error={errors.description?.message}
+        >
           <textarea
             {...register("description")}
             rows={3}
-            className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-300 resize-none"
-            placeholder="What was this expense for?"
+            className="field-input mt-1"
+            style={{ resize: "none" }}
+            placeholder="e.g. Bought 10kg all-purpose flour from SM, paid electric bill for June…"
           />
-        </div>
+        </Field>
 
-        <div className="flex items-center gap-3 pt-2">
-          <button
-            type="submit"
-            disabled={isPending}
-            className="bg-slate-800 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 disabled:opacity-50"
-          >
-            {isPending ? "Saving..." : isEdit ? "Update Expense" : "Record Expense"}
+        {/* Divider */}
+        <div style={{ borderTop: "1px solid #F5EDE0" }} />
+
+        {/* Actions */}
+        <div className="flex items-center gap-3 pt-1">
+          <button type="submit" disabled={isPending} className="btn-primary">
+            {isPending ? "Saving…" : isEdit ? "Update Expense" : "Record Expense"}
           </button>
-          <button
-            type="button"
-            onClick={() => navigate("/expenses")}
-            className="text-sm text-slate-500 hover:text-slate-800"
-          >
+          <button type="button" onClick={() => navigate("/expenses")} className="btn-ghost">
             Cancel
           </button>
         </div>

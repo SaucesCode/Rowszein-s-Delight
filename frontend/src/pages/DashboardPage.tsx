@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useDashboard } from "@/hooks/useDashboard";
 import {
   AreaChart,
@@ -10,45 +11,32 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { TrendingUp, TrendingDown, Minus, AlertTriangle } from "lucide-react";
-import { clsx } from "clsx";
-import { useNavigate } from "react-router-dom";
+import {
+  AlertTriangle,
+  ShoppingCart,
+  Receipt,
+  TrendingUp,
+  TrendingDown,
+  Minus,
+} from "lucide-react";
+import StatCard from "@/components/StatCard";
 
+/* ─────────────────────────────────────────────
+   TYPES
+   ───────────────────────────────────────────── */
 type Period = "this_week" | "this_month" | "this_quarter" | "this_year" | "custom";
 
-interface StatCardProps {
-  label: string;
-  value: string;
-  sub?: string;
-  trend?: "up" | "down" | "neutral";
-}
+const PERIODS: { value: Period; label: string }[] = [
+  { value: "this_week", label: "This Week" },
+  { value: "this_month", label: "This Month" },
+  { value: "this_quarter", label: "This Quarter" },
+  { value: "this_year", label: "This Year" },
+  { value: "custom", label: "Custom" },
+];
 
-function StatCard({ label, value, sub, trend }: StatCardProps) {
-  return (
-    <div className="bg-white rounded-xl border p-5">
-      <p className="text-sm text-slate-500 mb-1">{label}</p>
-      <p className="text-2xl font-semibold text-slate-800">{value}</p>
-      {sub && (
-        <div className="flex items-center gap-1 mt-1">
-          {trend === "up" && <TrendingUp size={13} className="text-green-500" />}
-          {trend === "down" && <TrendingDown size={13} className="text-red-500" />}
-          {trend === "neutral" && <Minus size={13} className="text-slate-400" />}
-          <p
-            className={clsx(
-              "text-xs",
-              trend === "up" && "text-green-600",
-              trend === "down" && "text-red-500",
-              trend === "neutral" && "text-slate-400",
-            )}
-          >
-            {sub}
-          </p>
-        </div>
-      )}
-    </div>
-  );
-}
-
+/* ─────────────────────────────────────────────
+   HELPERS
+   ───────────────────────────────────────────── */
 function formatPeso(value: number) {
   return `₱${value.toLocaleString("en-PH", {
     minimumFractionDigits: 2,
@@ -85,14 +73,51 @@ function getDateRange(period: Period): { date_from: string; date_to: string } {
   }
 }
 
-const PERIODS: { value: Period; label: string }[] = [
-  { value: "this_week", label: "This Week" },
-  { value: "this_month", label: "This Month" },
-  { value: "this_quarter", label: "This Quarter" },
-  { value: "this_year", label: "This Year" },
-  { value: "custom", label: "Custom" },
-];
+/* ─────────────────────────────────────────────
+   SKELETON — dashboard-specific
+   ───────────────────────────────────────────── */
+function DashboardSkeleton() {
+  return (
+    <div role="status" aria-label="Loading dashboard…" className="space-y-6">
+      {/* Stat cards */}
+      <div className="grid grid-cols-3 gap-4">
+        {[1, 2, 3].map(i => (
+          <div key={i} className="card-surface p-5">
+            <div
+              className="skeleton mb-2"
+              style={{ height: 11, width: "45%", borderRadius: 5 }}
+            />
+            <div className="skeleton" style={{ height: 22, width: "60%", borderRadius: 6 }} />
+          </div>
+        ))}
+      </div>
+      {/* Chart placeholder */}
+      <div className="card-surface p-5">
+        <div className="skeleton mb-4" style={{ height: 14, width: 140, borderRadius: 6 }} />
+        <div className="skeleton" style={{ height: 260, borderRadius: 8 }} />
+      </div>
+      <span className="sr-only">Loading, please wait…</span>
+    </div>
+  );
+}
 
+/* ─────────────────────────────────────────────
+   SECTION LABEL
+   ───────────────────────────────────────────── */
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p
+      className="font-heading font-semibold uppercase tracking-wide mb-3"
+      style={{ fontSize: 10, color: "#9B6644", letterSpacing: "0.07em" }}
+    >
+      {children}
+    </p>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   PAGE
+   ───────────────────────────────────────────── */
 export default function DashboardPage() {
   const navigate = useNavigate();
   const [period, setPeriod] = useState<Period>("this_year");
@@ -104,34 +129,62 @@ export default function DashboardPage() {
 
   const { data, isLoading, isError } = useDashboard(filters);
 
-  if (isLoading) return <p className="text-sm text-slate-500">Loading dashboard...</p>;
-  if (isError) return <p className="text-sm text-red-500">Failed to load dashboard.</p>;
+  if (isLoading) return <DashboardSkeleton />;
+
+  if (isError) {
+    return (
+      <div className="card-surface p-8 text-center">
+        <p className="font-body" style={{ fontSize: 13, color: "#EF4444" }}>
+          Failed to load dashboard. Please try refreshing the page.
+        </p>
+      </div>
+    );
+  }
 
   const { totals, this_month, best_selling, chart_data, low_stock } = data;
 
   const profitTrend =
     this_month.profit > 0 ? "up" : this_month.profit < 0 ? "down" : "neutral";
 
+  const totalsTrend =
+    totals.net_profit > 0 ? "up" : totals.net_profit < 0 ? "down" : "neutral";
+
   return (
-    <div className="space-y-6">
-      {/* Header + Period Picker */}
-      <div className="flex items-start justify-between">
+    <div className="space-y-6 animate-fade-in">
+      {/* ── Period picker ── */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold text-slate-800">Dashboard</h1>
-          <p className="text-sm text-slate-500 mt-1">Business performance overview</p>
+          <h1
+            className="font-heading font-semibold"
+            style={{ fontSize: 20, color: "#6B4226" }}
+          >
+            Dashboard
+          </h1>
+          <p className="font-body mt-0.5" style={{ fontSize: 13, color: "#9B6644" }}>
+            Business performance overview
+          </p>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap justify-end">
+        <div className="flex flex-wrap items-center gap-1.5">
           {PERIODS.map(p => (
             <button
               key={p.value}
               onClick={() => setPeriod(p.value)}
-              className={clsx(
-                "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
-                period === p.value
-                  ? "bg-slate-800 text-white"
-                  : "bg-white border text-slate-600 hover:bg-slate-50",
-              )}
+              className="font-body transition-colors"
+              style={{
+                padding: "5px 12px",
+                borderRadius: 8,
+                fontSize: 13,
+                fontWeight: 500,
+                border: period === p.value ? "none" : "1px solid #E8E6E1",
+                background:
+                  period === p.value
+                    ? "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)"
+                    : "#FFFDFB",
+                color: period === p.value ? "#FFFFFF" : "#5A5650",
+                cursor: "pointer",
+                boxShadow: period === p.value ? "0 2px 8px rgba(255,111,174,0.30)" : "none",
+              }}
             >
               {p.label}
             </button>
@@ -141,72 +194,110 @@ export default function DashboardPage() {
 
       {/* Custom date range */}
       {period === "custom" && (
-        <div className="flex items-center gap-3 bg-white border rounded-xl px-4 py-3">
+        <div
+          className="flex flex-wrap items-center gap-3 px-4 py-3 animate-slide-up"
+          style={{
+            background: "#FFFDFB",
+            border: "1px solid #E8E6E1",
+            borderRadius: 10,
+          }}
+        >
           <div className="flex items-center gap-2">
-            <label className="text-sm text-slate-600">From</label>
+            <label className="font-body" style={{ fontSize: 13, color: "#7C7870" }}>
+              From
+            </label>
             <input
               type="date"
               value={customFrom}
               onChange={e => setCustomFrom(e.target.value)}
-              className="border rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+              className="field-input"
+              style={{ width: "auto" }}
             />
           </div>
           <div className="flex items-center gap-2">
-            <label className="text-sm text-slate-600">To</label>
+            <label className="font-body" style={{ fontSize: 13, color: "#7C7870" }}>
+              To
+            </label>
             <input
               type="date"
               value={customTo}
               onChange={e => setCustomTo(e.target.value)}
-              className="border rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+              className="field-input"
+              style={{ width: "auto" }}
             />
           </div>
-          <p className="text-xs text-slate-400 ml-2">
-            Showing {filters.date_from} → {filters.date_to}
-          </p>
-        </div>
-      )}
-
-      {/* Low stock alert */}
-      {low_stock?.length > 0 && (
-        <div
-          className="flex items-start gap-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl px-4 py-3 cursor-pointer hover:bg-amber-100 transition-colors"
-          onClick={() => navigate("/ingredients")}
-        >
-          <AlertTriangle size={16} className="shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm font-medium">
-              {low_stock.length} ingredient{low_stock.length !== 1 ? "s are" : " is"} running
-              low
+          {customFrom && customTo && (
+            <p className="font-body" style={{ fontSize: 12, color: "#A8A49B" }}>
+              {customFrom} → {customTo}
             </p>
-            <p className="text-xs mt-0.5">{low_stock.map((i: any) => i.name).join(", ")}</p>
-          </div>
+          )}
         </div>
       )}
 
-      {/* Filtered Totals */}
+      {/* ── Low stock alert ── */}
+      {low_stock?.length > 0 && (
+        <button
+          type="button"
+          onClick={() => navigate("/ingredients")}
+          className="alert-low-stock w-full text-left animate-slide-up"
+          style={{ cursor: "pointer" }}
+        >
+          <AlertTriangle size={16} className="flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <div>
+            <p className="font-heading font-semibold" style={{ fontSize: 13 }}>
+              {low_stock.length} ingredient
+              {low_stock.length !== 1 ? "s are" : " is"} running low — tap to manage
+            </p>
+            <p className="font-body mt-0.5" style={{ fontSize: 12 }}>
+              {low_stock.map((i: any) => i.name).join(", ")}
+            </p>
+          </div>
+        </button>
+      )}
+
+      {/* ── Filtered period totals ── */}
       <div>
-        <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-3">
+        <SectionLabel>
           {PERIODS.find(p => p.value === period)?.label ?? "Selected Period"}
-        </p>
-        <div className="grid grid-cols-3 gap-4">
-          <StatCard label="Total Sales" value={formatPeso(totals.total_sales)} />
-          <StatCard label="Total Expenses" value={formatPeso(totals.total_expenses)} />
+        </SectionLabel>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <StatCard
+            label="Total Sales"
+            value={formatPeso(totals.total_sales)}
+            accent="blue"
+            icon={<ShoppingCart size={14} />}
+          />
+          <StatCard
+            label="Total Expenses"
+            value={formatPeso(totals.total_expenses)}
+            accent="orange"
+            icon={<Receipt size={14} />}
+          />
           <StatCard
             label="Net Profit"
             value={formatPeso(totals.net_profit)}
-            trend={totals.net_profit > 0 ? "up" : totals.net_profit < 0 ? "down" : "neutral"}
+            sub={
+              totals.net_profit > 0
+                ? "Profitable period"
+                : totals.net_profit < 0
+                  ? "Net loss"
+                  : "Break even"
+            }
+            trend={totalsTrend}
+            accent={totals.net_profit > 0 ? "green" : totals.net_profit < 0 ? "red" : "blue"}
+            icon={
+              totals.net_profit >= 0 ? <TrendingUp size={14} /> : <TrendingDown size={14} />
+            }
           />
         </div>
       </div>
 
-      {/* This Month Stats */}
+      {/* ── This month ── */}
       <div>
-        <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-3">
-          This Month
-        </p>
-        <div className="grid grid-cols-3 gap-4">
-          <StatCard label="Sales" value={formatPeso(this_month.sales)} />
-          <StatCard label="Expenses" value={formatPeso(this_month.expenses)} />
+        <SectionLabel>This Month</SectionLabel>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <StatCard label="Sales" value={formatPeso(this_month.sales)} accent="blue" />
+          <StatCard label="Expenses" value={formatPeso(this_month.expenses)} accent="orange" />
           <StatCard
             label="Profit"
             value={formatPeso(this_month.profit)}
@@ -218,14 +309,21 @@ export default function DashboardPage() {
                   : "Break even"
             }
             trend={profitTrend}
+            accent={this_month.profit > 0 ? "green" : this_month.profit < 0 ? "red" : "blue"}
           />
         </div>
       </div>
 
-      {/* Chart + Best Selling */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="col-span-2 bg-white rounded-xl border p-5">
-          <p className="text-sm font-semibold text-slate-800 mb-4">Monthly Overview</p>
+      {/* ── Chart + Best selling ── */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        {/* Area chart */}
+        <div className="card-surface p-5 lg:col-span-2">
+          <p
+            className="font-heading font-semibold mb-4"
+            style={{ fontSize: 14, color: "#6B4226" }}
+          >
+            Monthly Overview
+          </p>
           <ResponsiveContainer width="100%" height={260}>
             <AreaChart data={chart_data}>
               <defs>
@@ -242,24 +340,31 @@ export default function DashboardPage() {
                   <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#F5EDE0" />
               <XAxis
                 dataKey="month"
-                tick={{ fontSize: 11, fill: "#94a3b8" }}
+                tick={{ fontSize: 11, fill: "#9B6644", fontFamily: "Inter" }}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis
-                tick={{ fontSize: 11, fill: "#94a3b8" }}
+                tick={{ fontSize: 11, fill: "#9B6644", fontFamily: "Inter" }}
                 axisLine={false}
                 tickLine={false}
                 tickFormatter={v => `₱${v.toLocaleString()}`}
               />
               <Tooltip
                 formatter={(value: number) => formatPeso(value)}
-                contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #e2e8f0" }}
+                contentStyle={{
+                  fontSize: 12,
+                  borderRadius: 10,
+                  border: "1px solid #E8E6E1",
+                  background: "#FFFDFB",
+                  color: "#6B4226",
+                  fontFamily: "Inter",
+                }}
               />
-              <Legend wrapperStyle={{ fontSize: 12 }} />
+              <Legend wrapperStyle={{ fontSize: 12, fontFamily: "Inter", color: "#7C7870" }} />
               <Area
                 type="monotone"
                 dataKey="sales"
@@ -288,20 +393,48 @@ export default function DashboardPage() {
           </ResponsiveContainer>
         </div>
 
-        <div className="bg-white rounded-xl border p-5">
-          <p className="text-sm font-semibold text-slate-800 mb-4">Top Products</p>
+        {/* Top products */}
+        <div className="card-surface p-5">
+          <p
+            className="font-heading font-semibold mb-4"
+            style={{ fontSize: 14, color: "#6B4226" }}
+          >
+            Top Products
+          </p>
+
           {best_selling.length === 0 ? (
-            <p className="text-sm text-slate-400">No sales data yet.</p>
+            <div className="flex flex-col items-center justify-center py-10 text-center">
+              <p className="font-body" style={{ fontSize: 13, color: "#A8A49B" }}>
+                No sales data yet for this period.
+              </p>
+            </div>
           ) : (
             <div className="space-y-3">
               {best_selling.map((item: any, index: number) => (
                 <div key={item.product_id} className="flex items-center gap-3">
-                  <span className="text-xs font-semibold text-slate-400 w-4">{index + 1}</span>
+                  {/* Rank bubble */}
+                  <div
+                    className="flex items-center justify-center rounded-full font-heading font-semibold flex-shrink-0"
+                    style={{
+                      width: 24,
+                      height: 24,
+                      background: index === 0 ? "#FFF0F7" : "#F5F4F1",
+                      color: index === 0 ? "#FF6FAE" : "#A8A49B",
+                      fontSize: 11,
+                    }}
+                  >
+                    {index + 1}
+                  </div>
+
+                  {/* Product info */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-800 truncate">
+                    <p
+                      className="font-heading font-medium truncate"
+                      style={{ fontSize: 13, color: "#6B4226" }}
+                    >
                       {item.product_name}
                     </p>
-                    <p className="text-xs text-slate-400">
+                    <p className="font-body" style={{ fontSize: 11, color: "#9B6644" }}>
                       {item.total_quantity} sold · {formatPeso(item.total_revenue)}
                     </p>
                   </div>

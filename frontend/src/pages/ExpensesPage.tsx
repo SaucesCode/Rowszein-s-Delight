@@ -2,17 +2,22 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useExpenses, useDeleteExpense } from "@/hooks/useExpenses";
 import type { Expense } from "@/types/expense.types";
-import { Pencil, Trash2, Plus, X, Download } from "lucide-react";
-import { clsx } from "clsx";
+import { Plus, Download, X, Receipt, Pencil, Trash2 } from "lucide-react";
+import PageHeader from "@/components/PageHeader";
+import EmptyState from "@/components/EmptyState";
+import SkeletonTable from "@/components/SkeletonTable";
+import ConfirmDialog from "@/components/ConfirmDialog";
+import Pagination from "@/components/Pagination";
 import { exportService } from "@/services/export.service";
 import toast from "react-hot-toast";
 
-const CATEGORY_STYLES: Record<string, string> = {
-  ingredient: "bg-blue-100 text-blue-700",
-  packaging: "bg-purple-100 text-purple-700",
-  utilities: "bg-yellow-100 text-yellow-700",
-  transportation: "bg-orange-100 text-orange-700",
-  other: "bg-slate-100 text-slate-600",
+/* ── Category badge colors ── */
+const CATEGORY_BADGE: Record<string, string> = {
+  ingredient: "badge-info",
+  packaging: "badge-purple",
+  utilities: "badge-warning",
+  transportation: "badge-orange",
+  other: "badge-neutral",
 };
 
 export default function ExpensesPage() {
@@ -20,6 +25,7 @@ export default function ExpensesPage() {
   const [page, setPage] = useState(1);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<Expense | null>(null);
   const [exporting, setExporting] = useState(false);
 
   const filters = {
@@ -38,10 +44,13 @@ export default function ExpensesPage() {
 
   const expenses: Expense[] = data?.data?.results ?? [];
   const totalPages = Math.ceil((data?.data?.count ?? 0) / 20);
+  const hasFilters = !!dateFrom || !!dateTo;
 
-  const handleDelete = (id: number) => {
-    if (!window.confirm("Are you sure you want to delete this expense?")) return;
-    deleteExpense.mutate(id);
+  const handleDeleteConfirm = () => {
+    if (!deleteTarget) return;
+    deleteExpense.mutate(deleteTarget.id, {
+      onSettled: () => setDeleteTarget(null),
+    });
   };
 
   const clearFilters = () => {
@@ -63,152 +72,251 @@ export default function ExpensesPage() {
     }
   };
 
-  const hasFilters = !!dateFrom || !!dateTo;
-
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-xl font-semibold text-slate-800">Expenses</h1>
-          <p className="text-sm text-slate-500 mt-1">Track all business costs</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => handleExport("csv")}
-            disabled={exporting}
-            className="flex items-center gap-2 border px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50"
-          >
-            <Download size={15} />
-            CSV
-          </button>
-          <button
-            onClick={() => handleExport("pdf")}
-            disabled={exporting}
-            className="flex items-center gap-2 border px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50"
-          >
-            <Download size={15} />
-            PDF
-          </button>
-          <button
-            onClick={() => navigate("/expenses/new")}
-            className="flex items-center gap-2 bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-700"
-          >
-            <Plus size={16} />
-            Add Expense
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        title="Expenses"
+        description="Track all business costs"
+        action={
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleExport("csv")}
+              disabled={exporting}
+              className="btn-ghost"
+              style={{ fontSize: 13, padding: "7px 12px" }}
+              aria-label="Export expenses as CSV"
+            >
+              <Download size={14} aria-hidden="true" />
+              CSV
+            </button>
+            <button
+              onClick={() => handleExport("pdf")}
+              disabled={exporting}
+              className="btn-ghost"
+              style={{ fontSize: 13, padding: "7px 12px" }}
+              aria-label="Export expenses as PDF"
+            >
+              <Download size={14} aria-hidden="true" />
+              PDF
+            </button>
+            <button
+              onClick={() => navigate("/expenses/new")}
+              className="btn-primary"
+            >
+              <Plus size={15} aria-hidden="true" />
+              Add Expense
+            </button>
+          </div>
+        }
+      />
 
-      {/* Date filters */}
-      <div className="flex items-center gap-3 mb-4 bg-white border rounded-xl px-4 py-3">
+      {/* Date filter strip */}
+      <div
+        className="flex flex-wrap items-center gap-3 mb-5 px-4 py-3"
+        style={{
+          background: "#FFFDFB",
+          border: "1px solid #E8E6E1",
+          borderRadius: 10,
+        }}
+      >
         <div className="flex items-center gap-2">
-          <label className="text-sm text-slate-600">From</label>
+          <label
+            className="font-body flex-shrink-0"
+            style={{ fontSize: 13, color: "#7C7870" }}
+          >
+            From
+          </label>
           <input
             type="date"
             value={dateFrom}
-            onChange={e => {
+            onChange={(e) => {
               setDateFrom(e.target.value);
               setPage(1);
             }}
-            className="border rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+            className="field-input"
+            style={{ width: "auto" }}
           />
         </div>
         <div className="flex items-center gap-2">
-          <label className="text-sm text-slate-600">To</label>
+          <label
+            className="font-body flex-shrink-0"
+            style={{ fontSize: 13, color: "#7C7870" }}
+          >
+            To
+          </label>
           <input
             type="date"
             value={dateTo}
-            onChange={e => {
+            onChange={(e) => {
               setDateTo(e.target.value);
               setPage(1);
             }}
-            className="border rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+            className="field-input"
+            style={{ width: "auto" }}
           />
         </div>
         {hasFilters && (
           <button
             onClick={clearFilters}
-            className="flex items-center gap-1 text-sm text-slate-500 hover:text-slate-800 ml-2"
+            className="btn-ghost"
+            style={{ fontSize: 12, padding: "4px 10px", color: "#9B6644" }}
           >
-            <X size={14} />
+            <X size={12} aria-hidden="true" />
             Clear
           </button>
         )}
       </div>
 
-      {isLoading && <p className="text-sm text-slate-500">Loading...</p>}
-      {isError && <p className="text-sm text-red-500">Failed to load expenses.</p>}
+      {isLoading && <SkeletonTable rows={6} cols={5} />}
 
-      {!isLoading && !isError && expenses.length === 0 && (
-        <div className="text-center py-16 text-slate-400">
-          <p className="text-sm">
-            {hasFilters
-              ? "No expenses found for selected dates."
-              : "No expenses recorded yet."}
+      {isError && (
+        <div className="card-surface p-6 text-center">
+          <p className="font-body" style={{ fontSize: 13, color: "#EF4444" }}>
+            Failed to load expenses. Please try refreshing the page.
           </p>
-          {!hasFilters && (
-            <button
-              onClick={() => navigate("/expenses/new")}
-              className="mt-2 text-sm text-slate-600 underline"
-            >
-              Record your first expense
-            </button>
-          )}
         </div>
       )}
 
-      {expenses.length > 0 && (
+      {!isLoading && !isError && expenses.length === 0 && (
+        <div className="card-surface">
+          <EmptyState
+            icon={Receipt}
+            title={hasFilters ? "No expenses found for selected dates" : "No expenses recorded yet"}
+            description={
+              hasFilters
+                ? "Try adjusting or clearing the date filters."
+                : "Record your first expense to start tracking business costs."
+            }
+            action={
+              !hasFilters ? (
+                <button
+                  onClick={() => navigate("/expenses/new")}
+                  className="btn-primary"
+                >
+                  <Plus size={15} aria-hidden="true" />
+                  Add Expense
+                </button>
+              ) : (
+                <button onClick={clearFilters} className="btn-ghost">
+                  Clear filters
+                </button>
+              )
+            }
+          />
+        </div>
+      )}
+
+      {!isLoading && !isError && expenses.length > 0 && (
         <>
-          <div className="bg-white rounded-xl border overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-slate-50 text-slate-600 text-left">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Date</th>
-                  <th className="px-4 py-3 font-medium">Category</th>
-                  <th className="px-4 py-3 font-medium">Description</th>
-                  <th className="px-4 py-3 font-medium">Amount</th>
-                  <th className="px-4 py-3 font-medium">Actions</th>
+          <div
+            className="overflow-hidden overflow-x-auto"
+            style={{
+              background: "#FFFDFB",
+              border: "1px solid #E8E6E1",
+              borderRadius: 10,
+            }}
+          >
+            <table className="w-full text-sm" style={{ minWidth: 560 }}>
+              <thead>
+                <tr className="table-header-row">
+                  {["Date", "Category", "Description", "Amount", "Actions"].map((col) => (
+                    <th
+                      key={col}
+                      className="px-4 py-3 text-left"
+                      style={{ whiteSpace: "nowrap" }}
+                    >
+                      {col}
+                    </th>
+                  ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
-                {expenses.map(expense => (
-                  <tr key={expense.id} className="hover:bg-slate-50">
-                    <td className="px-4 py-3 text-slate-600 whitespace-nowrap">
+
+              <tbody>
+                {expenses.map((expense, idx) => (
+                  <tr
+                    key={expense.id}
+                    className="table-row-hover transition-colors"
+                    style={{
+                      borderBottom: "1px solid #F5EDE0",
+                      background: idx % 2 !== 0 ? "#FFF8F0" : undefined,
+                    }}
+                  >
+                    {/* Date */}
+                    <td
+                      className="px-4 py-3.5 font-body"
+                      style={{ fontSize: 13, color: "#6B4226", whiteSpace: "nowrap" }}
+                    >
                       {new Date(expense.date).toLocaleDateString("en-PH", {
                         year: "numeric",
                         month: "short",
                         day: "numeric",
                       })}
                     </td>
-                    <td className="px-4 py-3">
+
+                    {/* Category badge */}
+                    <td className="px-4 py-3.5">
                       <span
-                        className={clsx(
-                          "px-2 py-1 rounded-full text-xs font-medium",
-                          CATEGORY_STYLES[expense.category],
-                        )}
+                        className={`badge ${CATEGORY_BADGE[expense.category] ?? "badge-neutral"}`}
+                        style={{ fontSize: 11 }}
                       >
                         {expense.category_display}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-500 max-w-xs truncate">
-                      {expense.description || "—"}
+
+                    {/* Description */}
+                    <td
+                      className="px-4 py-3.5 font-body max-w-xs"
+                      style={{ fontSize: 13, color: "#7C7870" }}
+                    >
+                      <span className="line-clamp-1">
+                        {expense.description || (
+                          <span style={{ color: "#D1CEC7" }}>—</span>
+                        )}
+                      </span>
                     </td>
-                    <td className="px-4 py-3 font-medium text-slate-800">
+
+                    {/* Amount */}
+                    <td
+                      className="px-4 py-3.5 font-body"
+                      style={{ fontSize: 13, color: "#3D3A35", fontWeight: 600 }}
+                    >
                       ₱{Number(expense.amount).toFixed(2)}
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
+
+                    {/* Actions */}
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center gap-1">
                         <button
                           onClick={() => navigate(`/expenses/${expense.id}/edit`)}
-                          className="text-slate-500 hover:text-slate-800"
+                          className="rounded-lg p-1.5 transition-colors"
+                          style={{ color: "#A8A49B" }}
+                          onMouseOver={(e) => {
+                            (e.currentTarget as HTMLElement).style.background = "#FFF0F7";
+                            (e.currentTarget as HTMLElement).style.color = "#FF6FAE";
+                          }}
+                          onMouseOut={(e) => {
+                            (e.currentTarget as HTMLElement).style.background = "transparent";
+                            (e.currentTarget as HTMLElement).style.color = "#A8A49B";
+                          }}
+                          aria-label={`Edit expense from ${expense.date}`}
                         >
-                          <Pencil size={15} />
+                          <Pencil size={14} aria-hidden="true" />
                         </button>
                         <button
-                          onClick={() => handleDelete(expense.id)}
-                          className="text-slate-500 hover:text-red-500"
+                          onClick={() => setDeleteTarget(expense)}
+                          className="rounded-lg p-1.5 transition-colors"
+                          style={{ color: "#A8A49B" }}
+                          onMouseOver={(e) => {
+                            (e.currentTarget as HTMLElement).style.background = "#FEF2F2";
+                            (e.currentTarget as HTMLElement).style.color = "#EF4444";
+                          }}
+                          onMouseOut={(e) => {
+                            (e.currentTarget as HTMLElement).style.background = "transparent";
+                            (e.currentTarget as HTMLElement).style.color = "#A8A49B";
+                          }}
+                          aria-label={`Delete expense from ${expense.date}`}
                         >
-                          <Trash2 size={15} />
+                          <Trash2 size={14} aria-hidden="true" />
                         </button>
                       </div>
                     </td>
@@ -218,29 +326,24 @@ export default function ExpensesPage() {
             </table>
           </div>
 
-          {totalPages > 1 && (
-            <div className="flex items-center justify-end gap-2 mt-4">
-              <button
-                onClick={() => setPage(p => Math.max(p - 1, 1))}
-                disabled={page === 1}
-                className="text-sm px-3 py-1 rounded border disabled:opacity-40"
-              >
-                Previous
-              </button>
-              <span className="text-sm text-slate-500">
-                Page {page} of {totalPages}
-              </span>
-              <button
-                onClick={() => setPage(p => Math.min(p + 1, totalPages))}
-                disabled={page === totalPages}
-                className="text-sm px-3 py-1 rounded border disabled:opacity-40"
-              >
-                Next
-              </button>
-            </div>
-          )}
+          <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
         </>
       )}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete expense?"
+        description={
+          deleteTarget
+            ? `This ${deleteTarget.category_display.toLowerCase()} expense of ₱${Number(deleteTarget.amount).toFixed(2)} will be permanently deleted. This cannot be undone.`
+            : ""
+        }
+        confirmLabel="Delete"
+        destructive
+        loading={deleteExpense.isPending}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }
