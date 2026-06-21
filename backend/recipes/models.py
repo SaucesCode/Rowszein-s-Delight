@@ -9,6 +9,7 @@ class Recipe(models.Model):
         on_delete=models.CASCADE,
         related_name='recipe',
     )
+    yield_quantity = models.PositiveIntegerField(default=1)
     notes = models.TextField(blank=True, default='')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -18,11 +19,19 @@ class Recipe(models.Model):
 
     @property
     def production_cost(self):
+        """Total ingredient cost for one full batch (yield_quantity units)."""
         total = sum(
             item.quantity * item.ingredient.cost_per_unit
             for item in self.recipe_ingredients.all()
         )
         return round(total, 2)
+
+    @property
+    def cost_per_unit(self):
+        """Ingredient cost to produce a single unit of the product."""
+        if not self.yield_quantity:
+            return self.production_cost
+        return round(self.production_cost / self.yield_quantity, 2)
 
 
 class RecipeIngredient(models.Model):

@@ -176,7 +176,7 @@ class ProfitMarginView(APIView):
                 recipe = Recipe.objects.prefetch_related(
                     'recipe_ingredients__ingredient'
                 ).get(product=product)
-                production_cost = float(recipe.production_cost)
+                production_cost = float(recipe.cost_per_unit)
                 has_recipe = True
             except Recipe.DoesNotExist:
                 production_cost = 0

@@ -14,6 +14,7 @@ import SkeletonTable from "@/components/SkeletonTable";
    ───────────────────────────────────────────── */
 const recipeSchema = z.object({
   product: z.coerce.number().min(1, "Product is required"),
+  yield_quantity: z.coerce.number().min(1, "Batch must yield at least 1 unit"),
   notes: z.string().optional(),
   recipe_ingredients: z
     .array(
@@ -91,6 +92,7 @@ export default function RecipeFormPage() {
   } = useForm<RecipeForm>({
     resolver: zodResolver(recipeSchema),
     defaultValues: {
+      yield_quantity: 1,
       recipe_ingredients: [{ ingredient: 0, quantity: 0 }],
     },
   });
@@ -104,6 +106,7 @@ export default function RecipeFormPage() {
     if (recipe) {
       reset({
         product: recipe.product,
+        yield_quantity: recipe.yield_quantity,
         notes: recipe.notes ?? "",
         recipe_ingredients: recipe.recipe_ingredients?.map(ri => ({
           ingredient: ri.ingredient,
@@ -154,6 +157,23 @@ export default function RecipeFormPage() {
             {isEdit && (
               <p className="field-helper">Product cannot be changed after creation.</p>
             )}
+          </Field>
+
+          <Field
+            label="Batch Yield"
+            helper="How many units does this recipe produce? e.g. flour/sugar/chocolate above makes 24 donuts → enter 24"
+            error={errors.yield_quantity?.message}
+            required
+          >
+            <input
+              {...register("yield_quantity")}
+              type="number"
+              min="1"
+              step="1"
+              className="field-input mt-1"
+              placeholder="1"
+              aria-invalid={!!errors.yield_quantity}
+            />
           </Field>
 
           <Field

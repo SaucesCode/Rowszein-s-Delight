@@ -33,17 +33,14 @@ export default function RecipesPage() {
         title="Recipes"
         description="Define ingredients and production cost per product"
         action={
-          <button
-            onClick={() => navigate("/recipes/new")}
-            className="btn-primary"
-          >
+          <button onClick={() => navigate("/recipes/new")} className="btn-primary">
             <Plus size={15} aria-hidden="true" />
             Add Recipe
           </button>
         }
       />
 
-      {isLoading && <SkeletonTable rows={5} cols={5} />}
+      {isLoading && <SkeletonTable rows={5} cols={6} />}
 
       {isError && (
         <div className="card-surface p-6 text-center">
@@ -60,10 +57,7 @@ export default function RecipesPage() {
             title="No recipes yet"
             description="Define a recipe for each product to calculate accurate production costs."
             action={
-              <button
-                onClick={() => navigate("/recipes/new")}
-                className="btn-primary"
-              >
+              <button onClick={() => navigate("/recipes/new")} className="btn-primary">
                 <Plus size={15} aria-hidden="true" />
                 Add Recipe
               </button>
@@ -85,17 +79,22 @@ export default function RecipesPage() {
             <table className="w-full text-sm" style={{ minWidth: 580 }}>
               <thead>
                 <tr className="table-header-row">
-                  {["Product", "Ingredients", "Production Cost", "Notes", "Actions"].map(
-                    (col) => (
-                      <th
-                        key={col}
-                        className="px-4 py-3 text-left"
-                        style={{ whiteSpace: "nowrap" }}
-                      >
-                        {col}
-                      </th>
-                    ),
-                  )}
+                  {[
+                    "Product",
+                    "Ingredients",
+                    "Yield",
+                    "Batch Cost",
+                    "Cost / Unit",
+                    "Actions",
+                  ].map(col => (
+                    <th
+                      key={col}
+                      className="px-4 py-3 text-left"
+                      style={{ whiteSpace: "nowrap" }}
+                    >
+                      {col}
+                    </th>
+                  ))}
                 </tr>
               </thead>
 
@@ -120,32 +119,38 @@ export default function RecipesPage() {
                     </td>
 
                     {/* Ingredient count */}
-                    <td className="px-4 py-3.5 font-body" style={{ fontSize: 13, color: "#7C7870" }}>
-                      <span
-                        className="badge badge-info"
-                        style={{ fontSize: 11 }}
-                      >
+                    <td
+                      className="px-4 py-3.5 font-body"
+                      style={{ fontSize: 13, color: "#7C7870" }}
+                    >
+                      <span className="badge badge-info" style={{ fontSize: 11 }}>
                         {recipe.recipe_ingredients.length}{" "}
                         {recipe.recipe_ingredients.length === 1 ? "ingredient" : "ingredients"}
                       </span>
                     </td>
 
-                    {/* Production cost */}
+                    {/* Yield */}
                     <td
                       className="px-4 py-3.5 font-body"
-                      style={{ fontSize: 13, color: "#3D3A35", fontWeight: 500 }}
+                      style={{ fontSize: 13, color: "#7C7870" }}
+                    >
+                      {recipe.yield_quantity} {recipe.yield_quantity === 1 ? "unit" : "units"}
+                    </td>
+
+                    {/* Batch cost */}
+                    <td
+                      className="px-4 py-3.5 font-body"
+                      style={{ fontSize: 13, color: "#3D3A35" }}
                     >
                       ₱{Number(recipe.production_cost).toFixed(2)}
                     </td>
 
-                    {/* Notes */}
+                    {/* Cost per unit */}
                     <td
-                      className="px-4 py-3.5 font-body max-w-xs"
-                      style={{ fontSize: 13, color: "#7C7870" }}
+                      className="px-4 py-3.5 font-body"
+                      style={{ fontSize: 13, color: "#3D3A35", fontWeight: 600 }}
                     >
-                      <span className="line-clamp-1">
-                        {recipe.notes || <span style={{ color: "#D1CEC7" }}>—</span>}
-                      </span>
+                      ₱{Number(recipe.cost_per_unit).toFixed(2)}
                     </td>
 
                     {/* Actions */}
@@ -155,11 +160,11 @@ export default function RecipesPage() {
                           onClick={() => navigate(`/recipes/${recipe.id}/edit`)}
                           className="rounded-lg p-1.5 transition-colors"
                           style={{ color: "#A8A49B" }}
-                          onMouseOver={(e) => {
+                          onMouseOver={e => {
                             (e.currentTarget as HTMLElement).style.background = "#FFF0F7";
                             (e.currentTarget as HTMLElement).style.color = "#FF6FAE";
                           }}
-                          onMouseOut={(e) => {
+                          onMouseOut={e => {
                             (e.currentTarget as HTMLElement).style.background = "transparent";
                             (e.currentTarget as HTMLElement).style.color = "#A8A49B";
                           }}
@@ -171,11 +176,11 @@ export default function RecipesPage() {
                           onClick={() => setDeleteTarget(recipe)}
                           className="rounded-lg p-1.5 transition-colors"
                           style={{ color: "#A8A49B" }}
-                          onMouseOver={(e) => {
+                          onMouseOver={e => {
                             (e.currentTarget as HTMLElement).style.background = "#FEF2F2";
                             (e.currentTarget as HTMLElement).style.color = "#EF4444";
                           }}
-                          onMouseOut={(e) => {
+                          onMouseOut={e => {
                             (e.currentTarget as HTMLElement).style.background = "transparent";
                             (e.currentTarget as HTMLElement).style.color = "#A8A49B";
                           }}
