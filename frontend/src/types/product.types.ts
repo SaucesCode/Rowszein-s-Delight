@@ -5,6 +5,7 @@ export interface Product {
   price: number;
   image_url: string | null;
   is_available: boolean;
+  is_featured: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -14,5 +15,6 @@ export interface ProductPayload {
   description?: string;
   price: number;
   is_available: boolean;
+  is_featured: boolean;
   image?: File | null;
 }

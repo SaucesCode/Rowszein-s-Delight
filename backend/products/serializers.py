@@ -15,6 +15,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'image',
             'image_url',
             'is_available',
+            'is_featured',
             'created_at',
             'updated_at',
         ]

@@ -7,6 +7,7 @@ const toFormData = (payload: ProductPayload): FormData => {
   formData.append("description", payload.description ?? "");
   formData.append("price", String(payload.price));
   formData.append("is_available", String(payload.is_available));
+  formData.append("is_featured", String(payload.is_featured));
   if (payload.image) {
     formData.append("image", payload.image);
   }
@@ -16,6 +17,11 @@ const toFormData = (payload: ProductPayload): FormData => {
 export const productService = {
   getAll: async (page = 1) => {
     const response = await api.get("/products/", { params: { page } });
+    return response.data;
+  },
+
+  getFeatured: async () => {
+    const response = await api.get("/products/", { params: { is_featured: true, page: 1 } });
     return response.data;
   },
 

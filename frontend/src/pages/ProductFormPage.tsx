@@ -12,6 +12,7 @@ const productSchema = z.object({
   description: z.string().optional(),
   price: z.coerce.number().min(0.01, "Price must be greater than ₱0"),
   is_available: z.boolean(),
+  is_featured: z.boolean(),
 });
 
 type ProductForm = z.infer<typeof productSchema>;
@@ -50,6 +51,66 @@ function Field({
   );
 }
 
+/* ─────────────────────────────────────────────
+   TOGGLE ROW — reusable labeled boolean toggle
+   ───────────────────────────────────────────── */
+function ToggleRow({
+  label,
+  description,
+  checked,
+  onChange,
+}: {
+  label: string;
+  description: string;
+  checked: boolean;
+  onChange: (val: boolean) => void;
+}) {
+  return (
+    <div
+      className="flex items-center justify-between rounded-xl px-4 py-3"
+      style={{ background: "#FFF8F0", border: "1px solid #F5EDE0" }}
+    >
+      <div>
+        <p className="font-heading font-medium" style={{ fontSize: 13, color: "#6B4226" }}>
+          {label}
+        </p>
+        <p className="font-body" style={{ fontSize: 12, color: "#9B6644" }}>
+          {description}
+        </p>
+      </div>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        onClick={() => onChange(!checked)}
+        className="relative flex-shrink-0 rounded-full transition-colors duration-200"
+        style={{
+          width: 40,
+          height: 22,
+          background: checked
+            ? "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)"
+            : "#E8E6E1",
+          border: "none",
+          cursor: "pointer",
+          padding: 0,
+        }}
+      >
+        <span
+          className="absolute rounded-full transition-transform duration-200"
+          style={{
+            width: 16,
+            height: 16,
+            top: 3,
+            left: checked ? 21 : 3,
+            background: "#FFFFFF",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.15)",
+          }}
+        />
+      </button>
+    </div>
+  );
+}
+
 export default function ProductFormPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -66,11 +127,16 @@ export default function ProductFormPage() {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<ProductForm>({
     resolver: zodResolver(productSchema),
-    defaultValues: { is_available: true },
+    defaultValues: { is_available: true, is_featured: false },
   });
+
+  const isAvailable = watch("is_available");
+  const isFeatured = watch("is_featured");
 
   useEffect(() => {
     if (product) {
@@ -79,6 +145,7 @@ export default function ProductFormPage() {
         description: product.description,
         price: product.price,
         is_available: product.is_available,
+        is_featured: product.is_featured,
       });
       if (product.image_url) setImagePreview(product.image_url);
     }
@@ -122,7 +189,6 @@ export default function ProductFormPage() {
             </span>
           </label>
           <div className="flex items-center gap-4 mt-1">
-            {/* Preview box */}
             <div
               className="flex items-center justify-center rounded-xl overflow-hidden flex-shrink-0"
               style={{
@@ -136,14 +202,13 @@ export default function ProductFormPage() {
                 <img
                   src={imagePreview}
                   alt="Product preview"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full"
+                  style={{ objectFit: "cover" }}
                 />
               ) : (
                 <ImageOff size={20} style={{ color: "#FF6FAE" }} aria-hidden="true" />
               )}
             </div>
-
-            {/* Upload button */}
             <label
               className="btn-ghost cursor-pointer"
               style={{ fontSize: 13, padding: "7px 14px" }}
@@ -210,38 +275,20 @@ export default function ProductFormPage() {
           />
         </Field>
 
-        {/* Availability toggle */}
-        <div
-          className="flex items-center justify-between rounded-xl px-4 py-3"
-          style={{ background: "#FFF8F0", border: "1px solid #F5EDE0" }}
-        >
-          <div>
-            <p className="font-heading font-medium" style={{ fontSize: 13, color: "#6B4226" }}>
-              Available for sale
-            </p>
-            <p className="font-body" style={{ fontSize: 12, color: "#9B6644" }}>
-              Customers can order this product
-            </p>
-          </div>
-          <label className="relative inline-flex cursor-pointer items-center">
-            <input {...register("is_available")} type="checkbox" className="sr-only peer" />
-            <div
-              className="w-10 h-5 rounded-full peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:rounded-full after:h-4 after:w-4 after:transition-transform"
-              style={{
-                background: "var(--border)",
-              }}
-              aria-hidden="true"
-            />
-          </label>
-          {/* Simpler checkbox since Tailwind peer might need config */}
-          <input
-            {...register("is_available")}
-            type="checkbox"
-            id="is_available"
-            className="w-4 h-4 rounded"
-            style={{ accentColor: "#FF6FAE" }}
+        {/* Availability + Featured toggles */}
+        <div className="space-y-3">
+          <ToggleRow
+            label="Available for sale"
+            description="Customers can see and order this product"
+            checked={isAvailable}
+            onChange={val => setValue("is_available", val)}
           />
-          <style>{`input[type=checkbox] { display: none; } input[type=checkbox]:last-of-type { display: block; }`}</style>
+          <ToggleRow
+            label="Featured / Bestseller"
+            description="Shows in the Bestsellers section on the public shop page"
+            checked={isFeatured}
+            onChange={val => setValue("is_featured", val)}
+          />
         </div>
 
         {/* Divider */}
