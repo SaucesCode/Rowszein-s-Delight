@@ -357,7 +357,7 @@ export default function MainLayout() {
           style={{ background: "#FFF8F0" }}
           id="main-content"
         >
-          <div className="p-5 md:p-6 max-w-400 mx-auto animate-fade-in">
+          <div className="p-5 md:p-6 max-w-300 mx-auto animate-fade-in">
             <Outlet />
           </div>
         </main>

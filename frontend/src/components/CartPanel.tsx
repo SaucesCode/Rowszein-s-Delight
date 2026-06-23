@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { X, Plus, Minus, Trash2, Download, ShoppingBag, Trash } from "lucide-react";
+import { X, Plus, Minus, Trash2, Download, ShoppingBag, Trash, ClipboardList } from "lucide-react";
 import { toPng } from "html-to-image";
 import toast from "react-hot-toast";
 import type { CartItem } from "@/hooks/useCart";
@@ -234,16 +234,12 @@ export default function CartPanel({
     }
     setNameError(false);
 
-    // Generate a fresh reference + timestamp for this save, then wait for
-    // the receipt to re-render with that snapshot before capturing it.
     const snapshot = {
       referenceCode: generateReferenceCode(),
       timestamp: new Date(),
     };
     setReceiptSnapshot(snapshot);
 
-    // Let React commit the new snapshot to the hidden receipt DOM before
-    // we read it into a canvas.
     await new Promise((resolve) => requestAnimationFrame(resolve));
 
     if (!receiptRef.current) return;
@@ -267,10 +263,7 @@ export default function CartPanel({
 
   return (
     <>
-      {/* Off-screen receipt — always rendered so the ref is ready to capture,
-          positioned far off-canvas rather than display:none (some capture
-          libraries skip display:none nodes). Uses the last generated
-          snapshot, or a placeholder timestamp before the first save. */}
+      {/* Off-screen receipt — always rendered so the ref is ready to capture */}
       <div style={{ position: "fixed", top: -9999, left: -9999, pointerEvents: "none" }}>
         <div ref={receiptRef}>
           <ReceiptTemplate
@@ -287,7 +280,7 @@ export default function CartPanel({
       {open && (
         <div
           className="fixed inset-0 z-40 animate-fade-in"
-          style={{ background: "rgba(107, 66, 38, 0.25)", backdropFilter: "blur(2px)" }}
+          style={{ background: "rgba(107, 66, 38, 0.32)", backdropFilter: "blur(3px)" }}
           onClick={onClose}
           aria-hidden="true"
         />
@@ -295,14 +288,13 @@ export default function CartPanel({
 
       {/* Slide-out panel */}
       <div
-        className="fixed inset-y-0 right-0 z-50 flex flex-col"
+        className="fixed inset-y-0 right-0 z-50 flex flex-col landing-page"
         style={{
-          width: "min(380px, 100vw)",
-          background: "#FFFDFB",
-          borderLeft: "1px solid #E8E6E1",
-          boxShadow: "-8px 0 32px rgba(107, 66, 38, 0.15)",
+          width: "min(400px, 100vw)",
+          background: "#FFF8F0",
+          boxShadow: "-12px 0 40px rgba(107, 66, 38, 0.18)",
           transform: open ? "translateX(0)" : "translateX(100%)",
-          transition: "transform 0.25s ease-out",
+          transition: "transform 0.3s ease-out",
         }}
         role="dialog"
         aria-modal="true"
@@ -310,16 +302,16 @@ export default function CartPanel({
       >
         {/* Header */}
         <div
-          className="flex items-center justify-between px-5 py-4 flex-shrink-0"
-          style={{ borderBottom: "1px solid #F5EDE0" }}
+          className="flex items-center justify-between px-6 py-5 flex-shrink-0"
+          style={{ background: "#FFFDFB", borderBottom: "1px solid #F5EDE0" }}
         >
-          <div className="flex items-center gap-2">
-            <ShoppingBag size={18} style={{ color: "#FF6FAE" }} aria-hidden="true" />
-            <p
-              className="font-heading font-semibold"
-              style={{ fontSize: 15, color: "#6B4226" }}
-            >
+          <div>
+            <h2 className="font-heading font-bold" style={{ fontSize: 22, color: "#6B4226" }}>
               Your Order
+            </h2>
+            <p className="font-body" style={{ fontSize: 12, color: "#9B6644" }}>
+              {items.reduce((sum, i) => sum + i.quantity, 0)} item
+              {items.reduce((sum, i) => sum + i.quantity, 0) !== 1 ? "s" : ""}
             </p>
           </div>
 
@@ -327,7 +319,7 @@ export default function CartPanel({
             {items.length > 0 && (
               <button
                 onClick={handleClearAll}
-                className="flex items-center gap-1 rounded-lg px-2 py-1.5 transition-colors"
+                className="flex items-center gap-1 rounded-full px-3 py-1.5 transition-colors"
                 style={{ color: "#A8A49B", fontSize: 11 }}
                 onMouseOver={(e) => {
                   (e.currentTarget as HTMLElement).style.background = "#FEF2F2";
@@ -345,130 +337,173 @@ export default function CartPanel({
             )}
             <button
               onClick={onClose}
-              className="rounded-lg p-1.5 transition-colors"
-              style={{ color: "#A8A49B" }}
+              className="flex items-center justify-center rounded-full transition-colors"
+              style={{ width: 36, height: 36, background: "#FFF0F7", color: "#6B4226" }}
               aria-label="Close cart"
             >
-              <X size={16} aria-hidden="true" />
+              <X size={17} aria-hidden="true" />
             </button>
           </div>
         </div>
 
         {/* Items */}
-        <div className="flex-1 overflow-y-auto px-5 py-4">
+        <div className="flex-1 overflow-y-auto px-6 py-5">
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-4">
               <div
-                className="flex items-center justify-center rounded-2xl mb-4"
-                style={{ width: 52, height: 52, background: "#FFF0F7" }}
+                className="flex items-center justify-center rounded-full mb-4"
+                style={{ width: 64, height: 64, background: "#FFF0F7" }}
               >
-                <ShoppingBag size={22} style={{ color: "#FF6FAE" }} aria-hidden="true" />
+                <ShoppingBag size={26} style={{ color: "#FF6FAE" }} aria-hidden="true" />
               </div>
-              <p
-                className="font-heading font-medium"
-                style={{ fontSize: 14, color: "#6B4226" }}
-              >
+              <p className="font-heading font-bold" style={{ fontSize: 17, color: "#6B4226" }}>
                 Your cart is empty
               </p>
-              <p className="font-body mt-1" style={{ fontSize: 12, color: "#9B6644" }}>
+              <p className="font-body mt-1" style={{ fontSize: 13, color: "#9B6644" }}>
                 Add some treats from the menu to get started.
               </p>
             </div>
           ) : (
-            <div className="space-y-3">
-              {items.map((item) => (
-                <div
-                  key={item.product_id}
-                  className="flex items-center gap-3 p-2.5"
-                  style={{
-                    background: "#FFF8F0",
-                    border: "1px solid #F5EDE0",
-                    borderRadius: 10,
-                  }}
-                >
-                  {/* Thumbnail */}
+            <>
+              <div className="space-y-3">
+                {items.map((item) => (
                   <div
-                    className="flex-shrink-0 rounded-lg overflow-hidden"
-                    style={{ width: 44, height: 44, background: "#FFF0F7" }}
+                    key={item.product_id}
+                    className="flex gap-3 p-3"
+                    style={{ background: "#FFFDFB", border: "1px solid #F5EDE0", borderRadius: 20 }}
                   >
-                    {item.image_url && (
-                      <img
-                        src={item.image_url}
-                        alt={item.name}
-                        className="w-full h-full object-cover"
-                      />
-                    )}
-                  </div>
+                    {/* Thumbnail */}
+                    <div
+                      className="flex-shrink-0 rounded-2xl overflow-hidden"
+                      style={{ width: 64, height: 64, background: "#FFF0F7" }}
+                    >
+                      {item.image_url && (
+                        <img
+                          src={item.image_url}
+                          alt={item.name}
+                          className="w-full h-full object-cover"
+                        />
+                      )}
+                    </div>
 
-                  {/* Name + price */}
-                  <div className="flex-1 min-w-0">
-                    <p
-                      className="font-heading font-medium truncate"
-                      style={{ fontSize: 13, color: "#6B4226" }}
-                    >
-                      {item.name}
-                    </p>
-                    <p className="font-body" style={{ fontSize: 12, color: "#9B6644" }}>
-                      {formatPeso(item.price)} each
-                    </p>
-                  </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <p
+                          className="font-heading font-bold truncate"
+                          style={{ fontSize: 14, color: "#6B4226" }}
+                        >
+                          {item.name}
+                        </p>
+                        <button
+                          onClick={() => onRemove(item.product_id)}
+                          className="flex-shrink-0 transition-colors"
+                          style={{ color: "#D1CEC7" }}
+                          onMouseOver={(e) => ((e.currentTarget as HTMLElement).style.color = "#EF4444")}
+                          onMouseOut={(e) => ((e.currentTarget as HTMLElement).style.color = "#D1CEC7")}
+                          aria-label={`Remove ${item.name} from cart`}
+                        >
+                          <Trash2 size={14} aria-hidden="true" />
+                        </button>
+                      </div>
+                      <p className="font-body" style={{ fontSize: 12, color: "#9B6644" }}>
+                        {formatPeso(item.price)} each
+                      </p>
 
-                  {/* Quantity stepper */}
-                  <div className="flex items-center gap-1.5 flex-shrink-0">
-                    <button
-                      onClick={() => onDecrement(item.product_id)}
-                      className="flex items-center justify-center rounded-md transition-colors"
-                      style={{ width: 22, height: 22, background: "#FFFDFB", border: "1px solid #E8E6E1" }}
-                      aria-label={`Decrease quantity of ${item.name}`}
-                    >
-                      <Minus size={11} style={{ color: "#7C7870" }} aria-hidden="true" />
-                    </button>
-                    <span
-                      className="font-body text-center"
-                      style={{ fontSize: 12, color: "#3D3A35", width: 16 }}
-                      aria-live="polite"
-                    >
-                      {item.quantity}
-                    </span>
-                    <button
-                      onClick={() => onIncrement(item.product_id)}
-                      className="flex items-center justify-center rounded-md transition-colors"
-                      style={{ width: 22, height: 22, background: "#FFFDFB", border: "1px solid #E8E6E1" }}
-                      aria-label={`Increase quantity of ${item.name}`}
-                    >
-                      <Plus size={11} style={{ color: "#7C7870" }} aria-hidden="true" />
-                    </button>
+                      <div className="flex items-center justify-between mt-2">
+                        <div
+                          className="flex items-center gap-1 rounded-full p-1"
+                          style={{ background: "#FFF0F7" }}
+                        >
+                          <button
+                            onClick={() => onDecrement(item.product_id)}
+                            className="flex items-center justify-center rounded-full"
+                            style={{ width: 24, height: 24, background: "#FFFDFB", border: "1px solid #FFD6E7" }}
+                            aria-label={`Decrease quantity of ${item.name}`}
+                          >
+                            <Minus size={12} style={{ color: "#E5528A" }} aria-hidden="true" />
+                          </button>
+                          <span
+                            className="font-heading font-bold text-center"
+                            style={{ fontSize: 13, color: "#6B4226", width: 20 }}
+                            aria-live="polite"
+                          >
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={() => onIncrement(item.product_id)}
+                            className="flex items-center justify-center rounded-full"
+                            style={{ width: 24, height: 24, background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)" }}
+                            aria-label={`Increase quantity of ${item.name}`}
+                          >
+                            <Plus size={12} color="#FFFFFF" aria-hidden="true" />
+                          </button>
+                        </div>
+                        <span
+                          className="font-heading font-bold"
+                          style={{ fontSize: 14, color: "#FF6FAE" }}
+                        >
+                          {formatPeso(item.price * item.quantity)}
+                        </span>
+                      </div>
+                    </div>
                   </div>
+                ))}
+              </div>
 
-                  {/* Remove */}
-                  <button
-                    onClick={() => onRemove(item.product_id)}
-                    className="flex-shrink-0 rounded-md p-1 transition-colors"
-                    style={{ color: "#D1CEC7" }}
-                    onMouseOver={(e) => ((e.currentTarget as HTMLElement).style.color = "#EF4444")}
-                    onMouseOut={(e) => ((e.currentTarget as HTMLElement).style.color = "#D1CEC7")}
-                    aria-label={`Remove ${item.name} from cart`}
+              {/* Order summary preview — shown before any save/download action */}
+              <div
+                className="rounded-2xl p-4 mt-5"
+                style={{ background: "#FFF0F7" }}
+              >
+                <div className="flex items-center gap-1.5 mb-2.5">
+                  <ClipboardList size={13} style={{ color: "#E5528A" }} aria-hidden="true" />
+                  <p
+                    className="font-body font-bold uppercase"
+                    style={{ fontSize: 10.5, letterSpacing: "0.06em", color: "#E5528A" }}
                   >
-                    <Trash2 size={13} aria-hidden="true" />
-                  </button>
+                    Order Summary
+                  </p>
                 </div>
-              ))}
-            </div>
+                <div className="space-y-1">
+                  {items.map((item) => (
+                    <div
+                      key={item.product_id}
+                      className="flex items-baseline justify-between gap-2 font-body"
+                      style={{ fontSize: 12.5, color: "#6B4226" }}
+                    >
+                      <span className="truncate">
+                        • {item.quantity}× {item.name}
+                      </span>
+                      <span style={{ flexShrink: 0, fontWeight: 600 }}>
+                        {formatPeso(item.price * item.quantity)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div
+                  className="flex items-center justify-between mt-2.5 pt-2.5"
+                  style={{ borderTop: "1px dashed #FFD6E7" }}
+                >
+                  <span className="font-body font-bold" style={{ fontSize: 12.5, color: "#6B4226" }}>
+                    Total
+                  </span>
+                  <span className="font-heading font-bold" style={{ fontSize: 15, color: "#E5528A" }}>
+                    {formatPeso(totalAmount)}
+                  </span>
+                </div>
+              </div>
+            </>
           )}
         </div>
 
         {/* Footer — name input, total, save action */}
         {items.length > 0 && (
           <div
-            className="flex-shrink-0 px-5 py-4 space-y-3"
-            style={{ borderTop: "1px solid #F5EDE0" }}
+            className="flex-shrink-0 px-6 py-5 space-y-3"
+            style={{ background: "#FFFDFB", borderTop: "1px solid #F5EDE0" }}
           >
-            {/* Customer name */}
             <div>
-              <label
-                className="font-body block mb-1"
-                style={{ fontSize: 12, color: "#7C7870", fontWeight: 500 }}
-              >
+              <label className="field-label">
                 Your Name
                 <span style={{ color: "#FF6FAE", marginLeft: 3 }} aria-hidden="true">
                   *
@@ -485,7 +520,8 @@ export default function CartPanel({
                 className="field-input"
                 style={{
                   fontSize: 13,
-                  padding: "7px 10px",
+                  padding: "9px 12px",
+                  borderRadius: 12,
                   borderColor: nameError ? "#EF4444" : undefined,
                 }}
                 aria-invalid={nameError}
@@ -498,32 +534,18 @@ export default function CartPanel({
               )}
             </div>
 
-            {/* Total */}
-            <div className="flex items-center justify-between">
-              <span className="font-body" style={{ fontSize: 13, color: "#7C7870" }}>
-                Total
-              </span>
-              <span
-                className="font-heading font-semibold"
-                style={{ fontSize: 18, color: "#6B4226" }}
-              >
-                {formatPeso(totalAmount)}
-              </span>
-            </div>
-
-            {/* Save */}
             <button
               onClick={handleSaveSummary}
               disabled={exporting}
               className="btn-primary w-full justify-center"
-              style={{ fontSize: 13, padding: "9px 12px" }}
+              style={{ fontSize: 14, padding: "13px 16px", borderRadius: 999 }}
             >
-              <Download size={14} aria-hidden="true" />
+              <Download size={15} aria-hidden="true" />
               {exporting ? "Saving…" : "Save Order Summary"}
             </button>
 
             <p className="font-body text-center" style={{ fontSize: 11, color: "#A8A49B" }}>
-              Save and send this to place your order — no checkout needed.
+              Save and send this image to place your order — no checkout needed.
             </p>
           </div>
         )}

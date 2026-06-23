@@ -11,6 +11,7 @@ const productSchema = z.object({
   name: z.string().min(1, "Product name is required"),
   description: z.string().optional(),
   price: z.coerce.number().min(0.01, "Price must be greater than ₱0"),
+  category: z.enum(["classic", "fruity", "local", "premium", "brownies"]),
   is_available: z.boolean(),
   is_featured: z.boolean(),
 });
@@ -132,7 +133,7 @@ export default function ProductFormPage() {
     formState: { errors },
   } = useForm<ProductForm>({
     resolver: zodResolver(productSchema),
-    defaultValues: { is_available: true, is_featured: false },
+    defaultValues: { is_available: true, is_featured: false, category: "classic" },
   });
 
   const isAvailable = watch("is_available");
@@ -255,6 +256,25 @@ export default function ProductFormPage() {
             style={{ resize: "none" }}
             placeholder="Describe the product…"
           />
+        </Field>
+
+        <Field
+          label="Category"
+          helper="Which menu section this product appears under"
+          error={errors.category?.message}
+          required
+        >
+          <select
+            {...register("category")}
+            className="field-input mt-1"
+            aria-invalid={!!errors.category}
+          >
+            <option value="classic">Classic</option>
+            <option value="fruity">Fruity</option>
+            <option value="local">Local Favorites</option>
+            <option value="premium">Premium</option>
+            <option value="brownies">Brownies & Bars</option>
+          </select>
         </Field>
 
         {/* Price */}

@@ -6,6 +6,7 @@ const toFormData = (payload: ProductPayload): FormData => {
   formData.append("name", payload.name);
   formData.append("description", payload.description ?? "");
   formData.append("price", String(payload.price));
+  formData.append("category", payload.category);
   formData.append("is_available", String(payload.is_available));
   formData.append("is_featured", String(payload.is_featured));
   if (payload.image) {
