@@ -273,13 +273,20 @@ function PublicNav({
    ───────────────────────────────────────────── */
 function Hero({ heroProduct, totalCount }: { heroProduct: Product | null; totalCount: number }) {
   return (
-    <section id="top" className="relative overflow-hidden px-6 md:px-12 lg:px-20 pt-14 pb-20 md:pt-20 md:pb-28">
+    <section
+      id="top"
+      className="relative overflow-hidden px-6 md:px-12 lg:px-20 pt-14 pb-20 md:pt-20 md:pb-28"
+    >
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
         <div
           className="absolute rounded-full"
           style={{
-            width: 480, height: 480, top: -180, left: -160,
-            background: "radial-gradient(circle, #FF6FAE 0%, transparent 70%)", opacity: 0.16,
+            width: 480,
+            height: 480,
+            top: -180,
+            left: -160,
+            background: "radial-gradient(circle, #FF6FAE 0%, transparent 70%)",
+            opacity: 0.16,
           }}
         />
         <div
@@ -291,49 +298,79 @@ function Hero({ heroProduct, totalCount }: { heroProduct: Product | null; totalC
         />
       </div>
 
-      <div className="relative max-w-400 mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+      <div className="relative max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
         {/* Left — copy */}
         <div className="animate-slide-up">
           <span
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full font-body font-bold uppercase"
-            style={{ fontSize: 11, letterSpacing: "0.1em", background: "#FFFFFF", color: "#E5528A", border: "1px solid #FFD6E7" }}
+            style={{
+              fontSize: 11,
+              letterSpacing: "0.1em",
+              background: "#FFFFFF",
+              color: "#E5528A",
+              border: "1px solid #FFD6E7",
+            }}
           >
             <Sparkles size={13} aria-hidden="true" /> Baked fresh, every single day
           </span>
 
           <h1
             className="font-heading font-bold mt-5"
-            style={{ fontSize: "clamp(38px, 5.5vw, 60px)", color: "#6B4226", lineHeight: 0.98 }}
+            style={{
+              fontSize: "clamp(38px, 5.5vw, 60px)",
+              color: "#6B4226",
+              lineHeight: 0.98,
+            }}
           >
             Soft, sweet,
             <br />
             <em style={{ color: "#FF6FAE", fontStyle: "italic" }}>homemade</em> donuts.
           </h1>
 
-          <p className="font-body mt-5 max-w-md" style={{ fontSize: 16, color: "#7C7870", lineHeight: 1.75 }}>
+          <p
+            className="font-body mt-5 max-w-md"
+            style={{ fontSize: 16, color: "#7C7870", lineHeight: 1.75 }}
+          >
             Hand-rolled donuts and desserts, made fresh each morning with real butter, real
             eggs, and a generous swirl of glaze. Pick your favorites — we'll do the rest.
           </p>
 
           <div className="flex flex-wrap items-center gap-3 mt-8">
-            <a href="#menu" className="btn-primary" style={{ fontSize: 14, padding: "12px 26px", borderRadius: 999 }}>
+            <a
+              href="#menu"
+              className="btn-primary"
+              style={{ fontSize: 14, padding: "12px 26px", borderRadius: 999 }}
+            >
               View Menu
             </a>
-            <a href="#contact" className="btn-ghost" style={{ fontSize: 14, padding: "12px 26px", borderRadius: 999 }}>
+            <a
+              href="#contact"
+              className="btn-ghost"
+              style={{ fontSize: 14, padding: "12px 26px", borderRadius: 999 }}
+            >
               Contact Us
             </a>
           </div>
 
-          <div className="flex items-center gap-6 mt-10 font-body" style={{ fontSize: 13, color: "#7C7870" }}>
+          <div
+            className="flex items-center gap-6 mt-10 font-body"
+            style={{ fontSize: 13, color: "#7C7870" }}
+          >
             <div>
-              <span className="font-heading font-bold" style={{ fontSize: 22, color: "#6B4226" }}>
+              <span
+                className="font-heading font-bold"
+                style={{ fontSize: 22, color: "#6B4226" }}
+              >
                 {totalCount || "9+"}
               </span>{" "}
               flavors
             </div>
             <div style={{ width: 1, height: 28, background: "#E8E6E1" }} />
             <div>
-              <span className="font-heading font-bold" style={{ fontSize: 22, color: "#6B4226" }}>
+              <span
+                className="font-heading font-bold"
+                style={{ fontSize: 22, color: "#6B4226" }}
+              >
                 Daily
               </span>{" "}
               fresh batches
@@ -342,10 +379,16 @@ function Hero({ heroProduct, totalCount }: { heroProduct: Product | null; totalC
         </div>
 
         {/* Right — photo + floating badges */}
-        <div className="relative flex items-center justify-center animate-fade-in" style={{ minHeight: 340 }}>
+        <div
+          className="relative flex items-center justify-center animate-fade-in"
+          style={{ minHeight: 340 }}
+        >
           {/* Sized exactly to the photo, so badges anchor to the photo's own
               corners rather than the wider column around it. */}
-          <div className="relative" style={{ width: "min(340px, 78vw)", height: "min(340px, 78vw)" }}>
+          <div
+            className="relative"
+            style={{ width: "min(340px, 78vw)", height: "min(340px, 78vw)" }}
+          >
             <div
               className="absolute inset-0 rounded-[2.5rem] overflow-hidden flex items-center justify-center"
               style={{
@@ -362,7 +405,11 @@ function Hero({ heroProduct, totalCount }: { heroProduct: Product | null; totalC
                   style={{ objectFit: "cover" }}
                 />
               ) : (
-                <CakeSlice size={64} style={{ color: "#FFFFFF", opacity: 0.6 }} aria-hidden="true" />
+                <CakeSlice
+                  size={64}
+                  style={{ color: "#FFFFFF", opacity: 0.6 }}
+                  aria-hidden="true"
+                />
               )}
             </div>
 
@@ -370,19 +417,30 @@ function Hero({ heroProduct, totalCount }: { heroProduct: Product | null; totalC
             <div
               className="absolute px-4 py-3 rounded-2xl flex items-center gap-3"
               style={{
-                bottom: -18, left: -18,
-                background: "#FFFFFF", boxShadow: "0 8px 24px rgba(107,66,38,0.16)",
-                transform: "rotate(-3deg)", zIndex: 2,
+                bottom: -18,
+                left: -18,
+                background: "#FFFFFF",
+                boxShadow: "0 8px 24px rgba(107,66,38,0.16)",
+                transform: "rotate(-3deg)",
+                zIndex: 2,
               }}
             >
               <div
                 className="flex items-center justify-center rounded-full flex-shrink-0"
                 style={{ width: 36, height: 36, background: "#FFF0F7" }}
               >
-                <Heart size={16} style={{ color: "#FF6FAE" }} fill="#FF6FAE" aria-hidden="true" />
+                <Heart
+                  size={16}
+                  style={{ color: "#FF6FAE" }}
+                  fill="#FF6FAE"
+                  aria-hidden="true"
+                />
               </div>
               <div style={{ whiteSpace: "nowrap" }}>
-                <p className="font-heading font-bold" style={{ fontSize: 13, color: "#6B4226" }}>
+                <p
+                  className="font-heading font-bold"
+                  style={{ fontSize: 13, color: "#6B4226" }}
+                >
                   Made with love
                 </p>
                 <p className="font-body" style={{ fontSize: 11, color: "#9B6644" }}>
@@ -396,10 +454,15 @@ function Hero({ heroProduct, totalCount }: { heroProduct: Product | null; totalC
               <div
                 className="absolute px-3 py-1.5 rounded-full font-heading font-bold"
                 style={{
-                  top: -14, right: -14,
-                  background: "#FF6FAE", color: "#FFFFFF", fontSize: 13,
-                  transform: "rotate(6deg)", boxShadow: "0 4px 14px rgba(255,111,174,0.4)",
-                  whiteSpace: "nowrap", zIndex: 2,
+                  top: -14,
+                  right: -14,
+                  background: "#FF6FAE",
+                  color: "#FFFFFF",
+                  fontSize: 13,
+                  transform: "rotate(6deg)",
+                  boxShadow: "0 4px 14px rgba(255,111,174,0.4)",
+                  whiteSpace: "nowrap",
+                  zIndex: 2,
                 }}
               >
                 from {formatPeso(Number(heroProduct.price))}
@@ -445,7 +508,7 @@ function WhyUs() {
       className="px-6 md:px-12 lg:px-20 py-14"
       style={{ background: "#FFFDFB", scrollMarginTop: 72 }}
     >
-      <div className="max-w-400 mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
         {WHY_US.map(({ icon: Icon, title, body }) => (
           <div
             key={title}
@@ -673,7 +736,7 @@ function OrderCTA() {
   return (
     <section className="px-6 md:px-12 lg:px-20 py-16">
       <div
-        className="max-w-400 mx-auto rounded-[2rem] p-10 md:p-16 relative overflow-hidden"
+        className="max-w-6xl mx-auto rounded-[2rem] p-10 md:p-16 relative overflow-hidden"
         style={{ background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)" }}
       >
         <div
@@ -907,7 +970,7 @@ export default function LandingPage() {
           className="px-6 md:px-12 lg:px-20 py-14"
           style={{ background: PAGE_BG, scrollMarginTop: 72 }}
         >
-          <div className="max-w-400 mx-auto">
+          <div className="max-w-6xl mx-auto">
             <div className="flex items-end justify-between mb-8">
               <div>
                 <p
@@ -946,7 +1009,7 @@ export default function LandingPage() {
         className="px-6 md:px-12 lg:px-20 py-16"
         style={{ background: "#FFFDFB", scrollMarginTop: 72 }}
       >
-        <div className="max-w-400 mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10">
             <p
               className="font-body font-bold uppercase"
