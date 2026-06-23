@@ -14,18 +14,23 @@ import {
   X,
   Leaf,
   Heart,
-  PackageCheck,
+  MessageCircle,
   Sparkles,
+  Send,
+  Mail,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import type { Product } from "@/types/product.types";
 
 /* ─────────────────────────────────────────────
-   CONSTANTS
+   CONFIG — replace with your real contact info
    ───────────────────────────────────────────── */
-const PAGE_BG = "#FFD6E7";
+const SHOP_MESSENGER = "https://m.me/rowszeinsdelight";
+const SHOP_EMAIL = "hello@rowszeinsdelight.com";
+
+const PAGE_BG = "#FFF8F0";
 const CARD_BG = "#FFFDFB";
-const CARD_IMAGE_HEIGHT = 180;
+const CARD_IMAGE_HEIGHT = 200;
 
 /* ─────────────────────────────────────────────
    HELPERS
@@ -38,33 +43,7 @@ function formatPeso(value: number) {
 }
 
 /* ─────────────────────────────────────────────
-   NAV LINK
-   ───────────────────────────────────────────── */
-function NavLink({
-  href,
-  children,
-  onClick,
-}: {
-  href: string;
-  children: React.ReactNode;
-  onClick?: () => void;
-}) {
-  return (
-    <a
-      href={href}
-      onClick={onClick}
-      className="font-body font-medium relative group"
-      style={{ fontSize: 14, color: "#5A5650" }}
-      onMouseOver={e => ((e.currentTarget as HTMLElement).style.color = "#E5528A")}
-      onMouseOut={e => ((e.currentTarget as HTMLElement).style.color = "#5A5650")}
-    >
-      {children}
-    </a>
-  );
-}
-
-/* ─────────────────────────────────────────────
-   NAV BAR
+   NAV
    ───────────────────────────────────────────── */
 function PublicNav({
   cartCount,
@@ -79,101 +58,76 @@ function PublicNav({
     <header
       className="sticky top-0 z-30"
       style={{
-        background: "rgba(255, 253, 251, 0.90)",
+        background: "rgba(255, 253, 251, 0.88)",
         backdropFilter: "blur(10px)",
         borderBottom: "1px solid #F5EDE0",
       }}
     >
       <div className="flex items-center justify-between px-6 md:px-12 lg:px-20 py-4">
-        {/* Logo — circular bakery-seal badge */}
-        <div className="flex items-center gap-2.5">
-          <div
-            className="flex items-center justify-center rounded-full flex-shrink-0"
+        <a href="#top" className="flex items-center gap-2.5">
+          <span
+            className="flex items-center justify-center rounded-full font-heading font-bold text-lg"
             style={{
-              width: 36,
-              height: 36,
+              width: 40,
+              height: 40,
               background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)",
-              border: "2px solid #FFD6E7",
-              boxShadow: "0 3px 10px rgba(255, 111, 174, 0.35)",
+              color: "#FFFFFF",
+              boxShadow: "0 3px 10px rgba(255,111,174,0.35)",
             }}
           >
-            <CakeSlice size={17} color="#FFFFFF" />
-          </div>
-          <div>
-            <p
-              className="font-heading font-bold"
-              style={{ fontSize: 15, color: "#6B4226", lineHeight: 1.1 }}
-            >
-              Rowszein's Delight
-            </p>
-            <p
-              className="font-body"
-              style={{ fontSize: 10, color: "#9B6644", letterSpacing: "0.04em" }}
-            >
-              Homemade Donuts &amp; Desserts
-            </p>
-          </div>
-        </div>
+            R
+          </span>
+          <span className="font-heading font-bold" style={{ fontSize: 19, color: "#6B4226" }}>
+            Rowszein's <span style={{ color: "#FF6FAE" }}>Delight</span>
+          </span>
+        </a>
 
-        {/* Desktop links + CTA */}
-        <nav className="hidden md:flex items-center gap-8">
-          <NavLink href="#menu">Menu</NavLink>
-          <NavLink href="#why-us">About</NavLink>
-          <a
-            href="#contact"
-            className="font-heading font-semibold transition-colors"
-            style={{
-              fontSize: 13,
-              color: "#E5528A",
-              border: "1.5px solid #FF6FAE",
-              borderRadius: 999,
-              padding: "7px 20px",
-            }}
-            onMouseOver={e => {
-              (e.currentTarget as HTMLElement).style.background = "#FF6FAE";
-              (e.currentTarget as HTMLElement).style.color = "#FFFFFF";
-            }}
-            onMouseOut={e => {
-              (e.currentTarget as HTMLElement).style.background = "transparent";
-              (e.currentTarget as HTMLElement).style.color = "#E5528A";
-            }}
-          >
-            Contact Us
-          </a>
+        <nav className="hidden md:flex items-center gap-7">
+          {[
+            ["#menu", "Menu"],
+            ["#bestsellers", "Bestsellers"],
+            ["#why", "Why Us"],
+            ["#contact", "Contact"],
+          ].map(([href, label]) => (
+            <a
+              key={href}
+              href={href}
+              className="font-body font-semibold transition-colors"
+              style={{ fontSize: 14, color: "#5A5650" }}
+              onMouseOver={e => ((e.currentTarget as HTMLElement).style.color = "#E5528A")}
+              onMouseOut={e => ((e.currentTarget as HTMLElement).style.color = "#5A5650")}
+            >
+              {label}
+            </a>
+          ))}
         </nav>
 
-        {/* Right side */}
-        <div className="flex items-center gap-2.5">
-          {/* Cart — filled pink, primary action */}
+        <div className="flex items-center gap-2">
           <button
             onClick={onCartClick}
             className="relative flex items-center justify-center rounded-full transition-transform"
             style={{
-              width: 38,
-              height: 38,
-              background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)",
-              boxShadow: "0 3px 10px rgba(255, 111, 174, 0.35)",
+              width: 42,
+              height: 42,
+              background: "#FFF0F7",
             }}
-            onMouseOver={e =>
-              ((e.currentTarget as HTMLElement).style.transform = "scale(1.06)")
-            }
-            onMouseOut={e => ((e.currentTarget as HTMLElement).style.transform = "scale(1)")}
+            onMouseOver={e => ((e.currentTarget as HTMLElement).style.background = "#FFE3EF")}
+            onMouseOut={e => ((e.currentTarget as HTMLElement).style.background = "#FFF0F7")}
             aria-label={`Open cart, ${cartCount} item${cartCount !== 1 ? "s" : ""}`}
           >
-            <ShoppingBag size={17} color="#FFFFFF" aria-hidden="true" />
+            <ShoppingBag size={18} style={{ color: "#6B4226" }} aria-hidden="true" />
             {cartCount > 0 && (
               <span
-                className="absolute flex items-center justify-center rounded-full font-heading font-semibold"
+                className="absolute flex items-center justify-center rounded-full font-heading font-bold"
                 style={{
-                  top: -3,
-                  right: -3,
-                  minWidth: 17,
-                  height: 17,
-                  padding: "0 3px",
-                  background: "#FFFDFB",
-                  color: "#E5528A",
-                  fontSize: 10,
-                  border: "1.5px solid #FF6FAE",
+                  top: -4,
+                  right: -4,
+                  minWidth: 19,
+                  height: 19,
+                  padding: "0 4px",
+                  background: "#FF6FAE",
+                  color: "#FFFFFF",
+                  fontSize: 11,
                 }}
                 aria-hidden="true"
               >
@@ -182,23 +136,39 @@ function PublicNav({
             )}
           </button>
 
-          {/* Hidden owner login */}
+          <a
+            href="#contact"
+            className="hidden sm:inline-flex items-center justify-center font-heading font-semibold transition-transform"
+            style={{
+              height: 42,
+              padding: "0 22px",
+              borderRadius: 999,
+              background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)",
+              color: "#FFFFFF",
+              fontSize: 13,
+              boxShadow: "0 4px 14px rgba(255,111,174,0.35)",
+            }}
+            onMouseOver={e => ((e.currentTarget as HTMLElement).style.transform = "scale(1.03)")}
+            onMouseOut={e => ((e.currentTarget as HTMLElement).style.transform = "scale(1)")}
+          >
+            Contact Us
+          </a>
+
           <Link
             to="/login"
             className="hidden sm:flex items-center justify-center rounded-full transition-opacity"
-            style={{ width: 38, height: 38, opacity: 0.3 }}
-            onMouseOver={e => ((e.currentTarget as HTMLElement).style.opacity = "0.65")}
-            onMouseOut={e => ((e.currentTarget as HTMLElement).style.opacity = "0.3")}
+            style={{ width: 42, height: 42, opacity: 0.25 }}
+            onMouseOver={e => ((e.currentTarget as HTMLElement).style.opacity = "0.6")}
+            onMouseOut={e => ((e.currentTarget as HTMLElement).style.opacity = "0.25")}
             aria-label="Owner Login"
           >
             <CakeSlice size={16} style={{ color: "#6B4226" }} aria-hidden="true" />
           </Link>
 
-          {/* Hamburger */}
           <button
             onClick={() => setMobileOpen(o => !o)}
             className="flex md:hidden items-center justify-center rounded-full"
-            style={{ width: 38, height: 38, background: "#FFF0F7" }}
+            style={{ width: 42, height: 42, background: "#FFF0F7" }}
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
           >
@@ -211,36 +181,31 @@ function PublicNav({
         </div>
       </div>
 
-      {/* Mobile drawer */}
       {mobileOpen && (
         <div
           className="md:hidden flex flex-col gap-1 px-6 pb-5 pt-1 animate-fade-in"
           style={{ borderTop: "1px solid #F5EDE0", background: "#FFFDFB" }}
         >
-          <NavLink href="#menu" onClick={() => setMobileOpen(false)}>
-            Menu
-          </NavLink>
-          <NavLink href="#why-us" onClick={() => setMobileOpen(false)}>
-            About
-          </NavLink>
-          <a
-            href="#contact"
-            onClick={() => setMobileOpen(false)}
-            className="font-heading font-semibold text-center mt-2"
-            style={{
-              fontSize: 13,
-              color: "#FFFFFF",
-              background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)",
-              borderRadius: 999,
-              padding: "10px 18px",
-            }}
-          >
-            Contact Us
-          </a>
+          {[
+            ["#menu", "Menu"],
+            ["#bestsellers", "Bestsellers"],
+            ["#why", "Why Us"],
+            ["#contact", "Contact"],
+          ].map(([href, label]) => (
+            <a
+              key={href}
+              href={href}
+              onClick={() => setMobileOpen(false)}
+              className="font-body font-semibold py-2"
+              style={{ fontSize: 14, color: "#5A5650" }}
+            >
+              {label}
+            </a>
+          ))}
           <Link
             to="/login"
             onClick={() => setMobileOpen(false)}
-            className="font-body sm:hidden mt-2 text-center"
+            className="font-body mt-2"
             style={{ fontSize: 11, color: "#D1CEC7" }}
           >
             Owner Login
@@ -252,203 +217,105 @@ function PublicNav({
 }
 
 /* ─────────────────────────────────────────────
-   ORBIT THUMBNAIL
-   ───────────────────────────────────────────── */
-function OrbitThumbnail({
-  product,
-  size,
-  style,
-}: {
-  product: Product;
-  size: number;
-  style: React.CSSProperties;
-}) {
-  return (
-    <div
-      className="absolute rounded-full overflow-hidden transition-transform duration-300"
-      style={{
-        width: size,
-        height: size,
-        border: "3px solid #FFFDFB",
-        boxShadow: "0 8px 20px rgba(107, 66, 38, 0.18)",
-        ...style,
-      }}
-      onMouseOver={e => {
-        (e.currentTarget as HTMLElement).style.transform =
-          `${style.transform ?? ""} translateY(-4px)`;
-      }}
-      onMouseOut={e => {
-        (e.currentTarget as HTMLElement).style.transform = style.transform ?? "";
-      }}
-    >
-      {product.image_url ? (
-        <img
-          src={product.image_url}
-          alt={product.name}
-          className="w-full h-full"
-          style={{ objectFit: "cover" }}
-        />
-      ) : (
-        <div
-          className="flex items-center justify-center w-full h-full"
-          style={{ background: "#FFF0F7" }}
-        >
-          <CakeSlice size={size * 0.35} style={{ color: "#FF6FAE", opacity: 0.4 }} />
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────
    HERO
    ───────────────────────────────────────────── */
 function Hero({ products }: { products: Product[] }) {
   const featured = products[0] ?? null;
-  const satellites = products.slice(1, 3);
 
   return (
-    <section
-      className="relative overflow-hidden px-6 md:px-12 lg:px-20 pt-14 pb-20 md:pt-20 md:pb-28"
-      style={{ background: PAGE_BG }}
-    >
-      {/* Decorative blobs */}
+    <section id="top" className="relative overflow-hidden px-6 md:px-12 lg:px-20 pt-14 pb-20 md:pt-20 md:pb-28">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
         <div
           className="absolute rounded-full"
           style={{
-            width: 500,
-            height: 500,
-            top: -180,
-            right: -140,
-            background: "radial-gradient(circle, #FF6FAE 0%, transparent 70%)",
-            opacity: 0.18,
+            width: 480, height: 480, top: -180, left: -160,
+            background: "radial-gradient(circle, #FF6FAE 0%, transparent 70%)", opacity: 0.16,
           }}
         />
         <div
           className="absolute rounded-full"
           style={{
-            width: 340,
-            height: 340,
-            bottom: -140,
-            left: -80,
-            background: "radial-gradient(circle, #FF6FAE 0%, transparent 70%)",
-            opacity: 0.14,
+            width: 380, height: 380, bottom: -160, right: -120,
+            background: "radial-gradient(circle, #FFD6E7 0%, transparent 70%)", opacity: 0.5,
           }}
         />
       </div>
 
       <div className="relative max-w-400 mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-        {/* Left */}
         <div className="animate-slide-up">
-          <p
-            className="font-heading font-semibold uppercase mb-3"
-            style={{ fontSize: 11, color: "#E5528A", letterSpacing: "0.12em" }}
+          <span
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full font-body font-bold uppercase"
+            style={{ fontSize: 11, letterSpacing: "0.1em", background: "#FFFFFF", color: "#E5528A", border: "1px solid #FFD6E7" }}
           >
-            Baked fresh, every single day
-          </p>
+            <Sparkles size={13} aria-hidden="true" /> Baked fresh, every single day
+          </span>
+
           <h1
-            className="font-heading font-bold"
-            style={{ fontSize: "clamp(36px, 5vw, 54px)", color: "#6B4226", lineHeight: 1.1 }}
+            className="font-heading font-bold mt-5"
+            style={{ fontSize: "clamp(38px, 5.5vw, 60px)", color: "#6B4226", lineHeight: 0.98 }}
           >
-            Love in
+            Soft, sweet,
             <br />
-            every bite
+            <em style={{ color: "#FF6FAE", fontStyle: "italic" }}>homemade</em> donuts.
           </h1>
-          <p
-            className="font-body mt-5 max-w-md"
-            style={{ fontSize: 15, color: "#7C7870", lineHeight: 1.75 }}
-          >
-            Hand-rolled donuts and desserts, made fresh each morning with real ingredients and
-            a whole lot of care. Browse the menu and build your order below.
+
+          <p className="font-body mt-5 max-w-md" style={{ fontSize: 16, color: "#7C7870", lineHeight: 1.75 }}>
+            Hand-rolled donuts and desserts, made fresh each morning with real butter, real
+            eggs, and a generous swirl of glaze. Pick your favorites — we'll do the rest.
           </p>
-          <div className="flex items-center gap-3 mt-8">
-            <a
-              href="#menu"
-              className="btn-primary"
-              style={{ fontSize: 14, padding: "11px 24px" }}
-            >
+
+          <div className="flex flex-wrap items-center gap-3 mt-8">
+            <a href="#menu" className="btn-primary" style={{ fontSize: 14, padding: "12px 26px", borderRadius: 999 }}>
               View Menu
             </a>
-            <a
-              href="#contact"
-              className="btn-ghost"
-              style={{ fontSize: 14, padding: "11px 24px" }}
-            >
+            <a href="#contact" className="btn-ghost" style={{ fontSize: 14, padding: "12px 26px", borderRadius: 999 }}>
               Contact Us
             </a>
           </div>
+
+          <div className="flex items-center gap-6 mt-10 font-body" style={{ fontSize: 13, color: "#7C7870" }}>
+            <div><span className="font-heading font-bold" style={{ fontSize: 22, color: "#6B4226" }}>{products.length || "9+"}</span> flavors</div>
+            <div style={{ width: 1, height: 28, background: "#E8E6E1" }} />
+            <div><span className="font-heading font-bold" style={{ fontSize: 22, color: "#6B4226" }}>Daily</span> fresh batches</div>
+          </div>
         </div>
 
-        {/* Right — hero circle + satellites */}
-        <div
-          className="relative flex items-center justify-center animate-fade-in"
-          style={{ minHeight: 340 }}
-        >
+        <div className="relative flex items-center justify-center animate-fade-in" style={{ minHeight: 340 }}>
           <div
-            className="relative rounded-full overflow-hidden flex items-center justify-center flex-shrink-0"
+            className="relative rounded-[2.5rem] overflow-hidden flex items-center justify-center flex-shrink-0"
             style={{
-              width: "min(300px, 72vw)",
-              height: "min(300px, 72vw)",
+              width: "min(340px, 78vw)", height: "min(340px, 78vw)",
               background: "linear-gradient(135deg, #FF6FAE 0%, #FFD6E7 100%)",
-              boxShadow: "0 24px 64px rgba(255, 111, 174, 0.40)",
+              boxShadow: "0 28px 64px rgba(255,111,174,0.40)", transform: "rotate(2deg)",
             }}
           >
             {featured?.image_url ? (
-              <img
-                src={featured.image_url}
-                alt={featured.name}
-                className="w-full h-full"
-                style={{ objectFit: "cover" }}
-              />
+              <img src={featured.image_url} alt={featured.name} className="w-full h-full" style={{ objectFit: "cover" }} />
             ) : (
-              <CakeSlice
-                size={64}
-                style={{ color: "#FFFFFF", opacity: 0.6 }}
-                aria-hidden="true"
-              />
+              <CakeSlice size={64} style={{ color: "#FFFFFF", opacity: 0.6 }} aria-hidden="true" />
             )}
+          </div>
+
+          <div
+            className="absolute px-4 py-3 rounded-2xl flex items-center gap-3"
+            style={{ bottom: "4%", left: "-2%", background: "#FFFFFF", boxShadow: "0 8px 24px rgba(107,66,38,0.16)", transform: "rotate(-3deg)" }}
+          >
+            <div className="flex items-center justify-center rounded-full" style={{ width: 36, height: 36, background: "#FFF0F7" }}>
+              <Heart size={16} style={{ color: "#FF6FAE" }} fill="#FF6FAE" aria-hidden="true" />
+            </div>
+            <div>
+              <p className="font-heading font-bold" style={{ fontSize: 13, color: "#6B4226" }}>Made with love</p>
+              <p className="font-body" style={{ fontSize: 11, color: "#9B6644" }}>Small batch, big flavor</p>
+            </div>
           </div>
 
           {featured && (
             <div
-              className="absolute px-4 py-2 rounded-xl z-10"
-              style={{
-                bottom: "8%",
-                left: "50%",
-                transform: "translateX(-50%)",
-                background: "#FFFDFB",
-                boxShadow: "0 6px 20px rgba(107, 66, 38, 0.18)",
-              }}
+              className="absolute px-3 py-1.5 rounded-full font-heading font-bold"
+              style={{ top: "0%", right: "-2%", background: "#FF6FAE", color: "#FFFFFF", fontSize: 13, transform: "rotate(6deg)", boxShadow: "0 4px 14px rgba(255,111,174,0.4)" }}
             >
-              <p
-                className="font-heading font-semibold text-center"
-                style={{ fontSize: 13, color: "#6B4226" }}
-              >
-                {featured.name}
-              </p>
-              <p
-                className="font-body text-center"
-                style={{ fontSize: 12, color: "#FF6FAE", fontWeight: 600 }}
-              >
-                {formatPeso(Number(featured.price))}
-              </p>
+              from {formatPeso(Math.min(...[featured.price].map(Number)))}
             </div>
-          )}
-
-          {satellites[0] && (
-            <OrbitThumbnail
-              product={satellites[0]}
-              size={76}
-              style={{ top: "2%", right: "0%" }}
-            />
-          )}
-          {satellites[1] && (
-            <OrbitThumbnail
-              product={satellites[1]}
-              size={64}
-              style={{ bottom: "16%", left: "-4%" }}
-            />
           )}
         </div>
       </div>
@@ -457,101 +324,38 @@ function Hero({ products }: { products: Product[] }) {
 }
 
 /* ─────────────────────────────────────────────
-   WHY US — trust signal strip
+   WHY US
    ───────────────────────────────────────────── */
 const WHY_US = [
-  {
-    icon: Leaf,
-    title: "Real Ingredients",
-    body: "No artificial flavors. Just good food made the honest way.",
-  },
-  {
-    icon: Sparkles,
-    title: "Made Fresh Daily",
-    body: "Every batch is hand-rolled and baked fresh each morning.",
-  },
-  {
-    icon: Heart,
-    title: "Made with Love",
-    body: "A family recipe passed down and perfected over the years.",
-  },
-  {
-    icon: PackageCheck,
-    title: "Easy Ordering",
-    body: "Build your order here, save the summary, and send it our way.",
-  },
+  { icon: Sparkles, title: "Baked Fresh", body: "Every batch is hand-rolled and baked fresh each morning." },
+  { icon: Leaf, title: "Real Ingredients", body: "Butter, eggs, milk — no shortcuts, no artificial flavors." },
+  { icon: Heart, title: "Made with Love", body: "A family recipe, perfected and small-batched with care." },
+  { icon: MessageCircle, title: "Easy Ordering", body: "Build your order here, then message us to confirm." },
 ];
 
 function WhyUs() {
   return (
-    <section
-      id="why-us"
-      className="px-6 md:px-12 lg:px-20 py-16"
-      style={{ background: "#FFFDFB" }}
-    >
-      <div className="max-w-400 mx-auto">
-        <div className="text-center mb-10">
-          <p
-            className="font-heading font-semibold uppercase tracking-wide"
-            style={{ fontSize: 11, color: "#FF6FAE", letterSpacing: "0.08em" }}
-          >
-            Why Rowszein's
-          </p>
-          <h2
-            className="font-heading font-bold mt-2"
-            style={{ fontSize: 26, color: "#6B4226" }}
-          >
-            Baked with purpose
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {WHY_US.map(({ icon: Icon, title, body }) => (
-            <div
-              key={title}
-              className="flex flex-col items-center text-center p-6 rounded-2xl"
-              style={{ background: "#FFF8F0", border: "1px solid #F5EDE0" }}
-            >
-              <div
-                className="flex items-center justify-center rounded-2xl mb-4"
-                style={{
-                  width: 48,
-                  height: 48,
-                  background: "#FFF0F7",
-                  border: "1px solid #FFD6E7",
-                }}
-              >
-                <Icon size={22} style={{ color: "#FF6FAE" }} aria-hidden="true" />
-              </div>
-              <p
-                className="font-heading font-semibold mb-1"
-                style={{ fontSize: 14, color: "#6B4226" }}
-              >
-                {title}
-              </p>
-              <p
-                className="font-body"
-                style={{ fontSize: 12, color: "#9B6644", lineHeight: 1.6 }}
-              >
-                {body}
-              </p>
+    <section id="why" className="px-6 md:px-12 lg:px-20 py-14" style={{ background: "#FFFDFB" }}>
+      <div className="max-w-400 mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
+        {WHY_US.map(({ icon: Icon, title, body }) => (
+          <div key={title} className="rounded-3xl p-5" style={{ background: "#FFF8F0", border: "1px solid #F5EDE0" }}>
+            <div className="flex items-center justify-center rounded-full mb-3" style={{ width: 44, height: 44, background: "#FFF0F7" }}>
+              <Icon size={20} style={{ color: "#FF6FAE" }} aria-hidden="true" />
             </div>
-          ))}
-        </div>
+            <p className="font-heading font-bold" style={{ fontSize: 16, color: "#6B4226" }}>{title}</p>
+            <p className="font-body mt-1" style={{ fontSize: 12.5, color: "#9B6644", lineHeight: 1.6 }}>{body}</p>
+          </div>
+        ))}
       </div>
     </section>
   );
 }
 
 /* ─────────────────────────────────────────────
-   BESTSELLERS — featured row
+   PRODUCT CARD — shared between bestsellers + menu
    ───────────────────────────────────────────── */
-function BestsellerCard({
-  product,
-  quantity,
-  onAdd,
-  onIncrement,
-  onDecrement,
+function ProductCard({
+  product, quantity, onAdd, onIncrement, onDecrement,
 }: {
   product: Product;
   quantity: number;
@@ -560,265 +364,85 @@ function BestsellerCard({
   onDecrement: (id: number) => void;
 }) {
   return (
-    <div
-      className="flex gap-4 p-4 rounded-2xl transition-shadow"
-      style={{ background: CARD_BG, border: "1px solid #F5EDE0" }}
+    <article
+      className="group flex flex-col overflow-hidden transition-all duration-300"
+      style={{ background: CARD_BG, border: "1px solid #F5EDE0", borderRadius: 24 }}
       onMouseOver={e => {
-        (e.currentTarget as HTMLElement).style.boxShadow = "0 10px 24px rgba(107,66,38,0.10)";
+        (e.currentTarget as HTMLElement).style.boxShadow = "0 16px 36px rgba(107,66,38,0.14)";
+        (e.currentTarget as HTMLElement).style.transform = "translateY(-3px)";
       }}
       onMouseOut={e => {
         (e.currentTarget as HTMLElement).style.boxShadow = "none";
+        (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
       }}
     >
-      {/* Image */}
-      <div
-        className="flex-shrink-0 rounded-xl overflow-hidden"
-        style={{ width: 80, height: 80, background: "#FFF0F7" }}
-      >
+      <div className="relative" style={{ height: CARD_IMAGE_HEIGHT, overflow: "hidden", background: "#FFF0F7" }}>
         {product.image_url ? (
-          <img
-            src={product.image_url}
-            alt={product.name}
-            className="w-full h-full"
-            style={{ objectFit: "cover" }}
-          />
+          <img src={product.image_url} alt={product.name} className="w-full h-full transition-transform duration-500 group-hover:scale-105" style={{ objectFit: "cover" }} />
         ) : (
           <div className="flex items-center justify-center w-full h-full">
-            <ImageOff size={20} style={{ color: "#FF6FAE", opacity: 0.4 }} />
+            <ImageOff size={26} style={{ color: "#FF6FAE", opacity: 0.4 }} aria-hidden="true" />
           </div>
+        )}
+        {product.is_featured && (
+          <span
+            className="absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-heading font-bold uppercase"
+            style={{ fontSize: 10, letterSpacing: "0.04em", background: "#FF6FAE", color: "#FFFFFF" }}
+          >
+            <Sparkles size={11} aria-hidden="true" /> Bestseller
+          </span>
         )}
       </div>
 
-      {/* Info */}
-      <div className="flex flex-col flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2">
-          <p className="font-heading font-semibold" style={{ fontSize: 14, color: "#6B4226" }}>
-            {product.name}
-          </p>
-          <span
-            className="badge badge-pink flex-shrink-0"
-            style={{
-              fontSize: 10,
-              background: "#FFF0F7",
-              color: "#E5528A",
-              border: "1px solid #FFD6E7",
-            }}
-          >
-            Bestseller
-          </span>
-        </div>
+      <div className="p-5 flex flex-col flex-1">
+        <h3 className="font-heading font-bold" style={{ fontSize: 16, color: "#6B4226" }}>{product.name}</h3>
         {product.description && (
-          <p
-            className="font-body mt-1 line-clamp-1"
-            style={{ fontSize: 12, color: "#9B6644" }}
-          >
+          <p className="font-body mt-1.5 line-clamp-2 flex-1" style={{ fontSize: 12.5, color: "#9B6644", lineHeight: 1.6 }}>
             {product.description}
           </p>
         )}
 
-        <div className="flex items-center justify-between mt-auto pt-2">
-          <span
-            className="font-heading font-semibold"
-            style={{ fontSize: 14, color: "#FF6FAE" }}
-          >
+        <div className="flex items-center justify-between mt-4 pt-1">
+          <span className="font-heading font-bold" style={{ fontSize: 17, color: "#FF6FAE" }}>
             {formatPeso(Number(product.price))}
           </span>
 
           {quantity === 0 ? (
             <button
-              onClick={() => {
-                onAdd(product);
-                toast.success(`${product.name} added to cart.`);
-              }}
-              className="flex items-center gap-1 rounded-full font-heading font-semibold transition-transform"
+              onClick={() => { onAdd(product); toast.success(`${product.name} added to cart.`); }}
+              className="flex items-center gap-1.5 rounded-full font-heading font-bold transition-transform"
               style={{
-                fontSize: 12,
-                padding: "5px 12px",
-                background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)",
-                color: "#FFFFFF",
-                boxShadow: "0 2px 8px rgba(255,111,174,0.28)",
+                fontSize: 12, padding: "8px 16px", background: "#6B4226", color: "#FFF8F0",
               }}
-              onMouseOver={e => {
-                (e.currentTarget as HTMLElement).style.transform = "scale(1.04)";
-              }}
-              onMouseOut={e => {
-                (e.currentTarget as HTMLElement).style.transform = "scale(1)";
-              }}
+              onMouseOver={e => ((e.currentTarget as HTMLElement).style.background = "#FF6FAE")}
+              onMouseOut={e => ((e.currentTarget as HTMLElement).style.background = "#6B4226")}
             >
               <Plus size={13} aria-hidden="true" /> Add
             </button>
           ) : (
-            <div
-              className="flex items-center gap-1.5 rounded-full"
-              style={{ background: "#FFF0F7", padding: "3px 4px" }}
-            >
+            <div className="flex items-center gap-1.5 rounded-full p-1" style={{ background: "#FFF0F7" }}>
               <button
                 onClick={() => onDecrement(product.id)}
                 className="flex items-center justify-center rounded-full"
-                style={{
-                  width: 22,
-                  height: 22,
-                  background: "#FFFDFB",
-                  border: "1px solid #FFD6E7",
-                }}
+                style={{ width: 26, height: 26, background: "#FFFDFB", border: "1px solid #FFD6E7" }}
                 aria-label={`Decrease ${product.name}`}
               >
-                <Minus size={11} style={{ color: "#E5528A" }} />
+                <Minus size={12} style={{ color: "#E5528A" }} />
               </button>
-              <span
-                className="font-heading font-semibold text-center"
-                style={{ fontSize: 13, color: "#6B4226", width: 16 }}
-              >
-                {quantity}
-              </span>
+              <span className="font-heading font-bold text-center" style={{ fontSize: 14, color: "#6B4226", width: 20 }}>{quantity}</span>
               <button
                 onClick={() => onIncrement(product.id)}
                 className="flex items-center justify-center rounded-full"
-                style={{
-                  width: 22,
-                  height: 22,
-                  background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)",
-                }}
+                style={{ width: 26, height: 26, background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)" }}
                 aria-label={`Increase ${product.name}`}
               >
-                <Plus size={11} color="#FFFFFF" />
+                <Plus size={12} color="#FFFFFF" />
               </button>
             </div>
           )}
         </div>
       </div>
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────
-   PRODUCT CARD — full menu grid
-   ───────────────────────────────────────────── */
-function ProductCard({
-  product,
-  quantity,
-  onAdd,
-  onIncrement,
-  onDecrement,
-}: {
-  product: Product;
-  quantity: number;
-  onAdd: (p: Product) => void;
-  onIncrement: (id: number) => void;
-  onDecrement: (id: number) => void;
-}) {
-  return (
-    <div
-      className="flex flex-col h-full overflow-hidden transition-shadow"
-      style={{ background: CARD_BG, border: "1px solid #F5EDE0", borderRadius: 16 }}
-      onMouseOver={e => {
-        (e.currentTarget as HTMLElement).style.boxShadow = "0 12px 28px rgba(107,66,38,0.12)";
-      }}
-      onMouseOut={e => {
-        (e.currentTarget as HTMLElement).style.boxShadow = "none";
-      }}
-    >
-      <div
-        className="flex items-center justify-center flex-shrink-0"
-        style={{ height: CARD_IMAGE_HEIGHT, overflow: "hidden", background: "#FFF0F7" }}
-      >
-        {product.image_url ? (
-          <img
-            src={product.image_url}
-            alt={product.name}
-            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-          />
-        ) : (
-          <ImageOff size={28} style={{ color: "#FF6FAE", opacity: 0.4 }} aria-hidden="true" />
-        )}
-      </div>
-
-      <div className="p-4 flex flex-col flex-1">
-        <p className="font-heading font-semibold" style={{ fontSize: 14, color: "#6B4226" }}>
-          {product.name}
-        </p>
-        <p
-          className="font-body mt-1 line-clamp-2"
-          style={{ fontSize: 12, color: "#9B6644", lineHeight: 1.5, minHeight: 32 }}
-        >
-          {product.description || ""}
-        </p>
-
-        <div
-          className="flex items-center justify-between mt-3 pt-3"
-          style={{ borderTop: "1px solid #F5EDE0", marginTop: "auto" }}
-        >
-          <span
-            className="font-heading font-semibold"
-            style={{ fontSize: 15, color: "#FF6FAE" }}
-          >
-            {formatPeso(Number(product.price))}
-          </span>
-
-          {quantity === 0 ? (
-            <button
-              onClick={() => {
-                onAdd(product);
-                toast.success(`${product.name} added to cart.`);
-              }}
-              className="flex items-center justify-center rounded-full transition-transform"
-              style={{
-                width: 30,
-                height: 30,
-                background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)",
-                boxShadow: "0 2px 8px rgba(255,111,174,0.30)",
-              }}
-              onMouseOver={e => {
-                (e.currentTarget as HTMLElement).style.transform = "scale(1.08)";
-              }}
-              onMouseOut={e => {
-                (e.currentTarget as HTMLElement).style.transform = "scale(1)";
-              }}
-              aria-label={`Add ${product.name} to cart`}
-            >
-              <Plus size={15} color="#FFFFFF" aria-hidden="true" />
-            </button>
-          ) : (
-            <div
-              className="flex items-center gap-1.5 rounded-full"
-              style={{ background: "#FFF0F7", padding: "3px 4px" }}
-            >
-              <button
-                onClick={() => onDecrement(product.id)}
-                className="flex items-center justify-center rounded-full"
-                style={{
-                  width: 22,
-                  height: 22,
-                  background: "#FFFDFB",
-                  border: "1px solid #FFD6E7",
-                }}
-                aria-label={`Decrease ${product.name}`}
-              >
-                <Minus size={11} style={{ color: "#E5528A" }} />
-              </button>
-              <span
-                className="font-heading font-semibold text-center"
-                style={{ fontSize: 13, color: "#6B4226", width: 16 }}
-              >
-                {quantity}
-              </span>
-              <button
-                onClick={() => onIncrement(product.id)}
-                className="flex items-center justify-center rounded-full"
-                style={{
-                  width: 22,
-                  height: 22,
-                  background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)",
-                }}
-                aria-label={`Increase ${product.name}`}
-              >
-                <Plus size={11} color="#FFFFFF" />
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+    </article>
   );
 }
 
@@ -829,13 +453,10 @@ function MenuSkeleton() {
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div
-          key={i}
-          style={{ borderRadius: 16, overflow: "hidden", border: "1px solid #F5EDE0" }}
-        >
+        <div key={i} style={{ borderRadius: 24, overflow: "hidden", border: "1px solid #F5EDE0" }}>
           <div className="skeleton" style={{ height: CARD_IMAGE_HEIGHT, borderRadius: 0 }} />
-          <div className="p-4 space-y-2">
-            <div className="skeleton" style={{ height: 12, width: "70%", borderRadius: 5 }} />
+          <div className="p-5 space-y-2">
+            <div className="skeleton" style={{ height: 14, width: "70%", borderRadius: 5 }} />
             <div className="skeleton" style={{ height: 10, width: "50%", borderRadius: 5 }} />
           </div>
         </div>
@@ -845,52 +466,132 @@ function MenuSkeleton() {
 }
 
 /* ─────────────────────────────────────────────
-   ORDER CTA BANNER
+   ORDER CTA
    ───────────────────────────────────────────── */
 function OrderCTA() {
   return (
-    <section
-      className="px-6 md:px-12 lg:px-20 py-16"
-      style={{ background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)" }}
-    >
-      <div className="max-w-400 mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
-        <div>
-          <p
-            className="font-heading font-bold"
-            style={{ fontSize: 24, color: "#FFFFFF", lineHeight: 1.2 }}
-          >
-            Want a custom order?
+    <section className="px-6 md:px-12 lg:px-20 py-16">
+      <div
+        className="max-w-400 mx-auto rounded-[2rem] p-10 md:p-16 relative overflow-hidden"
+        style={{ background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)" }}
+      >
+        <div aria-hidden="true" className="absolute -top-20 -right-20 rounded-full" style={{ width: 280, height: 280, background: "rgba(255,255,255,0.15)" }} />
+        <div className="relative max-w-2xl">
+          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full font-body font-bold uppercase" style={{ fontSize: 11, letterSpacing: "0.08em", background: "rgba(255,255,255,0.2)", color: "#FFFFFF" }}>
+            <Sparkles size={13} aria-hidden="true" /> Bulk & Custom Orders
+          </span>
+          <h2 className="font-heading font-bold mt-4" style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#FFFFFF", lineHeight: 1.1 }}>
+            Birthdays, offices, special events?
+          </h2>
+          <p className="font-body mt-4" style={{ fontSize: 15, color: "rgba(255,255,255,0.9)", lineHeight: 1.7 }}>
+            Message us a day ahead and we'll prepare your dozens — donut towers, themed boxes,
+            dessert trays. Made fresh, just for your occasion.
           </p>
-          <p
-            className="font-body mt-2"
-            style={{ fontSize: 14, color: "rgba(255,255,255,0.85)", lineHeight: 1.6 }}
+          <a
+            href="#contact"
+            className="inline-flex items-center gap-2 mt-7 font-heading font-bold transition-transform"
+            style={{ padding: "13px 28px", borderRadius: 999, background: "#FFFFFF", color: "#E5528A", fontSize: 14 }}
+            onMouseOver={e => ((e.currentTarget as HTMLElement).style.transform = "scale(1.03)")}
+            onMouseOut={e => ((e.currentTarget as HTMLElement).style.transform = "scale(1)")}
           >
-            Bulk orders, special flavors, event boxes — just send us a message and we'll sort
-            it out together.
-          </p>
+            <MessageCircle size={16} aria-hidden="true" /> Message Us
+          </a>
         </div>
-        <a
-          href="#contact"
-          className="font-heading font-semibold flex-shrink-0 transition-transform"
-          style={{
-            fontSize: 14,
-            color: "#E5528A",
-            background: "#FFFDFB",
-            borderRadius: 999,
-            padding: "12px 28px",
-            boxShadow: "0 4px 14px rgba(0,0,0,0.15)",
-          }}
-          onMouseOver={e => {
-            (e.currentTarget as HTMLElement).style.transform = "scale(1.03)";
-          }}
-          onMouseOut={e => {
-            (e.currentTarget as HTMLElement).style.transform = "scale(1)";
-          }}
-        >
-          Message Us
-        </a>
       </div>
     </section>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   CONTACT FORM — client-side only, no backend
+   ───────────────────────────────────────────── */
+function ContactForm() {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  const validate = () => {
+    if (!name.trim() || name.length > 100) return "Please enter your name.";
+    if (!/^[+0-9()\-\s]{7,20}$/.test(phone.trim())) return "Please enter a valid phone number.";
+    if (!message.trim() || message.length > 1000) return "Please enter a message.";
+    return "";
+  };
+
+  const buildBody = () => `Hi Rowszein's Delight!\n\nName: ${name}\nPhone: ${phone}\n\n${message}`;
+
+  const sendMessenger = () => {
+    const err = validate();
+    if (err) return setError(err);
+    setError("");
+    navigator.clipboard?.writeText(buildBody()).catch(() => {});
+    window.open(SHOP_MESSENGER, "_blank", "noopener,noreferrer");
+  };
+
+  const sendEmail = () => {
+    const err = validate();
+    if (err) return setError(err);
+    setError("");
+    const subject = encodeURIComponent(`Inquiry from ${name}`);
+    const body = encodeURIComponent(buildBody());
+    window.location.href = `mailto:${SHOP_EMAIL}?subject=${subject}&body=${body}`;
+  };
+
+  return (
+    <form
+      onSubmit={e => { e.preventDefault(); sendMessenger(); }}
+      className="rounded-[2rem] p-6 md:p-9 space-y-4"
+      style={{ background: CARD_BG, border: "1px solid #F5EDE0" }}
+    >
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label className="field-label">Your Name</label>
+          <input
+            type="text" required maxLength={100} value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="Juan Dela Cruz" className="field-input mt-1"
+          />
+        </div>
+        <div>
+          <label className="field-label">Phone Number</label>
+          <input
+            type="tel" required maxLength={20} value={phone}
+            onChange={e => setPhone(e.target.value)}
+            placeholder="+63 900 000 0000" className="field-input mt-1"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="field-label">Message</label>
+        <textarea
+          required maxLength={1000} rows={4} value={message}
+          onChange={e => setMessage(e.target.value)}
+          placeholder="Hi! I'd like to order a dozen donuts for pickup on Saturday…"
+          className="field-input mt-1" style={{ resize: "none" }}
+        />
+        <p className="field-helper text-right">{message.length}/1000</p>
+      </div>
+
+      {error && (
+        <div className="px-4 py-2.5 rounded-xl" style={{ background: "#FEF2F2" }}>
+          <p className="font-body font-semibold" style={{ fontSize: 13, color: "#B91C1C" }}>{error}</p>
+        </div>
+      )}
+
+      <div className="flex flex-col sm:flex-row gap-3 pt-1">
+        <button type="submit" className="btn-primary flex-1 justify-center" style={{ padding: "13px 20px", borderRadius: 999, fontSize: 14 }}>
+          <Send size={15} aria-hidden="true" /> Send on Messenger
+        </button>
+        <button type="button" onClick={sendEmail} className="btn-ghost flex-1 justify-center" style={{ padding: "13px 20px", borderRadius: 999, fontSize: 14 }}>
+          <Mail size={15} aria-hidden="true" /> Send by Email
+        </button>
+      </div>
+
+      <p className="font-body text-center" style={{ fontSize: 11, color: "#A8A49B" }}>
+        Opens Messenger or your email app — nothing is stored on this site.
+      </p>
+    </form>
   );
 }
 
@@ -922,34 +623,32 @@ export default function LandingPage() {
   }
 
   return (
-    <div ref={pageRef} style={{ background: PAGE_BG, minHeight: "100vh" }}>
+    <div ref={pageRef} className="landing-page" style={{ background: PAGE_BG, minHeight: "100vh" }}>
       <PublicNav cartCount={cart.totalItems} onCartClick={() => setCartOpen(true)} />
 
       <Hero products={products} />
-
       <WhyUs />
 
       {/* Bestsellers */}
       {featured.length > 0 && (
-        <section className="px-6 md:px-12 lg:px-20 py-14" style={{ background: PAGE_BG }}>
+        <section id="bestsellers" className="px-6 md:px-12 lg:px-20 py-14" style={{ background: PAGE_BG }}>
           <div className="max-w-400 mx-auto">
-            <div className="text-center mb-8">
-              <p
-                className="font-heading font-semibold uppercase tracking-wide"
-                style={{ fontSize: 11, color: "#E5528A", letterSpacing: "0.08em" }}
-              >
-                Top Picks
-              </p>
-              <h2
-                className="font-heading font-bold mt-2"
-                style={{ fontSize: 26, color: "#6B4226" }}
-              >
-                Crowd Favorites
-              </h2>
+            <div className="flex items-end justify-between mb-8">
+              <div>
+                <p className="font-body font-bold uppercase" style={{ fontSize: 11, letterSpacing: "0.08em", color: "#E5528A" }}>
+                  Crowd Favorites
+                </p>
+                <h2 className="font-heading font-bold mt-1" style={{ fontSize: "clamp(26px, 3.5vw, 38px)", color: "#6B4226" }}>
+                  Bestsellers
+                </h2>
+              </div>
+              <a href="#menu" className="hidden sm:inline font-body font-bold" style={{ fontSize: 13, color: "#FF6FAE" }}>
+                See full menu →
+              </a>
             </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {featured.map(product => (
-                <BestsellerCard key={product.id} product={product} {...cardProps(product)} />
+                <ProductCard key={product.id} product={product} {...cardProps(product)} />
               ))}
             </div>
           </div>
@@ -957,24 +656,14 @@ export default function LandingPage() {
       )}
 
       {/* Full menu */}
-      <section
-        id="menu"
-        className="px-6 md:px-12 lg:px-20 py-16"
-        style={{ background: "#FFFDFB" }}
-      >
+      <section id="menu" className="px-6 md:px-12 lg:px-20 py-16" style={{ background: "#FFFDFB" }}>
         <div className="max-w-400 mx-auto">
           <div className="text-center mb-10">
-            <p
-              className="font-heading font-semibold uppercase tracking-wide"
-              style={{ fontSize: 11, color: "#FF6FAE", letterSpacing: "0.08em" }}
-            >
-              Our Menu
+            <p className="font-body font-bold uppercase" style={{ fontSize: 11, letterSpacing: "0.08em", color: "#FF6FAE" }}>
+              The Whole Menu
             </p>
-            <h2
-              className="font-heading font-bold mt-2"
-              style={{ fontSize: 28, color: "#6B4226" }}
-            >
-              Your Next Favorite
+            <h2 className="font-heading font-bold mt-2" style={{ fontSize: "clamp(28px, 4vw, 42px)", color: "#6B4226" }}>
+              Pick your sweet
             </h2>
           </div>
 
@@ -990,10 +679,7 @@ export default function LandingPage() {
 
           {!isLoading && !isError && products.length === 0 && (
             <div className="card-surface p-10 text-center max-w-md mx-auto">
-              <CakeSlice
-                size={28}
-                style={{ color: "#FF6FAE", opacity: 0.5, margin: "0 auto 12px" }}
-              />
+              <CakeSlice size={28} style={{ color: "#FF6FAE", opacity: 0.5, margin: "0 auto 12px" }} />
               <p className="font-body" style={{ fontSize: 13, color: "#9B6644" }}>
                 No items available right now — check back soon!
               </p>
@@ -1012,36 +698,41 @@ export default function LandingPage() {
 
       <OrderCTA />
 
-      {/* Footer / contact */}
-      <footer
-        id="contact"
-        className="px-6 md:px-12 lg:px-20 py-12 text-center"
-        style={{ background: "#FFFDFB", borderTop: "1px solid #F5EDE0" }}
-      >
-        <div className="flex items-center justify-center gap-2 mb-3">
-          <div
-            className="flex items-center justify-center rounded-full"
-            style={{
-              width: 28,
-              height: 28,
-              background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)",
-            }}
-          >
-            <CakeSlice size={13} color="#FFFFFF" />
+      {/* Contact */}
+      <section id="contact" className="px-6 md:px-12 lg:px-20 py-16">
+        <div className="max-w-2xl mx-auto">
+          <div className="text-center mb-8">
+            <p className="font-body font-bold uppercase" style={{ fontSize: 11, letterSpacing: "0.08em", color: "#FF6FAE" }}>
+              Send Us a Message
+            </p>
+            <h2 className="font-heading font-bold mt-2" style={{ fontSize: "clamp(26px, 3.5vw, 38px)", color: "#6B4226" }}>
+              Get in touch
+            </h2>
+            <p className="font-body mt-3" style={{ fontSize: 14, color: "#9B6644" }}>
+              Questions or a special request? Drop us a note — we'll reply on Messenger or by email.
+            </p>
           </div>
-          <p className="font-heading font-semibold" style={{ fontSize: 15, color: "#6B4226" }}>
-            Rowszein's Delight
-          </p>
+          <ContactForm />
         </div>
-        <p
-          className="font-body"
-          style={{ fontSize: 13, color: "#9B6644", maxWidth: 420, margin: "0 auto" }}
-        >
-          Have a question or want to place a custom order? Send us a message on Facebook or
-          visit us in store. We'd love to hear from you.
+      </section>
+
+      {/* Footer */}
+      <footer className="px-6 md:px-12 lg:px-20 py-12 text-center" style={{ background: "#FFFDFB", borderTop: "1px solid #F5EDE0" }}>
+        <div className="flex items-center justify-center gap-2 mb-3">
+          <span
+            className="flex items-center justify-center rounded-full font-heading font-bold"
+            style={{ width: 28, height: 28, background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)", color: "#FFFFFF", fontSize: 13 }}
+          >
+            R
+          </span>
+          <p className="font-heading font-bold" style={{ fontSize: 15, color: "#6B4226" }}>Rowszein's Delight</p>
+        </div>
+        <p className="font-body" style={{ fontSize: 13, color: "#9B6644", maxWidth: 420, margin: "0 auto" }}>
+          Have a question or want to place a custom order? Send us a message on Facebook or visit
+          us in store. We'd love to hear from you.
         </p>
         <p className="font-body mt-6" style={{ fontSize: 12, color: "#D1CEC7" }}>
-          © {new Date().getFullYear()} Rowszein's Delight — Made with love in Lucena
+          © {new Date().getFullYear()} Rowszein's Delight — Made with love
         </p>
       </footer>
 
