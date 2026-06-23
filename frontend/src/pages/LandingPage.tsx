@@ -148,7 +148,9 @@ function PublicNav({
               fontSize: 13,
               boxShadow: "0 4px 14px rgba(255,111,174,0.35)",
             }}
-            onMouseOver={e => ((e.currentTarget as HTMLElement).style.transform = "scale(1.03)")}
+            onMouseOver={e =>
+              ((e.currentTarget as HTMLElement).style.transform = "scale(1.03)")
+            }
             onMouseOut={e => ((e.currentTarget as HTMLElement).style.transform = "scale(1)")}
           >
             Contact Us
@@ -223,20 +225,31 @@ function Hero({ products }: { products: Product[] }) {
   const featured = products[0] ?? null;
 
   return (
-    <section id="top" className="relative overflow-hidden px-6 md:px-12 lg:px-20 pt-14 pb-20 md:pt-20 md:pb-28">
+    <section
+      id="top"
+      className="relative overflow-hidden px-6 md:px-12 lg:px-20 pt-14 pb-20 md:pt-20 md:pb-28"
+    >
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
         <div
           className="absolute rounded-full"
           style={{
-            width: 480, height: 480, top: -180, left: -160,
-            background: "radial-gradient(circle, #FF6FAE 0%, transparent 70%)", opacity: 0.16,
+            width: 480,
+            height: 480,
+            top: -180,
+            left: -160,
+            background: "radial-gradient(circle, #FF6FAE 0%, transparent 70%)",
+            opacity: 0.16,
           }}
         />
         <div
           className="absolute rounded-full"
           style={{
-            width: 380, height: 380, bottom: -160, right: -120,
-            background: "radial-gradient(circle, #FFD6E7 0%, transparent 70%)", opacity: 0.5,
+            width: 380,
+            height: 380,
+            bottom: -160,
+            right: -120,
+            background: "radial-gradient(circle, #FFD6E7 0%, transparent 70%)",
+            opacity: 0.5,
           }}
         />
       </div>
@@ -245,74 +258,154 @@ function Hero({ products }: { products: Product[] }) {
         <div className="animate-slide-up">
           <span
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full font-body font-bold uppercase"
-            style={{ fontSize: 11, letterSpacing: "0.1em", background: "#FFFFFF", color: "#E5528A", border: "1px solid #FFD6E7" }}
+            style={{
+              fontSize: 11,
+              letterSpacing: "0.1em",
+              background: "#FFFFFF",
+              color: "#E5528A",
+              border: "1px solid #FFD6E7",
+            }}
           >
             <Sparkles size={13} aria-hidden="true" /> Baked fresh, every single day
           </span>
 
           <h1
             className="font-heading font-bold mt-5"
-            style={{ fontSize: "clamp(38px, 5.5vw, 60px)", color: "#6B4226", lineHeight: 0.98 }}
+            style={{
+              fontSize: "clamp(38px, 5.5vw, 60px)",
+              color: "#6B4226",
+              lineHeight: 0.98,
+            }}
           >
             Soft, sweet,
             <br />
             <em style={{ color: "#FF6FAE", fontStyle: "italic" }}>homemade</em> donuts.
           </h1>
 
-          <p className="font-body mt-5 max-w-md" style={{ fontSize: 16, color: "#7C7870", lineHeight: 1.75 }}>
+          <p
+            className="font-body mt-5 max-w-md"
+            style={{ fontSize: 16, color: "#7C7870", lineHeight: 1.75 }}
+          >
             Hand-rolled donuts and desserts, made fresh each morning with real butter, real
             eggs, and a generous swirl of glaze. Pick your favorites — we'll do the rest.
           </p>
 
           <div className="flex flex-wrap items-center gap-3 mt-8">
-            <a href="#menu" className="btn-primary" style={{ fontSize: 14, padding: "12px 26px", borderRadius: 999 }}>
+            <a
+              href="#menu"
+              className="btn-primary"
+              style={{ fontSize: 14, padding: "12px 26px", borderRadius: 999 }}
+            >
               View Menu
             </a>
-            <a href="#contact" className="btn-ghost" style={{ fontSize: 14, padding: "12px 26px", borderRadius: 999 }}>
+            <a
+              href="#contact"
+              className="btn-ghost"
+              style={{ fontSize: 14, padding: "12px 26px", borderRadius: 999 }}
+            >
               Contact Us
             </a>
           </div>
 
-          <div className="flex items-center gap-6 mt-10 font-body" style={{ fontSize: 13, color: "#7C7870" }}>
-            <div><span className="font-heading font-bold" style={{ fontSize: 22, color: "#6B4226" }}>{products.length || "9+"}</span> flavors</div>
+          <div
+            className="flex items-center gap-6 mt-10 font-body"
+            style={{ fontSize: 13, color: "#7C7870" }}
+          >
+            <div>
+              <span
+                className="font-heading font-bold"
+                style={{ fontSize: 22, color: "#6B4226" }}
+              >
+                {products.length || "9+"}
+              </span>{" "}
+              flavors
+            </div>
             <div style={{ width: 1, height: 28, background: "#E8E6E1" }} />
-            <div><span className="font-heading font-bold" style={{ fontSize: 22, color: "#6B4226" }}>Daily</span> fresh batches</div>
+            <div>
+              <span
+                className="font-heading font-bold"
+                style={{ fontSize: 22, color: "#6B4226" }}
+              >
+                Daily
+              </span>{" "}
+              fresh batches
+            </div>
           </div>
         </div>
 
-        <div className="relative flex items-center justify-center animate-fade-in" style={{ minHeight: 340 }}>
+        <div
+          className="relative flex items-center justify-center animate-fade-in"
+          style={{ minHeight: 340 }}
+        >
           <div
             className="relative rounded-[2.5rem] overflow-hidden flex items-center justify-center flex-shrink-0"
             style={{
-              width: "min(340px, 78vw)", height: "min(340px, 78vw)",
+              width: "min(340px, 78vw)",
+              height: "min(340px, 78vw)",
               background: "linear-gradient(135deg, #FF6FAE 0%, #FFD6E7 100%)",
-              boxShadow: "0 28px 64px rgba(255,111,174,0.40)", transform: "rotate(2deg)",
+              boxShadow: "0 28px 64px rgba(255,111,174,0.40)",
+              transform: "rotate(2deg)",
             }}
           >
             {featured?.image_url ? (
-              <img src={featured.image_url} alt={featured.name} className="w-full h-full" style={{ objectFit: "cover" }} />
+              <img
+                src={featured.image_url}
+                alt={featured.name}
+                className="w-full h-full"
+                style={{ objectFit: "cover" }}
+              />
             ) : (
-              <CakeSlice size={64} style={{ color: "#FFFFFF", opacity: 0.6 }} aria-hidden="true" />
+              <CakeSlice
+                size={64}
+                style={{ color: "#FFFFFF", opacity: 0.6 }}
+                aria-hidden="true"
+              />
             )}
           </div>
 
           <div
             className="absolute px-4 py-3 rounded-2xl flex items-center gap-3"
-            style={{ bottom: "4%", left: "-2%", background: "#FFFFFF", boxShadow: "0 8px 24px rgba(107,66,38,0.16)", transform: "rotate(-3deg)" }}
+            style={{
+              bottom: "4%",
+              left: "-2%",
+              background: "#FFFFFF",
+              boxShadow: "0 8px 24px rgba(107,66,38,0.16)",
+              transform: "rotate(-3deg)",
+            }}
           >
-            <div className="flex items-center justify-center rounded-full" style={{ width: 36, height: 36, background: "#FFF0F7" }}>
-              <Heart size={16} style={{ color: "#FF6FAE" }} fill="#FF6FAE" aria-hidden="true" />
+            <div
+              className="flex items-center justify-center rounded-full"
+              style={{ width: 36, height: 36, background: "#FFF0F7" }}
+            >
+              <Heart
+                size={16}
+                style={{ color: "#FF6FAE" }}
+                fill="#FF6FAE"
+                aria-hidden="true"
+              />
             </div>
             <div>
-              <p className="font-heading font-bold" style={{ fontSize: 13, color: "#6B4226" }}>Made with love</p>
-              <p className="font-body" style={{ fontSize: 11, color: "#9B6644" }}>Small batch, big flavor</p>
+              <p className="font-heading font-bold" style={{ fontSize: 13, color: "#6B4226" }}>
+                Made with love
+              </p>
+              <p className="font-body" style={{ fontSize: 11, color: "#9B6644" }}>
+                Small batch, big flavor
+              </p>
             </div>
           </div>
 
           {featured && (
             <div
               className="absolute px-3 py-1.5 rounded-full font-heading font-bold"
-              style={{ top: "0%", right: "-2%", background: "#FF6FAE", color: "#FFFFFF", fontSize: 13, transform: "rotate(6deg)", boxShadow: "0 4px 14px rgba(255,111,174,0.4)" }}
+              style={{
+                top: "0%",
+                right: "-2%",
+                background: "#FF6FAE",
+                color: "#FFFFFF",
+                fontSize: 13,
+                transform: "rotate(6deg)",
+                boxShadow: "0 4px 14px rgba(255,111,174,0.4)",
+              }}
             >
               from {formatPeso(Math.min(...[featured.price].map(Number)))}
             </div>
@@ -327,23 +420,57 @@ function Hero({ products }: { products: Product[] }) {
    WHY US
    ───────────────────────────────────────────── */
 const WHY_US = [
-  { icon: Sparkles, title: "Baked Fresh", body: "Every batch is hand-rolled and baked fresh each morning." },
-  { icon: Leaf, title: "Real Ingredients", body: "Butter, eggs, milk — no shortcuts, no artificial flavors." },
-  { icon: Heart, title: "Made with Love", body: "A family recipe, perfected and small-batched with care." },
-  { icon: MessageCircle, title: "Easy Ordering", body: "Build your order here, then message us to confirm." },
+  {
+    icon: Sparkles,
+    title: "Baked Fresh",
+    body: "Every batch is hand-rolled and baked fresh each morning.",
+  },
+  {
+    icon: Leaf,
+    title: "Real Ingredients",
+    body: "Butter, eggs, milk — no shortcuts, no artificial flavors.",
+  },
+  {
+    icon: Heart,
+    title: "Made with Love",
+    body: "A family recipe, perfected and small-batched with care.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Easy Ordering",
+    body: "Build your order here, then message us to confirm.",
+  },
 ];
 
 function WhyUs() {
   return (
-    <section id="why" className="px-6 md:px-12 lg:px-20 py-14" style={{ background: "#FFFDFB" }}>
+    <section
+      id="why"
+      className="px-6 md:px-12 lg:px-20 py-14"
+      style={{ background: "#FFFDFB", scrollMarginTop: 72 }}
+    >
       <div className="max-w-400 mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
         {WHY_US.map(({ icon: Icon, title, body }) => (
-          <div key={title} className="rounded-3xl p-5" style={{ background: "#FFF8F0", border: "1px solid #F5EDE0" }}>
-            <div className="flex items-center justify-center rounded-full mb-3" style={{ width: 44, height: 44, background: "#FFF0F7" }}>
+          <div
+            key={title}
+            className="rounded-3xl p-5"
+            style={{ background: "#FFF8F0", border: "1px solid #F5EDE0" }}
+          >
+            <div
+              className="flex items-center justify-center rounded-full mb-3"
+              style={{ width: 44, height: 44, background: "#FFF0F7" }}
+            >
               <Icon size={20} style={{ color: "#FF6FAE" }} aria-hidden="true" />
             </div>
-            <p className="font-heading font-bold" style={{ fontSize: 16, color: "#6B4226" }}>{title}</p>
-            <p className="font-body mt-1" style={{ fontSize: 12.5, color: "#9B6644", lineHeight: 1.6 }}>{body}</p>
+            <p className="font-heading font-bold" style={{ fontSize: 16, color: "#6B4226" }}>
+              {title}
+            </p>
+            <p
+              className="font-body mt-1"
+              style={{ fontSize: 12.5, color: "#9B6644", lineHeight: 1.6 }}
+            >
+              {body}
+            </p>
           </div>
         ))}
       </div>
@@ -355,7 +482,11 @@ function WhyUs() {
    PRODUCT CARD — shared between bestsellers + menu
    ───────────────────────────────────────────── */
 function ProductCard({
-  product, quantity, onAdd, onIncrement, onDecrement,
+  product,
+  quantity,
+  onAdd,
+  onIncrement,
+  onDecrement,
 }: {
   product: Product;
   quantity: number;
@@ -376,18 +507,35 @@ function ProductCard({
         (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
       }}
     >
-      <div className="relative" style={{ height: CARD_IMAGE_HEIGHT, overflow: "hidden", background: "#FFF0F7" }}>
+      <div
+        className="relative"
+        style={{ height: CARD_IMAGE_HEIGHT, overflow: "hidden", background: "#FFF0F7" }}
+      >
         {product.image_url ? (
-          <img src={product.image_url} alt={product.name} className="w-full h-full transition-transform duration-500 group-hover:scale-105" style={{ objectFit: "cover" }} />
+          <img
+            src={product.image_url}
+            alt={product.name}
+            className="w-full h-full transition-transform duration-500 group-hover:scale-105"
+            style={{ objectFit: "cover" }}
+          />
         ) : (
           <div className="flex items-center justify-center w-full h-full">
-            <ImageOff size={26} style={{ color: "#FF6FAE", opacity: 0.4 }} aria-hidden="true" />
+            <ImageOff
+              size={26}
+              style={{ color: "#FF6FAE", opacity: 0.4 }}
+              aria-hidden="true"
+            />
           </div>
         )}
         {product.is_featured && (
           <span
             className="absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-heading font-bold uppercase"
-            style={{ fontSize: 10, letterSpacing: "0.04em", background: "#FF6FAE", color: "#FFFFFF" }}
+            style={{
+              fontSize: 10,
+              letterSpacing: "0.04em",
+              background: "#FF6FAE",
+              color: "#FFFFFF",
+            }}
           >
             <Sparkles size={11} aria-hidden="true" /> Bestseller
           </span>
@@ -395,9 +543,14 @@ function ProductCard({
       </div>
 
       <div className="p-5 flex flex-col flex-1">
-        <h3 className="font-heading font-bold" style={{ fontSize: 16, color: "#6B4226" }}>{product.name}</h3>
+        <h3 className="font-heading font-bold" style={{ fontSize: 16, color: "#6B4226" }}>
+          {product.name}
+        </h3>
         {product.description && (
-          <p className="font-body mt-1.5 line-clamp-2 flex-1" style={{ fontSize: 12.5, color: "#9B6644", lineHeight: 1.6 }}>
+          <p
+            className="font-body mt-1.5 line-clamp-2 flex-1"
+            style={{ fontSize: 12.5, color: "#9B6644", lineHeight: 1.6 }}
+          >
             {product.description}
           </p>
         )}
@@ -409,31 +562,56 @@ function ProductCard({
 
           {quantity === 0 ? (
             <button
-              onClick={() => { onAdd(product); toast.success(`${product.name} added to cart.`); }}
+              onClick={() => {
+                onAdd(product);
+                toast.success(`${product.name} added to cart.`);
+              }}
               className="flex items-center gap-1.5 rounded-full font-heading font-bold transition-transform"
               style={{
-                fontSize: 12, padding: "8px 16px", background: "#6B4226", color: "#FFF8F0",
+                fontSize: 12,
+                padding: "8px 16px",
+                background: "#6B4226",
+                color: "#FFF8F0",
               }}
-              onMouseOver={e => ((e.currentTarget as HTMLElement).style.background = "#FF6FAE")}
+              onMouseOver={e =>
+                ((e.currentTarget as HTMLElement).style.background = "#FF6FAE")
+              }
               onMouseOut={e => ((e.currentTarget as HTMLElement).style.background = "#6B4226")}
             >
               <Plus size={13} aria-hidden="true" /> Add
             </button>
           ) : (
-            <div className="flex items-center gap-1.5 rounded-full p-1" style={{ background: "#FFF0F7" }}>
+            <div
+              className="flex items-center gap-1.5 rounded-full p-1"
+              style={{ background: "#FFF0F7" }}
+            >
               <button
                 onClick={() => onDecrement(product.id)}
                 className="flex items-center justify-center rounded-full"
-                style={{ width: 26, height: 26, background: "#FFFDFB", border: "1px solid #FFD6E7" }}
+                style={{
+                  width: 26,
+                  height: 26,
+                  background: "#FFFDFB",
+                  border: "1px solid #FFD6E7",
+                }}
                 aria-label={`Decrease ${product.name}`}
               >
                 <Minus size={12} style={{ color: "#E5528A" }} />
               </button>
-              <span className="font-heading font-bold text-center" style={{ fontSize: 14, color: "#6B4226", width: 20 }}>{quantity}</span>
+              <span
+                className="font-heading font-bold text-center"
+                style={{ fontSize: 14, color: "#6B4226", width: 20 }}
+              >
+                {quantity}
+              </span>
               <button
                 onClick={() => onIncrement(product.id)}
                 className="flex items-center justify-center rounded-full"
-                style={{ width: 26, height: 26, background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)" }}
+                style={{
+                  width: 26,
+                  height: 26,
+                  background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)",
+                }}
                 aria-label={`Increase ${product.name}`}
               >
                 <Plus size={12} color="#FFFFFF" />
@@ -453,7 +631,10 @@ function MenuSkeleton() {
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} style={{ borderRadius: 24, overflow: "hidden", border: "1px solid #F5EDE0" }}>
+        <div
+          key={i}
+          style={{ borderRadius: 24, overflow: "hidden", border: "1px solid #F5EDE0" }}
+        >
           <div className="skeleton" style={{ height: CARD_IMAGE_HEIGHT, borderRadius: 0 }} />
           <div className="p-5 space-y-2">
             <div className="skeleton" style={{ height: 14, width: "70%", borderRadius: 5 }} />
@@ -475,23 +656,49 @@ function OrderCTA() {
         className="max-w-400 mx-auto rounded-[2rem] p-10 md:p-16 relative overflow-hidden"
         style={{ background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)" }}
       >
-        <div aria-hidden="true" className="absolute -top-20 -right-20 rounded-full" style={{ width: 280, height: 280, background: "rgba(255,255,255,0.15)" }} />
+        <div
+          aria-hidden="true"
+          className="absolute -top-20 -right-20 rounded-full"
+          style={{ width: 280, height: 280, background: "rgba(255,255,255,0.15)" }}
+        />
         <div className="relative max-w-2xl">
-          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full font-body font-bold uppercase" style={{ fontSize: 11, letterSpacing: "0.08em", background: "rgba(255,255,255,0.2)", color: "#FFFFFF" }}>
+          <span
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full font-body font-bold uppercase"
+            style={{
+              fontSize: 11,
+              letterSpacing: "0.08em",
+              background: "rgba(255,255,255,0.2)",
+              color: "#FFFFFF",
+            }}
+          >
             <Sparkles size={13} aria-hidden="true" /> Bulk & Custom Orders
           </span>
-          <h2 className="font-heading font-bold mt-4" style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#FFFFFF", lineHeight: 1.1 }}>
+          <h2
+            className="font-heading font-bold mt-4"
+            style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#FFFFFF", lineHeight: 1.1 }}
+          >
             Birthdays, offices, special events?
           </h2>
-          <p className="font-body mt-4" style={{ fontSize: 15, color: "rgba(255,255,255,0.9)", lineHeight: 1.7 }}>
+          <p
+            className="font-body mt-4"
+            style={{ fontSize: 15, color: "rgba(255,255,255,0.9)", lineHeight: 1.7 }}
+          >
             Message us a day ahead and we'll prepare your dozens — donut towers, themed boxes,
             dessert trays. Made fresh, just for your occasion.
           </p>
           <a
             href="#contact"
             className="inline-flex items-center gap-2 mt-7 font-heading font-bold transition-transform"
-            style={{ padding: "13px 28px", borderRadius: 999, background: "#FFFFFF", color: "#E5528A", fontSize: 14 }}
-            onMouseOver={e => ((e.currentTarget as HTMLElement).style.transform = "scale(1.03)")}
+            style={{
+              padding: "13px 28px",
+              borderRadius: 999,
+              background: "#FFFFFF",
+              color: "#E5528A",
+              fontSize: 14,
+            }}
+            onMouseOver={e =>
+              ((e.currentTarget as HTMLElement).style.transform = "scale(1.03)")
+            }
             onMouseOut={e => ((e.currentTarget as HTMLElement).style.transform = "scale(1)")}
           >
             <MessageCircle size={16} aria-hidden="true" /> Message Us
@@ -513,12 +720,14 @@ function ContactForm() {
 
   const validate = () => {
     if (!name.trim() || name.length > 100) return "Please enter your name.";
-    if (!/^[+0-9()\-\s]{7,20}$/.test(phone.trim())) return "Please enter a valid phone number.";
+    if (!/^[+0-9()\-\s]{7,20}$/.test(phone.trim()))
+      return "Please enter a valid phone number.";
     if (!message.trim() || message.length > 1000) return "Please enter a message.";
     return "";
   };
 
-  const buildBody = () => `Hi Rowszein's Delight!\n\nName: ${name}\nPhone: ${phone}\n\n${message}`;
+  const buildBody = () =>
+    `Hi Rowszein's Delight!\n\nName: ${name}\nPhone: ${phone}\n\n${message}`;
 
   const sendMessenger = () => {
     const err = validate();
@@ -539,7 +748,10 @@ function ContactForm() {
 
   return (
     <form
-      onSubmit={e => { e.preventDefault(); sendMessenger(); }}
+      onSubmit={e => {
+        e.preventDefault();
+        sendMessenger();
+      }}
       className="rounded-[2rem] p-6 md:p-9 space-y-4"
       style={{ background: CARD_BG, border: "1px solid #F5EDE0" }}
     >
@@ -547,17 +759,25 @@ function ContactForm() {
         <div>
           <label className="field-label">Your Name</label>
           <input
-            type="text" required maxLength={100} value={name}
+            type="text"
+            required
+            maxLength={100}
+            value={name}
             onChange={e => setName(e.target.value)}
-            placeholder="Juan Dela Cruz" className="field-input mt-1"
+            placeholder="Juan Dela Cruz"
+            className="field-input mt-1"
           />
         </div>
         <div>
           <label className="field-label">Phone Number</label>
           <input
-            type="tel" required maxLength={20} value={phone}
+            type="tel"
+            required
+            maxLength={20}
+            value={phone}
             onChange={e => setPhone(e.target.value)}
-            placeholder="+63 900 000 0000" className="field-input mt-1"
+            placeholder="+63 900 000 0000"
+            className="field-input mt-1"
           />
         </div>
       </div>
@@ -565,25 +785,40 @@ function ContactForm() {
       <div>
         <label className="field-label">Message</label>
         <textarea
-          required maxLength={1000} rows={4} value={message}
+          required
+          maxLength={1000}
+          rows={4}
+          value={message}
           onChange={e => setMessage(e.target.value)}
           placeholder="Hi! I'd like to order a dozen donuts for pickup on Saturday…"
-          className="field-input mt-1" style={{ resize: "none" }}
+          className="field-input mt-1"
+          style={{ resize: "none" }}
         />
         <p className="field-helper text-right">{message.length}/1000</p>
       </div>
 
       {error && (
         <div className="px-4 py-2.5 rounded-xl" style={{ background: "#FEF2F2" }}>
-          <p className="font-body font-semibold" style={{ fontSize: 13, color: "#B91C1C" }}>{error}</p>
+          <p className="font-body font-semibold" style={{ fontSize: 13, color: "#B91C1C" }}>
+            {error}
+          </p>
         </div>
       )}
 
       <div className="flex flex-col sm:flex-row gap-3 pt-1">
-        <button type="submit" className="btn-primary flex-1 justify-center" style={{ padding: "13px 20px", borderRadius: 999, fontSize: 14 }}>
+        <button
+          type="submit"
+          className="btn-primary flex-1 justify-center"
+          style={{ padding: "13px 20px", borderRadius: 999, fontSize: 14 }}
+        >
           <Send size={15} aria-hidden="true" /> Send on Messenger
         </button>
-        <button type="button" onClick={sendEmail} className="btn-ghost flex-1 justify-center" style={{ padding: "13px 20px", borderRadius: 999, fontSize: 14 }}>
+        <button
+          type="button"
+          onClick={sendEmail}
+          className="btn-ghost flex-1 justify-center"
+          style={{ padding: "13px 20px", borderRadius: 999, fontSize: 14 }}
+        >
           <Mail size={15} aria-hidden="true" /> Send by Email
         </button>
       </div>
@@ -623,7 +858,11 @@ export default function LandingPage() {
   }
 
   return (
-    <div ref={pageRef} className="landing-page" style={{ background: PAGE_BG, minHeight: "100vh" }}>
+    <div
+      ref={pageRef}
+      className="landing-page"
+      style={{ background: PAGE_BG, minHeight: "100vh" }}
+    >
       <PublicNav cartCount={cart.totalItems} onCartClick={() => setCartOpen(true)} />
 
       <Hero products={products} />
@@ -631,18 +870,32 @@ export default function LandingPage() {
 
       {/* Bestsellers */}
       {featured.length > 0 && (
-        <section id="bestsellers" className="px-6 md:px-12 lg:px-20 py-14" style={{ background: PAGE_BG }}>
+        <section
+          id="bestsellers"
+          className="px-6 md:px-12 lg:px-20 py-14"
+          style={{ background: PAGE_BG, scrollMarginTop: 72 }}
+        >
           <div className="max-w-400 mx-auto">
             <div className="flex items-end justify-between mb-8">
               <div>
-                <p className="font-body font-bold uppercase" style={{ fontSize: 11, letterSpacing: "0.08em", color: "#E5528A" }}>
+                <p
+                  className="font-body font-bold uppercase"
+                  style={{ fontSize: 11, letterSpacing: "0.08em", color: "#E5528A" }}
+                >
                   Crowd Favorites
                 </p>
-                <h2 className="font-heading font-bold mt-1" style={{ fontSize: "clamp(26px, 3.5vw, 38px)", color: "#6B4226" }}>
+                <h2
+                  className="font-heading font-bold mt-1"
+                  style={{ fontSize: "clamp(26px, 3.5vw, 38px)", color: "#6B4226" }}
+                >
                   Bestsellers
                 </h2>
               </div>
-              <a href="#menu" className="hidden sm:inline font-body font-bold" style={{ fontSize: 13, color: "#FF6FAE" }}>
+              <a
+                href="#menu"
+                className="hidden sm:inline font-body font-bold"
+                style={{ fontSize: 13, color: "#FF6FAE" }}
+              >
                 See full menu →
               </a>
             </div>
@@ -656,13 +909,23 @@ export default function LandingPage() {
       )}
 
       {/* Full menu */}
-      <section id="menu" className="px-6 md:px-12 lg:px-20 py-16" style={{ background: "#FFFDFB" }}>
+      <section
+        id="menu"
+        className="px-6 md:px-12 lg:px-20 py-16"
+        style={{ background: "#FFFDFB", scrollMarginTop: 72 }}
+      >
         <div className="max-w-400 mx-auto">
           <div className="text-center mb-10">
-            <p className="font-body font-bold uppercase" style={{ fontSize: 11, letterSpacing: "0.08em", color: "#FF6FAE" }}>
+            <p
+              className="font-body font-bold uppercase"
+              style={{ fontSize: 11, letterSpacing: "0.08em", color: "#FF6FAE" }}
+            >
               The Whole Menu
             </p>
-            <h2 className="font-heading font-bold mt-2" style={{ fontSize: "clamp(28px, 4vw, 42px)", color: "#6B4226" }}>
+            <h2
+              className="font-heading font-bold mt-2"
+              style={{ fontSize: "clamp(28px, 4vw, 42px)", color: "#6B4226" }}
+            >
               Pick your sweet
             </h2>
           </div>
@@ -679,7 +942,10 @@ export default function LandingPage() {
 
           {!isLoading && !isError && products.length === 0 && (
             <div className="card-surface p-10 text-center max-w-md mx-auto">
-              <CakeSlice size={28} style={{ color: "#FF6FAE", opacity: 0.5, margin: "0 auto 12px" }} />
+              <CakeSlice
+                size={28}
+                style={{ color: "#FF6FAE", opacity: 0.5, margin: "0 auto 12px" }}
+              />
               <p className="font-body" style={{ fontSize: 13, color: "#9B6644" }}>
                 No items available right now — check back soon!
               </p>
@@ -699,17 +965,28 @@ export default function LandingPage() {
       <OrderCTA />
 
       {/* Contact */}
-      <section id="contact" className="px-6 md:px-12 lg:px-20 py-16">
+      <section
+        id="contact"
+        className="px-6 md:px-12 lg:px-20 py-16"
+        style={{ scrollMarginTop: 72 }}
+      >
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-8">
-            <p className="font-body font-bold uppercase" style={{ fontSize: 11, letterSpacing: "0.08em", color: "#FF6FAE" }}>
+            <p
+              className="font-body font-bold uppercase"
+              style={{ fontSize: 11, letterSpacing: "0.08em", color: "#FF6FAE" }}
+            >
               Send Us a Message
             </p>
-            <h2 className="font-heading font-bold mt-2" style={{ fontSize: "clamp(26px, 3.5vw, 38px)", color: "#6B4226" }}>
+            <h2
+              className="font-heading font-bold mt-2"
+              style={{ fontSize: "clamp(26px, 3.5vw, 38px)", color: "#6B4226" }}
+            >
               Get in touch
             </h2>
             <p className="font-body mt-3" style={{ fontSize: 14, color: "#9B6644" }}>
-              Questions or a special request? Drop us a note — we'll reply on Messenger or by email.
+              Questions or a special request? Drop us a note — we'll reply on Messenger or by
+              email.
             </p>
           </div>
           <ContactForm />
@@ -717,19 +994,33 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="px-6 md:px-12 lg:px-20 py-12 text-center" style={{ background: "#FFFDFB", borderTop: "1px solid #F5EDE0" }}>
+      <footer
+        className="px-6 md:px-12 lg:px-20 py-12 text-center"
+        style={{ background: "#FFFDFB", borderTop: "1px solid #F5EDE0" }}
+      >
         <div className="flex items-center justify-center gap-2 mb-3">
           <span
             className="flex items-center justify-center rounded-full font-heading font-bold"
-            style={{ width: 28, height: 28, background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)", color: "#FFFFFF", fontSize: 13 }}
+            style={{
+              width: 28,
+              height: 28,
+              background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)",
+              color: "#FFFFFF",
+              fontSize: 13,
+            }}
           >
             R
           </span>
-          <p className="font-heading font-bold" style={{ fontSize: 15, color: "#6B4226" }}>Rowszein's Delight</p>
+          <p className="font-heading font-bold" style={{ fontSize: 15, color: "#6B4226" }}>
+            Rowszein's Delight
+          </p>
         </div>
-        <p className="font-body" style={{ fontSize: 13, color: "#9B6644", maxWidth: 420, margin: "0 auto" }}>
-          Have a question or want to place a custom order? Send us a message on Facebook or visit
-          us in store. We'd love to hear from you.
+        <p
+          className="font-body"
+          style={{ fontSize: 13, color: "#9B6644", maxWidth: 420, margin: "0 auto" }}
+        >
+          Have a question or want to place a custom order? Send us a message on Facebook or
+          visit us in store. We'd love to hear from you.
         </p>
         <p className="font-body mt-6" style={{ fontSize: 12, color: "#D1CEC7" }}>
           © {new Date().getFullYear()} Rowszein's Delight — Made with love
