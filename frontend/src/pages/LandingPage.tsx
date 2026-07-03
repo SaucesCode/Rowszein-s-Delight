@@ -292,8 +292,12 @@ function Hero({ heroProduct, totalCount }: { heroProduct: Product | null; totalC
         <div
           className="absolute rounded-full"
           style={{
-            width: 380, height: 380, bottom: -160, right: -120,
-            background: "radial-gradient(circle, #FFD6E7 0%, transparent 70%)", opacity: 0.5,
+            width: 380,
+            height: 380,
+            bottom: -160,
+            right: -120,
+            background: "radial-gradient(circle, #FFD6E7 0%, transparent 70%)",
+            opacity: 0.5,
           }}
         />
       </div>
