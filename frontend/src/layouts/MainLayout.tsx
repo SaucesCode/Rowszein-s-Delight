@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Outlet, NavLink, useLocation } from "react-router-dom";
+import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useMe, useLogout } from "@/hooks/useAuth";
 import {
   LayoutDashboard,
@@ -13,6 +13,7 @@ import {
   X,
   CakeSlice,
   ChevronLeft,
+  ExternalLink,
 } from "lucide-react";
 import { clsx } from "clsx";
 
@@ -73,13 +74,23 @@ function UserAvatar({ username }: { username: string }) {
 
 function SidebarContent({ collapsed, onNavigate }: { collapsed: boolean; onNavigate?: () => void }) {
   const logout = useLogout();
+  const navigate = useNavigate();
+
+  const handleLogoClick = () => {
+    window.open("/", "_blank");
+  };
 
   return (
     <div className="flex h-full flex-col">
-      {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-6 border-b border-gray-200">
+      {/* Logo - Now clickable */}
+      <button
+        onClick={handleLogoClick}
+        className="flex items-center gap-3 px-4 py-6 border-b border-gray-200 hover:bg-gray-50 transition-colors group"
+        title="Visit landing page"
+        aria-label="Rowszein's Delight - Visit landing page"
+      >
         <div
-          className="flex items-center justify-center rounded-lg flex-shrink-0"
+          className="flex items-center justify-center rounded-lg flex-shrink-0 group-hover:shadow-lg transition-shadow"
           style={{
             width: 40,
             height: 40,
@@ -90,7 +101,7 @@ function SidebarContent({ collapsed, onNavigate }: { collapsed: boolean; onNavig
           <CakeSlice size={20} color="#ffffff" strokeWidth={2.5} />
         </div>
         {!collapsed && (
-          <div>
+          <div className="flex-1 text-left">
             <p
               className="font-heading font-bold leading-tight"
               style={{ fontSize: 15, color: "#0f172a" }}
@@ -105,7 +116,15 @@ function SidebarContent({ collapsed, onNavigate }: { collapsed: boolean; onNavig
             </p>
           </div>
         )}
-      </div>
+        {!collapsed && (
+          <ExternalLink
+            size={14}
+            strokeWidth={2}
+            style={{ color: "#cbd5e1" }}
+            className="flex-shrink-0"
+          />
+        )}
+      </button>
 
       {/* Nav items */}
       <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto" aria-label="Main navigation">

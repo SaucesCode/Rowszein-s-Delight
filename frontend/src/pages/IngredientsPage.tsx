@@ -65,8 +65,8 @@ export default function IngredientsPage() {
 
       {/* Error */}
       {isError && (
-        <div className="premium-card p-8 text-center">
-          <p className="font-body text-sm" style={{ color: "#ef4444" }}>
+        <div className="rounded-xl border border-gray-200 bg-white p-8 text-center shadow-sm">
+          <p className="text-sm" style={{ color: "#ef4444" }}>
             Failed to load ingredients. Please try refreshing the page.
           </p>
         </div>
@@ -74,7 +74,7 @@ export default function IngredientsPage() {
 
       {/* Empty */}
       {!isLoading && !isError && ingredients.length === 0 && (
-        <div className="premium-card">
+        <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
           <EmptyState
             icon={Package}
             title="No ingredients yet"
@@ -92,11 +92,11 @@ export default function IngredientsPage() {
       {/* Table */}
       {!isLoading && !isError && ingredients.length > 0 && (
         <>
-          <div className="premium-card overflow-hidden">
+          <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm" style={{ minWidth: 680 }}>
                 <thead>
-                  <tr className="table-header-row">
+                  <tr style={{ background: "#f9fafb", borderBottom: "1px solid #e5e7eb" }}>
                     {[
                       "Name",
                       "Quantity",
@@ -108,8 +108,8 @@ export default function IngredientsPage() {
                     ].map(col => (
                       <th
                         key={col}
-                        className="px-6 py-4 text-left"
-                        style={{ whiteSpace: "nowrap" }}
+                        className="px-6 py-4 text-left font-medium"
+                        style={{ color: "#64748b", fontSize: 12, fontWeight: 600, whiteSpace: "nowrap" }}
                       >
                         {col}
                       </th>
@@ -118,19 +118,12 @@ export default function IngredientsPage() {
                 </thead>
 
                 <tbody>
-                  {ingredients.map((ingredient, idx) => (
+                  {ingredients.map((ingredient) => (
                     <tr
                       key={ingredient.id}
-                      className={clsx(
-                        "transition-colors hover:bg-gray-50",
-                        ingredient.is_low_stock
-                          ? "bg-yellow-50"
-                          : idx % 2 === 0
-                            ? ""
-                            : "bg-gray-50",
-                      )}
+                      className="transition-colors hover:bg-gray-50"
                       style={{
-                        borderBottom: "1px solid #e2e8f0",
+                        borderBottom: "1px solid #e5e7eb",
                       }}
                     >
                       {/* Name + badge */}

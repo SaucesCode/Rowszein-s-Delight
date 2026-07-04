@@ -10,37 +10,13 @@ interface StatCardProps {
   icon?: ReactNode;
 }
 
-const ACCENT_COLORS: Record<string, { gradient: string; text: string; light: string }> = {
-  pink: {
-    gradient: "linear-gradient(135deg, #ec4899 0%, #db2777 100%)",
-    text: "#ec4899",
-    light: "#fce7f3",
-  },
-  blue: {
-    gradient: "linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)",
-    text: "#3b82f6",
-    light: "#eff6ff",
-  },
-  green: {
-    gradient: "linear-gradient(135deg, #10b981 0%, #047857 100%)",
-    text: "#10b981",
-    light: "#ecfdf5",
-  },
-  orange: {
-    gradient: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
-    text: "#f59e0b",
-    light: "#fff7ed",
-  },
-  red: {
-    gradient: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
-    text: "#ef4444",
-    light: "#fef2f2",
-  },
-  purple: {
-    gradient: "linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)",
-    text: "#a855f7",
-    light: "#f3e8ff",
-  },
+const ACCENT_COLORS: Record<string, { color: string; bg: string }> = {
+  pink: { color: "#ec4899", bg: "#fce7f3" },
+  blue: { color: "#3b82f6", bg: "#eff6ff" },
+  green: { color: "#10b981", bg: "#ecfdf5" },
+  orange: { color: "#f59e0b", bg: "#fff7ed" },
+  red: { color: "#ef4444", bg: "#fef2f2" },
+  purple: { color: "#a855f7", bg: "#f3e8ff" },
 };
 
 export default function StatCard({
@@ -55,99 +31,84 @@ export default function StatCard({
 
   return (
     <div
-      className="premium-card relative overflow-hidden group cursor-default"
+      className="relative overflow-hidden rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-md hover:border-gray-300"
       style={{
-        background: "#ffffff",
-        border: "1px solid #e2e8f0",
-        borderRadius: "0.875rem",
-        padding: "1.5rem",
-        transition: "all 0.3s ease",
-      }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLElement).style.borderColor = colors.text;
-        (e.currentTarget as HTMLElement).style.boxShadow =
-          `0 8px 24px ${colors.text}15`;
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.borderColor = "#e2e8f0";
-        (e.currentTarget as HTMLElement).style.boxShadow = "0 1px 3px rgba(15, 23, 42, 0.06)";
+        minHeight: 160,
       }}
     >
-      {/* Gradient accent bar (top-left) */}
+      {/* Top accent line */}
       <div
-        className="absolute top-0 left-0 w-1 h-12"
-        style={{ background: colors.gradient }}
+        className="absolute top-0 left-0 right-0 h-1"
+        style={{ background: colors.color }}
       />
 
-      {/* Content */}
       <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">
+        <div className="flex-1">
+          {/* Label */}
           <p
-            className="font-body text-xs font-semibold uppercase tracking-widest"
-            style={{ color: "#94a3b8", marginBottom: 12 }}
+            className="text-xs font-medium uppercase tracking-wide"
+            style={{ color: "#94a3b8", marginBottom: 8 }}
           >
             {label}
           </p>
+
+          {/* Value */}
           <p
             className="font-heading font-bold"
-            style={{ fontSize: 32, color: "#0f172a", lineHeight: 1.1, marginBottom: 8 }}
+            style={{ fontSize: 32, color: "#0f172a", lineHeight: 1.1, marginBottom: 12 }}
           >
             {value}
           </p>
-          {sub && (
-            <p
-              className="font-body text-xs"
-              style={{ color: "#64748b" }}
-            >
+
+          {/* Sub text or trend */}
+          {sub && !trend && (
+            <p className="text-xs" style={{ color: "#64748b" }}>
               {sub}
             </p>
           )}
+
+          {trend && (
+            <div className="flex items-center gap-1.5 mt-2">
+              {trend === "up" && (
+                <>
+                  <TrendingUp size={13} strokeWidth={2.5} style={{ color: "#10b981" }} />
+                  <span className="text-xs font-semibold" style={{ color: "#10b981" }}>
+                    {sub || "Trending up"}
+                  </span>
+                </>
+              )}
+              {trend === "down" && (
+                <>
+                  <TrendingDown size={13} strokeWidth={2.5} style={{ color: "#ef4444" }} />
+                  <span className="text-xs font-semibold" style={{ color: "#ef4444" }}>
+                    {sub || "Trending down"}
+                  </span>
+                </>
+              )}
+              {trend === "neutral" && (
+                <span className="text-xs font-semibold" style={{ color: "#64748b" }}>
+                  {sub || "No change"}
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
+        {/* Icon */}
         {icon && (
           <div
             className="flex items-center justify-center rounded-lg flex-shrink-0"
             style={{
-              width: 52,
-              height: 52,
-              background: colors.light,
-              color: colors.text,
+              width: 56,
+              height: 56,
+              background: colors.bg,
+              color: colors.color,
             }}
           >
             {icon}
           </div>
         )}
       </div>
-
-      {/* Trend indicator */}
-      {trend && (
-        <div
-          className="flex items-center gap-1.5 mt-4 pt-4"
-          style={{ borderTop: "1px solid #e2e8f0" }}
-        >
-          {trend === "up" && (
-            <>
-              <TrendingUp size={14} strokeWidth={2.5} style={{ color: "#10b981" }} />
-              <span className="font-body text-xs font-semibold" style={{ color: "#10b981" }}>
-                +12.5% vs last month
-              </span>
-            </>
-          )}
-          {trend === "down" && (
-            <>
-              <TrendingDown size={14} strokeWidth={2.5} style={{ color: "#ef4444" }} />
-              <span className="font-body text-xs font-semibold" style={{ color: "#ef4444" }}>
-                -8.2% vs last month
-              </span>
-            </>
-          )}
-          {trend === "neutral" && (
-            <span className="font-body text-xs font-semibold" style={{ color: "#64748b" }}>
-              No change
-            </span>
-          )}
-        </div>
-      )}
     </div>
   );
 }

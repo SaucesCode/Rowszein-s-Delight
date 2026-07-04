@@ -122,8 +122,8 @@ export default function SalesPage() {
 
       {/* Error */}
       {isError && (
-        <div className="premium-card p-8 text-center">
-          <p className="font-body text-sm" style={{ color: "#ef4444" }}>
+        <div className="rounded-xl border border-gray-200 bg-white p-8 text-center shadow-sm">
+          <p className="text-sm" style={{ color: "#ef4444" }}>
             Failed to load sales. Please try refreshing the page.
           </p>
         </div>
@@ -131,7 +131,7 @@ export default function SalesPage() {
 
       {/* Empty */}
       {!isLoading && !isError && sales.length === 0 && (
-        <div className="premium-card">
+        <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
           <EmptyState
             icon={ShoppingCart}
             title={hasFilters ? "No sales found for selected dates" : "No sales recorded yet"}
@@ -159,16 +159,16 @@ export default function SalesPage() {
       {/* Table */}
       {!isLoading && !isError && sales.length > 0 && (
         <>
-          <div className="premium-card overflow-hidden">
+          <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm" style={{ minWidth: 560 }}>
                 <thead>
-                  <tr className="table-header-row">
+                  <tr style={{ background: "#f9fafb", borderBottom: "1px solid #e5e7eb" }}>
                     {["Date", "Items", "Notes", "Total", "Actions"].map(col => (
                       <th
                         key={col}
-                        className="px-6 py-4 text-left"
-                        style={{ whiteSpace: "nowrap" }}
+                        className="px-6 py-4 text-left font-medium"
+                        style={{ color: "#64748b", fontSize: 12, fontWeight: 600, whiteSpace: "nowrap" }}
                       >
                         {col}
                       </th>
@@ -177,13 +177,12 @@ export default function SalesPage() {
                 </thead>
 
                 <tbody>
-                  {sales.map((sale, idx) => (
+                  {sales.map((sale) => (
                     <tr
                       key={sale.id}
                       className="transition-colors hover:bg-gray-50"
                       style={{
-                        borderBottom: "1px solid #e2e8f0",
-                        background: idx % 2 !== 0 ? "#f9fafb" : undefined,
+                        borderBottom: "1px solid #e5e7eb",
                       }}
                     >
                       <td

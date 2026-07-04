@@ -44,15 +44,15 @@ export default function ProductsPage() {
       {isLoading && <SkeletonTable rows={6} cols={6} />}
 
       {isError && (
-        <div className="premium-card p-8 text-center">
-          <p className="font-body text-sm" style={{ color: "#ef4444" }}>
+        <div className="rounded-xl border border-gray-200 bg-white p-8 text-center shadow-sm">
+          <p className="text-sm" style={{ color: "#ef4444" }}>
             Failed to load products. Please try refreshing the page.
           </p>
         </div>
       )}
 
       {!isLoading && !isError && products.length === 0 && (
-        <div className="premium-card">
+        <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
           <EmptyState
             icon={CakeSlice}
             title="No products yet"
@@ -69,16 +69,16 @@ export default function ProductsPage() {
 
       {!isLoading && !isError && products.length > 0 && (
         <>
-          <div className="premium-card overflow-hidden">
+          <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full" style={{ minWidth: 620 }}>
                 <thead>
-                  <tr className="table-header-row">
+                  <tr style={{ background: "#f9fafb", borderBottom: "1px solid #e5e7eb" }}>
                     {["Image", "Name", "Description", "Price", "Status", "Actions"].map(col => (
                       <th
                         key={col}
-                        className="px-6 py-4 text-left"
-                        style={{ whiteSpace: "nowrap" }}
+                        className="px-6 py-4 text-left font-medium"
+                        style={{ color: "#64748b", fontSize: 12, fontWeight: 600, whiteSpace: "nowrap" }}
                       >
                         {col}
                       </th>
@@ -87,13 +87,12 @@ export default function ProductsPage() {
                 </thead>
 
                 <tbody>
-                  {products.map((product, idx) => (
+                  {products.map((product) => (
                     <tr
                       key={product.id}
                       className="transition-colors hover:bg-gray-50"
                       style={{
-                        borderBottom: "1px solid #e2e8f0",
-                        background: idx % 2 !== 0 ? "#f9fafb" : undefined,
+                        borderBottom: "1px solid #e5e7eb",
                       }}
                     >
                       {/* Image */}
@@ -106,7 +105,7 @@ export default function ProductsPage() {
                             style={{
                               width: 44,
                               height: 44,
-                              border: "1px solid #e2e8f0",
+                              border: "1px solid #e5e7eb",
                             }}
                           />
                         ) : (
