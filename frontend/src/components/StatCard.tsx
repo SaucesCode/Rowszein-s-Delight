@@ -1,111 +1,128 @@
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
-import { clsx } from "clsx";
-
-type Trend = "up" | "down" | "neutral";
-type Accent = "pink" | "green" | "orange" | "red" | "blue";
+import { ReactNode } from "react";
+import { TrendingUp, TrendingDown } from "lucide-react";
 
 interface StatCardProps {
   label: string;
-  value: string;
+  value: string | number;
   sub?: string;
-  trend?: Trend;
-  accent?: Accent;
-  /** Small descriptive icon shown top-right of the card */
-  icon?: React.ReactNode;
+  trend?: "up" | "down" | "neutral";
+  accent?: "pink" | "blue" | "green" | "orange" | "red" | "purple";
+  icon?: ReactNode;
 }
 
-const ACCENT_BORDER: Record<Accent, string> = {
-  pink: "border-l-4",
-  green: "border-l-4",
-  orange: "border-l-4",
-  red: "border-l-4",
-  blue: "border-l-4",
+const ACCENT_COLORS: Record<string, { bg: string; text: string; border: string }> = {
+  pink: {
+    bg: "#fbcfe8",
+    text: "#ec4899",
+    border: "#ec4899",
+  },
+  blue: {
+    bg: "#dbeafe",
+    text: "#3b82f6",
+    border: "#3b82f6",
+  },
+  green: {
+    bg: "#d1fae5",
+    text: "#10b981",
+    border: "#10b981",
+  },
+  orange: {
+    bg: "#fed7aa",
+    text: "#f59e0b",
+    border: "#f59e0b",
+  },
+  red: {
+    bg: "#fecaca",
+    text: "#ef4444",
+    border: "#ef4444",
+  },
+  purple: {
+    bg: "#e9d5ff",
+    text: "#a855f7",
+    border: "#a855f7",
+  },
 };
 
-const ACCENT_COLOR: Record<Accent, string> = {
-  pink: "#FF6FAE",
-  green: "#22C55E",
-  orange: "#F59E0B",
-  red: "#EF4444",
-  blue: "#3B82F6",
-};
-
-const ACCENT_BG: Record<Accent, string> = {
-  pink: "#FFF0F7",
-  green: "#F0FDF4",
-  orange: "#FFF7ED",
-  red: "#FEF2F2",
-  blue: "#EFF6FF",
-};
-
-const TREND_CONFIG: Record<Trend, { icon: React.ElementType; color: string; label: string }> =
-  {
-    up: { icon: TrendingUp, color: "#15803D", label: "Trending up" },
-    down: { icon: TrendingDown, color: "#B91C1C", label: "Trending down" },
-    neutral: { icon: Minus, color: "#7C7870", label: "No change" },
-  };
-
-export default function StatCard({ label, value, sub, trend, accent, icon }: StatCardProps) {
-  const TrendIcon = trend ? TREND_CONFIG[trend].icon : null;
-  const bgColor = accent ? ACCENT_BG[accent] : "#FFF0F7";
-  const accentColorValue = accent ? ACCENT_COLOR[accent] : "#FF6FAE";
+export default function StatCard({
+  label,
+  value,
+  sub,
+  trend,
+  accent = "pink",
+  icon,
+}: StatCardProps) {
+  const colors = ACCENT_COLORS[accent];
 
   return (
     <div
-      className="card-surface flex flex-col gap-3 p-6 relative overflow-hidden hover-lift"
-      style={accent ? { borderLeft: `5px solid ${accentColorValue}` } : undefined}
+      className="bento-card"
+      style={{
+        borderLeft: `4px solid ${colors.border}`,
+      }}
     >
-      {/* Top row: label + optional icon */}
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <p className="font-body text-xs font-medium" style={{ color: "#9B6644" }}>
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <p
+            className="font-body text-sm font-medium"
+            style={{ color: "#6b7280", marginBottom: 8 }}
+          >
             {label}
           </p>
+          <p
+            className="font-heading font-bold"
+            style={{ fontSize: 28, color: "#111827", lineHeight: 1.1 }}
+          >
+            {value}
+          </p>
+          {sub && (
+            <p
+              className="font-body text-xs mt-2"
+              style={{ color: "#9ca3af" }}
+            >
+              {sub}
+            </p>
+          )}
         </div>
+
         {icon && (
-          <span
-            className="flex items-center justify-center rounded-lg flex-shrink-0 ml-3"
+          <div
+            className="flex items-center justify-center rounded-lg flex-shrink-0"
             style={{
-              width: 36,
-              height: 36,
-              background: bgColor,
-              color: accentColorValue,
+              width: 44,
+              height: 44,
+              background: colors.bg,
+              color: colors.text,
             }}
-            aria-hidden="true"
           >
             {icon}
-          </span>
+          </div>
         )}
       </div>
 
-      {/* Value */}
-      <p
-        className="font-heading font-semibold"
-        style={{ fontSize: 28, color: "#6B4226", lineHeight: 1.2 }}
-      >
-        {value}
-      </p>
-
-      {/* Trend sub-label */}
-      {sub && trend && TrendIcon && (
-        <div className="flex items-center gap-1.5 mt-1">
-          <TrendIcon
-            size={14}
-            style={{ color: TREND_CONFIG[trend].color, flexShrink: 0 }}
-            strokeWidth={2.5}
-            aria-hidden="true"
-          />
-          <p className="font-body text-xs" style={{ color: TREND_CONFIG[trend].color }}>
-            {sub}
-          </p>
+      {trend && (
+        <div className="flex items-center gap-1 mt-4 pt-4 border-t border-gray-100">
+          {trend === "up" && (
+            <>
+              <TrendingUp size={14} strokeWidth={2.5} style={{ color: "#10b981" }} />
+              <span className="font-body text-xs font-medium" style={{ color: "#10b981" }}>
+                Trending up
+              </span>
+            </>
+          )}
+          {trend === "down" && (
+            <>
+              <TrendingDown size={14} strokeWidth={2.5} style={{ color: "#ef4444" }} />
+              <span className="font-body text-xs font-medium" style={{ color: "#ef4444" }}>
+                Trending down
+              </span>
+            </>
+          )}
+          {trend === "neutral" && (
+            <span className="font-body text-xs font-medium" style={{ color: "#6b7280" }}>
+              No change
+            </span>
+          )}
         </div>
-      )}
-
-      {/* Sub without trend */}
-      {sub && !trend && (
-        <p className="font-body text-xs mt-1" style={{ color: "#9B6644" }}>
-          {sub}
-        </p>
       )}
     </div>
   );

@@ -10,6 +10,8 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  BarChart,
+  Bar,
 } from "recharts";
 import {
   AlertTriangle,
@@ -17,26 +19,20 @@ import {
   Receipt,
   TrendingUp,
   TrendingDown,
-  Minus,
+  Zap,
 } from "lucide-react";
 import StatCard from "@/components/StatCard";
 
-/* ─────────────────────────────────────────────
-   TYPES
-   ───────────────────────────────────────────── */
 type Period = "this_week" | "this_month" | "this_quarter" | "this_year" | "custom";
 
 const PERIODS: { value: Period; label: string }[] = [
-  { value: "this_week", label: "This Week" },
-  { value: "this_month", label: "This Month" },
-  { value: "this_quarter", label: "This Quarter" },
-  { value: "this_year", label: "This Year" },
+  { value: "this_week", label: "Week" },
+  { value: "this_month", label: "Month" },
+  { value: "this_quarter", label: "Quarter" },
+  { value: "this_year", label: "Year" },
   { value: "custom", label: "Custom" },
 ];
 
-/* ─────────────────────────────────────────────
-   HELPERS
-   ───────────────────────────────────────────── */
 function formatPeso(value: number) {
   return `₱${value.toLocaleString("en-PH", {
     minimumFractionDigits: 2,
@@ -73,51 +69,30 @@ function getDateRange(period: Period): { date_from: string; date_to: string } {
   }
 }
 
-/* ─────────────────────────────────────────────
-   SKELETON — dashboard-specific
-   ───────────────────────────────────────────── */
 function DashboardSkeleton() {
   return (
-    <div role="status" aria-label="Loading dashboard…" className="space-y-8">
-      {/* Stat cards */}
-      <div className="stat-grid">
+    <div role="status" aria-label="Loading dashboard…" className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[1, 2, 3].map(i => (
-          <div key={i} className="card-surface p-6">
-            <div
-              className="skeleton mb-3"
-              style={{ height: 12, width: "50%", borderRadius: 5 }}
-            />
-            <div className="skeleton" style={{ height: 28, width: "70%", borderRadius: 6 }} />
+          <div key={i} className="bento-card">
+            <div className="skeleton h-12 w-24 mb-4" />
+            <div className="skeleton h-8 w-32" />
           </div>
         ))}
       </div>
-      {/* Chart placeholder */}
-      <div className="chart-container">
-        <div className="skeleton mb-4" style={{ height: 16, width: 160, borderRadius: 6 }} />
-        <div className="skeleton" style={{ height: 280, borderRadius: 8 }} />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bento-card h-80">
+          <div className="skeleton h-full" />
+        </div>
+        <div className="bento-card h-80">
+          <div className="skeleton h-full" />
+        </div>
       </div>
       <span className="sr-only">Loading, please wait…</span>
     </div>
   );
 }
 
-/* ─────────────────────────────────────────────
-   SECTION LABEL
-   ───────────────────────────────────────────── */
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <p
-      className="font-heading font-semibold uppercase tracking-wide mb-4"
-      style={{ fontSize: 11, color: "#9B6644", letterSpacing: "0.08em" }}
-    >
-      {children}
-    </p>
-  );
-}
-
-/* ─────────────────────────────────────────────
-   PAGE
-   ───────────────────────────────────────────── */
 export default function DashboardPage() {
   const navigate = useNavigate();
   const [period, setPeriod] = useState<Period>("this_year");
@@ -133,8 +108,8 @@ export default function DashboardPage() {
 
   if (isError) {
     return (
-      <div className="card-surface p-12 text-center">
-        <p className="font-body text-sm" style={{ color: "#EF4444" }}>
+      <div className="bento-card p-8 text-center">
+        <p className="font-body text-sm" style={{ color: "#ef4444" }}>
           Failed to load dashboard. Please try refreshing the page.
         </p>
       </div>
@@ -151,37 +126,27 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      {/* ── Period picker ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      {/* Period Selector */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2
-            className="font-heading font-semibold"
-            style={{ fontSize: 16, color: "#9B6644", fontWeight: 600 }}
-          >
-            Reporting Period
+          <h2 className="font-heading font-bold text-lg" style={{ color: "#111827" }}>
+            Performance Overview
           </h2>
+          <p className="font-body text-sm mt-1" style={{ color: "#6b7280" }}>
+            Track your business metrics at a glance
+          </p>
         </div>
-
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap gap-2">
           {PERIODS.map(p => (
             <button
               key={p.value}
               onClick={() => setPeriod(p.value)}
-              className="font-body transition-all duration-200"
-              style={{
-                padding: "6px 14px",
-                borderRadius: 8,
-                fontSize: 13,
-                fontWeight: 500,
-                border: period === p.value ? "none" : "1px solid #E8E6E1",
-                background:
-                  period === p.value
-                    ? "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)"
-                    : "#FFFDFB",
-                color: period === p.value ? "#FFFFFF" : "#5A5650",
-                cursor: "pointer",
-                boxShadow: period === p.value ? "0 2px 8px rgba(255,111,174,0.3)" : "none",
-              }}
+              className={clsx(
+                "px-4 py-2 rounded-lg font-body text-sm font-medium transition-all",
+                period === p.value
+                  ? "bg-gradient-to-r from-pink-500 to-pink-600 text-white shadow-md"
+                  : "bg-white text-gray-600 border border-gray-200 hover:border-gray-300"
+              )}
             >
               {p.label}
             </button>
@@ -191,16 +156,9 @@ export default function DashboardPage() {
 
       {/* Custom date range */}
       {period === "custom" && (
-        <div
-          className="flex flex-wrap items-center gap-4 px-5 py-4 animate-slide-up"
-          style={{
-            background: "#FFFDFB",
-            border: "1px solid #E8E6E1",
-            borderRadius: 10,
-          }}
-        >
+        <div className="bento-card p-4 flex flex-wrap items-center gap-4 animate-slide-up">
           <div className="flex items-center gap-2">
-            <label className="font-body text-sm" style={{ color: "#7C7870" }}>
+            <label className="font-body text-sm" style={{ color: "#6b7280" }}>
               From
             </label>
             <input
@@ -212,7 +170,7 @@ export default function DashboardPage() {
             />
           </div>
           <div className="flex items-center gap-2">
-            <label className="font-body text-sm" style={{ color: "#7C7870" }}>
+            <label className="font-body text-sm" style={{ color: "#6b7280" }}>
               To
             </label>
             <input
@@ -223,80 +181,70 @@ export default function DashboardPage() {
               style={{ width: "auto" }}
             />
           </div>
-          {customFrom && customTo && (
-            <p className="font-body text-xs" style={{ color: "#A8A49B" }}>
-              {customFrom} → {customTo}
-            </p>
-          )}
         </div>
       )}
 
-      {/* ── Low stock alert ── */}
+      {/* Low stock alert */}
       {low_stock?.length > 0 && (
         <button
           type="button"
           onClick={() => navigate("/ingredients")}
-          className="alert-low-stock w-full text-left animate-slide-up"
-          style={{ cursor: "pointer" }}
+          className="alert-low-stock w-full text-left animate-slide-up cursor-pointer hover:bg-yellow-50 transition-colors"
         >
-          <AlertTriangle size={18} className="flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <AlertTriangle size={20} className="flex-shrink-0 mt-0.5" strokeWidth={2} aria-hidden="true" />
           <div>
-            <p className="font-heading font-semibold text-sm" style={{ color: "#92400e" }}>
-              {low_stock.length} ingredient
-              {low_stock.length !== 1 ? "s are" : " is"} running low
+            <p className="font-heading font-semibold text-sm">
+              {low_stock.length} ingredient{low_stock.length !== 1 ? "s are" : " is"} running low
             </p>
-            <p className="font-body text-xs mt-1" style={{ color: "#92400e" }}>
+            <p className="font-body text-xs mt-1">
               {low_stock.map((i: any) => i.name).join(", ")}
             </p>
           </div>
         </button>
       )}
 
-      {/* ── Filtered period totals ── */}
-      <div className="page-section">
-        <SectionLabel>
-          {PERIODS.find(p => p.value === period)?.label ?? "Selected Period"}
-        </SectionLabel>
-        <div className="stat-grid">
-          <StatCard
-            label="Total Sales"
-            value={formatPeso(totals.total_sales)}
-            accent="blue"
-            icon={<ShoppingCart size={16} strokeWidth={2.5} />}
-          />
-          <StatCard
-            label="Total Expenses"
-            value={formatPeso(totals.total_expenses)}
-            accent="orange"
-            icon={<Receipt size={16} strokeWidth={2.5} />}
-          />
-          <StatCard
-            label="Net Profit"
-            value={formatPeso(totals.net_profit)}
-            sub={
-              totals.net_profit > 0
-                ? "Profitable period"
-                : totals.net_profit < 0
-                  ? "Net loss"
-                  : "Break even"
-            }
-            trend={totalsTrend}
-            accent={totals.net_profit > 0 ? "green" : totals.net_profit < 0 ? "red" : "blue"}
-            icon={
-              totals.net_profit >= 0 ? (
-                <TrendingUp size={16} strokeWidth={2.5} />
-              ) : (
-                <TrendingDown size={16} strokeWidth={2.5} />
-              )
-            }
-          />
-        </div>
+      {/* Key Metrics - Bento Grid */}
+      <div className="bento-grid-3">
+        <StatCard
+          label="Total Sales"
+          value={formatPeso(totals.total_sales)}
+          accent="blue"
+          icon={<ShoppingCart size={20} strokeWidth={2} />}
+        />
+        <StatCard
+          label="Total Expenses"
+          value={formatPeso(totals.total_expenses)}
+          accent="orange"
+          icon={<Receipt size={20} strokeWidth={2} />}
+        />
+        <StatCard
+          label="Net Profit"
+          value={formatPeso(totals.net_profit)}
+          sub={
+            totals.net_profit > 0
+              ? "Profitable"
+              : totals.net_profit < 0
+                ? "Loss"
+                : "Break even"
+          }
+          trend={totalsTrend}
+          accent={totals.net_profit > 0 ? "green" : totals.net_profit < 0 ? "red" : "blue"}
+          icon={
+            totals.net_profit >= 0 ? (
+              <TrendingUp size={20} strokeWidth={2} />
+            ) : (
+              <TrendingDown size={20} strokeWidth={2} />
+            )
+          }
+        />
       </div>
 
-      {/* ── This month ── */}
-      <div className="page-section">
-        <SectionLabel>This Month</SectionLabel>
-        <div className="stat-grid">
+      {/* This Month Metrics */}
+      <div>
+        <h3 className="font-heading font-bold text-base mb-4" style={{ color: "#111827" }}>
+          This Month
+        </h3>
+        <div className="bento-grid-3">
           <StatCard label="Sales" value={formatPeso(this_month.sales)} accent="blue" />
           <StatCard label="Expenses" value={formatPeso(this_month.expenses)} accent="orange" />
           <StatCard
@@ -315,79 +263,76 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* ── Chart + Best selling ── */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      {/* Charts - Bento Grid */}
+      <div className="bento-grid-2">
         {/* Area chart */}
-        <div className="chart-container lg:col-span-2">
-          <p
-            className="font-heading font-semibold mb-5"
-            style={{ fontSize: 15, color: "#6B4226", fontWeight: 700 }}
-          >
-            Monthly Overview
-          </p>
-          <ResponsiveContainer width="100%" height={280}>
+        <div className="bento-card">
+          <h3 className="font-heading font-bold text-base mb-4" style={{ color: "#111827" }}>
+            Monthly Trends
+          </h3>
+          <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={chart_data}>
               <defs>
                 <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.15} />
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2} />
                   <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="colorExpenses" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#f97316" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#f97316" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#22c55e" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F5EDE0" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
               <XAxis
                 dataKey="month"
-                tick={{ fontSize: 12, fill: "#9B6644", fontFamily: "Inter" }}
+                tick={{ fontSize: 12, fill: "#6b7280", fontFamily: "Inter" }}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis
-                tick={{ fontSize: 12, fill: "#9B6644", fontFamily: "Inter" }}
+                tick={{ fontSize: 12, fill: "#6b7280", fontFamily: "Inter" }}
                 axisLine={false}
                 tickLine={false}
-                tickFormatter={v => `₱${v.toLocaleString()}`}
+                tickFormatter={v => `₱${(v / 1000).toFixed(0)}k`}
               />
               <Tooltip
                 formatter={(value: number) => formatPeso(value)}
                 contentStyle={{
-                  fontSize: 13,
-                  borderRadius: 10,
-                  border: "1px solid #E8E6E1",
-                  background: "#FFFDFB",
-                  color: "#6B4226",
+                  fontSize: 12,
+                  borderRadius: 8,
+                  border: "1px solid #e5e7eb",
+                  background: "#ffffff",
+                  color: "#111827",
                   fontFamily: "Inter",
                 }}
               />
-              <Legend wrapperStyle={{ fontSize: 13, fontFamily: "Inter", color: "#7C7870" }} />
+              <Legend wrapperStyle={{ fontSize: 12, fontFamily: "Inter", color: "#6b7280" }} />
               <Area
                 type="monotone"
                 dataKey="sales"
                 name="Sales"
                 stroke="#3b82f6"
-                strokeWidth={2.5}
+                strokeWidth={2}
                 fill="url(#colorSales)"
               />
               <Area
                 type="monotone"
                 dataKey="expenses"
                 name="Expenses"
-                stroke="#f97316"
-                strokeWidth={2.5}
+                stroke="#f59e0b"
+                strokeWidth={2}
                 fill="url(#colorExpenses)"
               />
               <Area
                 type="monotone"
                 dataKey="profit"
                 name="Profit"
-                stroke="#22c55e"
-                strokeWidth={2.5}
+                stroke="#10b981"
+                strokeWidth={2}
                 fill="url(#colorProfit)"
               />
             </AreaChart>
@@ -395,48 +340,42 @@ export default function DashboardPage() {
         </div>
 
         {/* Top products */}
-        <div className="chart-container">
-          <p
-            className="font-heading font-semibold mb-5"
-            style={{ fontSize: 15, color: "#6B4226", fontWeight: 700 }}
-          >
+        <div className="bento-card">
+          <h3 className="font-heading font-bold text-base mb-4" style={{ color: "#111827" }}>
             Top Products
-          </p>
+          </h3>
 
           {best_selling.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <p className="font-body text-sm" style={{ color: "#A8A49B" }}>
-                No sales data yet for this period.
+              <Zap size={32} className="text-gray-300 mb-3" />
+              <p className="font-body text-sm" style={{ color: "#9ca3af" }}>
+                No sales data yet
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {best_selling.map((item: any, index: number) => (
-                <div key={item.product_id} className="flex items-start gap-3 pb-3" style={{ borderBottom: index !== best_selling.length - 1 ? "1px solid #F5EDE0" : "none" }}>
-                  {/* Rank bubble */}
+                <div key={item.product_id} className="flex items-center gap-3 pb-3 border-b border-gray-100 last:border-0">
                   <div
-                    className="flex items-center justify-center rounded-full font-heading font-semibold flex-shrink-0"
+                    className="flex items-center justify-center rounded-full font-heading font-bold flex-shrink-0"
                     style={{
-                      width: 28,
-                      height: 28,
-                      background: index === 0 ? "#FFF0F7" : "#F5F4F1",
-                      color: index === 0 ? "#FF6FAE" : "#A8A49B",
-                      fontSize: 12,
-                      fontWeight: 700,
+                      width: 32,
+                      height: 32,
+                      background: index === 0 ? "#fbcfe8" : "#f3f4f6",
+                      color: index === 0 ? "#ec4899" : "#6b7280",
+                      fontSize: 13,
                     }}
                   >
                     {index + 1}
                   </div>
-
-                  {/* Product info */}
                   <div className="flex-1 min-w-0">
                     <p
-                      className="font-heading font-medium truncate"
-                      style={{ fontSize: 14, color: "#6B4226", fontWeight: 600 }}
+                      className="font-heading font-semibold text-sm truncate"
+                      style={{ color: "#111827" }}
                     >
                       {item.product_name}
                     </p>
-                    <p className="font-body text-xs mt-1" style={{ color: "#9B6644" }}>
+                    <p className="font-body text-xs mt-1" style={{ color: "#6b7280" }}>
                       {item.total_quantity} sold · {formatPeso(item.total_revenue)}
                     </p>
                   </div>
@@ -448,4 +387,8 @@ export default function DashboardPage() {
       </div>
     </div>
   );
+}
+
+function clsx(...classes: (string | undefined | false)[]): string {
+  return classes.filter(Boolean).join(" ");
 }

@@ -4,7 +4,6 @@ import { useMe, useLogout } from "@/hooks/useAuth";
 import {
   LayoutDashboard,
   Package,
-  ShoppingBag,
   BookOpen,
   Receipt,
   ShoppingCart,
@@ -13,56 +12,48 @@ import {
   Menu,
   X,
   CakeSlice,
+  ChevronDown,
 } from "lucide-react";
 import { clsx } from "clsx";
 
 /* ─────────────────────────────────────────────
    NAV CONFIG
-   Single source of truth for sidebar items.
-   Adding a new page = add one entry here.
    ───────────────────────────────────────────── */
 const NAV_ITEMS = [
   {
     to: "/dashboard",
     label: "Dashboard",
     icon: LayoutDashboard,
-    description: "Business performance overview",
   },
   {
     to: "/ingredients",
     label: "Ingredients",
     icon: Package,
-    description: "Manage your inventory ingredients",
   },
   {
     to: "/products",
     label: "Products",
     icon: CakeSlice,
-    description: "Manage your dessert products",
   },
   {
     to: "/recipes",
     label: "Recipes",
     icon: BookOpen,
-    description: "Define ingredients and production cost per product",
   },
   {
     to: "/expenses",
     label: "Expenses",
     icon: Receipt,
-    description: "Track all business costs",
   },
   {
     to: "/sales",
     label: "Sales",
     icon: ShoppingCart,
-    description: "Track all revenue transactions",
   },
   {
     to: "/profit-margins",
     label: "Profit Margins",
     icon: TrendingUp,
-    description: "Selling price vs production cost per product",
   },
 ] as const;
 
@@ -80,28 +71,27 @@ function usePageMeta() {
     return { title: "Rowszein's Delight", description: "" };
   }
 
-  // Form pages get a different title
   const isNew = location.pathname.endsWith("/new");
   const isEdit = location.pathname.endsWith("/edit") || /\/\d+\/edit$/.test(location.pathname);
 
   if (isNew) {
     return {
       title: `Add ${match.label.replace(/s$/, "")}`,
-      description: match.description,
+      description: "",
     };
   }
   if (isEdit) {
     return {
       title: `Edit ${match.label.replace(/s$/, "")}`,
-      description: match.description,
+      description: "",
     };
   }
 
-  return { title: match.label, description: match.description };
+  return { title: match.label, description: "" };
 }
 
 /* ─────────────────────────────────────────────
-   USER AVATAR — initials in a pink circle
+   USER AVATAR
    ───────────────────────────────────────────── */
 function UserAvatar({ username }: { username: string }) {
   const initials = username
@@ -114,12 +104,11 @@ function UserAvatar({ username }: { username: string }) {
     <div
       className="flex items-center justify-center rounded-full text-xs font-semibold font-heading select-none"
       style={{
-        width: 32,
-        height: 32,
-        background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)",
-        color: "#FFFFFF",
-        boxShadow: "0 2px 8px rgba(255,111,174,0.3)",
-        flexShrink: 0,
+        width: 36,
+        height: 36,
+        background: "linear-gradient(135deg, #ec4899 0%, #db2777 100%)",
+        color: "#ffffff",
+        boxShadow: "0 2px 8px rgba(236, 72, 153, 0.25)",
       }}
       aria-hidden="true"
     >
@@ -130,7 +119,6 @@ function UserAvatar({ username }: { username: string }) {
 
 /* ─────────────────────────────────────────────
    SIDEBAR NAV CONTENT
-   Shared between desktop sidebar and mobile Sheet
    ───────────────────────────────────────────── */
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const logout = useLogout();
@@ -138,31 +126,28 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="flex h-full flex-col">
       {/* Logo / shop name */}
-      <div
-        className="flex items-center gap-3 px-5 py-5"
-        style={{ borderBottom: "1px solid #F5EDE0" }}
-      >
+      <div className="flex items-center gap-3 px-6 py-6 border-b border-gray-200">
         <div
           className="flex items-center justify-center rounded-lg flex-shrink-0"
           style={{
-            width: 36,
-            height: 36,
-            background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)",
-            boxShadow: "0 2px 8px rgba(255,111,174,0.25)",
+            width: 40,
+            height: 40,
+            background: "linear-gradient(135deg, #ec4899 0%, #db2777 100%)",
+            boxShadow: "0 2px 8px rgba(236, 72, 153, 0.2)",
           }}
         >
-          <CakeSlice size={18} color="#FFFFFF" strokeWidth={2.5} />
+          <CakeSlice size={20} color="#ffffff" strokeWidth={2.5} />
         </div>
         <div>
           <p
-            className="font-heading font-semibold leading-tight"
-            style={{ fontSize: 14, color: "#6B4226" }}
+            className="font-heading font-bold leading-tight"
+            style={{ fontSize: 15, color: "#111827" }}
           >
             Rowszein's
           </p>
           <p
-            className="font-heading font-medium leading-tight"
-            style={{ fontSize: 12, color: "#9B6644", marginTop: 2 }}
+            className="font-heading font-semibold leading-tight"
+            style={{ fontSize: 13, color: "#6b7280", marginTop: 2 }}
           >
             Delight
           </p>
@@ -170,7 +155,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </div>
 
       {/* Nav items */}
-      <nav className="flex-1 px-3 py-5 space-y-1" aria-label="Main navigation">
+      <nav className="flex-1 px-3 py-6 space-y-1" aria-label="Main navigation">
         {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
@@ -183,22 +168,22 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
               )
             }
           >
-            <Icon size={17} aria-hidden="true" strokeWidth={2} />
-            <span className="text-sm">{label}</span>
+            <Icon size={18} strokeWidth={2} aria-hidden="true" />
+            <span>{label}</span>
           </NavLink>
         ))}
       </nav>
 
       {/* Logout */}
-      <div className="px-3 py-5" style={{ borderTop: "1px solid #F5EDE0" }}>
+      <div className="px-3 py-6 border-t border-gray-200">
         <button
           onClick={() => logout.mutate()}
           disabled={logout.isPending}
           className="nav-item w-full text-left"
           aria-label="Logout"
         >
-          <LogOut size={17} aria-hidden="true" strokeWidth={2} />
-          <span className="text-sm">
+          <LogOut size={18} strokeWidth={2} aria-hidden="true" />
+          <span>
             {logout.isPending ? "Logging out..." : "Logout"}
           </span>
         </button>
@@ -208,8 +193,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 /* ─────────────────────────────────────────────
-   MOBILE SIDEBAR — simple slide-in panel
-   No external dependency needed — just CSS
+   MOBILE SIDEBAR
    ───────────────────────────────────────────── */
 function MobileSidebar({
   open,
@@ -220,34 +204,31 @@ function MobileSidebar({
 }) {
   return (
     <>
-      {/* Backdrop */}
       {open && (
         <div
-          className="fixed inset-0 z-40 bg-black/40 md:hidden animate-fade-in"
+          className="fixed inset-0 z-40 bg-black/30 md:hidden animate-fade-in"
           onClick={onClose}
           aria-hidden="true"
         />
       )}
 
-      {/* Panel */}
       <div
         className={clsx(
           "fixed inset-y-0 left-0 z-50 w-64 md:hidden",
           "transition-transform duration-250 ease-out",
           open ? "translate-x-0" : "-translate-x-full",
         )}
-        style={{ background: "#FFFDFB", borderRight: "1px solid #F5EDE0" }}
+        style={{ background: "#ffffff", borderRight: "1px solid #e5e7eb" }}
         role="dialog"
         aria-modal="true"
         aria-label="Navigation menu"
       >
-        {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute right-3 top-4 rounded-lg p-1.5 text-warm-500 hover:bg-brand-pink-light hover:text-brand-pink-dark transition-colors"
+          className="absolute right-4 top-4 rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
           aria-label="Close menu"
         >
-          <X size={18} strokeWidth={2} />
+          <X size={20} strokeWidth={2} />
         </button>
 
         <SidebarContent onNavigate={onClose} />
@@ -265,23 +246,20 @@ function TopNavbar({
   onMenuClick: () => void;
 }) {
   const { data: user } = useMe();
-  const { title, description } = usePageMeta();
+  const { title } = usePageMeta();
 
   return (
     <header
-      className="flex items-center justify-between px-6 py-4 flex-shrink-0"
+      className="flex items-center justify-between px-6 py-4 flex-shrink-0 border-b border-gray-200"
       style={{
-        background: "#FFFDFB",
-        borderBottom: "1px solid #F5EDE0",
+        background: "#ffffff",
         minHeight: 64,
       }}
     >
-      {/* Left — hamburger (mobile) + page title */}
       <div className="flex items-center gap-4 min-w-0">
-        {/* Hamburger — only visible on mobile */}
         <button
           onClick={onMenuClick}
-          className="flex-shrink-0 rounded-lg p-1.5 text-warm-500 hover:bg-brand-pink-light hover:text-brand-pink-dark transition-colors md:hidden"
+          className="flex-shrink-0 rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors md:hidden"
           aria-label="Open navigation menu"
         >
           <Menu size={20} strokeWidth={2} />
@@ -289,31 +267,26 @@ function TopNavbar({
 
         <div className="min-w-0">
           <h1
-            className="font-heading font-semibold truncate"
-            style={{ fontSize: 18, color: "#6B4226", lineHeight: 1.3 }}
+            className="font-heading font-bold truncate"
+            style={{ fontSize: 20, color: "#111827" }}
           >
             {title}
           </h1>
-          {description && (
-            <p
-              className="truncate hidden sm:block"
-              style={{ fontSize: 13, color: "#9B6644", marginTop: 3 }}
-            >
-              {description}
-            </p>
-          )}
         </div>
       </div>
 
-      {/* Right — user info */}
       {user && (
-        <div className="flex items-center gap-3 flex-shrink-0 ml-4">
-          <span
-            className="hidden sm:block font-body text-sm"
-            style={{ color: "#7C7870" }}
-          >
-            {user.username}
-          </span>
+        <div className="flex items-center gap-4 flex-shrink-0 ml-4">
+          <div className="hidden sm:flex items-center gap-3">
+            <div>
+              <p
+                className="font-body text-sm font-medium"
+                style={{ color: "#111827" }}
+              >
+                {user.username}
+              </p>
+            </div>
+          </div>
           <UserAvatar username={user.username} />
         </div>
       )}
@@ -330,36 +303,36 @@ export default function MainLayout() {
   return (
     <div
       className="flex h-screen overflow-hidden"
-      style={{ background: "#FFF8F0" }}
+      style={{ background: "#f9fafb" }}
     >
-      {/* ── Desktop sidebar (hidden on mobile) ── */}
+      {/* Desktop sidebar */}
       <aside
         className="hidden md:flex flex-col flex-shrink-0"
         style={{
-          width: 240,
-          background: "#FFFDFB",
-          borderRight: "1px solid #F5EDE0",
+          width: 260,
+          background: "#ffffff",
+          borderRight: "1px solid #e5e7eb",
         }}
       >
         <SidebarContent />
       </aside>
 
-      {/* ── Mobile sidebar ── */}
+      {/* Mobile sidebar */}
       <MobileSidebar
         open={mobileOpen}
         onClose={() => setMobileOpen(false)}
       />
 
-      {/* ── Main content area ── */}
+      {/* Main content area */}
       <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
         <TopNavbar onMenuClick={() => setMobileOpen(true)} />
 
         <main
           className="flex-1 overflow-y-auto"
-          style={{ background: "#FFF8F0" }}
+          style={{ background: "#f9fafb" }}
           id="main-content"
         >
-          <div className="p-6 md:p-8 max-w-1400 mx-auto animate-fade-in">
+          <div className="p-6 md:p-8 max-w-7xl mx-auto animate-fade-in">
             <Outlet />
           </div>
         </main>

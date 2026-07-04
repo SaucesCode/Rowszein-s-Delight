@@ -74,7 +74,7 @@ export default function SalesPage() {
             <button
               onClick={() => handleExport("csv")}
               disabled={exporting}
-              className="btn-ghost"
+              className="btn-secondary"
               style={{ fontSize: 13, padding: "8px 14px" }}
               aria-label="Export sales as CSV"
             >
@@ -84,7 +84,7 @@ export default function SalesPage() {
             <button
               onClick={() => handleExport("pdf")}
               disabled={exporting}
-              className="btn-ghost"
+              className="btn-secondary"
               style={{ fontSize: 13, padding: "8px 14px" }}
               aria-label="Export sales as PDF"
             >
@@ -102,18 +102,11 @@ export default function SalesPage() {
       />
 
       {/* Date filter strip */}
-      <div
-        className="flex flex-wrap items-center gap-4 mb-6 px-5 py-4"
-        style={{
-          background: "#FFFDFB",
-          border: "1px solid #E8E6E1",
-          borderRadius: 10,
-        }}
-      >
+      <div className="bento-card p-4 flex flex-wrap items-center gap-4 mb-6">
         <div className="flex items-center gap-2">
           <label
             className="font-body flex-shrink-0 text-sm"
-            style={{ color: "#7C7870" }}
+            style={{ color: "#6b7280" }}
           >
             From
           </label>
@@ -131,7 +124,7 @@ export default function SalesPage() {
         <div className="flex items-center gap-2">
           <label
             className="font-body flex-shrink-0 text-sm"
-            style={{ color: "#7C7870" }}
+            style={{ color: "#6b7280" }}
           >
             To
           </label>
@@ -150,7 +143,7 @@ export default function SalesPage() {
           <button
             onClick={clearFilters}
             className="btn-ghost"
-            style={{ fontSize: 13, padding: "6px 12px", color: "#9B6644" }}
+            style={{ fontSize: 13, padding: "6px 12px", color: "#6b7280" }}
           >
             <X size={14} strokeWidth={2} aria-hidden="true" />
             Clear
@@ -163,8 +156,8 @@ export default function SalesPage() {
 
       {/* Error */}
       {isError && (
-        <div className="card-surface p-8 text-center">
-          <p className="font-body text-sm" style={{ color: "#EF4444" }}>
+        <div className="bento-card p-8 text-center">
+          <p className="font-body text-sm" style={{ color: "#ef4444" }}>
             Failed to load sales. Please try refreshing the page.
           </p>
         </div>
@@ -172,7 +165,7 @@ export default function SalesPage() {
 
       {/* Empty */}
       {!isLoading && !isError && sales.length === 0 && (
-        <div className="card-surface">
+        <div className="bento-card">
           <EmptyState
             icon={ShoppingCart}
             title={hasFilters ? "No sales found for selected dates" : "No sales recorded yet"}
@@ -188,7 +181,7 @@ export default function SalesPage() {
                   Record Sale
                 </button>
               ) : (
-                <button onClick={clearFilters} className="btn-ghost">
+                <button onClick={clearFilters} className="btn-secondary">
                   Clear filters
                 </button>
               )
@@ -200,119 +193,115 @@ export default function SalesPage() {
       {/* Table */}
       {!isLoading && !isError && sales.length > 0 && (
         <>
-          <div
-            className="table-container overflow-hidden overflow-x-auto"
-            style={{
-              background: "#FFFDFB",
-              border: "1px solid #E8E6E1",
-            }}
-          >
-            <table className="w-full text-sm" style={{ minWidth: 560 }}>
-              <thead>
-                <tr className="table-header-row">
-                  {["Date", "Items", "Notes", "Total", "Actions"].map(col => (
-                    <th
-                      key={col}
-                      className="px-5 py-4 text-left"
-                      style={{ whiteSpace: "nowrap" }}
-                    >
-                      {col}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-
-              <tbody>
-                {sales.map((sale, idx) => (
-                  <tr
-                    key={sale.id}
-                    className="transition-colors hover:bg-brand-pink-light"
-                    style={{
-                      borderBottom: "1px solid #F5EDE0",
-                      background: idx % 2 !== 0 ? "#FFF8F0" : undefined,
-                    }}
-                  >
-                    {/* Date */}
-                    <td
-                      className="px-5 py-4 font-body"
-                      style={{ fontSize: 14, color: "#6B4226", fontWeight: 600, whiteSpace: "nowrap" }}
-                    >
-                      {new Date(sale.date).toLocaleDateString("en-PH", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </td>
-
-                    {/* Items count */}
-                    <td className="px-5 py-4">
-                      <span
-                        className="font-heading font-medium"
-                        style={{ fontSize: 14, color: "#6B4226", fontWeight: 600 }}
+          <div className="bento-card overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm" style={{ minWidth: 560 }}>
+                <thead>
+                  <tr className="table-header-row">
+                    {["Date", "Items", "Notes", "Total", "Actions"].map(col => (
+                      <th
+                        key={col}
+                        className="px-6 py-4 text-left"
+                        style={{ whiteSpace: "nowrap" }}
                       >
-                        {sale.items.length} item{sale.items.length !== 1 ? "s" : ""}
-                      </span>
-                    </td>
-
-                    {/* Notes */}
-                    <td
-                      className="px-5 py-4 font-body max-w-xs"
-                      style={{ fontSize: 14, color: "#7C7870" }}
-                    >
-                      <span className="line-clamp-1">
-                        {sale.notes || <span style={{ color: "#D1CEC7" }}>—</span>}
-                      </span>
-                    </td>
-
-                    {/* Total */}
-                    <td
-                      className="px-5 py-4 font-body"
-                      style={{ fontSize: 14, color: "#3D3A35", fontWeight: 700 }}
-                    >
-                      ₱{Number(sale.total_amount).toFixed(2)}
-                    </td>
-
-                    {/* Actions */}
-                    <td className="px-5 py-4">
-                      <div className="table-cell-action">
-                        <button
-                          onClick={() => navigate(`/sales/${sale.id}/edit`)}
-                          className="rounded-lg p-2 transition-colors"
-                          style={{ color: "#A8A49B" }}
-                          onMouseOver={e => {
-                            (e.currentTarget as HTMLElement).style.background = "#FFF0F7";
-                            (e.currentTarget as HTMLElement).style.color = "#FF6FAE";
-                          }}
-                          onMouseOut={e => {
-                            (e.currentTarget as HTMLElement).style.background = "transparent";
-                            (e.currentTarget as HTMLElement).style.color = "#A8A49B";
-                          }}
-                          aria-label={`Edit sale`}
-                        >
-                          <Pencil size={16} strokeWidth={2} aria-hidden="true" />
-                        </button>
-                        <button
-                          onClick={() => setDeleteTarget(sale)}
-                          className="rounded-lg p-2 transition-colors"
-                          style={{ color: "#A8A49B" }}
-                          onMouseOver={e => {
-                            (e.currentTarget as HTMLElement).style.background = "#FEF2F2";
-                            (e.currentTarget as HTMLElement).style.color = "#EF4444";
-                          }}
-                          onMouseOut={e => {
-                            (e.currentTarget as HTMLElement).style.background = "transparent";
-                            (e.currentTarget as HTMLElement).style.color = "#A8A49B";
-                          }}
-                          aria-label={`Delete sale`}
-                        >
-                          <Trash2 size={16} strokeWidth={2} aria-hidden="true" />
-                        </button>
-                      </div>
-                    </td>
+                        {col}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+
+                <tbody>
+                  {sales.map((sale, idx) => (
+                    <tr
+                      key={sale.id}
+                      className="transition-colors hover:bg-gray-50"
+                      style={{
+                        borderBottom: "1px solid #e5e7eb",
+                        background: idx % 2 !== 0 ? "#f9fafb" : undefined,
+                      }}
+                    >
+                      {/* Date */}
+                      <td
+                        className="px-6 py-4 font-body"
+                        style={{ fontSize: 14, color: "#111827", fontWeight: 600, whiteSpace: "nowrap" }}
+                      >
+                        {new Date(sale.date).toLocaleDateString("en-PH", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </td>
+
+                      {/* Items count */}
+                      <td className="px-6 py-4">
+                        <span
+                          className="font-heading font-semibold"
+                          style={{ fontSize: 14, color: "#111827" }}
+                        >
+                          {sale.items.length} item{sale.items.length !== 1 ? "s" : ""}
+                        </span>
+                      </td>
+
+                      {/* Notes */}
+                      <td
+                        className="px-6 py-4 font-body max-w-xs"
+                        style={{ fontSize: 14, color: "#6b7280" }}
+                      >
+                        <span className="line-clamp-1">
+                          {sale.notes || <span style={{ color: "#d1d5db" }}>—</span>}
+                        </span>
+                      </td>
+
+                      {/* Total */}
+                      <td
+                        className="px-6 py-4 font-body"
+                        style={{ fontSize: 14, color: "#111827", fontWeight: 700 }}
+                      >
+                        ₱{Number(sale.total_amount).toFixed(2)}
+                      </td>
+
+                      {/* Actions */}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => navigate(`/sales/${sale.id}/edit`)}
+                            className="rounded-lg p-2 transition-colors"
+                            style={{ color: "#9ca3af" }}
+                            onMouseOver={e => {
+                              (e.currentTarget as HTMLElement).style.background = "#f3f4f6";
+                              (e.currentTarget as HTMLElement).style.color = "#ec4899";
+                            }}
+                            onMouseOut={e => {
+                              (e.currentTarget as HTMLElement).style.background = "transparent";
+                              (e.currentTarget as HTMLElement).style.color = "#9ca3af";
+                            }}
+                            aria-label={`Edit sale`}
+                          >
+                            <Pencil size={16} strokeWidth={2} aria-hidden="true" />
+                          </button>
+                          <button
+                            onClick={() => setDeleteTarget(sale)}
+                            className="rounded-lg p-2 transition-colors"
+                            style={{ color: "#9ca3af" }}
+                            onMouseOver={e => {
+                              (e.currentTarget as HTMLElement).style.background = "#fee2e2";
+                              (e.currentTarget as HTMLElement).style.color = "#ef4444";
+                            }}
+                            onMouseOut={e => {
+                              (e.currentTarget as HTMLElement).style.background = "transparent";
+                              (e.currentTarget as HTMLElement).style.color = "#9ca3af";
+                            }}
+                            aria-label={`Delete sale`}
+                          >
+                            <Trash2 size={16} strokeWidth={2} aria-hidden="true" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
