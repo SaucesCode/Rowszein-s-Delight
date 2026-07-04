@@ -44,7 +44,7 @@ export default function ProductsPage() {
       {isLoading && <SkeletonTable rows={6} cols={6} />}
 
       {isError && (
-        <div className="bento-card p-8 text-center">
+        <div className="premium-card p-8 text-center">
           <p className="font-body text-sm" style={{ color: "#ef4444" }}>
             Failed to load products. Please try refreshing the page.
           </p>
@@ -52,7 +52,7 @@ export default function ProductsPage() {
       )}
 
       {!isLoading && !isError && products.length === 0 && (
-        <div className="bento-card">
+        <div className="premium-card">
           <EmptyState
             icon={CakeSlice}
             title="No products yet"
@@ -69,7 +69,7 @@ export default function ProductsPage() {
 
       {!isLoading && !isError && products.length > 0 && (
         <>
-          <div className="bento-card overflow-hidden">
+          <div className="premium-card overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full" style={{ minWidth: 620 }}>
                 <thead>
@@ -92,7 +92,7 @@ export default function ProductsPage() {
                       key={product.id}
                       className="transition-colors hover:bg-gray-50"
                       style={{
-                        borderBottom: "1px solid #e5e7eb",
+                        borderBottom: "1px solid #e2e8f0",
                         background: idx % 2 !== 0 ? "#f9fafb" : undefined,
                       }}
                     >
@@ -106,7 +106,7 @@ export default function ProductsPage() {
                             style={{
                               width: 44,
                               height: 44,
-                              border: "1px solid #e5e7eb",
+                              border: "1px solid #e2e8f0",
                             }}
                           />
                         ) : (
@@ -115,7 +115,7 @@ export default function ProductsPage() {
                             style={{
                               width: 44,
                               height: 44,
-                              background: "#fbcfe8",
+                              background: "#fce7f3",
                               border: "1px solid #fbcfe8",
                             }}
                           >
@@ -133,7 +133,7 @@ export default function ProductsPage() {
                       <td className="px-6 py-4">
                         <span
                           className="font-heading font-semibold"
-                          style={{ fontSize: 14, color: "#111827" }}
+                          style={{ fontSize: 14, color: "#0f172a" }}
                         >
                           {product.name}
                         </span>
@@ -142,17 +142,17 @@ export default function ProductsPage() {
                       {/* Description */}
                       <td
                         className="px-6 py-4 font-body max-w-xs"
-                        style={{ fontSize: 14, color: "#6b7280" }}
+                        style={{ fontSize: 14, color: "#64748b" }}
                       >
                         <span className="line-clamp-1">
-                          {product.description || <span style={{ color: "#d1d5db" }}>—</span>}
+                          {product.description || <span style={{ color: "#cbd5e1" }}>—</span>}
                         </span>
                       </td>
 
                       {/* Price */}
                       <td
                         className="px-6 py-4 font-body"
-                        style={{ fontSize: 14, color: "#111827", fontWeight: 700 }}
+                        style={{ fontSize: 14, color: "#0f172a", fontWeight: 700 }}
                       >
                         ₱{Number(product.price).toFixed(2)}
                       </td>
@@ -177,14 +177,14 @@ export default function ProductsPage() {
                           <button
                             onClick={() => navigate(`/products/${product.id}/edit`)}
                             className="rounded-lg p-2 transition-colors"
-                            style={{ color: "#9ca3af" }}
+                            style={{ color: "#cbd5e1" }}
                             onMouseOver={e => {
-                              (e.currentTarget as HTMLElement).style.background = "#f3f4f6";
+                              (e.currentTarget as HTMLElement).style.background = "#f5f6f8";
                               (e.currentTarget as HTMLElement).style.color = "#ec4899";
                             }}
                             onMouseOut={e => {
                               (e.currentTarget as HTMLElement).style.background = "transparent";
-                              (e.currentTarget as HTMLElement).style.color = "#9ca3af";
+                              (e.currentTarget as HTMLElement).style.color = "#cbd5e1";
                             }}
                             aria-label={`Edit ${product.name}`}
                           >
@@ -193,14 +193,14 @@ export default function ProductsPage() {
                           <button
                             onClick={() => setDeleteTarget(product)}
                             className="rounded-lg p-2 transition-colors"
-                            style={{ color: "#9ca3af" }}
+                            style={{ color: "#cbd5e1" }}
                             onMouseOver={e => {
                               (e.currentTarget as HTMLElement).style.background = "#fee2e2";
                               (e.currentTarget as HTMLElement).style.color = "#ef4444";
                             }}
                             onMouseOut={e => {
                               (e.currentTarget as HTMLElement).style.background = "transparent";
-                              (e.currentTarget as HTMLElement).style.color = "#9ca3af";
+                              (e.currentTarget as HTMLElement).style.color = "#cbd5e1";
                             }}
                             aria-label={`Delete ${product.name}`}
                           >

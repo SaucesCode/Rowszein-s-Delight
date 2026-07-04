@@ -102,11 +102,11 @@ export default function SalesPage() {
       />
 
       {/* Date filter strip */}
-      <div className="bento-card p-4 flex flex-wrap items-center gap-4 mb-6">
+      <div className="premium-card p-4 flex flex-wrap items-center gap-4 mb-6">
         <div className="flex items-center gap-2">
           <label
             className="font-body flex-shrink-0 text-sm"
-            style={{ color: "#6b7280" }}
+            style={{ color: "#64748b" }}
           >
             From
           </label>
@@ -124,7 +124,7 @@ export default function SalesPage() {
         <div className="flex items-center gap-2">
           <label
             className="font-body flex-shrink-0 text-sm"
-            style={{ color: "#6b7280" }}
+            style={{ color: "#64748b" }}
           >
             To
           </label>
@@ -143,7 +143,7 @@ export default function SalesPage() {
           <button
             onClick={clearFilters}
             className="btn-ghost"
-            style={{ fontSize: 13, padding: "6px 12px", color: "#6b7280" }}
+            style={{ fontSize: 13, padding: "6px 12px", color: "#64748b" }}
           >
             <X size={14} strokeWidth={2} aria-hidden="true" />
             Clear
@@ -156,7 +156,7 @@ export default function SalesPage() {
 
       {/* Error */}
       {isError && (
-        <div className="bento-card p-8 text-center">
+        <div className="premium-card p-8 text-center">
           <p className="font-body text-sm" style={{ color: "#ef4444" }}>
             Failed to load sales. Please try refreshing the page.
           </p>
@@ -165,7 +165,7 @@ export default function SalesPage() {
 
       {/* Empty */}
       {!isLoading && !isError && sales.length === 0 && (
-        <div className="bento-card">
+        <div className="premium-card">
           <EmptyState
             icon={ShoppingCart}
             title={hasFilters ? "No sales found for selected dates" : "No sales recorded yet"}
@@ -193,7 +193,7 @@ export default function SalesPage() {
       {/* Table */}
       {!isLoading && !isError && sales.length > 0 && (
         <>
-          <div className="bento-card overflow-hidden">
+          <div className="premium-card overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm" style={{ minWidth: 560 }}>
                 <thead>
@@ -216,14 +216,14 @@ export default function SalesPage() {
                       key={sale.id}
                       className="transition-colors hover:bg-gray-50"
                       style={{
-                        borderBottom: "1px solid #e5e7eb",
+                        borderBottom: "1px solid #e2e8f0",
                         background: idx % 2 !== 0 ? "#f9fafb" : undefined,
                       }}
                     >
                       {/* Date */}
                       <td
                         className="px-6 py-4 font-body"
-                        style={{ fontSize: 14, color: "#111827", fontWeight: 600, whiteSpace: "nowrap" }}
+                        style={{ fontSize: 14, color: "#0f172a", fontWeight: 600, whiteSpace: "nowrap" }}
                       >
                         {new Date(sale.date).toLocaleDateString("en-PH", {
                           year: "numeric",
@@ -236,7 +236,7 @@ export default function SalesPage() {
                       <td className="px-6 py-4">
                         <span
                           className="font-heading font-semibold"
-                          style={{ fontSize: 14, color: "#111827" }}
+                          style={{ fontSize: 14, color: "#0f172a" }}
                         >
                           {(sale.items?.length ?? 0)} item{(sale.items?.length ?? 0) !== 1 ? "s" : ""}
                         </span>
@@ -245,17 +245,17 @@ export default function SalesPage() {
                       {/* Notes */}
                       <td
                         className="px-6 py-4 font-body max-w-xs"
-                        style={{ fontSize: 14, color: "#6b7280" }}
+                        style={{ fontSize: 14, color: "#64748b" }}
                       >
                         <span className="line-clamp-1">
-                          {sale.notes || <span style={{ color: "#d1d5db" }}>—</span>}
+                          {sale.notes || <span style={{ color: "#cbd5e1" }}>—</span>}
                         </span>
                       </td>
 
                       {/* Total */}
                       <td
                         className="px-6 py-4 font-body"
-                        style={{ fontSize: 14, color: "#111827", fontWeight: 700 }}
+                        style={{ fontSize: 14, color: "#0f172a", fontWeight: 700 }}
                       >
                         ₱{Number(sale.total_amount).toFixed(2)}
                       </td>
@@ -266,14 +266,14 @@ export default function SalesPage() {
                           <button
                             onClick={() => navigate(`/sales/${sale.id}/edit`)}
                             className="rounded-lg p-2 transition-colors"
-                            style={{ color: "#9ca3af" }}
+                            style={{ color: "#cbd5e1" }}
                             onMouseOver={e => {
-                              (e.currentTarget as HTMLElement).style.background = "#f3f4f6";
+                              (e.currentTarget as HTMLElement).style.background = "#f5f6f8";
                               (e.currentTarget as HTMLElement).style.color = "#ec4899";
                             }}
                             onMouseOut={e => {
                               (e.currentTarget as HTMLElement).style.background = "transparent";
-                              (e.currentTarget as HTMLElement).style.color = "#9ca3af";
+                              (e.currentTarget as HTMLElement).style.color = "#cbd5e1";
                             }}
                             aria-label={`Edit sale`}
                           >
@@ -282,14 +282,14 @@ export default function SalesPage() {
                           <button
                             onClick={() => setDeleteTarget(sale)}
                             className="rounded-lg p-2 transition-colors"
-                            style={{ color: "#9ca3af" }}
+                            style={{ color: "#cbd5e1" }}
                             onMouseOver={e => {
                               (e.currentTarget as HTMLElement).style.background = "#fee2e2";
                               (e.currentTarget as HTMLElement).style.color = "#ef4444";
                             }}
                             onMouseOut={e => {
                               (e.currentTarget as HTMLElement).style.background = "transparent";
-                              (e.currentTarget as HTMLElement).style.color = "#9ca3af";
+                              (e.currentTarget as HTMLElement).style.color = "#cbd5e1";
                             }}
                             aria-label={`Delete sale`}
                           >

@@ -10,8 +10,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-  BarChart,
-  Bar,
 } from "recharts";
 import {
   AlertTriangle,
@@ -72,19 +70,19 @@ function getDateRange(period: Period): { date_from: string; date_to: string } {
 function DashboardSkeleton() {
   return (
     <div role="status" aria-label="Loading dashboard…" className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid-3">
         {[1, 2, 3].map(i => (
-          <div key={i} className="bento-card">
+          <div key={i} className="premium-card">
             <div className="skeleton h-12 w-24 mb-4" />
             <div className="skeleton h-8 w-32" />
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bento-card h-80">
+      <div className="grid-2">
+        <div className="premium-card h-80">
           <div className="skeleton h-full" />
         </div>
-        <div className="bento-card h-80">
+        <div className="premium-card h-80">
           <div className="skeleton h-full" />
         </div>
       </div>
@@ -108,7 +106,7 @@ export default function DashboardPage() {
 
   if (isError) {
     return (
-      <div className="bento-card p-8 text-center">
+      <div className="premium-card p-8 text-center">
         <p className="font-body text-sm" style={{ color: "#ef4444" }}>
           Failed to load dashboard. Please try refreshing the page.
         </p>
@@ -126,14 +124,14 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      {/* Period Selector */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      {/* Header + Period Selector */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h2 className="font-heading font-bold text-lg" style={{ color: "#111827" }}>
+          <h2 className="font-heading font-bold text-2xl" style={{ color: "#0f172a" }}>
             Performance Overview
           </h2>
-          <p className="font-body text-sm mt-1" style={{ color: "#6b7280" }}>
-            Track your business metrics at a glance
+          <p className="font-body text-sm mt-1" style={{ color: "#64748b" }}>
+            Track your business metrics and trends
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -141,12 +139,16 @@ export default function DashboardPage() {
             <button
               key={p.value}
               onClick={() => setPeriod(p.value)}
-              className={clsx(
-                "px-4 py-2 rounded-lg font-body text-sm font-medium transition-all",
+              className={`px-4 py-2 rounded-lg font-body text-sm font-medium transition-all ${
                 period === p.value
-                  ? "bg-gradient-to-r from-pink-500 to-pink-600 text-white shadow-md"
-                  : "bg-white text-gray-600 border border-gray-200 hover:border-gray-300"
-              )}
+                  ? "bg-ec4899 text-white shadow-sm"
+                  : "bg-f5f6f8 text-0f172a border border-e2e8f0 hover:border-cbd5e1"
+              }`}
+              style={
+                period === p.value
+                  ? { background: "#ec4899", color: "#ffffff" }
+                  : { background: "#f5f6f8", color: "#0f172a", borderColor: "#e2e8f0" }
+              }
             >
               {p.label}
             </button>
@@ -156,9 +158,9 @@ export default function DashboardPage() {
 
       {/* Custom date range */}
       {period === "custom" && (
-        <div className="bento-card p-4 flex flex-wrap items-center gap-4 animate-slide-up">
+        <div className="premium-card p-4 flex flex-wrap items-center gap-4 animate-slide-up">
           <div className="flex items-center gap-2">
-            <label className="font-body text-sm" style={{ color: "#6b7280" }}>
+            <label className="font-body text-sm" style={{ color: "#64748b" }}>
               From
             </label>
             <input
@@ -170,7 +172,7 @@ export default function DashboardPage() {
             />
           </div>
           <div className="flex items-center gap-2">
-            <label className="font-body text-sm" style={{ color: "#6b7280" }}>
+            <label className="font-body text-sm" style={{ color: "#64748b" }}>
               To
             </label>
             <input
@@ -189,7 +191,7 @@ export default function DashboardPage() {
         <button
           type="button"
           onClick={() => navigate("/ingredients")}
-          className="alert-low-stock w-full text-left animate-slide-up cursor-pointer hover:bg-yellow-50 transition-colors"
+          className="alert-low-stock w-full text-left animate-slide-up cursor-pointer hover:bg-yellow-100 transition-colors"
         >
           <AlertTriangle size={20} className="flex-shrink-0 mt-0.5" strokeWidth={2} aria-hidden="true" />
           <div>
@@ -203,8 +205,8 @@ export default function DashboardPage() {
         </button>
       )}
 
-      {/* Key Metrics - Bento Grid */}
-      <div className="bento-grid-3">
+      {/* Key Metrics */}
+      <div className="grid-3">
         <StatCard
           label="Total Sales"
           value={formatPeso(totals.total_sales)}
@@ -241,10 +243,10 @@ export default function DashboardPage() {
 
       {/* This Month Metrics */}
       <div>
-        <h3 className="font-heading font-bold text-base mb-4" style={{ color: "#111827" }}>
+        <h3 className="font-heading font-bold text-lg mb-4" style={{ color: "#0f172a" }}>
           This Month
         </h3>
-        <div className="bento-grid-3">
+        <div className="grid-3">
           <StatCard label="Sales" value={formatPeso(this_month.sales)} accent="blue" />
           <StatCard label="Expenses" value={formatPeso(this_month.expenses)} accent="orange" />
           <StatCard
@@ -263,38 +265,38 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Charts - Bento Grid */}
-      <div className="bento-grid-2">
+      {/* Charts */}
+      <div className="grid-2">
         {/* Area chart */}
-        <div className="bento-card">
-          <h3 className="font-heading font-bold text-base mb-4" style={{ color: "#111827" }}>
+        <div className="premium-card">
+          <h3 className="font-heading font-bold text-lg mb-6" style={{ color: "#0f172a" }}>
             Monthly Trends
           </h3>
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={chart_data}>
               <defs>
                 <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2} />
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.15} />
                   <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="colorExpenses" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.2} />
+                  <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.15} />
                   <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.15} />
                   <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
               <XAxis
                 dataKey="month"
-                tick={{ fontSize: 12, fill: "#6b7280", fontFamily: "Inter" }}
+                tick={{ fontSize: 12, fill: "#64748b", fontFamily: "Inter" }}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis
-                tick={{ fontSize: 12, fill: "#6b7280", fontFamily: "Inter" }}
+                tick={{ fontSize: 12, fill: "#64748b", fontFamily: "Inter" }}
                 axisLine={false}
                 tickLine={false}
                 tickFormatter={v => `₱${(v / 1000).toFixed(0)}k`}
@@ -304,13 +306,13 @@ export default function DashboardPage() {
                 contentStyle={{
                   fontSize: 12,
                   borderRadius: 8,
-                  border: "1px solid #e5e7eb",
+                  border: "1px solid #e2e8f0",
                   background: "#ffffff",
-                  color: "#111827",
+                  color: "#0f172a",
                   fontFamily: "Inter",
                 }}
               />
-              <Legend wrapperStyle={{ fontSize: 12, fontFamily: "Inter", color: "#6b7280" }} />
+              <Legend wrapperStyle={{ fontSize: 12, fontFamily: "Inter", color: "#64748b" }} />
               <Area
                 type="monotone"
                 dataKey="sales"
@@ -340,15 +342,15 @@ export default function DashboardPage() {
         </div>
 
         {/* Top products */}
-        <div className="bento-card">
-          <h3 className="font-heading font-bold text-base mb-4" style={{ color: "#111827" }}>
+        <div className="premium-card">
+          <h3 className="font-heading font-bold text-lg mb-6" style={{ color: "#0f172a" }}>
             Top Products
           </h3>
 
           {best_selling.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Zap size={32} className="text-gray-300 mb-3" />
-              <p className="font-body text-sm" style={{ color: "#9ca3af" }}>
+              <p className="font-body text-sm" style={{ color: "#cbd5e1" }}>
                 No sales data yet
               </p>
             </div>
@@ -357,12 +359,12 @@ export default function DashboardPage() {
               {best_selling.map((item: any, index: number) => (
                 <div key={item.product_id} className="flex items-center gap-3 pb-3 border-b border-gray-100 last:border-0">
                   <div
-                    className="flex items-center justify-center rounded-full font-heading font-bold flex-shrink-0"
+                    className="flex items-center justify-center rounded-lg font-heading font-bold flex-shrink-0"
                     style={{
                       width: 32,
                       height: 32,
-                      background: index === 0 ? "#fbcfe8" : "#f3f4f6",
-                      color: index === 0 ? "#ec4899" : "#6b7280",
+                      background: index === 0 ? "#fce7f3" : "#f5f6f8",
+                      color: index === 0 ? "#ec4899" : "#64748b",
                       fontSize: 13,
                     }}
                   >
@@ -371,11 +373,11 @@ export default function DashboardPage() {
                   <div className="flex-1 min-w-0">
                     <p
                       className="font-heading font-semibold text-sm truncate"
-                      style={{ color: "#111827" }}
+                      style={{ color: "#0f172a" }}
                     >
                       {item.product_name}
                     </p>
-                    <p className="font-body text-xs mt-1" style={{ color: "#6b7280" }}>
+                    <p className="font-body text-xs mt-1" style={{ color: "#64748b" }}>
                       {item.total_quantity} sold · {formatPeso(item.total_revenue)}
                     </p>
                   </div>
@@ -387,8 +389,4 @@ export default function DashboardPage() {
       </div>
     </div>
   );
-}
-
-function clsx(...classes: (string | undefined | false)[]): string {
-  return classes.filter(Boolean).join(" ");
 }

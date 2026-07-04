@@ -12,60 +12,22 @@ import {
   Menu,
   X,
   CakeSlice,
-  ChevronDown,
 } from "lucide-react";
 import { clsx } from "clsx";
 
-/* ─────────────────────────────────────────────
-   NAV CONFIG
-   ───────────────────────────────────────────── */
 const NAV_ITEMS = [
-  {
-    to: "/dashboard",
-    label: "Dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    to: "/ingredients",
-    label: "Ingredients",
-    icon: Package,
-  },
-  {
-    to: "/products",
-    label: "Products",
-    icon: CakeSlice,
-  },
-  {
-    to: "/recipes",
-    label: "Recipes",
-    icon: BookOpen,
-  },
-  {
-    to: "/expenses",
-    label: "Expenses",
-    icon: Receipt,
-  },
-  {
-    to: "/sales",
-    label: "Sales",
-    icon: ShoppingCart,
-  },
-  {
-    to: "/profit-margins",
-    label: "Profit Margins",
-    icon: TrendingUp,
-  },
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/ingredients", label: "Ingredients", icon: Package },
+  { to: "/products", label: "Products", icon: CakeSlice },
+  { to: "/recipes", label: "Recipes", icon: BookOpen },
+  { to: "/expenses", label: "Expenses", icon: Receipt },
+  { to: "/sales", label: "Sales", icon: ShoppingCart },
+  { to: "/profit-margins", label: "Profit Margins", icon: TrendingUp },
 ] as const;
 
-/* ─────────────────────────────────────────────
-   HOOKS — derive current page meta from route
-   ───────────────────────────────────────────── */
 function usePageMeta() {
   const location = useLocation();
-
-  const match = NAV_ITEMS.find((item) =>
-    location.pathname.startsWith(item.to),
-  );
+  const match = NAV_ITEMS.find((item) => location.pathname.startsWith(item.to));
 
   if (!match) {
     return { title: "Rowszein's Delight", description: "" };
@@ -75,24 +37,15 @@ function usePageMeta() {
   const isEdit = location.pathname.endsWith("/edit") || /\/\d+\/edit$/.test(location.pathname);
 
   if (isNew) {
-    return {
-      title: `Add ${match.label.replace(/s$/, "")}`,
-      description: "",
-    };
+    return { title: `Add ${match.label.replace(/s$/, "")}`, description: "" };
   }
   if (isEdit) {
-    return {
-      title: `Edit ${match.label.replace(/s$/, "")}`,
-      description: "",
-    };
+    return { title: `Edit ${match.label.replace(/s$/, "")}`, description: "" };
   }
 
   return { title: match.label, description: "" };
 }
 
-/* ─────────────────────────────────────────────
-   USER AVATAR
-   ───────────────────────────────────────────── */
 function UserAvatar({ username }: { username: string }) {
   const initials = username
     .split(/[\s_-]/)
@@ -102,13 +55,13 @@ function UserAvatar({ username }: { username: string }) {
 
   return (
     <div
-      className="flex items-center justify-center rounded-full text-xs font-semibold font-heading select-none"
+      className="flex items-center justify-center rounded-lg text-xs font-semibold font-heading select-none"
       style={{
         width: 36,
         height: 36,
-        background: "linear-gradient(135deg, #ec4899 0%, #db2777 100%)",
+        background: "#ec4899",
         color: "#ffffff",
-        boxShadow: "0 2px 8px rgba(236, 72, 153, 0.25)",
+        boxShadow: "0 2px 4px rgba(236, 72, 153, 0.15)",
       }}
       aria-hidden="true"
     >
@@ -117,23 +70,20 @@ function UserAvatar({ username }: { username: string }) {
   );
 }
 
-/* ─────────────────────────────────────────────
-   SIDEBAR NAV CONTENT
-   ───────────────────────────────────────────── */
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const logout = useLogout();
 
   return (
     <div className="flex h-full flex-col">
-      {/* Logo / shop name */}
+      {/* Logo */}
       <div className="flex items-center gap-3 px-6 py-6 border-b border-gray-200">
         <div
           className="flex items-center justify-center rounded-lg flex-shrink-0"
           style={{
             width: 40,
             height: 40,
-            background: "linear-gradient(135deg, #ec4899 0%, #db2777 100%)",
-            boxShadow: "0 2px 8px rgba(236, 72, 153, 0.2)",
+            background: "#ec4899",
+            boxShadow: "0 2px 4px rgba(236, 72, 153, 0.15)",
           }}
         >
           <CakeSlice size={20} color="#ffffff" strokeWidth={2.5} />
@@ -141,13 +91,13 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         <div>
           <p
             className="font-heading font-bold leading-tight"
-            style={{ fontSize: 15, color: "#111827" }}
+            style={{ fontSize: 15, color: "#0f172a" }}
           >
             Rowszein's
           </p>
           <p
             className="font-heading font-semibold leading-tight"
-            style={{ fontSize: 13, color: "#6b7280", marginTop: 2 }}
+            style={{ fontSize: 13, color: "#64748b", marginTop: 2 }}
           >
             Delight
           </p>
@@ -183,30 +133,19 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           aria-label="Logout"
         >
           <LogOut size={18} strokeWidth={2} aria-hidden="true" />
-          <span>
-            {logout.isPending ? "Logging out..." : "Logout"}
-          </span>
+          <span>{logout.isPending ? "Logging out..." : "Logout"}</span>
         </button>
       </div>
     </div>
   );
 }
 
-/* ─────────────────────────────────────────────
-   MOBILE SIDEBAR
-   ───────────────────────────────────────────── */
-function MobileSidebar({
-  open,
-  onClose,
-}: {
-  open: boolean;
-  onClose: () => void;
-}) {
+function MobileSidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
     <>
       {open && (
         <div
-          className="fixed inset-0 z-40 bg-black/30 md:hidden animate-fade-in"
+          className="fixed inset-0 z-40 bg-black/20 md:hidden animate-fade-in"
           onClick={onClose}
           aria-hidden="true"
         />
@@ -218,7 +157,7 @@ function MobileSidebar({
           "transition-transform duration-250 ease-out",
           open ? "translate-x-0" : "-translate-x-full",
         )}
-        style={{ background: "#ffffff", borderRight: "1px solid #e5e7eb" }}
+        style={{ background: "#ffffff", borderRight: "1px solid #e2e8f0" }}
         role="dialog"
         aria-modal="true"
         aria-label="Navigation menu"
@@ -237,14 +176,7 @@ function MobileSidebar({
   );
 }
 
-/* ─────────────────────────────────────────────
-   TOP NAVBAR
-   ───────────────────────────────────────────── */
-function TopNavbar({
-  onMenuClick,
-}: {
-  onMenuClick: () => void;
-}) {
+function TopNavbar({ onMenuClick }: { onMenuClick: () => void }) {
   const { data: user } = useMe();
   const { title } = usePageMeta();
 
@@ -268,7 +200,7 @@ function TopNavbar({
         <div className="min-w-0">
           <h1
             className="font-heading font-bold truncate"
-            style={{ fontSize: 20, color: "#111827" }}
+            style={{ fontSize: 20, color: "#0f172a" }}
           >
             {title}
           </h1>
@@ -281,7 +213,7 @@ function TopNavbar({
             <div>
               <p
                 className="font-body text-sm font-medium"
-                style={{ color: "#111827" }}
+                style={{ color: "#0f172a" }}
               >
                 {user.username}
               </p>
@@ -294,16 +226,13 @@ function TopNavbar({
   );
 }
 
-/* ─────────────────────────────────────────────
-   MAIN LAYOUT
-   ───────────────────────────────────────────── */
 export default function MainLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <div
       className="flex h-screen overflow-hidden"
-      style={{ background: "#f9fafb" }}
+      style={{ background: "#fafbfc" }}
     >
       {/* Desktop sidebar */}
       <aside
@@ -311,17 +240,14 @@ export default function MainLayout() {
         style={{
           width: 260,
           background: "#ffffff",
-          borderRight: "1px solid #e5e7eb",
+          borderRight: "1px solid #e2e8f0",
         }}
       >
         <SidebarContent />
       </aside>
 
       {/* Mobile sidebar */}
-      <MobileSidebar
-        open={mobileOpen}
-        onClose={() => setMobileOpen(false)}
-      />
+      <MobileSidebar open={mobileOpen} onClose={() => setMobileOpen(false)} />
 
       {/* Main content area */}
       <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
@@ -329,7 +255,7 @@ export default function MainLayout() {
 
         <main
           className="flex-1 overflow-y-auto"
-          style={{ background: "#f9fafb" }}
+          style={{ background: "#fafbfc" }}
           id="main-content"
         >
           <div className="p-6 md:p-8 max-w-7xl mx-auto animate-fade-in">

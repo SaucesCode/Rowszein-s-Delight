@@ -65,7 +65,7 @@ export default function IngredientsPage() {
 
       {/* Error */}
       {isError && (
-        <div className="bento-card p-8 text-center">
+        <div className="premium-card p-8 text-center">
           <p className="font-body text-sm" style={{ color: "#ef4444" }}>
             Failed to load ingredients. Please try refreshing the page.
           </p>
@@ -74,7 +74,7 @@ export default function IngredientsPage() {
 
       {/* Empty */}
       {!isLoading && !isError && ingredients.length === 0 && (
-        <div className="bento-card">
+        <div className="premium-card">
           <EmptyState
             icon={Package}
             title="No ingredients yet"
@@ -92,7 +92,7 @@ export default function IngredientsPage() {
       {/* Table */}
       {!isLoading && !isError && ingredients.length > 0 && (
         <>
-          <div className="bento-card overflow-hidden">
+          <div className="premium-card overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm" style={{ minWidth: 680 }}>
                 <thead>
@@ -130,7 +130,7 @@ export default function IngredientsPage() {
                             : "bg-gray-50",
                       )}
                       style={{
-                        borderBottom: "1px solid #e5e7eb",
+                        borderBottom: "1px solid #e2e8f0",
                       }}
                     >
                       {/* Name + badge */}
@@ -138,7 +138,7 @@ export default function IngredientsPage() {
                         <div className="flex items-center gap-2">
                           <span
                             className="font-heading font-semibold"
-                            style={{ fontSize: 14, color: "#111827" }}
+                            style={{ fontSize: 14, color: "#0f172a" }}
                           >
                             {ingredient.name}
                           </span>
@@ -159,7 +159,7 @@ export default function IngredientsPage() {
                         className="px-6 py-4 font-body"
                         style={{
                           fontSize: 14,
-                          color: ingredient.is_low_stock ? "#dc2626" : "#111827",
+                          color: ingredient.is_low_stock ? "#dc2626" : "#0f172a",
                           fontWeight: ingredient.is_low_stock ? 700 : 500,
                         }}
                       >
@@ -168,34 +168,34 @@ export default function IngredientsPage() {
 
                       <td
                         className="px-6 py-4 font-body"
-                        style={{ fontSize: 14, color: "#6b7280" }}
+                        style={{ fontSize: 14, color: "#64748b" }}
                       >
                         {ingredient.unit}
                       </td>
 
                       <td
                         className="px-6 py-4 font-body"
-                        style={{ fontSize: 14, color: "#6b7280" }}
+                        style={{ fontSize: 14, color: "#64748b" }}
                       >
                         {ingredient.minimum_stock > 0 ? (
                           Number(ingredient.minimum_stock).toLocaleString("en-PH")
                         ) : (
-                          <span style={{ color: "#d1d5db" }}>—</span>
+                          <span style={{ color: "#cbd5e1" }}>—</span>
                         )}
                       </td>
 
                       <td
                         className="px-6 py-4 font-body"
-                        style={{ fontSize: 14, color: "#111827", fontWeight: 600 }}
+                        style={{ fontSize: 14, color: "#0f172a", fontWeight: 600 }}
                       >
                         ₱{Number(ingredient.cost_per_unit).toFixed(2)}
                       </td>
 
                       <td
                         className="px-6 py-4 font-body"
-                        style={{ fontSize: 14, color: "#6b7280" }}
+                        style={{ fontSize: 14, color: "#64748b" }}
                       >
-                        {ingredient.supplier || <span style={{ color: "#d1d5db" }}>—</span>}
+                        {ingredient.supplier || <span style={{ color: "#cbd5e1" }}>—</span>}
                       </td>
 
                       {/* Actions */}
@@ -204,14 +204,14 @@ export default function IngredientsPage() {
                           <button
                             onClick={() => navigate(`/ingredients/${ingredient.id}/edit`)}
                             className="rounded-lg p-2 transition-colors"
-                            style={{ color: "#9ca3af" }}
+                            style={{ color: "#cbd5e1" }}
                             onMouseOver={e => {
-                              (e.currentTarget as HTMLElement).style.background = "#f3f4f6";
+                              (e.currentTarget as HTMLElement).style.background = "#f5f6f8";
                               (e.currentTarget as HTMLElement).style.color = "#ec4899";
                             }}
                             onMouseOut={e => {
                               (e.currentTarget as HTMLElement).style.background = "transparent";
-                              (e.currentTarget as HTMLElement).style.color = "#9ca3af";
+                              (e.currentTarget as HTMLElement).style.color = "#cbd5e1";
                             }}
                             aria-label={`Edit ${ingredient.name}`}
                           >
@@ -220,14 +220,14 @@ export default function IngredientsPage() {
                           <button
                             onClick={() => setDeleteTarget(ingredient)}
                             className="rounded-lg p-2 transition-colors"
-                            style={{ color: "#9ca3af" }}
+                            style={{ color: "#cbd5e1" }}
                             onMouseOver={e => {
                               (e.currentTarget as HTMLElement).style.background = "#fee2e2";
                               (e.currentTarget as HTMLElement).style.color = "#ef4444";
                             }}
                             onMouseOut={e => {
                               (e.currentTarget as HTMLElement).style.background = "transparent";
-                              (e.currentTarget as HTMLElement).style.color = "#9ca3af";
+                              (e.currentTarget as HTMLElement).style.color = "#cbd5e1";
                             }}
                             aria-label={`Delete ${ingredient.name}`}
                           >
