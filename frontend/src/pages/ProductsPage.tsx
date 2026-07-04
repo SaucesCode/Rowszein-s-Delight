@@ -35,7 +35,7 @@ export default function ProductsPage() {
         description="Manage your dessert menu and pricing"
         action={
           <button onClick={() => navigate("/products/new")} className="btn-primary">
-            <Plus size={15} aria-hidden="true" />
+            <Plus size={16} strokeWidth={2.5} aria-hidden="true" />
             Add Product
           </button>
         }
@@ -44,8 +44,8 @@ export default function ProductsPage() {
       {isLoading && <SkeletonTable rows={6} cols={6} />}
 
       {isError && (
-        <div className="card-surface p-6 text-center">
-          <p className="font-body" style={{ fontSize: 13, color: "#EF4444" }}>
+        <div className="card-surface p-8 text-center">
+          <p className="font-body text-sm" style={{ color: "#EF4444" }}>
             Failed to load products. Please try refreshing the page.
           </p>
         </div>
@@ -59,7 +59,7 @@ export default function ProductsPage() {
             description="Add your first product to start building your dessert menu."
             action={
               <button onClick={() => navigate("/products/new")} className="btn-primary">
-                <Plus size={15} aria-hidden="true" />
+                <Plus size={16} strokeWidth={2.5} aria-hidden="true" />
                 Add Product
               </button>
             }
@@ -70,11 +70,10 @@ export default function ProductsPage() {
       {!isLoading && !isError && products.length > 0 && (
         <>
           <div
-            className="overflow-hidden overflow-x-auto"
+            className="table-container overflow-hidden overflow-x-auto"
             style={{
               background: "#FFFDFB",
               border: "1px solid #E8E6E1",
-              borderRadius: 10,
             }}
           >
             <table className="w-full" style={{ minWidth: 620 }}>
@@ -83,7 +82,7 @@ export default function ProductsPage() {
                   {["Image", "Name", "Description", "Price", "Status", "Actions"].map(col => (
                     <th
                       key={col}
-                      className="px-4 py-3 text-left"
+                      className="px-5 py-4 text-left"
                       style={{ whiteSpace: "nowrap" }}
                     >
                       {col}
@@ -96,22 +95,22 @@ export default function ProductsPage() {
                 {products.map((product, idx) => (
                   <tr
                     key={product.id}
-                    className="table-row-hover transition-colors"
+                    className="transition-colors hover:bg-brand-pink-light"
                     style={{
                       borderBottom: "1px solid #F5EDE0",
                       background: idx % 2 !== 0 ? "#FFF8F0" : undefined,
                     }}
                   >
                     {/* Image */}
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-4">
                       {product.image_url ? (
                         <img
                           src={product.image_url}
                           alt={product.name}
                           className="rounded-lg object-cover"
                           style={{
-                            width: 40,
-                            height: 40,
+                            width: 44,
+                            height: 44,
                             border: "1px solid #F5EDE0",
                           }}
                         />
@@ -119,15 +118,16 @@ export default function ProductsPage() {
                         <div
                           className="flex items-center justify-center rounded-lg"
                           style={{
-                            width: 40,
-                            height: 40,
+                            width: 44,
+                            height: 44,
                             background: "#FFF0F7",
                             border: "1px solid #FFD6E7",
                           }}
                         >
                           <ImageOff
-                            size={14}
+                            size={16}
                             style={{ color: "#FF6FAE" }}
+                            strokeWidth={2}
                             aria-hidden="true"
                           />
                         </div>
@@ -135,10 +135,10 @@ export default function ProductsPage() {
                     </td>
 
                     {/* Name */}
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-4">
                       <span
                         className="font-heading font-medium"
-                        style={{ fontSize: 13, color: "#6B4226" }}
+                        style={{ fontSize: 14, color: "#6B4226", fontWeight: 600 }}
                       >
                         {product.name}
                       </span>
@@ -146,8 +146,8 @@ export default function ProductsPage() {
 
                     {/* Description */}
                     <td
-                      className="px-4 py-3 font-body max-w-xs"
-                      style={{ fontSize: 13, color: "#7C7870" }}
+                      className="px-5 py-4 font-body max-w-xs"
+                      style={{ fontSize: 14, color: "#7C7870" }}
                     >
                       <span className="line-clamp-1">
                         {product.description || <span style={{ color: "#D1CEC7" }}>—</span>}
@@ -156,14 +156,14 @@ export default function ProductsPage() {
 
                     {/* Price */}
                     <td
-                      className="px-4 py-3 font-body"
-                      style={{ fontSize: 13, color: "#3D3A35", fontWeight: 500 }}
+                      className="px-5 py-4 font-body"
+                      style={{ fontSize: 14, color: "#3D3A35", fontWeight: 600 }}
                     >
                       ₱{Number(product.price).toFixed(2)}
                     </td>
 
                     {/* Status badge */}
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-4">
                       <span
                         className={clsx(
                           "badge",
@@ -175,11 +175,11 @@ export default function ProductsPage() {
                     </td>
 
                     {/* Actions */}
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-1">
+                    <td className="px-5 py-4">
+                      <div className="table-cell-action">
                         <button
                           onClick={() => navigate(`/products/${product.id}/edit`)}
-                          className="rounded-lg p-1.5 transition-colors"
+                          className="rounded-lg p-2 transition-colors"
                           style={{ color: "#A8A49B" }}
                           onMouseOver={e => {
                             (e.currentTarget as HTMLElement).style.background = "#FFF0F7";
@@ -191,11 +191,11 @@ export default function ProductsPage() {
                           }}
                           aria-label={`Edit ${product.name}`}
                         >
-                          <Pencil size={14} aria-hidden="true" />
+                          <Pencil size={16} strokeWidth={2} aria-hidden="true" />
                         </button>
                         <button
                           onClick={() => setDeleteTarget(product)}
-                          className="rounded-lg p-1.5 transition-colors"
+                          className="rounded-lg p-2 transition-colors"
                           style={{ color: "#A8A49B" }}
                           onMouseOver={e => {
                             (e.currentTarget as HTMLElement).style.background = "#FEF2F2";
@@ -207,7 +207,7 @@ export default function ProductsPage() {
                           }}
                           aria-label={`Delete ${product.name}`}
                         >
-                          <Trash2 size={14} aria-hidden="true" />
+                          <Trash2 size={16} strokeWidth={2} aria-hidden="true" />
                         </button>
                       </div>
                     </td>
@@ -221,6 +221,7 @@ export default function ProductsPage() {
         </>
       )}
 
+      {/* Delete confirm dialog */}
       <ConfirmDialog
         open={!!deleteTarget}
         title="Delete product?"

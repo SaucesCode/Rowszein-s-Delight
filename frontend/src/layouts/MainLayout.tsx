@@ -114,11 +114,11 @@ function UserAvatar({ username }: { username: string }) {
     <div
       className="flex items-center justify-center rounded-full text-xs font-semibold font-heading select-none"
       style={{
-        width: 30,
-        height: 30,
+        width: 32,
+        height: 32,
         background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)",
         color: "#FFFFFF",
-        boxShadow: "0 2px 6px rgba(255,111,174,0.35)",
+        boxShadow: "0 2px 8px rgba(255,111,174,0.3)",
         flexShrink: 0,
       }}
       aria-hidden="true"
@@ -139,30 +139,30 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     <div className="flex h-full flex-col">
       {/* Logo / shop name */}
       <div
-        className="flex items-center gap-2.5 px-5 py-4"
+        className="flex items-center gap-3 px-5 py-5"
         style={{ borderBottom: "1px solid #F5EDE0" }}
       >
         <div
           className="flex items-center justify-center rounded-lg flex-shrink-0"
           style={{
-            width: 32,
-            height: 32,
+            width: 36,
+            height: 36,
             background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)",
-            boxShadow: "0 2px 6px rgba(255,111,174,0.30)",
+            boxShadow: "0 2px 8px rgba(255,111,174,0.25)",
           }}
         >
-          <CakeSlice size={17} color="#FFFFFF" />
+          <CakeSlice size={18} color="#FFFFFF" strokeWidth={2.5} />
         </div>
         <div>
           <p
-            className="font-heading font-semibold leading-none"
-            style={{ fontSize: 13, color: "#6B4226" }}
+            className="font-heading font-semibold leading-tight"
+            style={{ fontSize: 14, color: "#6B4226" }}
           >
             Rowszein's
           </p>
           <p
-            className="font-heading font-medium leading-none mt-0.5"
-            style={{ fontSize: 11, color: "#9B6644" }}
+            className="font-heading font-medium leading-tight"
+            style={{ fontSize: 12, color: "#9B6644", marginTop: 2 }}
           >
             Delight
           </p>
@@ -170,7 +170,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </div>
 
       {/* Nav items */}
-      <nav className="flex-1 px-3 py-4 space-y-0.5" aria-label="Main navigation">
+      <nav className="flex-1 px-3 py-5 space-y-1" aria-label="Main navigation">
         {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
@@ -183,22 +183,24 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
               )
             }
           >
-            <Icon size={16} aria-hidden="true" />
-            {label}
+            <Icon size={17} aria-hidden="true" strokeWidth={2} />
+            <span className="text-sm">{label}</span>
           </NavLink>
         ))}
       </nav>
 
       {/* Logout */}
-      <div className="px-3 py-4" style={{ borderTop: "1px solid #F5EDE0" }}>
+      <div className="px-3 py-5" style={{ borderTop: "1px solid #F5EDE0" }}>
         <button
           onClick={() => logout.mutate()}
           disabled={logout.isPending}
           className="nav-item w-full text-left"
           aria-label="Logout"
         >
-          <LogOut size={16} aria-hidden="true" />
-          {logout.isPending ? "Logging out..." : "Logout"}
+          <LogOut size={17} aria-hidden="true" strokeWidth={2} />
+          <span className="text-sm">
+            {logout.isPending ? "Logging out..." : "Logout"}
+          </span>
         </button>
       </div>
     </div>
@@ -242,10 +244,10 @@ function MobileSidebar({
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute right-3 top-3.5 rounded-lg p-1.5 text-warm-500 hover:bg-brand-pink-light hover:text-brand-pink-dark transition-colors"
+          className="absolute right-3 top-4 rounded-lg p-1.5 text-warm-500 hover:bg-brand-pink-light hover:text-brand-pink-dark transition-colors"
           aria-label="Close menu"
         >
-          <X size={16} />
+          <X size={18} strokeWidth={2} />
         </button>
 
         <SidebarContent onNavigate={onClose} />
@@ -267,35 +269,35 @@ function TopNavbar({
 
   return (
     <header
-      className="flex items-center justify-between px-5 py-3 flex-shrink-0"
+      className="flex items-center justify-between px-6 py-4 flex-shrink-0"
       style={{
         background: "#FFFDFB",
         borderBottom: "1px solid #F5EDE0",
-        minHeight: 56,
+        minHeight: 64,
       }}
     >
       {/* Left — hamburger (mobile) + page title */}
-      <div className="flex items-center gap-3 min-w-0">
+      <div className="flex items-center gap-4 min-w-0">
         {/* Hamburger — only visible on mobile */}
         <button
           onClick={onMenuClick}
           className="flex-shrink-0 rounded-lg p-1.5 text-warm-500 hover:bg-brand-pink-light hover:text-brand-pink-dark transition-colors md:hidden"
           aria-label="Open navigation menu"
         >
-          <Menu size={18} />
+          <Menu size={20} strokeWidth={2} />
         </button>
 
         <div className="min-w-0">
           <h1
             className="font-heading font-semibold truncate"
-            style={{ fontSize: 15, color: "#6B4226", lineHeight: 1.3 }}
+            style={{ fontSize: 18, color: "#6B4226", lineHeight: 1.3 }}
           >
             {title}
           </h1>
           {description && (
             <p
               className="truncate hidden sm:block"
-              style={{ fontSize: 12, color: "#9B6644", marginTop: 1 }}
+              style={{ fontSize: 13, color: "#9B6644", marginTop: 3 }}
             >
               {description}
             </p>
@@ -305,10 +307,10 @@ function TopNavbar({
 
       {/* Right — user info */}
       {user && (
-        <div className="flex items-center gap-2.5 flex-shrink-0 ml-4">
+        <div className="flex items-center gap-3 flex-shrink-0 ml-4">
           <span
-            className="hidden sm:block font-body"
-            style={{ fontSize: 13, color: "#7C7870" }}
+            className="hidden sm:block font-body text-sm"
+            style={{ color: "#7C7870" }}
           >
             {user.username}
           </span>
@@ -334,7 +336,7 @@ export default function MainLayout() {
       <aside
         className="hidden md:flex flex-col flex-shrink-0"
         style={{
-          width: 220,
+          width: 240,
           background: "#FFFDFB",
           borderRight: "1px solid #F5EDE0",
         }}
@@ -357,7 +359,7 @@ export default function MainLayout() {
           style={{ background: "#FFF8F0" }}
           id="main-content"
         >
-          <div className="p-5 md:p-6 max-w-300 mx-auto animate-fade-in">
+          <div className="p-6 md:p-8 max-w-1400 mx-auto animate-fade-in">
             <Outlet />
           </div>
         </main>

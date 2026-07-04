@@ -36,7 +36,7 @@ export default function IngredientsPage() {
         description="Manage your inventory and track stock levels"
         action={
           <button onClick={() => navigate("/ingredients/new")} className="btn-primary">
-            <Plus size={15} aria-hidden="true" />
+            <Plus size={16} strokeWidth={2.5} aria-hidden="true" />
             Add Ingredient
           </button>
         }
@@ -44,13 +44,13 @@ export default function IngredientsPage() {
 
       {/* Low stock alert */}
       {lowStockCount > 0 && (
-        <div className="alert-low-stock mb-5 animate-fade-in">
-          <AlertTriangle size={16} className="flex-shrink-0 mt-0.5" aria-hidden="true" />
+        <div className="alert-low-stock mb-6 animate-fade-in">
+          <AlertTriangle size={18} className="flex-shrink-0 mt-0.5" strokeWidth={2} aria-hidden="true" />
           <div>
-            <p className="font-heading font-semibold" style={{ fontSize: 13 }}>
+            <p className="font-heading font-semibold text-sm" style={{ color: "#92400e" }}>
               {lowStockCount} ingredient{lowStockCount !== 1 ? "s are" : " is"} running low
             </p>
-            <p className="font-body mt-0.5" style={{ fontSize: 12 }}>
+            <p className="font-body text-xs mt-1" style={{ color: "#92400e" }}>
               {ingredients
                 .filter(i => i.is_low_stock)
                 .map(i => i.name)
@@ -65,8 +65,8 @@ export default function IngredientsPage() {
 
       {/* Error */}
       {isError && (
-        <div className="card-surface p-6 text-center">
-          <p className="font-body" style={{ fontSize: 13, color: "#EF4444" }}>
+        <div className="card-surface p-8 text-center">
+          <p className="font-body text-sm" style={{ color: "#EF4444" }}>
             Failed to load ingredients. Please try refreshing the page.
           </p>
         </div>
@@ -81,7 +81,7 @@ export default function IngredientsPage() {
             description="Add your first ingredient to start tracking inventory and production costs."
             action={
               <button onClick={() => navigate("/ingredients/new")} className="btn-primary">
-                <Plus size={15} aria-hidden="true" />
+                <Plus size={16} strokeWidth={2.5} aria-hidden="true" />
                 Add Ingredient
               </button>
             }
@@ -93,11 +93,10 @@ export default function IngredientsPage() {
       {!isLoading && !isError && ingredients.length > 0 && (
         <>
           <div
-            className="overflow-hidden overflow-x-auto"
+            className="table-container overflow-hidden overflow-x-auto"
             style={{
               background: "#FFFDFB",
               border: "1px solid #E8E6E1",
-              borderRadius: 10,
             }}
           >
             <table className="w-full text-sm" style={{ minWidth: 680 }}>
@@ -114,7 +113,7 @@ export default function IngredientsPage() {
                   ].map(col => (
                     <th
                       key={col}
-                      className="px-4 py-3 text-left"
+                      className="px-5 py-4 text-left"
                       style={{ whiteSpace: "nowrap" }}
                     >
                       {col}
@@ -128,7 +127,7 @@ export default function IngredientsPage() {
                   <tr
                     key={ingredient.id}
                     className={clsx(
-                      "table-row-hover transition-colors",
+                      "transition-colors hover:bg-brand-pink-light",
                       ingredient.is_low_stock
                         ? "bg-warning-bg"
                         : idx % 2 === 0
@@ -141,17 +140,17 @@ export default function IngredientsPage() {
                     }}
                   >
                     {/* Name + badge */}
-                    <td className="px-4 py-3.5">
+                    <td className="px-5 py-4">
                       <div className="flex items-center gap-2">
                         <span
                           className="font-heading font-medium"
-                          style={{ fontSize: 13, color: "#6B4226" }}
+                          style={{ fontSize: 14, color: "#6B4226", fontWeight: 600 }}
                         >
                           {ingredient.name}
                         </span>
                         {ingredient.is_low_stock && (
                           <span className="badge badge-warning">
-                            <AlertTriangle size={9} aria-hidden="true" />
+                            <AlertTriangle size={10} aria-hidden="true" />
                             Low
                           </span>
                         )}
@@ -160,26 +159,26 @@ export default function IngredientsPage() {
 
                     {/* Quantity — red if low */}
                     <td
-                      className="px-4 py-3.5 font-body"
+                      className="px-5 py-4 font-body"
                       style={{
-                        fontSize: 13,
+                        fontSize: 14,
                         color: ingredient.is_low_stock ? "#B91C1C" : "#3D3A35",
-                        fontWeight: ingredient.is_low_stock ? 600 : 400,
+                        fontWeight: ingredient.is_low_stock ? 600 : 500,
                       }}
                     >
                       {Number(ingredient.quantity).toLocaleString("en-PH")}
                     </td>
 
                     <td
-                      className="px-4 py-3.5 font-body"
-                      style={{ fontSize: 13, color: "#7C7870" }}
+                      className="px-5 py-4 font-body"
+                      style={{ fontSize: 14, color: "#7C7870" }}
                     >
                       {ingredient.unit}
                     </td>
 
                     <td
-                      className="px-4 py-3.5 font-body"
-                      style={{ fontSize: 13, color: "#7C7870" }}
+                      className="px-5 py-4 font-body"
+                      style={{ fontSize: 14, color: "#7C7870" }}
                     >
                       {ingredient.minimum_stock > 0 ? (
                         Number(ingredient.minimum_stock).toLocaleString("en-PH")
@@ -189,25 +188,25 @@ export default function IngredientsPage() {
                     </td>
 
                     <td
-                      className="px-4 py-3.5 font-body"
-                      style={{ fontSize: 13, color: "#3D3A35" }}
+                      className="px-5 py-4 font-body"
+                      style={{ fontSize: 14, color: "#3D3A35", fontWeight: 500 }}
                     >
                       ₱{Number(ingredient.cost_per_unit).toFixed(2)}
                     </td>
 
                     <td
-                      className="px-4 py-3.5 font-body"
-                      style={{ fontSize: 13, color: "#7C7870" }}
+                      className="px-5 py-4 font-body"
+                      style={{ fontSize: 14, color: "#7C7870" }}
                     >
                       {ingredient.supplier || <span style={{ color: "#D1CEC7" }}>—</span>}
                     </td>
 
                     {/* Actions */}
-                    <td className="px-4 py-3.5">
-                      <div className="flex items-center gap-1">
+                    <td className="px-5 py-4">
+                      <div className="table-cell-action">
                         <button
                           onClick={() => navigate(`/ingredients/${ingredient.id}/edit`)}
-                          className="rounded-lg p-1.5 transition-colors"
+                          className="rounded-lg p-2 transition-colors"
                           style={{ color: "#A8A49B" }}
                           onMouseOver={e => {
                             (e.currentTarget as HTMLElement).style.background = "#FFF0F7";
@@ -219,11 +218,11 @@ export default function IngredientsPage() {
                           }}
                           aria-label={`Edit ${ingredient.name}`}
                         >
-                          <Pencil size={14} aria-hidden="true" />
+                          <Pencil size={16} strokeWidth={2} aria-hidden="true" />
                         </button>
                         <button
                           onClick={() => setDeleteTarget(ingredient)}
-                          className="rounded-lg p-1.5 transition-colors"
+                          className="rounded-lg p-2 transition-colors"
                           style={{ color: "#A8A49B" }}
                           onMouseOver={e => {
                             (e.currentTarget as HTMLElement).style.background = "#FEF2F2";
@@ -235,7 +234,7 @@ export default function IngredientsPage() {
                           }}
                           aria-label={`Delete ${ingredient.name}`}
                         >
-                          <Trash2 size={14} aria-hidden="true" />
+                          <Trash2 size={16} strokeWidth={2} aria-hidden="true" />
                         </button>
                       </div>
                     </td>

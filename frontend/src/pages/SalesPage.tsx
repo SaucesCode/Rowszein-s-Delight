@@ -2,13 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSales, useDeleteSale } from "@/hooks/useSales";
 import type { Sale } from "@/types/sale.types";
-import { Plus, Download, X, ShoppingCart } from "lucide-react";
+import { Plus, Download, X, ShoppingCart, Pencil, Trash2 } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import EmptyState from "@/components/EmptyState";
 import SkeletonTable from "@/components/SkeletonTable";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Pagination from "@/components/Pagination";
-import { Pencil, Trash2 } from "lucide-react";
 import { exportService } from "@/services/export.service";
 import toast from "react-hot-toast";
 
@@ -76,26 +75,26 @@ export default function SalesPage() {
               onClick={() => handleExport("csv")}
               disabled={exporting}
               className="btn-ghost"
-              style={{ fontSize: 13, padding: "7px 12px" }}
+              style={{ fontSize: 13, padding: "8px 14px" }}
               aria-label="Export sales as CSV"
             >
-              <Download size={14} aria-hidden="true" />
+              <Download size={16} strokeWidth={2} aria-hidden="true" />
               CSV
             </button>
             <button
               onClick={() => handleExport("pdf")}
               disabled={exporting}
               className="btn-ghost"
-              style={{ fontSize: 13, padding: "7px 12px" }}
+              style={{ fontSize: 13, padding: "8px 14px" }}
               aria-label="Export sales as PDF"
             >
-              <Download size={14} aria-hidden="true" />
+              <Download size={16} strokeWidth={2} aria-hidden="true" />
               PDF
             </button>
 
             {/* Primary action */}
             <button onClick={() => navigate("/sales/new")} className="btn-primary">
-              <Plus size={15} aria-hidden="true" />
+              <Plus size={16} strokeWidth={2.5} aria-hidden="true" />
               Record Sale
             </button>
           </div>
@@ -104,7 +103,7 @@ export default function SalesPage() {
 
       {/* Date filter strip */}
       <div
-        className="flex flex-wrap items-center gap-3 mb-5 px-4 py-3"
+        className="flex flex-wrap items-center gap-4 mb-6 px-5 py-4"
         style={{
           background: "#FFFDFB",
           border: "1px solid #E8E6E1",
@@ -113,8 +112,8 @@ export default function SalesPage() {
       >
         <div className="flex items-center gap-2">
           <label
-            className="font-body flex-shrink-0"
-            style={{ fontSize: 13, color: "#7C7870" }}
+            className="font-body flex-shrink-0 text-sm"
+            style={{ color: "#7C7870" }}
           >
             From
           </label>
@@ -131,8 +130,8 @@ export default function SalesPage() {
         </div>
         <div className="flex items-center gap-2">
           <label
-            className="font-body flex-shrink-0"
-            style={{ fontSize: 13, color: "#7C7870" }}
+            className="font-body flex-shrink-0 text-sm"
+            style={{ color: "#7C7870" }}
           >
             To
           </label>
@@ -151,9 +150,9 @@ export default function SalesPage() {
           <button
             onClick={clearFilters}
             className="btn-ghost"
-            style={{ fontSize: 12, padding: "4px 10px", color: "#9B6644" }}
+            style={{ fontSize: 13, padding: "6px 12px", color: "#9B6644" }}
           >
-            <X size={12} aria-hidden="true" />
+            <X size={14} strokeWidth={2} aria-hidden="true" />
             Clear
           </button>
         )}
@@ -164,8 +163,8 @@ export default function SalesPage() {
 
       {/* Error */}
       {isError && (
-        <div className="card-surface p-6 text-center">
-          <p className="font-body" style={{ fontSize: 13, color: "#EF4444" }}>
+        <div className="card-surface p-8 text-center">
+          <p className="font-body text-sm" style={{ color: "#EF4444" }}>
             Failed to load sales. Please try refreshing the page.
           </p>
         </div>
@@ -185,7 +184,7 @@ export default function SalesPage() {
             action={
               !hasFilters ? (
                 <button onClick={() => navigate("/sales/new")} className="btn-primary">
-                  <Plus size={15} aria-hidden="true" />
+                  <Plus size={16} strokeWidth={2.5} aria-hidden="true" />
                   Record Sale
                 </button>
               ) : (
@@ -202,11 +201,10 @@ export default function SalesPage() {
       {!isLoading && !isError && sales.length > 0 && (
         <>
           <div
-            className="overflow-hidden overflow-x-auto"
+            className="table-container overflow-hidden overflow-x-auto"
             style={{
               background: "#FFFDFB",
               border: "1px solid #E8E6E1",
-              borderRadius: 10,
             }}
           >
             <table className="w-full text-sm" style={{ minWidth: 560 }}>
@@ -215,7 +213,7 @@ export default function SalesPage() {
                   {["Date", "Items", "Notes", "Total", "Actions"].map(col => (
                     <th
                       key={col}
-                      className="px-4 py-3 text-left"
+                      className="px-5 py-4 text-left"
                       style={{ whiteSpace: "nowrap" }}
                     >
                       {col}
@@ -228,7 +226,7 @@ export default function SalesPage() {
                 {sales.map((sale, idx) => (
                   <tr
                     key={sale.id}
-                    className="table-row-hover transition-colors"
+                    className="transition-colors hover:bg-brand-pink-light"
                     style={{
                       borderBottom: "1px solid #F5EDE0",
                       background: idx % 2 !== 0 ? "#FFF8F0" : undefined,
@@ -236,8 +234,8 @@ export default function SalesPage() {
                   >
                     {/* Date */}
                     <td
-                      className="px-4 py-3.5 font-body"
-                      style={{ fontSize: 13, color: "#6B4226", whiteSpace: "nowrap" }}
+                      className="px-5 py-4 font-body"
+                      style={{ fontSize: 14, color: "#6B4226", fontWeight: 600, whiteSpace: "nowrap" }}
                     >
                       {new Date(sale.date).toLocaleDateString("en-PH", {
                         year: "numeric",
@@ -247,17 +245,19 @@ export default function SalesPage() {
                     </td>
 
                     {/* Items count */}
-                    <td className="px-4 py-3.5">
-                      <span className="badge badge-info" style={{ fontSize: 11 }}>
-                        {sale.sale_items.length}{" "}
-                        {sale.sale_items.length !== 1 ? "items" : "item"}
+                    <td className="px-5 py-4">
+                      <span
+                        className="font-heading font-medium"
+                        style={{ fontSize: 14, color: "#6B4226", fontWeight: 600 }}
+                      >
+                        {sale.items.length} item{sale.items.length !== 1 ? "s" : ""}
                       </span>
                     </td>
 
                     {/* Notes */}
                     <td
-                      className="px-4 py-3.5 font-body max-w-xs"
-                      style={{ fontSize: 13, color: "#7C7870" }}
+                      className="px-5 py-4 font-body max-w-xs"
+                      style={{ fontSize: 14, color: "#7C7870" }}
                     >
                       <span className="line-clamp-1">
                         {sale.notes || <span style={{ color: "#D1CEC7" }}>—</span>}
@@ -266,18 +266,18 @@ export default function SalesPage() {
 
                     {/* Total */}
                     <td
-                      className="px-4 py-3.5 font-body"
-                      style={{ fontSize: 13, color: "#3D3A35", fontWeight: 600 }}
+                      className="px-5 py-4 font-body"
+                      style={{ fontSize: 14, color: "#3D3A35", fontWeight: 700 }}
                     >
                       ₱{Number(sale.total_amount).toFixed(2)}
                     </td>
 
                     {/* Actions */}
-                    <td className="px-4 py-3.5">
-                      <div className="flex items-center gap-1">
+                    <td className="px-5 py-4">
+                      <div className="table-cell-action">
                         <button
                           onClick={() => navigate(`/sales/${sale.id}/edit`)}
-                          className="rounded-lg p-1.5 transition-colors"
+                          className="rounded-lg p-2 transition-colors"
                           style={{ color: "#A8A49B" }}
                           onMouseOver={e => {
                             (e.currentTarget as HTMLElement).style.background = "#FFF0F7";
@@ -287,13 +287,13 @@ export default function SalesPage() {
                             (e.currentTarget as HTMLElement).style.background = "transparent";
                             (e.currentTarget as HTMLElement).style.color = "#A8A49B";
                           }}
-                          aria-label={`Edit sale from ${sale.date}`}
+                          aria-label={`Edit sale`}
                         >
-                          <Pencil size={14} aria-hidden="true" />
+                          <Pencil size={16} strokeWidth={2} aria-hidden="true" />
                         </button>
                         <button
                           onClick={() => setDeleteTarget(sale)}
-                          className="rounded-lg p-1.5 transition-colors"
+                          className="rounded-lg p-2 transition-colors"
                           style={{ color: "#A8A49B" }}
                           onMouseOver={e => {
                             (e.currentTarget as HTMLElement).style.background = "#FEF2F2";
@@ -303,9 +303,9 @@ export default function SalesPage() {
                             (e.currentTarget as HTMLElement).style.background = "transparent";
                             (e.currentTarget as HTMLElement).style.color = "#A8A49B";
                           }}
-                          aria-label={`Delete sale from ${sale.date}`}
+                          aria-label={`Delete sale`}
                         >
-                          <Trash2 size={14} aria-hidden="true" />
+                          <Trash2 size={16} strokeWidth={2} aria-hidden="true" />
                         </button>
                       </div>
                     </td>
@@ -319,12 +319,13 @@ export default function SalesPage() {
         </>
       )}
 
+      {/* Delete confirm dialog */}
       <ConfirmDialog
         open={!!deleteTarget}
         title="Delete sale?"
         description={
           deleteTarget
-            ? `The sale from ${new Date(deleteTarget.date).toLocaleDateString("en-PH", { year: "numeric", month: "long", day: "numeric" })} will be permanently deleted. Inventory will be restored. This cannot be undone.`
+            ? `This sale of ₱${Number(deleteTarget.total_amount).toFixed(2)} will be permanently removed. This cannot be undone.`
             : ""
         }
         confirmLabel="Delete"

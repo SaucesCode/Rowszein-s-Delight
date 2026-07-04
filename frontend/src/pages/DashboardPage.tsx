@@ -78,23 +78,23 @@ function getDateRange(period: Period): { date_from: string; date_to: string } {
    ───────────────────────────────────────────── */
 function DashboardSkeleton() {
   return (
-    <div role="status" aria-label="Loading dashboard…" className="space-y-6">
+    <div role="status" aria-label="Loading dashboard…" className="space-y-8">
       {/* Stat cards */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="stat-grid">
         {[1, 2, 3].map(i => (
-          <div key={i} className="card-surface p-5">
+          <div key={i} className="card-surface p-6">
             <div
-              className="skeleton mb-2"
-              style={{ height: 11, width: "45%", borderRadius: 5 }}
+              className="skeleton mb-3"
+              style={{ height: 12, width: "50%", borderRadius: 5 }}
             />
-            <div className="skeleton" style={{ height: 22, width: "60%", borderRadius: 6 }} />
+            <div className="skeleton" style={{ height: 28, width: "70%", borderRadius: 6 }} />
           </div>
         ))}
       </div>
       {/* Chart placeholder */}
-      <div className="card-surface p-5">
-        <div className="skeleton mb-4" style={{ height: 14, width: 140, borderRadius: 6 }} />
-        <div className="skeleton" style={{ height: 260, borderRadius: 8 }} />
+      <div className="chart-container">
+        <div className="skeleton mb-4" style={{ height: 16, width: 160, borderRadius: 6 }} />
+        <div className="skeleton" style={{ height: 280, borderRadius: 8 }} />
       </div>
       <span className="sr-only">Loading, please wait…</span>
     </div>
@@ -107,8 +107,8 @@ function DashboardSkeleton() {
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <p
-      className="font-heading font-semibold uppercase tracking-wide mb-3"
-      style={{ fontSize: 10, color: "#9B6644", letterSpacing: "0.07em" }}
+      className="font-heading font-semibold uppercase tracking-wide mb-4"
+      style={{ fontSize: 11, color: "#9B6644", letterSpacing: "0.08em" }}
     >
       {children}
     </p>
@@ -133,8 +133,8 @@ export default function DashboardPage() {
 
   if (isError) {
     return (
-      <div className="card-surface p-8 text-center">
-        <p className="font-body" style={{ fontSize: 13, color: "#EF4444" }}>
+      <div className="card-surface p-12 text-center">
+        <p className="font-body text-sm" style={{ color: "#EF4444" }}>
           Failed to load dashboard. Please try refreshing the page.
         </p>
       </div>
@@ -150,29 +150,26 @@ export default function DashboardPage() {
     totals.net_profit > 0 ? "up" : totals.net_profit < 0 ? "down" : "neutral";
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-8 animate-fade-in">
       {/* ── Period picker ── */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1
+          <h2
             className="font-heading font-semibold"
-            style={{ fontSize: 20, color: "#6B4226" }}
+            style={{ fontSize: 16, color: "#9B6644", fontWeight: 600 }}
           >
-            Dashboard
-          </h1>
-          <p className="font-body mt-0.5" style={{ fontSize: 13, color: "#9B6644" }}>
-            Business performance overview
-          </p>
+            Reporting Period
+          </h2>
         </div>
 
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-2">
           {PERIODS.map(p => (
             <button
               key={p.value}
               onClick={() => setPeriod(p.value)}
-              className="font-body transition-colors"
+              className="font-body transition-all duration-200"
               style={{
-                padding: "5px 12px",
+                padding: "6px 14px",
                 borderRadius: 8,
                 fontSize: 13,
                 fontWeight: 500,
@@ -183,7 +180,7 @@ export default function DashboardPage() {
                     : "#FFFDFB",
                 color: period === p.value ? "#FFFFFF" : "#5A5650",
                 cursor: "pointer",
-                boxShadow: period === p.value ? "0 2px 8px rgba(255,111,174,0.30)" : "none",
+                boxShadow: period === p.value ? "0 2px 8px rgba(255,111,174,0.3)" : "none",
               }}
             >
               {p.label}
@@ -195,7 +192,7 @@ export default function DashboardPage() {
       {/* Custom date range */}
       {period === "custom" && (
         <div
-          className="flex flex-wrap items-center gap-3 px-4 py-3 animate-slide-up"
+          className="flex flex-wrap items-center gap-4 px-5 py-4 animate-slide-up"
           style={{
             background: "#FFFDFB",
             border: "1px solid #E8E6E1",
@@ -203,7 +200,7 @@ export default function DashboardPage() {
           }}
         >
           <div className="flex items-center gap-2">
-            <label className="font-body" style={{ fontSize: 13, color: "#7C7870" }}>
+            <label className="font-body text-sm" style={{ color: "#7C7870" }}>
               From
             </label>
             <input
@@ -215,7 +212,7 @@ export default function DashboardPage() {
             />
           </div>
           <div className="flex items-center gap-2">
-            <label className="font-body" style={{ fontSize: 13, color: "#7C7870" }}>
+            <label className="font-body text-sm" style={{ color: "#7C7870" }}>
               To
             </label>
             <input
@@ -227,7 +224,7 @@ export default function DashboardPage() {
             />
           </div>
           {customFrom && customTo && (
-            <p className="font-body" style={{ fontSize: 12, color: "#A8A49B" }}>
+            <p className="font-body text-xs" style={{ color: "#A8A49B" }}>
               {customFrom} → {customTo}
             </p>
           )}
@@ -242,13 +239,13 @@ export default function DashboardPage() {
           className="alert-low-stock w-full text-left animate-slide-up"
           style={{ cursor: "pointer" }}
         >
-          <AlertTriangle size={16} className="flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <AlertTriangle size={18} className="flex-shrink-0 mt-0.5" aria-hidden="true" />
           <div>
-            <p className="font-heading font-semibold" style={{ fontSize: 13 }}>
+            <p className="font-heading font-semibold text-sm" style={{ color: "#92400e" }}>
               {low_stock.length} ingredient
-              {low_stock.length !== 1 ? "s are" : " is"} running low — tap to manage
+              {low_stock.length !== 1 ? "s are" : " is"} running low
             </p>
-            <p className="font-body mt-0.5" style={{ fontSize: 12 }}>
+            <p className="font-body text-xs mt-1" style={{ color: "#92400e" }}>
               {low_stock.map((i: any) => i.name).join(", ")}
             </p>
           </div>
@@ -256,22 +253,22 @@ export default function DashboardPage() {
       )}
 
       {/* ── Filtered period totals ── */}
-      <div>
+      <div className="page-section">
         <SectionLabel>
           {PERIODS.find(p => p.value === period)?.label ?? "Selected Period"}
         </SectionLabel>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="stat-grid">
           <StatCard
             label="Total Sales"
             value={formatPeso(totals.total_sales)}
             accent="blue"
-            icon={<ShoppingCart size={14} />}
+            icon={<ShoppingCart size={16} strokeWidth={2.5} />}
           />
           <StatCard
             label="Total Expenses"
             value={formatPeso(totals.total_expenses)}
             accent="orange"
-            icon={<Receipt size={14} />}
+            icon={<Receipt size={16} strokeWidth={2.5} />}
           />
           <StatCard
             label="Net Profit"
@@ -286,16 +283,20 @@ export default function DashboardPage() {
             trend={totalsTrend}
             accent={totals.net_profit > 0 ? "green" : totals.net_profit < 0 ? "red" : "blue"}
             icon={
-              totals.net_profit >= 0 ? <TrendingUp size={14} /> : <TrendingDown size={14} />
+              totals.net_profit >= 0 ? (
+                <TrendingUp size={16} strokeWidth={2.5} />
+              ) : (
+                <TrendingDown size={16} strokeWidth={2.5} />
+              )
             }
           />
         </div>
       </div>
 
       {/* ── This month ── */}
-      <div>
+      <div className="page-section">
         <SectionLabel>This Month</SectionLabel>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="stat-grid">
           <StatCard label="Sales" value={formatPeso(this_month.sales)} accent="blue" />
           <StatCard label="Expenses" value={formatPeso(this_month.expenses)} accent="orange" />
           <StatCard
@@ -315,16 +316,16 @@ export default function DashboardPage() {
       </div>
 
       {/* ── Chart + Best selling ── */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Area chart */}
-        <div className="card-surface p-5 lg:col-span-2">
+        <div className="chart-container lg:col-span-2">
           <p
-            className="font-heading font-semibold mb-4"
-            style={{ fontSize: 14, color: "#6B4226" }}
+            className="font-heading font-semibold mb-5"
+            style={{ fontSize: 15, color: "#6B4226", fontWeight: 700 }}
           >
             Monthly Overview
           </p>
-          <ResponsiveContainer width="100%" height={260}>
+          <ResponsiveContainer width="100%" height={280}>
             <AreaChart data={chart_data}>
               <defs>
                 <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
@@ -343,12 +344,12 @@ export default function DashboardPage() {
               <CartesianGrid strokeDasharray="3 3" stroke="#F5EDE0" />
               <XAxis
                 dataKey="month"
-                tick={{ fontSize: 11, fill: "#9B6644", fontFamily: "Inter" }}
+                tick={{ fontSize: 12, fill: "#9B6644", fontFamily: "Inter" }}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis
-                tick={{ fontSize: 11, fill: "#9B6644", fontFamily: "Inter" }}
+                tick={{ fontSize: 12, fill: "#9B6644", fontFamily: "Inter" }}
                 axisLine={false}
                 tickLine={false}
                 tickFormatter={v => `₱${v.toLocaleString()}`}
@@ -356,7 +357,7 @@ export default function DashboardPage() {
               <Tooltip
                 formatter={(value: number) => formatPeso(value)}
                 contentStyle={{
-                  fontSize: 12,
+                  fontSize: 13,
                   borderRadius: 10,
                   border: "1px solid #E8E6E1",
                   background: "#FFFDFB",
@@ -364,13 +365,13 @@ export default function DashboardPage() {
                   fontFamily: "Inter",
                 }}
               />
-              <Legend wrapperStyle={{ fontSize: 12, fontFamily: "Inter", color: "#7C7870" }} />
+              <Legend wrapperStyle={{ fontSize: 13, fontFamily: "Inter", color: "#7C7870" }} />
               <Area
                 type="monotone"
                 dataKey="sales"
                 name="Sales"
                 stroke="#3b82f6"
-                strokeWidth={2}
+                strokeWidth={2.5}
                 fill="url(#colorSales)"
               />
               <Area
@@ -378,7 +379,7 @@ export default function DashboardPage() {
                 dataKey="expenses"
                 name="Expenses"
                 stroke="#f97316"
-                strokeWidth={2}
+                strokeWidth={2.5}
                 fill="url(#colorExpenses)"
               />
               <Area
@@ -386,7 +387,7 @@ export default function DashboardPage() {
                 dataKey="profit"
                 name="Profit"
                 stroke="#22c55e"
-                strokeWidth={2}
+                strokeWidth={2.5}
                 fill="url(#colorProfit)"
               />
             </AreaChart>
@@ -394,33 +395,34 @@ export default function DashboardPage() {
         </div>
 
         {/* Top products */}
-        <div className="card-surface p-5">
+        <div className="chart-container">
           <p
-            className="font-heading font-semibold mb-4"
-            style={{ fontSize: 14, color: "#6B4226" }}
+            className="font-heading font-semibold mb-5"
+            style={{ fontSize: 15, color: "#6B4226", fontWeight: 700 }}
           >
             Top Products
           </p>
 
           {best_selling.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-10 text-center">
-              <p className="font-body" style={{ fontSize: 13, color: "#A8A49B" }}>
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <p className="font-body text-sm" style={{ color: "#A8A49B" }}>
                 No sales data yet for this period.
               </p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {best_selling.map((item: any, index: number) => (
-                <div key={item.product_id} className="flex items-center gap-3">
+                <div key={item.product_id} className="flex items-start gap-3 pb-3" style={{ borderBottom: index !== best_selling.length - 1 ? "1px solid #F5EDE0" : "none" }}>
                   {/* Rank bubble */}
                   <div
                     className="flex items-center justify-center rounded-full font-heading font-semibold flex-shrink-0"
                     style={{
-                      width: 24,
-                      height: 24,
+                      width: 28,
+                      height: 28,
                       background: index === 0 ? "#FFF0F7" : "#F5F4F1",
                       color: index === 0 ? "#FF6FAE" : "#A8A49B",
-                      fontSize: 11,
+                      fontSize: 12,
+                      fontWeight: 700,
                     }}
                   >
                     {index + 1}
@@ -430,11 +432,11 @@ export default function DashboardPage() {
                   <div className="flex-1 min-w-0">
                     <p
                       className="font-heading font-medium truncate"
-                      style={{ fontSize: 13, color: "#6B4226" }}
+                      style={{ fontSize: 14, color: "#6B4226", fontWeight: 600 }}
                     >
                       {item.product_name}
                     </p>
-                    <p className="font-body" style={{ fontSize: 11, color: "#9B6644" }}>
+                    <p className="font-body text-xs mt-1" style={{ color: "#9B6644" }}>
                       {item.total_quantity} sold · {formatPeso(item.total_revenue)}
                     </p>
                   </div>
