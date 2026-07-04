@@ -238,7 +238,7 @@ export default function SalesPage() {
                           className="font-heading font-semibold"
                           style={{ fontSize: 14, color: "#111827" }}
                         >
-                          {sale.items.length} item{sale.items.length !== 1 ? "s" : ""}
+                          {(sale.items?.length ?? 0)} item{(sale.items?.length ?? 0) !== 1 ? "s" : ""}
                         </span>
                       </td>
 
