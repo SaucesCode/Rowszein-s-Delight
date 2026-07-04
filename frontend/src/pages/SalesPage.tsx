@@ -2,8 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSales, useDeleteSale } from "@/hooks/useSales";
 import type { Sale } from "@/types/sale.types";
-import { Plus, Download, X, ShoppingCart, Pencil, Trash2 } from "lucide-react";
+import { Plus, Download, ShoppingCart, Pencil, Trash2 } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
+import DateRangeFilter from "@/components/DateRangeFilter";
 import EmptyState from "@/components/EmptyState";
 import SkeletonTable from "@/components/SkeletonTable";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -44,7 +45,7 @@ export default function SalesPage() {
     });
   };
 
-  const clearFilters = () => {
+  const handleClearFilters = () => {
     setDateFrom("");
     setDateTo("");
     setPage(1);
@@ -70,7 +71,6 @@ export default function SalesPage() {
         description="Track all revenue transactions"
         action={
           <div className="flex items-center gap-2">
-            {/* Export buttons */}
             <button
               onClick={() => handleExport("csv")}
               disabled={exporting}
@@ -91,8 +91,6 @@ export default function SalesPage() {
               <Download size={16} strokeWidth={2} aria-hidden="true" />
               PDF
             </button>
-
-            {/* Primary action */}
             <button onClick={() => navigate("/sales/new")} className="btn-primary">
               <Plus size={16} strokeWidth={2.5} aria-hidden="true" />
               Record Sale
@@ -101,54 +99,22 @@ export default function SalesPage() {
         }
       />
 
-      {/* Date filter strip */}
-      <div className="premium-card p-4 flex flex-wrap items-center gap-4 mb-6">
-        <div className="flex items-center gap-2">
-          <label
-            className="font-body flex-shrink-0 text-sm"
-            style={{ color: "#64748b" }}
-          >
-            From
-          </label>
-          <input
-            type="date"
-            value={dateFrom}
-            onChange={e => {
-              setDateFrom(e.target.value);
-              setPage(1);
-            }}
-            className="field-input"
-            style={{ width: "auto" }}
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <label
-            className="font-body flex-shrink-0 text-sm"
-            style={{ color: "#64748b" }}
-          >
-            To
-          </label>
-          <input
-            type="date"
-            value={dateTo}
-            onChange={e => {
-              setDateTo(e.target.value);
-              setPage(1);
-            }}
-            className="field-input"
-            style={{ width: "auto" }}
-          />
-        </div>
-        {hasFilters && (
-          <button
-            onClick={clearFilters}
-            className="btn-ghost"
-            style={{ fontSize: 13, padding: "6px 12px", color: "#64748b" }}
-          >
-            <X size={14} strokeWidth={2} aria-hidden="true" />
-            Clear
-          </button>
-        )}
+      {/* Date filter */}
+      <div className="mb-6 animate-fade-in">
+        <DateRangeFilter
+          dateFrom={dateFrom}
+          dateTo={dateTo}
+          onDateFromChange={(date) => {
+            setDateFrom(date);
+            setPage(1);
+          }}
+          onDateToChange={(date) => {
+            setDateTo(date);
+            setPage(1);
+          }}
+          onClear={handleClearFilters}
+          hasFilters={hasFilters}
+        />
       </div>
 
       {/* Loading */}
@@ -181,7 +147,7 @@ export default function SalesPage() {
                   Record Sale
                 </button>
               ) : (
-                <button onClick={clearFilters} className="btn-secondary">
+                <button onClick={handleClearFilters} className="btn-secondary">
                   Clear filters
                 </button>
               )
@@ -220,7 +186,6 @@ export default function SalesPage() {
                         background: idx % 2 !== 0 ? "#f9fafb" : undefined,
                       }}
                     >
-                      {/* Date */}
                       <td
                         className="px-6 py-4 font-body"
                         style={{ fontSize: 14, color: "#0f172a", fontWeight: 600, whiteSpace: "nowrap" }}
@@ -232,7 +197,6 @@ export default function SalesPage() {
                         })}
                       </td>
 
-                      {/* Items count */}
                       <td className="px-6 py-4">
                         <span
                           className="font-heading font-semibold"
@@ -242,7 +206,6 @@ export default function SalesPage() {
                         </span>
                       </td>
 
-                      {/* Notes */}
                       <td
                         className="px-6 py-4 font-body max-w-xs"
                         style={{ fontSize: 14, color: "#64748b" }}
@@ -252,7 +215,6 @@ export default function SalesPage() {
                         </span>
                       </td>
 
-                      {/* Total */}
                       <td
                         className="px-6 py-4 font-body"
                         style={{ fontSize: 14, color: "#0f172a", fontWeight: 700 }}
@@ -260,22 +222,21 @@ export default function SalesPage() {
                         ₱{Number(sale.total_amount).toFixed(2)}
                       </td>
 
-                      {/* Actions */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => navigate(`/sales/${sale.id}/edit`)}
                             className="rounded-lg p-2 transition-colors"
                             style={{ color: "#cbd5e1" }}
-                            onMouseOver={e => {
+                            onMouseOver={(e) => {
                               (e.currentTarget as HTMLElement).style.background = "#f5f6f8";
                               (e.currentTarget as HTMLElement).style.color = "#ec4899";
                             }}
-                            onMouseOut={e => {
+                            onMouseOut={(e) => {
                               (e.currentTarget as HTMLElement).style.background = "transparent";
                               (e.currentTarget as HTMLElement).style.color = "#cbd5e1";
                             }}
-                            aria-label={`Edit sale`}
+                            aria-label="Edit sale"
                           >
                             <Pencil size={16} strokeWidth={2} aria-hidden="true" />
                           </button>
@@ -283,15 +244,15 @@ export default function SalesPage() {
                             onClick={() => setDeleteTarget(sale)}
                             className="rounded-lg p-2 transition-colors"
                             style={{ color: "#cbd5e1" }}
-                            onMouseOver={e => {
+                            onMouseOver={(e) => {
                               (e.currentTarget as HTMLElement).style.background = "#fee2e2";
                               (e.currentTarget as HTMLElement).style.color = "#ef4444";
                             }}
-                            onMouseOut={e => {
+                            onMouseOut={(e) => {
                               (e.currentTarget as HTMLElement).style.background = "transparent";
                               (e.currentTarget as HTMLElement).style.color = "#cbd5e1";
                             }}
-                            aria-label={`Delete sale`}
+                            aria-label="Delete sale"
                           >
                             <Trash2 size={16} strokeWidth={2} aria-hidden="true" />
                           </button>
@@ -308,7 +269,6 @@ export default function SalesPage() {
         </>
       )}
 
-      {/* Delete confirm dialog */}
       <ConfirmDialog
         open={!!deleteTarget}
         title="Delete sale?"

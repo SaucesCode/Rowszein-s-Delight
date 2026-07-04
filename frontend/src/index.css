@@ -199,23 +199,22 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    background: #ec4899;
+    background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
     color: #ffffff;
     font-family: "Inter", system-ui, sans-serif;
     font-size: 0.875rem;
     font-weight: 600;
     padding: 0.625rem 1.25rem;
-    border-radius: var(--radius);
+    border-radius: 0.625rem;
     border: none;
     cursor: pointer;
-    box-shadow: 0 2px 4px rgba(236, 72, 153, 0.15);
+    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.25);
     transition: all 0.2s ease;
     white-space: nowrap;
   }
   .btn-primary:hover:not(:disabled) {
-    background: #db2777;
-    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.25);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(236, 72, 153, 0.35);
   }
   .btn-primary:active:not(:disabled) {
     transform: translateY(0);
@@ -235,7 +234,7 @@
     font-size: 0.875rem;
     font-weight: 500;
     padding: 0.625rem 1.25rem;
-    border-radius: var(--radius);
+    border-radius: 0.625rem;
     border: 1px solid #e2e8f0;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -260,7 +259,7 @@
     font-size: 0.875rem;
     font-weight: 500;
     padding: 0.625rem 1rem;
-    border-radius: var(--radius);
+    border-radius: 0.625rem;
     border: none;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -273,34 +272,6 @@
   .btn-ghost:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-  }
-
-  /* ── Sidebar nav item ── */
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    border-radius: var(--radius);
-    font-family: "Inter", system-ui, sans-serif;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #64748b;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    text-decoration: none;
-  }
-  .nav-item:hover {
-    background-color: #f5f6f8;
-    color: #0f172a;
-  }
-  .nav-item-active {
-    background: #fce7f3;
-    color: #ec4899;
-    font-weight: 600;
-  }
-  .nav-item-active:hover {
-    background: #fbcfe8;
   }
 
   /* ── Form fields ── */
@@ -317,7 +288,7 @@
     width: 100%;
     background-color: var(--card);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: 0.625rem;
     padding: 0.625rem 0.875rem;
     font-family: "Inter", system-ui, sans-serif;
     font-size: 0.875rem;
@@ -339,30 +310,77 @@
   .card-surface {
     background-color: var(--card);
     border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-xs);
+    border-radius: 0.875rem;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
     transition: all 0.2s ease;
   }
 
   .card-surface:hover {
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 4px 6px rgba(15, 23, 42, 0.08);
   }
 
   /* ── Premium card ── */
   .premium-card {
     background-color: var(--card);
     border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
+    border-radius: 0.875rem;
     padding: 1.5rem;
-    box-shadow: var(--shadow-xs);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
     transition: all 0.2s ease;
   }
 
   .premium-card:hover {
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 4px 6px rgba(15, 23, 42, 0.08);
   }
 
-  /* ── Table helpers ── */
+  /* ── Premium Table ── */
+  .premium-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+
+  .premium-table thead {
+    background: linear-gradient(90deg, #f9fafb 0%, #f5f6f8 100%);
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  .premium-table th {
+    padding: 1rem 1.5rem;
+    text-align: left;
+    font-family: "Inter", system-ui, sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .premium-table tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+    transition: background-color 0.2s ease;
+  }
+
+  .premium-table tbody tr:hover {
+    background-color: #f9fafb;
+  }
+
+  .premium-table tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+  }
+
+  .premium-table tbody tr:nth-child(even):hover {
+    background-color: #f5f6f8;
+  }
+
+  .premium-table td {
+    padding: 1rem 1.5rem;
+    color: #0f172a;
+    font-family: "Inter", system-ui, sans-serif;
+  }
+
+  /* ── Table header row ── */
   .table-header-row {
     background-color: #f5f6f8;
     font-family: "Inter", system-ui, sans-serif;
@@ -372,10 +390,6 @@
     letter-spacing: 0.05em;
     text-transform: uppercase;
     border-bottom: 1px solid #e2e8f0;
-  }
-
-  .table-row-hover:hover {
-    background-color: #f9fafb;
   }
 
   /* ── Status badges ── */
@@ -419,7 +433,7 @@
     background-color: #fffbeb;
     border: 1px solid #fde68a;
     color: #92400e;
-    border-radius: var(--radius-lg);
+    border-radius: 0.875rem;
     padding: 1rem 1.25rem;
   }
 
@@ -428,7 +442,7 @@
     background: linear-gradient(90deg, #f5f6f8 25%, #eef2f5 50%, #f5f6f8 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s linear infinite;
-    border-radius: var(--radius);
+    border-radius: 0.625rem;
   }
 
   @keyframes shimmer {
@@ -454,23 +468,6 @@
     .skeleton {
       animation: none;
     }
-  }
-
-  /* ── Stat card accent borders ── */
-  .stat-accent-pink {
-    border-left: 3px solid #ec4899;
-  }
-  .stat-accent-green {
-    border-left: 3px solid #10b981;
-  }
-  .stat-accent-orange {
-    border-left: 3px solid #f59e0b;
-  }
-  .stat-accent-red {
-    border-left: 3px solid #ef4444;
-  }
-  .stat-accent-blue {
-    border-left: 3px solid #3b82f6;
   }
 
   /* ── Grid layouts ── */

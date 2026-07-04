@@ -12,6 +12,7 @@ import {
   Menu,
   X,
   CakeSlice,
+  ChevronLeft,
 } from "lucide-react";
 import { clsx } from "clsx";
 
@@ -59,9 +60,9 @@ function UserAvatar({ username }: { username: string }) {
       style={{
         width: 36,
         height: 36,
-        background: "#ec4899",
+        background: "linear-gradient(135deg, #ec4899 0%, #db2777 100%)",
         color: "#ffffff",
-        boxShadow: "0 2px 4px rgba(236, 72, 153, 0.15)",
+        boxShadow: "0 4px 12px rgba(236, 72, 153, 0.25)",
       }}
       aria-hidden="true"
     >
@@ -70,42 +71,44 @@ function UserAvatar({ username }: { username: string }) {
   );
 }
 
-function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
+function SidebarContent({ collapsed, onNavigate }: { collapsed: boolean; onNavigate?: () => void }) {
   const logout = useLogout();
 
   return (
     <div className="flex h-full flex-col">
       {/* Logo */}
-      <div className="flex items-center gap-3 px-6 py-6 border-b border-gray-200">
+      <div className="flex items-center gap-3 px-4 py-6 border-b border-gray-200">
         <div
           className="flex items-center justify-center rounded-lg flex-shrink-0"
           style={{
             width: 40,
             height: 40,
-            background: "#ec4899",
-            boxShadow: "0 2px 4px rgba(236, 72, 153, 0.15)",
+            background: "linear-gradient(135deg, #ec4899 0%, #db2777 100%)",
+            boxShadow: "0 4px 12px rgba(236, 72, 153, 0.25)",
           }}
         >
           <CakeSlice size={20} color="#ffffff" strokeWidth={2.5} />
         </div>
-        <div>
-          <p
-            className="font-heading font-bold leading-tight"
-            style={{ fontSize: 15, color: "#0f172a" }}
-          >
-            Rowszein's
-          </p>
-          <p
-            className="font-heading font-semibold leading-tight"
-            style={{ fontSize: 13, color: "#64748b", marginTop: 2 }}
-          >
-            Delight
-          </p>
-        </div>
+        {!collapsed && (
+          <div>
+            <p
+              className="font-heading font-bold leading-tight"
+              style={{ fontSize: 15, color: "#0f172a" }}
+            >
+              Rowszein's
+            </p>
+            <p
+              className="font-heading font-semibold leading-tight"
+              style={{ fontSize: 13, color: "#64748b", marginTop: 2 }}
+            >
+              Delight
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Nav items */}
-      <nav className="flex-1 px-3 py-6 space-y-1" aria-label="Main navigation">
+      <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto" aria-label="Main navigation">
         {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
@@ -113,27 +116,34 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             onClick={onNavigate}
             className={({ isActive }) =>
               clsx(
-                "nav-item",
-                isActive && "nav-item-active",
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg font-body text-sm font-medium transition-all",
+                isActive
+                  ? "bg-gradient-to-r from-pink-100 to-pink-50 text-ec4899 font-semibold"
+                  : "text-64748b hover:bg-gray-100 hover:text-0f172a",
               )
             }
+            title={collapsed ? label : undefined}
           >
-            <Icon size={18} strokeWidth={2} aria-hidden="true" />
-            <span>{label}</span>
+            <Icon size={18} strokeWidth={2} aria-hidden="true" className="flex-shrink-0" />
+            {!collapsed && <span className="truncate">{label}</span>}
           </NavLink>
         ))}
       </nav>
 
       {/* Logout */}
-      <div className="px-3 py-6 border-t border-gray-200">
+      <div className="px-2 py-4 border-t border-gray-200">
         <button
           onClick={() => logout.mutate()}
           disabled={logout.isPending}
-          className="nav-item w-full text-left"
+          className={clsx(
+            "flex items-center gap-3 px-3 py-2.5 rounded-lg font-body text-sm font-medium w-full transition-all",
+            "text-64748b hover:bg-red-50 hover:text-ef4444",
+          )}
           aria-label="Logout"
+          title={collapsed ? "Logout" : undefined}
         >
-          <LogOut size={18} strokeWidth={2} aria-hidden="true" />
-          <span>{logout.isPending ? "Logging out..." : "Logout"}</span>
+          <LogOut size={18} strokeWidth={2} aria-hidden="true" className="flex-shrink-0" />
+          {!collapsed && <span>{logout.isPending ? "Logging out..." : "Logout"}</span>}
         </button>
       </div>
     </div>
@@ -170,13 +180,21 @@ function MobileSidebar({ open, onClose }: { open: boolean; onClose: () => void }
           <X size={20} strokeWidth={2} />
         </button>
 
-        <SidebarContent onNavigate={onClose} />
+        <SidebarContent collapsed={false} onNavigate={onClose} />
       </div>
     </>
   );
 }
 
-function TopNavbar({ onMenuClick }: { onMenuClick: () => void }) {
+function TopNavbar({
+  onMenuClick,
+  sidebarCollapsed,
+  onToggleSidebar,
+}: {
+  onMenuClick: () => void;
+  sidebarCollapsed: boolean;
+  onToggleSidebar: () => void;
+}) {
   const { data: user } = useMe();
   const { title } = usePageMeta();
 
@@ -195,6 +213,19 @@ function TopNavbar({ onMenuClick }: { onMenuClick: () => void }) {
           aria-label="Open navigation menu"
         >
           <Menu size={20} strokeWidth={2} />
+        </button>
+
+        <button
+          onClick={onToggleSidebar}
+          className="hidden md:flex flex-shrink-0 rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+          aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          <ChevronLeft
+            size={20}
+            strokeWidth={2}
+            style={{ transform: sidebarCollapsed ? "rotate(180deg)" : "rotate(0deg)" }}
+          />
         </button>
 
         <div className="min-w-0">
@@ -228,6 +259,7 @@ function TopNavbar({ onMenuClick }: { onMenuClick: () => void }) {
 
 export default function MainLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
     <div
@@ -236,14 +268,14 @@ export default function MainLayout() {
     >
       {/* Desktop sidebar */}
       <aside
-        className="hidden md:flex flex-col flex-shrink-0"
+        className="hidden md:flex flex-col flex-shrink-0 transition-all duration-300 ease-out"
         style={{
-          width: 260,
+          width: sidebarCollapsed ? 80 : 260,
           background: "#ffffff",
           borderRight: "1px solid #e2e8f0",
         }}
       >
-        <SidebarContent />
+        <SidebarContent collapsed={sidebarCollapsed} />
       </aside>
 
       {/* Mobile sidebar */}
@@ -251,7 +283,11 @@ export default function MainLayout() {
 
       {/* Main content area */}
       <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
-        <TopNavbar onMenuClick={() => setMobileOpen(true)} />
+        <TopNavbar
+          onMenuClick={() => setMobileOpen(true)}
+          sidebarCollapsed={sidebarCollapsed}
+          onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
+        />
 
         <main
           className="flex-1 overflow-y-auto"
