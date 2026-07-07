@@ -1,22 +1,30 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useProduct, useCreateProduct, useUpdateProduct } from "@/hooks/useProducts";
+import { useCategories, useCreateProduct, useProduct, useUpdateProduct } from "@/hooks/useProducts";
 import { ImageOff, Upload } from "lucide-react";
 import SkeletonTable from "@/components/SkeletonTable";
+import type { Category } from "@/types/product.types";
 
 const productSchema = z.object({
   name: z.string().min(1, "Product name is required"),
   description: z.string().optional(),
-  price: z.coerce.number().min(0.01, "Price must be greater than ₱0"),
-  category: z.enum(["classic", "fruity", "local", "premium", "brownies"]),
+  price: z.number().min(0.01, "Price must be greater than ₱0"),
+  category_id: z.number().min(1, "Category is required"),
   is_available: z.boolean(),
   is_featured: z.boolean(),
 });
 
 type ProductForm = z.infer<typeof productSchema>;
+
+interface DuplicateState {
+  name?: string;
+  description?: string;
+  price?: number;
+  category_id?: number;
+}
 
 function Field({
   label,
@@ -115,14 +123,26 @@ function ToggleRow({
 export default function ProductFormPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const isEdit = !!id;
+
+  // Populated only when arriving via the Products list's "Duplicate" action
+  // (see ProductsPage.handleDuplicate). Image is intentionally not carried
+  // over — cloning a File from a remote URL adds real complexity for a
+  // rare action; the owner re-attaches an image if needed.
+  const duplicateData = !isEdit
+    ? (location.state as { duplicate?: DuplicateState } | null)?.duplicate
+    : undefined;
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const { data: product, isLoading } = useProduct(Number(id));
+  const { data: categoriesData, isLoading: categoriesLoading } = useCategories();
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct(Number(id));
+  const categories: Category[] = categoriesData?.data ?? [];
+  const defaultCategoryId = duplicateData?.category_id ?? categories.find(category => category.is_active)?.id ?? 0;
 
   const {
     register,
@@ -133,18 +153,33 @@ export default function ProductFormPage() {
     formState: { errors },
   } = useForm<ProductForm>({
     resolver: zodResolver(productSchema),
-    defaultValues: { is_available: true, is_featured: false, category: "classic" },
+    defaultValues: {
+      is_available: true,
+      is_featured: false,
+      category_id: defaultCategoryId,
+      name: duplicateData?.name,
+      description: duplicateData?.description,
+      price: duplicateData?.price,
+    },
   });
 
   const isAvailable = watch("is_available");
   const isFeatured = watch("is_featured");
+  const selectedCategoryId = watch("category_id");
+
+  useEffect(() => {
+    if (!isEdit && !selectedCategoryId && defaultCategoryId) {
+      setValue("category_id", defaultCategoryId);
+    }
+  }, [defaultCategoryId, isEdit, selectedCategoryId, setValue]);
 
   useEffect(() => {
     if (product) {
       reset({
         name: product.name,
         description: product.description,
-        price: product.price,
+        price: Number(product.price),
+        category_id: product.category.id,
         is_available: product.is_available,
         is_featured: product.is_featured,
       });
@@ -176,6 +211,18 @@ export default function ProductFormPage() {
 
   return (
     <div className="max-w-400">
+      {duplicateData && (
+        <div
+          className="mb-4 px-4 py-3 rounded-xl animate-fade-in"
+          style={{ background: "#FFF0F7", border: "1px solid #FFD6E7" }}
+        >
+          <p className="font-body" style={{ fontSize: 13, color: "#993556" }}>
+            Duplicating from an existing product — review the details below, then add a new
+            image.
+          </p>
+        </div>
+      )}
+
       <form
         onSubmit={handleSubmit(onSubmit)}
         noValidate
@@ -261,19 +308,25 @@ export default function ProductFormPage() {
         <Field
           label="Category"
           helper="Which menu section this product appears under"
-          error={errors.category?.message}
+          error={errors.category_id?.message}
           required
         >
           <select
-            {...register("category")}
+            {...register("category_id", { valueAsNumber: true })}
             className="field-input mt-1"
-            aria-invalid={!!errors.category}
+            aria-invalid={!!errors.category_id}
+            disabled={categoriesLoading || categories.length === 0}
           >
-            <option value="classic">Classic</option>
-            <option value="fruity">Fruity</option>
-            <option value="local">Local Favorites</option>
-            <option value="premium">Premium</option>
-            <option value="brownies">Brownies & Bars</option>
+            <option value={0}>
+              {categoriesLoading ? "Loading categories..." : "Select a category..."}
+            </option>
+            {categories
+              .filter(category => category.is_active)
+              .map(category => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
           </select>
         </Field>
 
@@ -285,7 +338,7 @@ export default function ProductFormPage() {
           required
         >
           <input
-            {...register("price")}
+            {...register("price", { valueAsNumber: true })}
             type="number"
             step="0.01"
             min="0"

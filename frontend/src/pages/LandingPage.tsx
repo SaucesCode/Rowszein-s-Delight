@@ -20,7 +20,7 @@ import {
   Mail,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import type { Product } from "@/types/product.types";
+import type { Category, Product } from "@/types/product.types";
 
 /* ─────────────────────────────────────────────
    CONFIG — replace with your real contact info
@@ -31,15 +31,6 @@ const SHOP_EMAIL = "hello@rowszeinsdelight.com";
 const PAGE_BG = "#FFF8F0";
 const CARD_BG = "#FFFDFB";
 const CARD_IMAGE_HEIGHT = 200;
-
-const CATEGORIES: { value: string; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "classic", label: "Classic" },
-  { value: "fruity", label: "Fruity" },
-  { value: "local", label: "Local Favorites" },
-  { value: "premium", label: "Premium" },
-  { value: "brownies", label: "Brownies & Bars" },
-];
 
 /* ─────────────────────────────────────────────
    HELPERS
@@ -55,18 +46,22 @@ function CategoryFilter({
   active,
   onChange,
   counts,
+  options,
 }: {
   active: string;
   onChange: (val: string) => void;
   counts: Record<string, number>;
+  options: { value: string; label: string }[];
 }) {
+  const allOptions = [{ value: "all", label: "All" }, ...options];
+
   return (
     <div
       className="flex flex-wrap justify-center gap-2 mb-8"
       role="group"
       aria-label="Filter menu by category"
     >
-      {CATEGORIES.map(c => {
+      {allOptions.map(c => {
         const count = counts[c.value] ?? 0;
         if (c.value !== "all" && count === 0) return null;
         const isActive = active === c.value;
@@ -930,8 +925,16 @@ export default function LandingPage() {
     queryKey: ["public-products"],
     queryFn: () => productService.getAll(1),
   });
+  const { data: categoriesData } = useQuery({
+    queryKey: ["public-product-categories"],
+    queryFn: () => productService.getCategories(),
+  });
 
   const allProducts: Product[] = data?.data?.results ?? [];
+  const categories: Category[] = categoriesData?.data ?? [];
+  const categoryOptions = categories
+    .filter(category => category.is_active)
+    .map(category => ({ value: String(category.id), label: category.name }));
   const products = allProducts.filter(p => p.is_available);
   const featured = products.filter(p => p.is_featured);
 
@@ -939,12 +942,15 @@ export default function LandingPage() {
 
   const categoryCounts = products.reduce<Record<string, number>>((acc, p) => {
     acc.all = (acc.all ?? 0) + 1;
-    acc[p.category] = (acc[p.category] ?? 0) + 1;
+    const categoryId = String(p.category.id);
+    acc[categoryId] = (acc[categoryId] ?? 0) + 1;
     return acc;
   }, {});
 
   const filteredProducts =
-    categoryFilter === "all" ? products : products.filter(p => p.category === categoryFilter);
+    categoryFilter === "all"
+      ? products
+      : products.filter(p => String(p.category.id) === categoryFilter);
 
   function cardProps(product: Product) {
     const cartItem = cart.items.find(i => i.product_id === product.id);
@@ -1057,6 +1063,7 @@ export default function LandingPage() {
                 active={categoryFilter}
                 onChange={setCategoryFilter}
                 counts={categoryCounts}
+                options={categoryOptions}
               />
 
               {filteredProducts.length === 0 ? (

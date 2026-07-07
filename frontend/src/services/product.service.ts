@@ -6,7 +6,7 @@ const toFormData = (payload: ProductPayload): FormData => {
   formData.append("name", payload.name);
   formData.append("description", payload.description ?? "");
   formData.append("price", String(payload.price));
-  formData.append("category", payload.category);
+  formData.append("category_id", String(payload.category_id));
   formData.append("is_available", String(payload.is_available));
   formData.append("is_featured", String(payload.is_featured));
   if (payload.image) {
@@ -16,6 +16,15 @@ const toFormData = (payload: ProductPayload): FormData => {
 };
 
 export const productService = {
+  getCategories: async () => {
+    const response = await api.get("/products/categories/");
+    const payload = response.data;
+    return {
+      ...payload,
+      data: Array.isArray(payload.data) ? payload.data : payload.data?.results ?? [],
+    };
+  },
+
   getAll: async (page = 1) => {
     const response = await api.get("/products/", { params: { page } });
     return response.data;

@@ -11,6 +11,13 @@ export function useProducts(page = 1) {
   });
 }
 
+export function useCategories() {
+  return useQuery({
+    queryKey: ["product-categories"],
+    queryFn: () => productService.getCategories(),
+  });
+}
+
 export function useProduct(id: number) {
   return useQuery({
     queryKey: ["products", id],
@@ -27,6 +34,7 @@ export function useCreateProduct() {
     mutationFn: (payload: ProductPayload) => productService.create(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["product-categories"] });
       toast.success("Product created.");
       navigate("/products");
     },
@@ -44,6 +52,7 @@ export function useUpdateProduct(id: number) {
     mutationFn: (payload: ProductPayload) => productService.update(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["product-categories"] });
       toast.success("Product updated.");
       navigate("/products");
     },
@@ -60,6 +69,7 @@ export function useDeleteProduct() {
     mutationFn: (id: number) => productService.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["product-categories"] });
       toast.success("Product deleted.");
     },
     onError: () => {

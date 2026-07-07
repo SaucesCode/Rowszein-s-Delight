@@ -1,70 +1,57 @@
-import { useState } from "react";
-import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Outlet, NavLink, useLocation } from "react-router-dom";
 import { useMe, useLogout } from "@/hooks/useAuth";
 import {
-  LayoutDashboard,
-  Package,
-  BookOpen,
-  Receipt,
-  ShoppingCart,
-  TrendingUp,
   LogOut,
   Menu,
   X,
   CakeSlice,
   ChevronLeft,
+  ChevronRight,
   ExternalLink,
 } from "lucide-react";
 import { clsx } from "clsx";
+import { NAV_GROUPS, FLAT_NAV_ITEMS } from "@/config/navigation";
 
-const NAV_ITEMS = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/ingredients", label: "Ingredients", icon: Package },
-  { to: "/products", label: "Products", icon: CakeSlice },
-  { to: "/recipes", label: "Recipes", icon: BookOpen },
-  { to: "/expenses", label: "Expenses", icon: Receipt },
-  { to: "/sales", label: "Sales", icon: ShoppingCart },
-  { to: "/profit-margins", label: "Profit Margins", icon: TrendingUp },
-] as const;
-
-function usePageMeta() {
+/* ─────────────────────────────────────────────
+   PAGE META — drives the browser tab title only.
+   The visible heading lives in each page's own
+   <PageHeader />, so we don't render a second,
+   duplicate title in the topbar.
+   ───────────────────────────────────────────── */
+function usePageTitle() {
   const location = useLocation();
-  const match = NAV_ITEMS.find((item) => location.pathname.startsWith(item.to));
 
-  if (!match) {
-    return { title: "Rowszein's Delight", description: "" };
-  }
+  useEffect(() => {
+    const match = FLAT_NAV_ITEMS.find(item => location.pathname.startsWith(item.to));
+    const base = match?.label ?? "Rowszein's Delight";
 
-  const isNew = location.pathname.endsWith("/new");
-  const isEdit = location.pathname.endsWith("/edit") || /\/\d+\/edit$/.test(location.pathname);
+    const isNew = location.pathname.endsWith("/new");
+    const isEdit =
+      location.pathname.endsWith("/edit") || /\/\d+\/edit$/.test(location.pathname);
 
-  if (isNew) {
-    return { title: `Add ${match.label.replace(/s$/, "")}`, description: "" };
-  }
-  if (isEdit) {
-    return { title: `Edit ${match.label.replace(/s$/, "")}`, description: "" };
-  }
-
-  return { title: match.label, description: "" };
+    const suffix = isNew ? ` · Add` : isEdit ? ` · Edit` : "";
+    document.title = `${base}${suffix} — Rowszein's Delight`;
+  }, [location.pathname]);
 }
 
+/* ─────────────────────────────────────────────
+   USER AVATAR
+   ───────────────────────────────────────────── */
 function UserAvatar({ username }: { username: string }) {
-  const initials = username
-    .split(/[\s_-]/)
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase() ?? "")
-    .join("") || username[0]?.toUpperCase() || "?";
+  const initials =
+    username
+      .split(/[\s_-]/)
+      .slice(0, 2)
+      .map(w => w[0]?.toUpperCase() ?? "")
+      .join("") ||
+    username[0]?.toUpperCase() ||
+    "?";
 
   return (
     <div
-      className="flex items-center justify-center rounded-lg text-xs font-semibold font-heading select-none"
-      style={{
-        width: 36,
-        height: 36,
-        background: "linear-gradient(135deg, #ec4899 0%, #db2777 100%)",
-        color: "#ffffff",
-        boxShadow: "0 4px 12px rgba(236, 72, 153, 0.25)",
-      }}
+      className="flex items-center justify-center rounded-lg text-xs font-semibold font-heading select-none flex-shrink-0"
+      style={{ width: 36, height: 36, background: "#FFF0F7", color: "#E5528A" }}
       aria-hidden="true"
     >
       {initials}
@@ -72,109 +59,241 @@ function UserAvatar({ username }: { username: string }) {
   );
 }
 
-function SidebarContent({ collapsed, onNavigate }: { collapsed: boolean; onNavigate?: () => void }) {
-  const logout = useLogout();
-  const navigate = useNavigate();
+/* ─────────────────────────────────────────────
+   NAV RAIL ITEM
+   Handles both the expanded (icon + label) and
+   collapsed (icon-only, with a real tooltip —
+   not a native title attr, which many screen
+   readers skip) presentations.
+   ───────────────────────────────────────────── */
+function NavRailItem({
+  item,
+  collapsed,
+  onNavigate,
+}: {
+  item: (typeof FLAT_NAV_ITEMS)[number];
+  collapsed: boolean;
+  onNavigate?: () => void;
+}) {
+  const Icon = item.icon;
 
-  const handleLogoClick = () => {
-    window.open("/", "_blank");
-  };
+  return (
+    <NavLink
+      to={item.to}
+      onClick={onNavigate}
+      className={clsx(
+        "group relative flex items-center rounded-lg font-body text-sm transition-colors duration-150",
+        collapsed ? "justify-center w-11 h-11 mx-auto" : "gap-3 px-3 py-2.5",
+      )}
+      style={({ isActive }) => ({
+        background: isActive ? "#FFF0F7" : "transparent",
+        fontWeight: isActive ? 600 : 500,
+      })}
+    >
+      {({ isActive }) => (
+        <>
+          {isActive && (
+            <span
+              aria-hidden="true"
+              style={{
+                position: "absolute",
+                left: 0,
+                top: 6,
+                bottom: 6,
+                width: 3,
+                borderRadius: 4,
+                background: "#FF6FAE",
+              }}
+            />
+          )}
+
+          <Icon
+            size={19}
+            strokeWidth={2}
+            aria-hidden="true"
+            style={{ color: isActive ? "#E5528A" : "#9B6644", flexShrink: 0 }}
+          />
+
+          {!collapsed && (
+            <span className="truncate" style={{ color: isActive ? "#6B4226" : "#7C5A3D" }}>
+              {item.label}
+            </span>
+          )}
+
+          {collapsed && (
+            <span
+              role="tooltip"
+              className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2 -translate-x-1 whitespace-nowrap rounded-md px-2.5 py-1.5 text-xs font-medium opacity-0 transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100"
+              style={{ background: "#6B4226", color: "#FFFDFB" }}
+            >
+              {item.label}
+            </span>
+          )}
+        </>
+      )}
+    </NavLink>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   SIDEBAR CONTENT — shared between the fixed
+   desktop rail and the mobile drawer.
+   ───────────────────────────────────────────── */
+function SidebarContent({
+  collapsed,
+  onNavigate,
+}: {
+  collapsed: boolean;
+  onNavigate?: () => void;
+}) {
+  const logout = useLogout();
 
   return (
     <div className="flex h-full flex-col">
-      {/* Logo - Now clickable */}
-      <button
-        onClick={handleLogoClick}
-        className="flex items-center gap-3 px-4 py-6 border-b border-gray-200 hover:bg-gray-50 transition-colors group"
-        title="Visit landing page"
-        aria-label="Rowszein's Delight - Visit landing page"
+      {/* Logo */}
+      <a
+        href="/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className={clsx(
+          "group flex items-center border-b flex-shrink-0 transition-colors hover:bg-[#FFF8F0]",
+          collapsed ? "justify-center py-5" : "gap-3 px-4 py-5",
+        )}
+        style={{ borderColor: "#F5EDE0" }}
+        title={collapsed ? "View live shop" : undefined}
       >
         <div
-          className="flex items-center justify-center rounded-lg flex-shrink-0 group-hover:shadow-lg transition-shadow"
-          style={{
-            width: 40,
-            height: 40,
-            background: "linear-gradient(135deg, #ec4899 0%, #db2777 100%)",
-            boxShadow: "0 4px 12px rgba(236, 72, 153, 0.25)",
-          }}
+          className="flex items-center justify-center rounded-lg flex-shrink-0"
+          style={{ width: 38, height: 38, background: "#FF6FAE" }}
         >
-          <CakeSlice size={20} color="#ffffff" strokeWidth={2.5} />
+          <CakeSlice size={19} color="#FFFFFF" strokeWidth={2.25} aria-hidden="true" />
         </div>
         {!collapsed && (
-          <div className="flex-1 text-left">
+          <div className="flex-1 min-w-0">
             <p
-              className="font-heading font-bold leading-tight"
-              style={{ fontSize: 15, color: "#0f172a" }}
+              className="font-heading font-semibold leading-tight truncate"
+              style={{ fontSize: 14, color: "#6B4226" }}
             >
-              Rowszein's
+              Rowszein's Delight
             </p>
             <p
-              className="font-heading font-semibold leading-tight"
-              style={{ fontSize: 13, color: "#64748b", marginTop: 2 }}
+              className="font-body leading-tight"
+              style={{ fontSize: 11.5, color: "#9B6644" }}
             >
-              Delight
+              Owner Panel
             </p>
           </div>
         )}
         {!collapsed && (
           <ExternalLink
-            size={14}
+            size={13}
             strokeWidth={2}
-            style={{ color: "#cbd5e1" }}
-            className="flex-shrink-0"
+            style={{ color: "#D1CEC7" }}
+            className="flex-shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+            aria-hidden="true"
           />
         )}
-      </button>
+      </a>
 
-      {/* Nav items */}
-      <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto" aria-label="Main navigation">
-        {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
-          <NavLink
-            key={to}
-            to={to}
-            onClick={onNavigate}
-            className={({ isActive }) =>
-              clsx(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg font-body text-sm font-medium transition-all",
-                isActive
-                  ? "bg-gradient-to-r from-pink-100 to-pink-50 text-ec4899 font-semibold"
-                  : "text-64748b hover:bg-gray-100 hover:text-0f172a",
-              )
-            }
-            title={collapsed ? label : undefined}
+      {/* Nav groups */}
+      <nav
+        className={clsx("flex-1 overflow-y-auto py-4 space-y-1", collapsed ? "px-2" : "px-3")}
+        aria-label="Main navigation"
+      >
+        {NAV_GROUPS.map((group, groupIndex) => (
+          <div
+            key={group.label ?? `group-${groupIndex}`}
+            className={groupIndex > 0 ? "pt-3" : ""}
           >
-            <Icon size={18} strokeWidth={2} aria-hidden="true" className="flex-shrink-0" />
-            {!collapsed && <span className="truncate">{label}</span>}
-          </NavLink>
+            {group.label && !collapsed && (
+              <p
+                className="font-body font-semibold uppercase px-3 mb-1.5"
+                style={{ fontSize: 10.5, letterSpacing: "0.06em", color: "#B8A98D" }}
+              >
+                {group.label}
+              </p>
+            )}
+            {group.label && collapsed && (
+              <div
+                className="mx-3 my-2 border-t"
+                style={{ borderColor: "#F5EDE0" }}
+                aria-hidden="true"
+              />
+            )}
+            <div className="space-y-0.5">
+              {group.items.map(item => (
+                <NavRailItem
+                  key={item.to}
+                  item={item}
+                  collapsed={collapsed}
+                  onNavigate={onNavigate}
+                />
+              ))}
+            </div>
+          </div>
         ))}
       </nav>
 
       {/* Logout */}
-      <div className="px-2 py-4 border-t border-gray-200">
+      <div
+        className={clsx("border-t py-3 flex-shrink-0", collapsed ? "px-2" : "px-3")}
+        style={{ borderColor: "#F5EDE0" }}
+      >
         <button
           onClick={() => logout.mutate()}
           disabled={logout.isPending}
           className={clsx(
-            "flex items-center gap-3 px-3 py-2.5 rounded-lg font-body text-sm font-medium w-full transition-all",
-            "text-64748b hover:bg-red-50 hover:text-ef4444",
+            "group relative flex items-center rounded-lg font-body text-sm font-medium w-full transition-colors duration-150 hover:bg-[#FEF2F2]",
+            collapsed ? "justify-center w-11 h-11 mx-auto" : "gap-3 px-3 py-2.5",
           )}
+          style={{ color: "#9B6644" }}
           aria-label="Logout"
-          title={collapsed ? "Logout" : undefined}
         >
-          <LogOut size={18} strokeWidth={2} aria-hidden="true" className="flex-shrink-0" />
-          {!collapsed && <span>{logout.isPending ? "Logging out..." : "Logout"}</span>}
+          <LogOut size={19} strokeWidth={2} aria-hidden="true" className="flex-shrink-0" />
+          {!collapsed && <span>{logout.isPending ? "Logging out…" : "Logout"}</span>}
+          {collapsed && (
+            <span
+              role="tooltip"
+              className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2 -translate-x-1 whitespace-nowrap rounded-md px-2.5 py-1.5 text-xs font-medium opacity-0 transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100"
+              style={{ background: "#6B4226", color: "#FFFDFB" }}
+            >
+              Logout
+            </span>
+          )}
         </button>
       </div>
     </div>
   );
 }
 
-function MobileSidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
+/* ─────────────────────────────────────────────
+   MOBILE DRAWER — always expanded (no icon-only
+   mode on touch), closes on backdrop click or Escape.
+   ───────────────────────────────────────────── */
+function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (open) {
+      closeButtonRef.current?.focus();
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [open, onClose]);
+
   return (
     <>
       {open && (
         <div
-          className="fixed inset-0 z-40 bg-black/20 md:hidden animate-fade-in"
+          className="fixed inset-0 z-40 md:hidden animate-fade-in"
+          style={{ background: "rgba(107, 66, 38, 0.28)" }}
           onClick={onClose}
           aria-hidden="true"
         />
@@ -182,21 +301,22 @@ function MobileSidebar({ open, onClose }: { open: boolean; onClose: () => void }
 
       <div
         className={clsx(
-          "fixed inset-y-0 left-0 z-50 w-64 md:hidden",
-          "transition-transform duration-250 ease-out",
+          "fixed inset-y-0 left-0 z-50 w-72 md:hidden transition-transform duration-250 ease-out",
           open ? "translate-x-0" : "-translate-x-full",
         )}
-        style={{ background: "#ffffff", borderRight: "1px solid #e2e8f0" }}
+        style={{ background: "#FFFDFB", borderRight: "1px solid #F5EDE0" }}
         role="dialog"
         aria-modal="true"
         aria-label="Navigation menu"
       >
         <button
+          ref={closeButtonRef}
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+          className="absolute right-3 top-4 z-10 rounded-lg p-2 transition-colors"
+          style={{ color: "#9B6644" }}
           aria-label="Close menu"
         >
-          <X size={20} strokeWidth={2} />
+          <X size={19} strokeWidth={2} aria-hidden="true" />
         </button>
 
         <SidebarContent collapsed={false} onNavigate={onClose} />
@@ -205,115 +325,111 @@ function MobileSidebar({ open, onClose }: { open: boolean; onClose: () => void }
   );
 }
 
-function TopNavbar({
-  onMenuClick,
-  sidebarCollapsed,
-  onToggleSidebar,
-}: {
-  onMenuClick: () => void;
-  sidebarCollapsed: boolean;
-  onToggleSidebar: () => void;
-}) {
+/* ─────────────────────────────────────────────
+   TOPBAR — slim utility strip only. The page
+   heading lives in each page's own PageHeader.
+   ───────────────────────────────────────────── */
+function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
   const { data: user } = useMe();
-  const { title } = usePageMeta();
 
   return (
     <header
-      className="flex items-center justify-between px-6 py-4 flex-shrink-0 border-b border-gray-200"
-      style={{
-        background: "#ffffff",
-        minHeight: 64,
-      }}
+      className="flex items-center justify-between px-4 md:px-6 py-3 flex-shrink-0 border-b"
+      style={{ background: "#FFFDFB", borderColor: "#F5EDE0", minHeight: 60 }}
     >
-      <div className="flex items-center gap-4 min-w-0">
-        <button
-          onClick={onMenuClick}
-          className="flex-shrink-0 rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors md:hidden"
-          aria-label="Open navigation menu"
-        >
-          <Menu size={20} strokeWidth={2} />
-        </button>
+      <button
+        onClick={onMenuClick}
+        className="flex-shrink-0 rounded-lg p-2 transition-colors md:hidden"
+        style={{ color: "#9B6644" }}
+        aria-label="Open navigation menu"
+      >
+        <Menu size={20} strokeWidth={2} />
+      </button>
 
-        <button
-          onClick={onToggleSidebar}
-          className="hidden md:flex flex-shrink-0 rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
-          aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-        >
-          <ChevronLeft
-            size={20}
-            strokeWidth={2}
-            style={{ transform: sidebarCollapsed ? "rotate(180deg)" : "rotate(0deg)" }}
-          />
-        </button>
+      <a
+        href="/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hidden sm:inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-body font-medium transition-colors hover:bg-[#FFF0F7]"
+        style={{ fontSize: 13, color: "#9B6644" }}
+      >
+        View live shop
+        <ExternalLink size={13} strokeWidth={2} aria-hidden="true" />
+      </a>
 
-        <div className="min-w-0">
-          <h1
-            className="font-heading font-bold truncate"
-            style={{ fontSize: 20, color: "#0f172a" }}
-          >
-            {title}
-          </h1>
-        </div>
+      <div className="flex items-center gap-3 flex-shrink-0 ml-auto">
+        {user && (
+          <>
+            <p
+              className="hidden sm:block font-body font-medium truncate max-w-[140px]"
+              style={{ fontSize: 13.5, color: "#6B4226" }}
+            >
+              {user.username}
+            </p>
+            <UserAvatar username={user.username} />
+          </>
+        )}
       </div>
-
-      {user && (
-        <div className="flex items-center gap-4 flex-shrink-0 ml-4">
-          <div className="hidden sm:flex items-center gap-3">
-            <div>
-              <p
-                className="font-body text-sm font-medium"
-                style={{ color: "#0f172a" }}
-              >
-                {user.username}
-              </p>
-            </div>
-          </div>
-          <UserAvatar username={user.username} />
-        </div>
-      )}
     </header>
   );
 }
 
+/* ─────────────────────────────────────────────
+   MAIN LAYOUT
+   ───────────────────────────────────────────── */
 export default function MainLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+
+  usePageTitle();
 
   return (
-    <div
-      className="flex h-screen overflow-hidden"
-      style={{ background: "#fafbfc" }}
-    >
+    <div className="flex h-screen overflow-hidden" style={{ background: "#FFF8F0" }}>
       {/* Desktop sidebar */}
       <aside
-        className="hidden md:flex flex-col flex-shrink-0 transition-all duration-300 ease-out"
+        className="hidden md:flex flex-col flex-shrink-0 transition-all duration-300 ease-out relative"
         style={{
-          width: sidebarCollapsed ? 80 : 260,
-          background: "#ffffff",
-          borderRight: "1px solid #e2e8f0",
+          width: collapsed ? 72 : 232,
+          background: "#FFFDFB",
+          borderRight: "1px solid #F5EDE0",
         }}
       >
-        <SidebarContent collapsed={sidebarCollapsed} />
+        <SidebarContent collapsed={collapsed} />
+
+        <button
+          onClick={() => setCollapsed(c => !c)}
+          className="absolute -right-3 top-[52px] hidden md:flex items-center justify-center rounded-full transition-colors"
+          style={{
+            width: 24,
+            height: 24,
+            background: "#FFFDFB",
+            border: "1px solid #E8E6E1",
+            color: "#9B6644",
+          }}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-expanded={!collapsed}
+        >
+          {collapsed ? (
+            <ChevronRight size={13} strokeWidth={2.5} />
+          ) : (
+            <ChevronLeft size={13} strokeWidth={2.5} />
+          )}
+        </button>
       </aside>
 
-      {/* Mobile sidebar */}
-      <MobileSidebar open={mobileOpen} onClose={() => setMobileOpen(false)} />
+      {/* Mobile drawer */}
+      <MobileDrawer open={mobileOpen} onClose={() => setMobileOpen(false)} />
 
       {/* Main content area */}
       <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
-        <TopNavbar
-          onMenuClick={() => setMobileOpen(true)}
-          sidebarCollapsed={sidebarCollapsed}
-          onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
-        />
+        <TopBar onMenuClick={() => setMobileOpen(true)} />
 
         <main
           className="flex-1 overflow-y-auto"
-          style={{ background: "#fafbfc" }}
+          style={{ background: "#FFF8F0" }}
           id="main-content"
         >
-          <div className="p-6 md:p-8 max-w-7xl mx-auto animate-fade-in">
+          <div className="p-5 md:p-8 max-w-7xl mx-auto animate-fade-in">
             <Outlet />
           </div>
         </main>
