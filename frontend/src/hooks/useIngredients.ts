@@ -60,6 +60,26 @@ export function useUpdateIngredient(id: number) {
   });
 }
 
+/**
+ * Dedicated stock-adjustment mutation used by UpdateStockModal. Distinct from
+ * useUpdateIngredient because it stays on the Ingredients page (no navigate)
+ * and gives stock-specific toast copy.
+ */
+export function useUpdateStock(id: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: IngredientPayload) => ingredientService.update(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["ingredients"] });
+      toast.success("Stock updated.");
+    },
+    onError: () => {
+      toast.error("Failed to update stock.");
+    },
+  });
+}
+
 export function useDeleteIngredient() {
   const queryClient = useQueryClient();
 
