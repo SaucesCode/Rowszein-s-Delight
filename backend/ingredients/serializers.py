@@ -4,6 +4,8 @@ from .models import Ingredient
 
 class IngredientSerializer(serializers.ModelSerializer):
     is_low_stock = serializers.BooleanField(read_only=True)
+    category_display = serializers.CharField(source='get_category_display', read_only=True)
+    image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Ingredient
@@ -15,11 +17,25 @@ class IngredientSerializer(serializers.ModelSerializer):
             'cost_per_unit',
             'supplier',
             'minimum_stock',
+            'category',
+            'category_display',
+            'notes',
+            'image',
+            'image_url',
             'is_low_stock',
             'created_at',
             'updated_at',
         ]
-        read_only_fields = ['id', 'is_low_stock', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'is_low_stock', 'category_display', 'image_url', 'created_at', 'updated_at']
+        extra_kwargs = {
+            'image': {'write_only': True, 'required': False},
+        }
+
+    def get_image_url(self, obj):
+        request = self.context.get('request')
+        if obj.image and request:
+            return request.build_absolute_uri(obj.image.url)
+        return None
 
     def validate_name(self, value):
         qs = Ingredient.objects.filter(name__iexact=value)
