@@ -8,6 +8,7 @@ import { useIngredients } from "@/hooks/useIngredients";
 import { useProducts } from "@/hooks/useProducts";
 import { Plus, Trash2 } from "lucide-react";
 import SkeletonTable from "@/components/SkeletonTable";
+import RecipeCostPreview from "@/components/recipes/RecipeCostPreview";
 
 /* ─────────────────────────────────────────────
    SCHEMA
@@ -273,7 +274,7 @@ export default function RecipeFormPage() {
                     <option value={0}>Select ingredient…</option>
                     {ingredients.map((ing: any) => (
                       <option key={ing.id} value={ing.id}>
-                        {ing.name} ({ing.unit})
+                        {ing.name} ({ing.unit}) — ₱{Number(ing.cost_per_unit).toFixed(2)}
                       </option>
                     ))}
                   </select>
@@ -348,6 +349,9 @@ export default function RecipeFormPage() {
               </button>
             </div>
           )}
+
+          {/* Live cost preview — updates as ingredients/quantities/yield change */}
+          <RecipeCostPreview control={control} ingredients={ingredients} />
         </div>
 
         {/* ── Actions ── */}

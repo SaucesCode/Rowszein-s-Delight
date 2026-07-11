@@ -3,6 +3,7 @@ import { TrendingUp } from "lucide-react";
 import EmptyState from "@/components/EmptyState";
 import SkeletonTable from "@/components/SkeletonTable";
 import PageHeader from "@/components/PageHeader";
+import ProductMarginCard from "@/components/ProductMarginCard";
 
 /* ─────────────────────────────────────────────
    TYPES
@@ -119,9 +120,9 @@ export default function ProfitMarginsPage() {
             <SummaryCard label="High Margin (≥60%)" value={highMarginCount} />
           </div>
 
-          {/* Table */}
+          {/* Desktop table */}
           <div
-            className="overflow-hidden overflow-x-auto"
+            className="hidden md:block overflow-hidden overflow-x-auto"
             style={{
               background: "#FFFDFB",
               border: "1px solid #E8E6E1",
@@ -228,6 +229,13 @@ export default function ProfitMarginsPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile cards */}
+          <div className="md:hidden space-y-3">
+            {products.map(product => (
+              <ProductMarginCard key={product.product_id} product={product} />
+            ))}
           </div>
 
           {/* Legend */}
