@@ -48,7 +48,8 @@ const expenseSchema = z.object({
   date: z.string().min(1, "Date is required"),
 });
 
-type ExpenseForm = z.infer<typeof expenseSchema>;
+type ExpenseFormInput = z.input<typeof expenseSchema>;
+type ExpenseForm = z.output<typeof expenseSchema>;
 
 /* ─────────────────────────────────────────────
    FIELD — reusable labeled block
@@ -177,7 +178,7 @@ export default function ExpenseFormPage() {
   const { data: expense, isLoading } = useExpense(Number(id));
   const createExpense = useCreateExpense();
   const updateExpense = useUpdateExpense(Number(id));
-
+  
   const {
     register,
     handleSubmit,
@@ -185,7 +186,7 @@ export default function ExpenseFormPage() {
     watch,
     setValue,
     formState: { errors },
-  } = useForm<ExpenseForm>({
+  } = useForm<ExpenseFormInput, unknown, ExpenseForm>({
     resolver: zodResolver(expenseSchema),
     defaultValues: {
       category: "other",

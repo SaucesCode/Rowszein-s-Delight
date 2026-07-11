@@ -262,10 +262,17 @@ export default function DashboardPage() {
       {period === "custom" && (
         <div
           className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 animate-slide-up"
-          style={{ background: BRAND.white, border: `1px solid ${BRAND.border}`, borderRadius: 16 }}
+          style={{
+            background: BRAND.white,
+            border: `1px solid ${BRAND.border}`,
+            borderRadius: 16,
+          }}
         >
           <div className="flex items-center gap-2 w-full sm:w-auto">
-            <label className="font-body text-sm flex-shrink-0" style={{ color: BRAND.textMuted }}>
+            <label
+              className="font-body text-sm flex-shrink-0"
+              style={{ color: BRAND.textMuted }}
+            >
               From
             </label>
             <input
@@ -276,7 +283,10 @@ export default function DashboardPage() {
             />
           </div>
           <div className="flex items-center gap-2 w-full sm:w-auto">
-            <label className="font-body text-sm flex-shrink-0" style={{ color: BRAND.textMuted }}>
+            <label
+              className="font-body text-sm flex-shrink-0"
+              style={{ color: BRAND.textMuted }}
+            >
               To
             </label>
             <input
@@ -296,10 +306,16 @@ export default function DashboardPage() {
           onClick={() => navigate("/ingredients")}
           className="alert-low-stock w-full text-left animate-slide-up cursor-pointer hover:bg-yellow-100 transition-colors"
         >
-          <AlertTriangle size={20} className="flex-shrink-0 mt-0.5" strokeWidth={2} aria-hidden="true" />
+          <AlertTriangle
+            size={20}
+            className="flex-shrink-0 mt-0.5"
+            strokeWidth={2}
+            aria-hidden="true"
+          />
           <div>
             <p className="font-heading font-semibold text-sm">
-              {low_stock.length} ingredient{low_stock.length !== 1 ? "s are" : " is"} running low
+              {low_stock.length} ingredient{low_stock.length !== 1 ? "s are" : " is"} running
+              low
             </p>
             <p className="font-body text-xs mt-1">
               {low_stock.map((i: any) => i.name).join(", ")}
@@ -348,9 +364,16 @@ export default function DashboardPage() {
         {/* Trend chart */}
         <div
           className="lg:col-span-2 p-6"
-          style={{ background: BRAND.white, border: `1px solid ${BRAND.border}`, borderRadius: 16 }}
+          style={{
+            background: BRAND.white,
+            border: `1px solid ${BRAND.border}`,
+            borderRadius: 16,
+          }}
         >
-          <h3 className="font-heading font-bold text-lg mb-1" style={{ color: BRAND.chocolate }}>
+          <h3
+            className="font-heading font-bold text-lg mb-1"
+            style={{ color: BRAND.chocolate }}
+          >
             Monthly trends
           </h3>
           <p className="sr-only">
@@ -386,7 +409,7 @@ export default function DashboardPage() {
                 tickFormatter={v => `₱${(v / 1000).toFixed(0)}k`}
               />
               <Tooltip
-                formatter={(value: number) => formatPeso(value)}
+                formatter={value => formatPeso(Number(value ?? 0))}
                 contentStyle={{
                   fontSize: 12,
                   borderRadius: 10,
@@ -396,7 +419,9 @@ export default function DashboardPage() {
                   fontFamily: "Inter",
                 }}
               />
-              <Legend wrapperStyle={{ fontSize: 12, fontFamily: "Inter", color: BRAND.textMuted }} />
+              <Legend
+                wrapperStyle={{ fontSize: 12, fontFamily: "Inter", color: BRAND.textMuted }}
+              />
               <Area
                 type="monotone"
                 dataKey="sales"
@@ -428,15 +453,26 @@ export default function DashboardPage() {
         {/* Top products */}
         <div
           className="p-6"
-          style={{ background: BRAND.white, border: `1px solid ${BRAND.border}`, borderRadius: 16 }}
+          style={{
+            background: BRAND.white,
+            border: `1px solid ${BRAND.border}`,
+            borderRadius: 16,
+          }}
         >
-          <h3 className="font-heading font-bold text-lg mb-5" style={{ color: BRAND.chocolate }}>
+          <h3
+            className="font-heading font-bold text-lg mb-5"
+            style={{ color: BRAND.chocolate }}
+          >
             Top products
           </h3>
 
           {best_selling.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <Zap size={28} style={{ color: BRAND.primaryPink, opacity: 0.4 }} aria-hidden="true" />
+              <Zap
+                size={28}
+                style={{ color: BRAND.primaryPink, opacity: 0.4 }}
+                aria-hidden="true"
+              />
               <p className="font-body text-sm mt-3" style={{ color: BRAND.textMuted }}>
                 No sales data yet
               </p>

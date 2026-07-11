@@ -25,7 +25,8 @@ const saleSchema = z.object({
     .min(1, "At least one item is required"),
 });
 
-type SaleForm = z.infer<typeof saleSchema>;
+type SaleFormInput = z.input<typeof saleSchema>;
+type SaleForm = z.output<typeof saleSchema>;
 
 /* ─────────────────────────────────────────────
    FIELD — labeled input block
@@ -113,29 +114,27 @@ export default function SaleFormPage() {
     reset,
     setValue,
     formState: { errors },
-  } = useForm<SaleForm>({
+  } = useForm<SaleFormInput, unknown, SaleForm>({
     resolver: zodResolver(saleSchema),
-    defaultValues: {
-      date: new Date().toISOString().split("T")[0],
-      sale_items: [{ product: 0, quantity: 1, unit_price: 0 }],
-    },
   });
 
   const { fields, append, remove } = useFieldArray({ control, name: "sale_items" });
 
-  useEffect(() => {
-    if (sale) {
-      reset({
-        date: sale.date,
-        notes: sale.notes ?? "",
-        sale_items: sale.sale_items?.map(item => ({
+useEffect(() => {
+  if (sale) {
+    reset({
+      date: sale.date,
+      notes: sale.notes ?? "",
+      sale_items: sale.sale_items?.map(
+        (item: { product: number; quantity: number; unit_price: number | string }) => ({
           product: item.product,
           quantity: item.quantity,
           unit_price: Number(item.unit_price),
-        })) ?? [{ product: 0, quantity: 1, unit_price: 0 }],
-      });
-    }
-  }, [sale, reset]);
+        }),
+      ) ?? [{ product: 0, quantity: 1, unit_price: 0 }],
+    });
+  }
+}, [sale, reset]);
 
   /* Auto-fill unit price when product is selected */
   const handleProductChange = (index: number, productId: number) => {

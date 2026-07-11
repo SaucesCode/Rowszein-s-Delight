@@ -41,7 +41,8 @@ const ingredientSchema = z.object({
   notes: z.string().optional(),
 });
 
-type IngredientForm = z.infer<typeof ingredientSchema>;
+type IngredientFormInput = z.input<typeof ingredientSchema>;
+type IngredientForm = z.output<typeof ingredientSchema>;
 
 /* ─────────────────────────────────────────────
    FIELD — reusable labeled input block
@@ -100,9 +101,8 @@ export default function IngredientFormPage() {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<IngredientForm>({
+  } = useForm<IngredientFormInput, unknown, IngredientForm>({
     resolver: zodResolver(ingredientSchema),
-    defaultValues: { minimum_stock: 0 },
   });
 
   useEffect(() => {

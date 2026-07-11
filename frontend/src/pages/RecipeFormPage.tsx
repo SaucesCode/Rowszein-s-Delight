@@ -27,7 +27,8 @@ const recipeSchema = z.object({
     .min(1, "At least one ingredient is required"),
 });
 
-type RecipeForm = z.infer<typeof recipeSchema>;
+export type RecipeFormInput = z.input<typeof recipeSchema>;
+export type RecipeForm = z.output<typeof recipeSchema>;
 
 /* ─────────────────────────────────────────────
    FIELD — reusable labeled block
@@ -90,12 +91,8 @@ export default function RecipeFormPage() {
     control,
     reset,
     formState: { errors },
-  } = useForm<RecipeForm>({
+  } = useForm<RecipeFormInput, unknown, RecipeForm>({
     resolver: zodResolver(recipeSchema),
-    defaultValues: {
-      yield_quantity: 1,
-      recipe_ingredients: [{ ingredient: 0, quantity: 0 }],
-    },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -109,10 +106,12 @@ export default function RecipeFormPage() {
         product: recipe.product,
         yield_quantity: recipe.yield_quantity,
         notes: recipe.notes ?? "",
-        recipe_ingredients: recipe.recipe_ingredients?.map(ri => ({
-          ingredient: ri.ingredient,
-          quantity: Number(ri.quantity),
-        })) ?? [{ ingredient: 0, quantity: 0 }],
+        recipe_ingredients: recipe.recipe_ingredients?.map(
+          (ri: { ingredient: number; quantity: number | string }) => ({
+            ingredient: ri.ingredient,
+            quantity: Number(ri.quantity),
+          }),
+        ) ?? [{ ingredient: 0, quantity: 0 }],
       });
     }
   }, [recipe, reset]);

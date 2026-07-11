@@ -1,5 +1,5 @@
-import { useWatch } from "react-hook-form";
-import type { Control } from "react-hook-form";
+import type { RecipeFormInput, RecipeForm } from "@/pages/RecipeFormPage";
+import { useWatch, type Control } from "react-hook-form";
 
 interface IngredientCostLookup {
   id: number;
@@ -7,7 +7,7 @@ interface IngredientCostLookup {
 }
 
 interface RecipeCostPreviewProps {
-  control: Control<any>;
+  control: Control<RecipeFormInput, unknown, RecipeForm>;
   ingredients: IngredientCostLookup[];
 }
 
