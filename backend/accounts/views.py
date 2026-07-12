@@ -82,11 +82,15 @@ class LogoutView(APIView):
         }, status=status.HTTP_200_OK)
 
         for cookie_name in (jwt_settings["AUTH_COOKIE"], jwt_settings["AUTH_COOKIE_REFRESH"]):
-            response.delete_cookie(
-                cookie_name,
-                path="/",
-                samesite=jwt_settings["AUTH_COOKIE_SAMESITE"],
+            response.set_cookie(
+                key=cookie_name,
+                value="",
+                max_age=0,
+                expires="Thu, 01 Jan 1970 00:00:00 GMT",
+                httponly=jwt_settings["AUTH_COOKIE_HTTP_ONLY"],
                 secure=jwt_settings["AUTH_COOKIE_SECURE"],
+                samesite=jwt_settings["AUTH_COOKIE_SAMESITE"],
+                path="/",
             )
 
         return response
