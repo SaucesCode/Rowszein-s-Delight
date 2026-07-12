@@ -27,6 +27,7 @@ def set_auth_cookies(response, access_token, refresh_token):
         httponly=jwt_settings['AUTH_COOKIE_HTTP_ONLY'],
         secure=jwt_settings['AUTH_COOKIE_SECURE'],
         samesite=jwt_settings['AUTH_COOKIE_SAMESITE'],
+        path="/", 
         max_age=int(jwt_settings['REFRESH_TOKEN_LIFETIME'].total_seconds()),
     )
 
@@ -80,8 +81,13 @@ class LogoutView(APIView):
             'message': 'Logout successful.',
         }, status=status.HTTP_200_OK)
 
-        response.delete_cookie(jwt_settings['AUTH_COOKIE'])
-        response.delete_cookie(jwt_settings['AUTH_COOKIE_REFRESH'])
+        for cookie_name in (jwt_settings["AUTH_COOKIE"], jwt_settings["AUTH_COOKIE_REFRESH"]):
+            response.delete_cookie(
+                cookie_name,
+                path="/",
+                samesite=jwt_settings["AUTH_COOKIE_SAMESITE"],
+                secure=jwt_settings["AUTH_COOKIE_SECURE"],
+            )
 
         return response
 
