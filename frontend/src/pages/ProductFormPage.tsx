@@ -3,7 +3,12 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCategories, useCreateProduct, useProduct, useUpdateProduct } from "@/hooks/useProducts";
+import {
+  useCategories,
+  useCreateProduct,
+  useProduct,
+  useUpdateProduct,
+} from "@/hooks/useProducts";
 import { ImageOff, Upload } from "lucide-react";
 import SkeletonTable from "@/components/SkeletonTable";
 import type { Category } from "@/types/product.types";
@@ -142,7 +147,8 @@ export default function ProductFormPage() {
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct(Number(id));
   const categories: Category[] = categoriesData?.data ?? [];
-  const defaultCategoryId = duplicateData?.category_id ?? categories.find(category => category.is_active)?.id ?? 0;
+  const defaultCategoryId =
+    duplicateData?.category_id ?? categories.find(category => category.is_active)?.id ?? 0;
 
   const {
     register,

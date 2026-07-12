@@ -21,7 +21,7 @@ export const productService = {
     const payload = response.data;
     return {
       ...payload,
-      data: Array.isArray(payload.data) ? payload.data : payload.data?.results ?? [],
+      data: Array.isArray(payload.data) ? payload.data : (payload.data?.results ?? []),
     };
   },
 

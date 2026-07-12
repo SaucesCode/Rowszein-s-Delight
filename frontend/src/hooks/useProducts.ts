@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 
 export function useProducts(page = 1) {
   return useQuery({
-    queryKey: ["products", page],
+    queryKey: ["products", "list", page],
     queryFn: () => productService.getAll(page),
   });
 }
@@ -20,7 +20,7 @@ export function useCategories() {
 
 export function useProduct(id: number) {
   return useQuery({
-    queryKey: ["products", id],
+    queryKey: ["products", "detail", id],
     queryFn: () => productService.getOne(id),
     enabled: !!id,
   });
