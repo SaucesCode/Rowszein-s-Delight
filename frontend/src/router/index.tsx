@@ -16,6 +16,7 @@ import ExpenseFormPage from "@/pages/ExpenseFormPage";
 import SalesPage from "@/pages/SalesPage";
 import SaleFormPage from "@/pages/SaleFormPage";
 import ProfitMarginsPage from "@/pages/ProfitMarginsPage";
+import GuestRoute from "@/components/GuestRoute";
 
 const router = createBrowserRouter([
   // ── Public — shop landing page, no auth required ──
@@ -26,8 +27,18 @@ const router = createBrowserRouter([
 
   // ── Public — owner login (reached via the hidden nav icon) ──
   {
-    element: <AuthLayout />,
-    children: [{ path: "/login", element: <LoginPage /> }],
+    element: <GuestRoute />,
+    children: [
+      {
+        element: <AuthLayout />,
+        children: [
+          {
+            path: "/login",
+            element: <LoginPage />,
+          },
+        ],
+      },
+    ],
   },
 
   // ── Protected — Owner Panel ──
