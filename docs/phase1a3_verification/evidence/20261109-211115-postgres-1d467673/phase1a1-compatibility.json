@@ -1,0 +1,116 @@
+{
+  "tests_run": 18,
+  "outcomes": [
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_cancellation_failure_after_status_save_restores_every_record",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.312
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_cancellation_failure_during_restoration_rolls_back_partial_credits",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.312
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_create_failure_after_first_deduction_rolls_back_every_write",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.109
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_create_failure_after_item_insertion_rolls_back_parent_and_items",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.094
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_create_failure_after_last_deduction_rolls_back_every_write",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.204
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_failed_create_can_be_retried_without_residual_sale_or_stock_changes",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.312
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_invalid_create_has_no_persistent_effects",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.078
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_invalid_put_nested_items_leaves_all_records_unchanged",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.187
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_invalid_update_after_recipe_change_does_not_restore_current_recipe",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.172
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_invalid_update_after_recipe_removal_leaves_records_unchanged",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.172
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_repeated_invalid_patch_does_not_inflate_stock_or_change_sale",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.187
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_response_serialization_failure_rolls_back_sale_and_inventory",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.047
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_soft_delete_restores_stock_and_retry_cannot_restore_again",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.203
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_successful_create_preserves_historical_price_and_decimal_totals",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.093
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_successful_update_retains_original_items_and_reconciles_stock",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.203
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_update_failure_after_new_deduction_rolls_back_everything",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.266
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_update_failure_after_projection_write_preserves_original_items_and_prices",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.265
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_update_failure_during_stock_write_preserves_entire_state",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.266
+    }
+  ],
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0
+}

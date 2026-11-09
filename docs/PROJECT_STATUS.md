@@ -6,7 +6,7 @@ Rowszein's Delight Management System
 
 ## Current Phase
 
-Phase 1A sales/inventory integrity — five-model implementation under review. New migrations generated and statically checked, **not applied**. Phase 1A is incomplete; ten integrated API requirements remain unverified release blockers.
+Phase 1A.3 disposable sales/inventory verification complete for owner review. Both approved migrations applied only to owned disposable PostgreSQL/SQLite targets, with unchanged migration files. Ten former API blockers now pass on PostgreSQL. No production rollout or next package is authorized.
 
 ## Completed
 
@@ -30,7 +30,7 @@ Phase 1A sales/inventory integrity — five-model implementation under review. N
 
 ## In Progress
 
-Migration-execution approval checkpoint: [implementation report](PHASE1A2_IMPLEMENTATION_CHECKPOINT.md). Database-free tests/build pass; new-schema API/PostgreSQL concurrency testing has not run.
+Review checkpoint: [verification report](PHASE1A3_DATABASE_VERIFICATION_REPORT.md). PostgreSQL 120 passes; SQLite 103 passes/17 skips; repeated races 80 passes; browser 28 checks pass. Build/affected lint pass, full lint remains failed.
 
 ## Not Started
 
@@ -40,7 +40,7 @@ Migration-execution approval checkpoint: [implementation report](PHASE1A2_IMPLEM
 
 ## Current Task
 
-STOPPED awaiting explicit authorization to apply the new migrations and run integration tests only in disposable PostgreSQL and SQLite. No deployment, production changes, Phase 2 demo data, UI redesign or SEO work is authorized.
+STOPPED after the authorized disposable verification package, awaiting owner review. Proposed next package is separate AUTH-01/02 design/regression work. No deployment, production changes, Phase 2 demo data, UI redesign, SEO or automatic security implementation is authorized.
 
 ## Notes
 

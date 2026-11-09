@@ -86,7 +86,6 @@ export default function ConfirmDialog({
       onClick={e => {
         if (e.target === e.currentTarget) onCancel();
       }}
-      aria-hidden="true"
     >
       {/* Dialog panel */}
       <div

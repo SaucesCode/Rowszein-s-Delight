@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ingredientService } from "@/services/ingredient.service";
 import type { IngredientPayload } from "@/types/ingredient.types";
 import toast from "react-hot-toast";
-import { useOperationIdentity, rejectedBeforeCommit } from "@/hooks/useOperationIdentity";
+import { useOperationIdentity } from "@/hooks/useOperationIdentity";
 
 export function useIngredients(page = 1) {
   return useQuery({
@@ -82,7 +82,7 @@ export function useUpdateStock(id: number) {
       toast.success("Stock updated.");
     },
     onError: (error) => {
-      if (rejectedBeforeCommit(error)) identity.clear(`stock:adjust:${id}`);
+      identity.reject(`stock:adjust:${id}`, error);
       queryClient.invalidateQueries({ queryKey: ["ingredients"] });
       toast.error("Failed to update stock. Reload before retrying a stale balance.");
     },

@@ -1,0 +1,16 @@
+{
+  "identity": "877f51af49a249009fff539c9a08e3ee",
+  "backend": "sqlite",
+  "authorization": "Phase 1A.3 disposable verification only",
+  "production_connections": false,
+  "name": "C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\.verification-runtime\\877f51af49a249009fff539c9a08e3ee\\isolated.sqlite3",
+  "ownership": "new exclusive runtime file",
+  "scrubbed_environment_variable_names": [],
+  "project_dotenv_loading": false,
+  "settings": "backend.disposable_verification_settings",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "migration_sha256": {
+    "backend/ingredients/migrations/0004_inventory_integrity.py": "6b16f329b58d1dd2385c053f8bda98466f77f2483eafa275a6d66f810ef4843c",
+    "backend/sales/migrations/0003_inventory_integrity.py": "56b12876f54896011f31b8c089bf0553e6f5c047481eaddba7eb25d6502cff14"
+  }
+}

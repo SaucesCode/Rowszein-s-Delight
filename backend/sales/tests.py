@@ -1,7 +1,8 @@
-"""New-schema API regressions: DEFINED, NOT EXECUTED before migration approval.
+"""API regressions for the approved five-model schema.
 
 The earlier 1A.1 definitions/results remain in Git b87d36d/docs/phase1a.
-Do not run a Django test runner until disposable migration execution is approved.
+Phase 1A.3 results are in docs/PHASE1A3_DATABASE_VERIFICATION_REPORT.md.
+Use only the ownership-verified disposable runner for database execution.
 """
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date
@@ -320,6 +321,7 @@ class SalesConcurrencyTests(SalesFixture, TransactionTestCase):
             futures = [pool.submit(run, call) for call in calls]
             responses = [future.result(timeout=20) for future in futures]
         self.assertEqual(len(set(pids)), len(calls))
+        print(f'PostgreSQL workers: pids={pids}, response_statuses={[response.status_code for response in responses]}', flush=True)
         return responses
 
     def test_competing_last_stock_sales(self):

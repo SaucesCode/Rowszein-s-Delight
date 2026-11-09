@@ -1,0 +1,86 @@
+{
+  "tests_run": 13,
+  "outcomes": [
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_actual_checks_unique_keys_and_foreign_keys",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.39
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_adjustment_result_is_exact_or_rejected_before_storage",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.094
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_deterministic_lifecycle_reconciles_after_every_operation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 50.75
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_frontend_compatibility_read_endpoints_and_validation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.297
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_gross_adjustment_cancellation_dates_and_no_refund",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.5
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_initial_quantity_is_exact_or_rejected_before_storage",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.047
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_postgresql_maximum_precision_roundtrips_without_lost_quanta",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.172
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_protected_history_and_immutable_quantities",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.421
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedConcurrencyTests.test_cancellation_competing_with_edit",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.375
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedConcurrencyTests.test_multiple_products_and_ingredients_in_opposite_request_orders",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.593
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedConcurrencyTests.test_real_ingredient_lock_wait_is_observed_then_commits",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.328
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedConcurrencyTests.test_recipe_change_competing_with_sale",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.531
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedConcurrencyTests.test_two_operators_compete_for_last_stock",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.328
+    }
+  ],
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0
+}

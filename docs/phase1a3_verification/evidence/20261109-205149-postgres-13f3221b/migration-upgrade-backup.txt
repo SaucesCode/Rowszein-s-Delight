@@ -1,0 +1,15 @@
+PASS: fresh install applies approved sales migration
+PASS: fresh install applies approved ingredient migration
+PASS: second migration application is a no-op
+PASS: unused schema contains no sale/operation history
+PASS: unused reversal removes new tables
+PASS: unused reversal removes added ingredient fields
+PASS: auxiliary database name is disposable
+PASS: disposable backup restores exact historical rows in a second database
+PASS: upgrade preserves every original field, ID, date, timestamp, price and quantity
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1a3_verification\migration_verification.py", line 120, in <module>
+    check(results['legacy_baseline_sha256'] == results['legacy_after_sha256'], 'historical baseline hashes agree')
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1a3_verification\migration_verification.py", line 32, in check
+    raise AssertionError(description)
+AssertionError: historical baseline hashes agree

@@ -1,0 +1,6 @@
+{
+  "browser": {
+    "exit_code": 1,
+    "result_file": "browser.json"
+  }
+}

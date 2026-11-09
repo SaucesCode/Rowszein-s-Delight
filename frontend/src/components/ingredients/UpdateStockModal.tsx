@@ -10,35 +10,28 @@ interface UpdateStockModalProps {
   onCancel: () => void;
 }
 
-export default function UpdateStockModal({
+export default function UpdateStockModal(props: UpdateStockModalProps) {
+  if (!props.ingredient) return null;
+  return <StockAdjustmentDialog key={props.ingredient.id} {...props} ingredient={props.ingredient} />;
+}
+
+function StockAdjustmentDialog({
   ingredient,
   loading = false,
   onSave,
   onCancel,
-}: UpdateStockModalProps) {
+}: Omit<UpdateStockModalProps, "ingredient"> & { ingredient: Ingredient }) {
   const [mode, setMode] = useState<"add" | "deduct">("add");
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
 
-  // Reset the form fresh every time a different ingredient is targeted
   useEffect(() => {
-    if (ingredient) {
-      setMode("add");
-      setAmount("");
-      setNote("");
-    }
-  }, [ingredient]);
-
-  useEffect(() => {
-    if (!ingredient) return;
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onCancel();
     };
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
   }, [ingredient, onCancel]);
-
-  if (!ingredient) return null;
 
   const current = String(ingredient.quantity);
   let delta = "0.000000000";
@@ -66,7 +59,6 @@ export default function UpdateStockModal({
       onClick={e => {
         if (e.target === e.currentTarget) onCancel();
       }}
-      aria-hidden="true"
     >
       <div
         role="dialog"

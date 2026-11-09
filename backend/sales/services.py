@@ -15,6 +15,7 @@ from recipes.models import Recipe
 from sales.financial_math import posting_amount
 from sales.inventory_math import Basis, MAX_ACTIVE_UNITS, UNITS, allocate, apply_deltas, intent_fingerprint, money_text, signed_money_text, quantity_quanta, quantity_text
 from sales.models import ConsumptionBasis, InventoryOperation, Sale, SaleConsumption, SaleFinancialEntry, SaleItem, StockMovement
+from sales.storage_precision import validate_quantity_storage
 
 
 class Conflict(APIException):
@@ -233,6 +234,14 @@ def execute_sale(*, action, actor, key, data=None, sale_id=None, expected_revisi
             deltas[ingredient_id].append(allocation.applied_quantity.copy_negate())
             additions.append((basis, allocation, new_quantities[product_id]))
         projected = {pk: apply_deltas(ingredients[pk].quantity, deltas[pk]) for pk in ingredient_ids}
+        # Validate every Decimal that will be stored, before ANY business write.
+        with localcontext() as context:
+            context.prec = 50
+            for pk in ingredient_ids:
+                for value in [ingredients[pk].quantity, projected[pk], projected[pk] - ingredients[pk].quantity]:
+                    validate_quantity_storage(value)
+        for _, allocation, _ in additions:
+            validate_quantity_storage(allocation.applied_quantity)
         old_amount = item_total(old_items) if old_items else Decimal('0.00')
         new_amount = Decimal('0.00') if action == 'sale_cancel' else item_total(new_items)
         if sale:
@@ -337,6 +346,8 @@ def adjust_stock(*, actor, key, ingredient_id, expected_revision, delta, reason)
         if row.unit not in UNITS:
             raise Conflict('Inventory unit is invalid; explicit reconciliation is required.')
         result = apply_deltas(row.quantity, [delta])
+        for value in [row.quantity, delta, result]:
+            validate_quantity_storage(value)
         before = {'quantity': quantity_text(row.quantity), 'unit': row.unit, 'stock_revision': row.stock_revision}
         body = {'success': True, 'data': {'id': row.pk, 'quantity': quantity_text(result), 'unit': row.unit, 'stock_revision': str(row.stock_revision + 1)}, 'message': 'Stock adjusted.'}
         op = InventoryOperation.objects.create(actor=actor, client_key=key, action='stock_adjust', ingredient=row,

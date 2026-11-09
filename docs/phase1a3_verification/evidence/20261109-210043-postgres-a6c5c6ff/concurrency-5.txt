@@ -1,0 +1,83 @@
+Found 16 test(s).
+Operations to perform:
+  Synchronize unmigrated apps: corsheaders, messages, rest_framework, staticfiles
+  Apply all migrations: accounts, admin, auth, contenttypes, expenses, ingredients, products, recipes, sales, sessions
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0001_initial... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying accounts.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying expenses.0001_initial... OK
+  Applying ingredients.0001_initial... OK
+  Applying ingredients.0002_ingredient_minimum_stock... OK
+  Applying ingredients.0003_ingredient_category_ingredient_image_and_more... OK
+  Applying ingredients.0004_inventory_integrity... OK
+  Applying products.0001_initial... OK
+  Applying products.0002_product_is_featured... OK
+  Applying products.0003_product_category... OK
+  Applying products.0004_category_product_category_fk... OK
+  Applying recipes.0001_initial... OK
+  Applying recipes.0002_recipe_yield_quantity... OK
+  Applying sales.0001_initial... OK
+  Applying sales.0002_saleitem_subtotal_amount... OK
+  Applying sales.0003_inventory_integrity... OK
+  Applying sessions.0001_initial... OK
+System check identified no issues (0 silenced).
+PostgreSQL workers: pids=[285, 284], response_statuses=[200, 409]
+PostgreSQL workers: pids=[287, 288], response_statuses=[400, 201]
+PostgreSQL workers: pids=[290, 291], response_statuses=[409, 201]
+PostgreSQL workers: pids=[295, 294], response_statuses=[409, 201]
+PostgreSQL workers: pids=[297, 298], response_statuses=[201, 200]
+PostgreSQL workers: pids=[300, 301], response_statuses=[201, 201]
+PostgreSQL workers: pids=[305, 303, 304], response_statuses=[201, 201, 201]
+PostgreSQL workers: pids=[308, 307, 306], response_statuses=[200, 200, 200]
+PostgreSQL workers: pids=[310, 311], response_statuses=[409, 200]
+PostgreSQL workers: pids=[313, 314], response_statuses=[200, 409]
+PostgreSQL workers: pids=[316, 317], response_statuses=[201, 201]
+Observed lock wait: holder_pid=318, contender_pid=319, wait=('Lock', [318])
+PostgreSQL workers: pids=[321, 322], response_statuses=[201, 200]
+PostgreSQL workers: pids=[324, 325], response_statuses=[400, 201]
+Creating test database for alias 'default' ('test_rowszein_verify_c450947b08df4ea5a9a16d68e457c181')...
+
+test_cancellation_is_unique_across_different_request_keys (sales.tests.SalesConcurrencyTests.test_cancellation_is_unique_across_different_request_keys) ... C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\django\core\handlers\base.py:61: UserWarning: No directory at: C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\.verification-runtime\c450947b08df4ea5a9a16d68e457c181\static\
+  mw_instance = middleware(adapted_handler)
+ok
+test_competing_last_stock_sales (sales.tests.SalesConcurrencyTests.test_competing_last_stock_sales) ... ok
+test_conflicting_payload_same_uuid_rolls_back_losing_request (sales.tests.SalesConcurrencyTests.test_conflicting_payload_same_uuid_rolls_back_losing_request) ... ok
+test_database_uuid_collision_with_disjoint_stock_rolls_back_loser (sales.tests.SalesConcurrencyTests.test_database_uuid_collision_with_disjoint_stock_rolls_back_loser) ... ok
+test_direct_adjustment_and_sale_follow_same_stock_lock (sales.tests.SalesConcurrencyTests.test_direct_adjustment_and_sale_follow_same_stock_lock) ... ok
+test_duplicate_uuid_creates_one_complete_transaction (sales.tests.SalesConcurrencyTests.test_duplicate_uuid_creates_one_complete_transaction) ... ok
+test_fractional_competing_sales_and_cancellations_conserve_stock (sales.tests.SalesConcurrencyTests.test_fractional_competing_sales_and_cancellations_conserve_stock) ... ok
+test_stale_edits_cannot_overwrite_new_revision (sales.tests.SalesConcurrencyTests.test_stale_edits_cannot_overwrite_new_revision) ... ok
+test_cancellation_competing_with_edit (sales.test_verification_extended.ExtendedConcurrencyTests.test_cancellation_competing_with_edit) ... ok
+test_multiple_products_and_ingredients_in_opposite_request_orders (sales.test_verification_extended.ExtendedConcurrencyTests.test_multiple_products_and_ingredients_in_opposite_request_orders) ... ok
+test_real_ingredient_lock_wait_is_observed_then_commits (sales.test_verification_extended.ExtendedConcurrencyTests.test_real_ingredient_lock_wait_is_observed_then_commits) ... ok
+test_recipe_change_competing_with_sale (sales.test_verification_extended.ExtendedConcurrencyTests.test_recipe_change_competing_with_sale) ... ok
+test_two_operators_compete_for_last_stock (sales.test_verification_extended.ExtendedConcurrencyTests.test_two_operators_compete_for_last_stock) ... ok
+test_competing_sales_only_one_can_consume_last_stock (sales.test_release_blockers.ReleaseBlockerContracts.test_competing_sales_only_one_can_consume_last_stock) ... ok
+test_concurrent_duplicate_request_creates_only_one_sale (sales.test_release_blockers.ReleaseBlockerContracts.test_concurrent_duplicate_request_creates_only_one_sale) ... ok
+test_concurrent_stale_sale_edits_reject_second_revision (sales.test_release_blockers.ReleaseBlockerContracts.test_concurrent_stale_sale_edits_reject_second_revision) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 19.691s
+
+OK
+Destroying test database for alias 'default' ('test_rowszein_verify_c450947b08df4ea5a9a16d68e457c181')...
+

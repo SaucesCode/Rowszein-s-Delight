@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Ingredient
+from sales.storage_precision import validate_quantity_storage
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -50,6 +51,10 @@ class IngredientSerializer(serializers.ModelSerializer):
     def validate_quantity(self, value):
         if value < 0:
             raise serializers.ValidationError('Quantity cannot be negative.')
+        try:
+            validate_quantity_storage(value)
+        except ValueError as error:
+            raise serializers.ValidationError(str(error)) from error
         return value
 
     def validate_cost_per_unit(self, value):
@@ -70,4 +75,8 @@ class StockAdjustmentSerializer(serializers.Serializer):
     def validate_delta(self, value):
         if not value:
             raise serializers.ValidationError('Adjustment must be nonzero.')
+        try:
+            validate_quantity_storage(value)
+        except ValueError as error:
+            raise serializers.ValidationError(str(error)) from error
         return value

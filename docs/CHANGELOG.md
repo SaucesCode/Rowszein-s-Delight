@@ -1,5 +1,11 @@
 # Revival changelog
 
+## 2026-11-09 — Phase 1A.3 disposable database verification
+
+Preserved the implementation checkpoint in `570e227`; verified only fresh owned PostgreSQL 17.11/SQLite targets. All ten prior API blockers now pass on PostgreSQL; all 33 defined API/concurrency tests and 18 adapted 1A.1 regressions pass. Selected totals: PostgreSQL 120 pass/0 fail/0 error/0 skip; SQLite 103 pass/0 fail/0 error/17 skip. Repeated PostgreSQL concurrency: 80 passes across five 16-case runs. Browser: 28 passing real HTTP checks. Fresh/legacy upgrade, idempotence, unused reverse migrations and backup/restore verified; invalid stock fixture safely rejected without repair. Migration files/hashes unchanged; no new migration created.
+
+Fixed pending request UUID loss after a later validation error (a browser reproduced a duplicate sale before the fix), unsafe SQLite precision acceptance with pre-write storage validation, hidden cancellation/stock dialog roles, stock-modal reset lifecycle lint, and uncaught protected-product deletion. Preserved the failing reproductions and corrected migration-harness issues without editing historical migrations. Build/affected lint pass; full lint remains 12 errors/16 warnings. [Required report and evidence](PHASE1A3_DATABASE_VERIFICATION_REPORT.md). No production/later-phase work; AUTH-01/02 remain open. Stopped after verification for owner review.
+
 ## 2026-11-09 — Five-model implementation; migrations generated, UNAPPLIED
 
 On `codex/phase-1a2-five-models`, implemented InventoryOperation, ConsumptionBasis, SaleConsumption, StockMovement and SaleFinancialEntry with exact applied-quantity reversals, monotonic allocation, stable database identities/revisions, cancellation uniqueness and cancellation-date signed financial reports. Original sale facts remain retained; legacy inventory changes/cancellation fail closed. Added coordinated stock/recipe paths and frontend contract support. Generated ingredient 0004 and sale 0003; statically inspected only. **No new migration executed**, including in disposable environments.

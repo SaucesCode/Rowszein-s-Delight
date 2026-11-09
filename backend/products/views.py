@@ -3,6 +3,8 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django.db.models import Count
+from django.db import transaction
+from django.db.models.deletion import ProtectedError
 
 from .models import Category, Product
 from .serializers import CategorySerializer, ProductSerializer
@@ -148,9 +150,14 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
             'message': 'Product updated successfully.',
         })
 
+    @transaction.atomic
     def destroy(self, request, *args, **kwargs):
+        self.queryset = Product.objects.select_for_update()
         instance = self.get_object()
-        instance.delete()
+        try:
+            instance.delete()
+        except ProtectedError:
+            return Response({'success': False, 'error': 'This product is referenced by retained sales or consumption history and cannot be deleted.'}, status=409)
         return Response({
             'success': True,
             'data': None,

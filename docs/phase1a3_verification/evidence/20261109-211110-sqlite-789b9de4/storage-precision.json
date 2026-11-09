@@ -1,0 +1,32 @@
+{
+  "tests_run": 4,
+  "outcomes": [
+    {
+      "test": "sales.test_storage_precision.StoragePrecisionTests.test_no_engine_accepts_floats_nonfinite_or_subquantum_values",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_storage_precision.StoragePrecisionTests.test_postgresql_retains_full_approved_quantity_range",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_storage_precision.StoragePrecisionTests.test_sqlite_accepts_safe_values_with_insignificant_zeros",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_storage_precision.StoragePrecisionTests.test_sqlite_rejects_unsafe_signed_quantities_and_balances",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    }
+  ],
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0
+}

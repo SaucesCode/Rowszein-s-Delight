@@ -1,0 +1,62 @@
+November 09, 2026 - 21:15:47
+Django version 5.1.4, using settings 'backend.disposable_verification_settings'
+Starting development server at http://127.0.0.1:18842/
+Quit the server with CTRL-BREAK.
+
+[09/Nov/2026 21:16:00] "GET /api/auth/me/ HTTP/1.1" 401 58
+[09/Nov/2026 21:16:00] "POST /api/auth/login/ HTTP/1.1" 200 126
+[09/Nov/2026 21:16:01] "GET /api/auth/me/ HTTP/1.1" 200 109
+[09/Nov/2026 21:16:01] "GET /api/auth/me/ HTTP/1.1" 200 109
+[09/Nov/2026 21:16:01] "GET /api/auth/me/ HTTP/1.1" 200 109
+[09/Nov/2026 21:16:02] "GET /api/products/?page=1 HTTP/1.1" 200 544
+[09/Nov/2026 21:16:02] "GET /api/products/ HTTP/1.1" 200 544
+[09/Nov/2026 21:16:03] "POST /api/sales/ HTTP/1.1" 201 496
+[09/Nov/2026 21:16:03] "GET /api/sales/ HTTP/1.1" 200 534
+[09/Nov/2026 21:16:03] "GET /api/sales/ HTTP/1.1" 200 534
+[09/Nov/2026 21:16:04] "GET /api/auth/me/ HTTP/1.1" 200 109
+[09/Nov/2026 21:16:04] "GET /api/products/?page=1 HTTP/1.1" 200 544
+[09/Nov/2026 21:16:05] "POST /api/sales/ HTTP/1.1" 409 101
+[09/Nov/2026 21:16:05] "GET /api/sales/ HTTP/1.1" 200 534
+[09/Nov/2026 21:16:06] "POST /api/sales/ HTTP/1.1" 201 496
+[09/Nov/2026 21:16:06] "GET /api/sales/ HTTP/1.1" 200 534
+[09/Nov/2026 21:16:06] "GET /api/sales/?page=1&date_from=2026-11-09&date_to=2026-11-09 HTTP/1.1" 200 534
+[09/Nov/2026 21:16:06] "GET /api/sales/financial-summary/?date_from=2026-11-09&date_to=2026-11-09 HTTP/1.1" 200 532
+[09/Nov/2026 21:16:06] "GET /api/ingredients/ HTTP/1.1" 200 795
+[09/Nov/2026 21:16:06] "GET /api/sales/1/ HTTP/1.1" 200 482
+[09/Nov/2026 21:16:07] "PUT /api/sales/1/ HTTP/1.1" 200 495
+[09/Nov/2026 21:16:08] "GET /api/sales/1/ HTTP/1.1" 200 482
+[09/Nov/2026 21:16:08] "GET /api/sales/financial-summary/?date_from=2026-11-09&date_to=2026-11-09 HTTP/1.1" 200 534
+[09/Nov/2026 21:16:08] "GET /api/sales/1/ HTTP/1.1" 200 482
+[09/Nov/2026 21:16:08] "GET /api/sales/?page=1&date_from=2026-11-09&date_to=2026-11-09 HTTP/1.1" 200 534
+[09/Nov/2026 21:16:08] "GET /api/ingredients/ HTTP/1.1" 200 795
+[09/Nov/2026 21:16:08] "PATCH /api/sales/1/ HTTP/1.1" 200 537
+[09/Nov/2026 21:16:08] "GET /api/ingredients/ HTTP/1.1" 200 795
+[09/Nov/2026 21:16:08] "PUT /api/sales/1/ HTTP/1.1" 409 74
+[09/Nov/2026 21:16:09] "GET /api/sales/1/ HTTP/1.1" 200 524
+[09/Nov/2026 21:16:09] "GET /api/ingredients/ HTTP/1.1" 200 795
+[09/Nov/2026 21:16:10] "GET /api/auth/me/ HTTP/1.1" 200 109
+[09/Nov/2026 21:16:10] "GET /api/sales/financial-summary/?date_from=2026-11-09&date_to=2026-11-09 HTTP/1.1" 200 534
+[09/Nov/2026 21:16:10] "GET /api/sales/?page=1&date_from=2026-11-09&date_to=2026-11-09 HTTP/1.1" 200 576
+[09/Nov/2026 21:16:12] "DELETE /api/sales/1/ HTTP/1.1" 200 540
+[09/Nov/2026 21:16:12] "GET /api/sales/financial-summary/?date_from=2026-11-09&date_to=2026-11-09 HTTP/1.1" 200 538
+[09/Nov/2026 21:16:12] "GET /api/sales/?page=1&date_from=2026-11-09&date_to=2026-11-09 HTTP/1.1" 200 577
+[09/Nov/2026 21:16:12] "GET /api/sales/ HTTP/1.1" 200 577
+[09/Nov/2026 21:16:12] "GET /api/sales/1/ HTTP/1.1" 200 525
+[09/Nov/2026 21:16:13] "GET /api/ingredients/ HTTP/1.1" 200 796
+[09/Nov/2026 21:16:13] "GET /api/sales/financial-summary/?date_from=2026-01-01&date_to=2026-12-31 HTTP/1.1" 200 538
+[09/Nov/2026 21:16:14] "GET /api/auth/me/ HTTP/1.1" 200 109
+[09/Nov/2026 21:16:14] "GET /api/ingredients/?page=1 HTTP/1.1" 200 796
+[09/Nov/2026 21:16:14] "GET /api/ingredients/low-stock/ HTTP/1.1" 200 39
+[09/Nov/2026 21:16:16] "POST /api/ingredients/1/adjustments/ HTTP/1.1" 200 119
+[09/Nov/2026 21:16:16] "GET /api/ingredients/?page=1 HTTP/1.1" 200 796
+[09/Nov/2026 21:16:16] "GET /api/ingredients/low-stock/ HTTP/1.1" 200 39
+[09/Nov/2026 21:16:16] "GET /api/ingredients/ HTTP/1.1" 200 796
+[09/Nov/2026 21:16:18] "GET /api/auth/me/ HTTP/1.1" 200 109
+[09/Nov/2026 21:16:18] "GET /api/products/?page=1 HTTP/1.1" 200 544
+[09/Nov/2026 21:16:19] "GET /api/ingredients/ HTTP/1.1" 200 796
+[09/Nov/2026 21:16:19] "POST /api/sales/ HTTP/1.1" 400 96
+[09/Nov/2026 21:16:19] "GET /api/sales/ HTTP/1.1" 200 577
+[09/Nov/2026 21:16:19] "GET /api/ingredients/ HTTP/1.1" 200 796
+[09/Nov/2026 21:16:21] "GET /api/auth/me/ HTTP/1.1" 200 109
+[09/Nov/2026 21:16:21] "GET /api/dashboard/?date_from=2025-12-31&date_to=2026-11-09 HTTP/1.1" 200 1266
+[09/Nov/2026 21:16:21] "GET /api/dashboard/?date_from=2026-01-01&date_to=2026-12-31 HTTP/1.1" 200 1218

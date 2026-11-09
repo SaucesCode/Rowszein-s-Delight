@@ -7,9 +7,10 @@ import os
 import re
 import sys
 
-# Remove only after the owner's next explicit migration-execution approval.
+# Generic settings cannot verify target ownership. The authorized Phase 1A.3
+# runner uses dedicated disposable_verification_settings; retain this guard.
 if any(command in sys.argv for command in ['test', 'migrate']):
-    raise RuntimeError('New-schema database execution is not authorized. Use schema_review_settings and the database-free review script.')
+    raise RuntimeError('Generic database execution has no verified disposable ownership. Use docs/phase1a3_verification/run_verification.py.')
 
 os.environ.update(
     SECRET_KEY="local-regression-tests-only-not-a-deployment-key-1234567890",

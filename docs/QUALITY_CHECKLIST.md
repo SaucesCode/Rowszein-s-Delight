@@ -62,7 +62,7 @@ Current evidence and limitations: [PHASE1A_PROGRESS.md](PHASE1A_PROGRESS.md). Th
 
 Existing reduced-animation support, image alt text, explicit button labels in many shared controls, and error/loading states should be retained. A complete conformance audit has not been conducted. Use the [W3C WCAG 2.2 Recommendation](https://www.w3.org/TR/WCAG22/) for criterion-level verification rather than claiming accessibility from automated checks alone.
 
-## Current implementation checkpoint — 2026-11-09
+## Earlier implementation checkpoint — 2026-11-09
 
 - [x] Five-model implementation and additive migration generation/static inspection authorized and completed for review.
 - [x] 42 database-free arithmetic/metadata tests and 10 frontend stock utility checks pass; TypeScript/Vite build passes.
@@ -72,3 +72,17 @@ Existing reduced-animation support, image alt text, explicit button labels in ma
 - [ ] AUTH-01/AUTH-02 and outstanding security/dependency issues — separate reviewed package.
 
 See [the implementation checkpoint](PHASE1A2_IMPLEMENTATION_CHECKPOINT.md). No production readiness or deployment approval is implied. Historical baseline assessments remain evidence of the earlier state.
+
+## Current disposable verification checkpoint — 2026-11-09
+
+- [x] Authorized disposable migrations applied on PostgreSQL/SQLite; fresh/upgrade/idempotence verified.
+- [x] Original legacy values preserved; no invented history; separate invalid-stock migration refused without repair.
+- [x] All ten API blockers pass on PostgreSQL; original assertions unchanged.
+- [x] PostgreSQL 120 passes; SQLite 103 passes/17 explicit skips; 80 repeated race executions pass.
+- [x] Unused reverse migration and disposable backup/restore rehearsals pass.
+- [x] 28 real-browser checks, TypeScript/Vite build and affected-file lint pass.
+- [ ] Full-project lint: 12 existing errors/16 warnings remain.
+- [ ] AUTH-01/AUTH-02, dependency/security findings and separately reviewed security implementation.
+- [ ] Production data preflight/reconciliation, authorized backup/restore and any production rollout.
+
+See [the required verification report](PHASE1A3_DATABASE_VERIFICATION_REPORT.md). Stopped for owner review; no overall security/production-readiness claim.

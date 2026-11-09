@@ -4,7 +4,7 @@ import { saleService } from "@/services/sale.service";
 import type { SaleFilters } from "@/services/sale.service";
 import type { SalePayload } from "@/types/sale.types";
 import toast from "react-hot-toast";
-import { useOperationIdentity, rejectedBeforeCommit } from "@/hooks/useOperationIdentity";
+import { useOperationIdentity } from "@/hooks/useOperationIdentity";
 
 export function useSalesSummary(filters: SaleFilters = {}) {
   return useQuery({ queryKey: ["sales", "summary", filters], queryFn: () => saleService.financialSummary(filters) });
@@ -41,7 +41,7 @@ export function useCreateSale() {
       navigate("/sales");
     },
     onError: (error) => {
-      if (rejectedBeforeCommit(error)) identity.clear("sale:create");
+      identity.reject("sale:create", error);
       toast.error("Failed to record sale.");
     },
   });
@@ -67,7 +67,7 @@ export function useUpdateSale(id: number, revision?: string) {
       navigate("/sales");
     },
     onError: (error) => {
-      if (rejectedBeforeCommit(error)) identity.clear(`sale:update:${id}`);
+      identity.reject(`sale:update:${id}`, error);
       queryClient.invalidateQueries({ queryKey: ["sales", id] });
       toast.error("Failed to update sale.");
     },
@@ -91,7 +91,7 @@ export function useDeleteSale() {
       toast.success("Sale cancelled. No cash refund was recorded.");
     },
     onError: (error, variables) => {
-      if (rejectedBeforeCommit(error)) identity.clear(`sale:cancel:${variables.id}`);
+      identity.reject(`sale:cancel:${variables.id}`, error);
       queryClient.invalidateQueries({ queryKey: ["sales"] });
       toast.error("Failed to cancel sale. Reload before retrying stale data.");
     },

@@ -1,8 +1,8 @@
-"""The same TEN prior release blockers, NOT EXECUTED at this checkpoint.
+"""The same TEN prior release blockers, verified in disposable Phase 1A.3.
 
 Versioned from docs/phase1a2/pending_api_contracts.py (preserved unchanged).
 Only the cancellation request fixture now supplies the required reason body.
-Assertions are unchanged. Run only after disposable migration authorization.
+Assertions are unchanged. Use only the ownership-verified disposable runner.
 """
 from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal

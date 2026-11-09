@@ -1,0 +1,9 @@
+{
+  "protection": {
+    "tests_run": 1,
+    "failures": 0,
+    "errors": 1,
+    "skipped": 0,
+    "exit_code": 1
+  }
+}

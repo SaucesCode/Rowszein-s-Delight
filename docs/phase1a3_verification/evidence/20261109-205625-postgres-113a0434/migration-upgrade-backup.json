@@ -1,0 +1,1531 @@
+{
+  "fresh_forward_sequence": [
+    {
+      "app": "contenttypes",
+      "name": "0001_initial",
+      "backwards": false
+    },
+    {
+      "app": "contenttypes",
+      "name": "0002_remove_content_type_name",
+      "backwards": false
+    },
+    {
+      "app": "auth",
+      "name": "0001_initial",
+      "backwards": false
+    },
+    {
+      "app": "auth",
+      "name": "0002_alter_permission_name_max_length",
+      "backwards": false
+    },
+    {
+      "app": "auth",
+      "name": "0003_alter_user_email_max_length",
+      "backwards": false
+    },
+    {
+      "app": "auth",
+      "name": "0004_alter_user_username_opts",
+      "backwards": false
+    },
+    {
+      "app": "auth",
+      "name": "0005_alter_user_last_login_null",
+      "backwards": false
+    },
+    {
+      "app": "auth",
+      "name": "0006_require_contenttypes_0002",
+      "backwards": false
+    },
+    {
+      "app": "auth",
+      "name": "0007_alter_validators_add_error_messages",
+      "backwards": false
+    },
+    {
+      "app": "auth",
+      "name": "0008_alter_user_username_max_length",
+      "backwards": false
+    },
+    {
+      "app": "auth",
+      "name": "0009_alter_user_last_name_max_length",
+      "backwards": false
+    },
+    {
+      "app": "auth",
+      "name": "0010_alter_group_name_max_length",
+      "backwards": false
+    },
+    {
+      "app": "auth",
+      "name": "0011_update_proxy_permissions",
+      "backwards": false
+    },
+    {
+      "app": "auth",
+      "name": "0012_alter_user_first_name_max_length",
+      "backwards": false
+    },
+    {
+      "app": "accounts",
+      "name": "0001_initial",
+      "backwards": false
+    },
+    {
+      "app": "admin",
+      "name": "0001_initial",
+      "backwards": false
+    },
+    {
+      "app": "admin",
+      "name": "0002_logentry_remove_auto_add",
+      "backwards": false
+    },
+    {
+      "app": "admin",
+      "name": "0003_logentry_add_action_flag_choices",
+      "backwards": false
+    },
+    {
+      "app": "expenses",
+      "name": "0001_initial",
+      "backwards": false
+    },
+    {
+      "app": "ingredients",
+      "name": "0001_initial",
+      "backwards": false
+    },
+    {
+      "app": "ingredients",
+      "name": "0002_ingredient_minimum_stock",
+      "backwards": false
+    },
+    {
+      "app": "ingredients",
+      "name": "0003_ingredient_category_ingredient_image_and_more",
+      "backwards": false
+    },
+    {
+      "app": "ingredients",
+      "name": "0004_inventory_integrity",
+      "backwards": false
+    },
+    {
+      "app": "products",
+      "name": "0001_initial",
+      "backwards": false
+    },
+    {
+      "app": "products",
+      "name": "0002_product_is_featured",
+      "backwards": false
+    },
+    {
+      "app": "products",
+      "name": "0003_product_category",
+      "backwards": false
+    },
+    {
+      "app": "products",
+      "name": "0004_category_product_category_fk",
+      "backwards": false
+    },
+    {
+      "app": "recipes",
+      "name": "0001_initial",
+      "backwards": false
+    },
+    {
+      "app": "recipes",
+      "name": "0002_recipe_yield_quantity",
+      "backwards": false
+    },
+    {
+      "app": "sales",
+      "name": "0001_initial",
+      "backwards": false
+    },
+    {
+      "app": "sales",
+      "name": "0002_saleitem_subtotal_amount",
+      "backwards": false
+    },
+    {
+      "app": "sales",
+      "name": "0003_inventory_integrity",
+      "backwards": false
+    },
+    {
+      "app": "sessions",
+      "name": "0001_initial",
+      "backwards": false
+    }
+  ],
+  "second_apply_sequence": [],
+  "unused_reverse_sequence": [
+    {
+      "app": "sales",
+      "name": "0003_inventory_integrity",
+      "backwards": true
+    },
+    {
+      "app": "ingredients",
+      "name": "0004_inventory_integrity",
+      "backwards": true
+    }
+  ],
+  "legacy_baseline": {
+    "accounts.User": [
+      {
+        "id": 1,
+        "password": "!",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "synthetic-legacy-only",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-11-09 12:56:39.582485+00:00",
+        "role": "staff"
+      }
+    ],
+    "products.Category": [
+      {
+        "id": 1,
+        "slug": "classic",
+        "name": "Classic",
+        "description": "",
+        "is_active": true,
+        "sort_order": 10,
+        "created_at": "2026-11-09 12:56:34.629629+00:00",
+        "updated_at": "2026-11-09 12:56:34.629629+00:00"
+      },
+      {
+        "id": 2,
+        "slug": "fruity",
+        "name": "Fruity",
+        "description": "",
+        "is_active": true,
+        "sort_order": 20,
+        "created_at": "2026-11-09 12:56:34.651786+00:00",
+        "updated_at": "2026-11-09 12:56:34.651786+00:00"
+      },
+      {
+        "id": 3,
+        "slug": "local",
+        "name": "Local Favorites",
+        "description": "",
+        "is_active": true,
+        "sort_order": 30,
+        "created_at": "2026-11-09 12:56:34.674569+00:00",
+        "updated_at": "2026-11-09 12:56:34.674569+00:00"
+      },
+      {
+        "id": 4,
+        "slug": "premium",
+        "name": "Premium",
+        "description": "",
+        "is_active": true,
+        "sort_order": 40,
+        "created_at": "2026-11-09 12:56:34.709820+00:00",
+        "updated_at": "2026-11-09 12:56:34.709820+00:00"
+      },
+      {
+        "id": 5,
+        "slug": "brownies",
+        "name": "Brownies & Bars",
+        "description": "",
+        "is_active": true,
+        "sort_order": 50,
+        "created_at": "2026-11-09 12:56:34.720887+00:00",
+        "updated_at": "2026-11-09 12:56:34.720887+00:00"
+      },
+      {
+        "id": 6,
+        "slug": "upgrade-fixture",
+        "name": "Upgrade fixture",
+        "description": "",
+        "is_active": true,
+        "sort_order": 0,
+        "created_at": "2026-11-09 12:56:39.585643+00:00",
+        "updated_at": "2026-11-09 12:56:39.585643+00:00"
+      }
+    ],
+    "products.Product": [
+      {
+        "id": 1,
+        "name": "Synthetic historical product",
+        "description": "",
+        "price": "99.99",
+        "image": "",
+        "is_available": true,
+        "created_at": "2026-11-09 12:56:39.589136+00:00",
+        "updated_at": "2026-11-09 12:56:39.589136+00:00",
+        "is_featured": false,
+        "category_id": 6
+      }
+    ],
+    "ingredients.Ingredient": [
+      {
+        "id": 1,
+        "name": "Legacy two-decimal stock",
+        "quantity": "12.34",
+        "unit": "kg",
+        "cost_per_unit": "60.00",
+        "supplier": "",
+        "created_at": "2026-11-09 12:56:39.593709+00:00",
+        "updated_at": "2026-11-09 12:56:39.593709+00:00",
+        "minimum_stock": "0.00",
+        "category": "other",
+        "image": "",
+        "notes": ""
+      },
+      {
+        "id": 2,
+        "name": "Legacy maximum stock",
+        "quantity": "99999999.99",
+        "unit": "g",
+        "cost_per_unit": "1.00",
+        "supplier": "",
+        "created_at": "2026-11-09 12:56:39.603001+00:00",
+        "updated_at": "2026-11-09 12:56:39.603001+00:00",
+        "minimum_stock": "0.00",
+        "category": "other",
+        "image": "",
+        "notes": ""
+      },
+      {
+        "id": 3,
+        "name": "Legacy zero stock",
+        "quantity": "0.00",
+        "unit": "pcs",
+        "cost_per_unit": "1.00",
+        "supplier": "",
+        "created_at": "2026-11-09 12:56:39.606058+00:00",
+        "updated_at": "2026-11-09 12:56:39.606058+00:00",
+        "minimum_stock": "0.00",
+        "category": "other",
+        "image": "",
+        "notes": ""
+      }
+    ],
+    "sales.Sale": [
+      {
+        "id": 1,
+        "date": "2020-02-29",
+        "notes": "Synthetic legacy \u2014 original owner's note",
+        "total_amount": "123.45",
+        "created_at": "2026-11-09 12:56:39.608705+00:00",
+        "updated_at": "2026-11-09 12:56:39.608705+00:00"
+      },
+      {
+        "id": 2,
+        "date": "2021-01-01",
+        "notes": "",
+        "total_amount": "0.00",
+        "created_at": "2026-11-09 12:56:39.614962+00:00",
+        "updated_at": "2026-11-09 12:56:39.614962+00:00"
+      }
+    ],
+    "sales.SaleItem": [
+      {
+        "id": 1,
+        "quantity": 3,
+        "unit_price": "41.15",
+        "product_id": 1,
+        "sale_id": 1,
+        "subtotal_amount": "123.45"
+      },
+      {
+        "id": 2,
+        "quantity": 1,
+        "unit_price": "25.00",
+        "product_id": 1,
+        "sale_id": 2,
+        "subtotal_amount": "25.00"
+      }
+    ]
+  },
+  "legacy_baseline_sha256": "ded96ab33f057c3d2e2c6cf376c1271050d2694f57443511b447fa3aec65037f",
+  "backup_sha256": "d8f87e73e7c798824e84df5ef30a642d4e0aa1288bee428df086e68cc6b15aa0",
+  "backup_bytes": 59164,
+  "backup_restore_exact": true,
+  "upgrade_sequence": [
+    {
+      "app": "ingredients",
+      "name": "0004_inventory_integrity",
+      "backwards": false
+    },
+    {
+      "app": "sales",
+      "name": "0003_inventory_integrity",
+      "backwards": false
+    }
+  ],
+  "legacy_after_sha256": "ded96ab33f057c3d2e2c6cf376c1271050d2694f57443511b447fa3aec65037f",
+  "upgrade_preserved": true,
+  "no_invented_history": true,
+  "constraints": {
+    "sales_inventoryoperation": {
+      "sales_inventoryoperation_actor_id_76339384_fk_accounts_user_id": {
+        "columns": [
+          "actor_id"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": [
+          "accounts_user",
+          "id"
+        ],
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sales_inventoryopera_ingredient_id_96d17395_fk_ingredien": {
+        "columns": [
+          "ingredient_id"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": [
+          "ingredients_ingredient",
+          "id"
+        ],
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sales_inventoryoperation_sale_id_f1c5ba3b_fk_sales_sale_id": {
+        "columns": [
+          "sale_id"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": [
+          "sales_sale",
+          "id"
+        ],
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sales_inventoryoperation_pkey": {
+        "columns": [
+          "id"
+        ],
+        "primary_key": true,
+        "unique": true,
+        "foreign_key": null,
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "invop_actor_key_unique": {
+        "columns": [
+          "actor_id",
+          "client_key"
+        ],
+        "primary_key": false,
+        "unique": true,
+        "foreign_key": null,
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "invop_action_valid": {
+        "columns": [
+          "action"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "invop_target_valid": {
+        "columns": [
+          "action",
+          "ingredient_id",
+          "sale_id"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "invop_response_valid": {
+        "columns": [
+          "action",
+          "response_status"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "invop_fingerprint_valid": {
+        "columns": [
+          "request_fingerprint"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "invop_version_valid": {
+        "columns": [
+          "schema_version"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "invop_reason_required": {
+        "columns": [
+          "action",
+          "reason"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "invop_sale_cancel_once": {
+        "columns": [
+          "sale_id"
+        ],
+        "orders": [
+          "ASC"
+        ],
+        "primary_key": false,
+        "unique": true,
+        "foreign_key": null,
+        "check": false,
+        "index": true,
+        "type": "idx",
+        "definition": null,
+        "options": null
+      },
+      "invop_sale_time_idx": {
+        "columns": [
+          "sale_id",
+          "created_at",
+          "id"
+        ],
+        "orders": [
+          "ASC",
+          "ASC",
+          "ASC"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": false,
+        "index": true,
+        "type": "idx",
+        "definition": null,
+        "options": null
+      },
+      "sales_inventoryoperation_ingredient_id_96d17395": {
+        "columns": [
+          "ingredient_id"
+        ],
+        "orders": [
+          "ASC"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": false,
+        "index": true,
+        "type": "idx",
+        "definition": null,
+        "options": null
+      }
+    },
+    "sales_consumptionbasis": {
+      "sales_consumptionbasis_pkey": {
+        "columns": [
+          "id"
+        ],
+        "primary_key": true,
+        "unique": true,
+        "foreign_key": null,
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "basis_counts_valid": {
+        "columns": [
+          "active_units",
+          "allocated_units"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "basis_rate_unique": {
+        "columns": [
+          "product_id",
+          "ingredient_id",
+          "unit",
+          "batch_quantity",
+          "yield_quantity"
+        ],
+        "primary_key": false,
+        "unique": true,
+        "foreign_key": null,
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "basis_unit_valid": {
+        "columns": [
+          "unit"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "basis_batch_positive": {
+        "columns": [
+          "batch_quantity"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "basis_yield_positive": {
+        "columns": [
+          "yield_quantity"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "basis_min_quantum": {
+        "columns": [
+          "batch_quantity",
+          "yield_quantity"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sales_consumptionbas_ingredient_id_b05ec909_fk_ingredien": {
+        "columns": [
+          "ingredient_id"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": [
+          "ingredients_ingredient",
+          "id"
+        ],
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sales_consumptionbas_product_id_24c7c2b6_fk_products_": {
+        "columns": [
+          "product_id"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": [
+          "products_product",
+          "id"
+        ],
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sales_consumptionbasis_ingredient_id_b05ec909": {
+        "columns": [
+          "ingredient_id"
+        ],
+        "orders": [
+          "ASC"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": false,
+        "index": true,
+        "type": "idx",
+        "definition": null,
+        "options": null
+      }
+    },
+    "sales_saleconsumption": {
+      "sales_saleconsumption_pkey": {
+        "columns": [
+          "id"
+        ],
+        "primary_key": true,
+        "unique": true,
+        "foreign_key": null,
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sales_saleconsumptio_basis_id_9ed87e5b_fk_sales_con": {
+        "columns": [
+          "basis_id"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": [
+          "sales_consumptionbasis",
+          "id"
+        ],
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sales_saleconsumptio_operation_id_ef01268a_fk_sales_inv": {
+        "columns": [
+          "operation_id"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": [
+          "sales_inventoryoperation",
+          "id"
+        ],
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sales_saleconsumptio_reversed_by_id_ad2f708b_fk_sales_inv": {
+        "columns": [
+          "reversed_by_id"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": [
+          "sales_inventoryoperation",
+          "id"
+        ],
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sales_saleconsumption_sale_id_a1c4c47a_fk_sales_sale_id": {
+        "columns": [
+          "sale_id"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": [
+          "sales_sale",
+          "id"
+        ],
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sc_basis_start_unique": {
+        "columns": [
+          "basis_id",
+          "allocation_start"
+        ],
+        "primary_key": false,
+        "unique": true,
+        "foreign_key": null,
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sc_sale_rev_basis_unique": {
+        "columns": [
+          "sale_id",
+          "sale_revision",
+          "basis_id"
+        ],
+        "primary_key": false,
+        "unique": true,
+        "foreign_key": null,
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sc_values_positive": {
+        "columns": [
+          "allocation_start",
+          "applied_quantity",
+          "sale_revision",
+          "units"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sc_counter_range": {
+        "columns": [
+          "allocation_start",
+          "units"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sales_saleconsumption_basis_id_9ed87e5b": {
+        "columns": [
+          "basis_id"
+        ],
+        "orders": [
+          "ASC"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": false,
+        "index": true,
+        "type": "idx",
+        "definition": null,
+        "options": null
+      },
+      "sales_saleconsumption_operation_id_ef01268a": {
+        "columns": [
+          "operation_id"
+        ],
+        "orders": [
+          "ASC"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": false,
+        "index": true,
+        "type": "idx",
+        "definition": null,
+        "options": null
+      },
+      "sales_saleconsumption_reversed_by_id_ad2f708b": {
+        "columns": [
+          "reversed_by_id"
+        ],
+        "orders": [
+          "ASC"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": false,
+        "index": true,
+        "type": "idx",
+        "definition": null,
+        "options": null
+      },
+      "sc_active_sale_basis_unique": {
+        "columns": [
+          "sale_id",
+          "basis_id"
+        ],
+        "orders": [
+          "ASC",
+          "ASC"
+        ],
+        "primary_key": false,
+        "unique": true,
+        "foreign_key": null,
+        "check": false,
+        "index": true,
+        "type": "idx",
+        "definition": null,
+        "options": null
+      }
+    },
+    "sales_stockmovement": {
+      "sales_stockmovement_pkey": {
+        "columns": [
+          "id"
+        ],
+        "primary_key": true,
+        "unique": true,
+        "foreign_key": null,
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sales_stockmovement_ingredient_id_4d622a63_fk_ingredien": {
+        "columns": [
+          "ingredient_id"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": [
+          "ingredients_ingredient",
+          "id"
+        ],
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sales_stockmovement_operation_id_bbfb9a27_fk_sales_inv": {
+        "columns": [
+          "operation_id"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": [
+          "sales_inventoryoperation",
+          "id"
+        ],
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "movement_op_ing_unique": {
+        "columns": [
+          "operation_id",
+          "ingredient_id"
+        ],
+        "primary_key": false,
+        "unique": true,
+        "foreign_key": null,
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "movement_ing_rev_unique": {
+        "columns": [
+          "ingredient_id",
+          "stock_revision"
+        ],
+        "primary_key": false,
+        "unique": true,
+        "foreign_key": null,
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "movement_unit_valid": {
+        "columns": [
+          "unit"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "movement_delta_nonzero": {
+        "columns": [
+          "quantity_delta"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "movement_balance_valid": {
+        "columns": [
+          "balance_after",
+          "stock_revision"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      }
+    },
+    "sales_salefinancialentry": {
+      "sales_salefinancialentry_pkey": {
+        "columns": [
+          "id"
+        ],
+        "primary_key": true,
+        "unique": true,
+        "foreign_key": null,
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sales_salefinancialentry_operation_id_key": {
+        "columns": [
+          "operation_id"
+        ],
+        "primary_key": false,
+        "unique": true,
+        "foreign_key": null,
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sales_salefinanciale_operation_id_4da0a8bf_fk_sales_inv": {
+        "columns": [
+          "operation_id"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": [
+          "sales_inventoryoperation",
+          "id"
+        ],
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sales_salefinancialentry_sale_id_fa8a24f1_fk_sales_sale_id": {
+        "columns": [
+          "sale_id"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": [
+          "sales_sale",
+          "id"
+        ],
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "finance_sale_revision_unique": {
+        "columns": [
+          "sale_id",
+          "sale_revision"
+        ],
+        "primary_key": false,
+        "unique": true,
+        "foreign_key": null,
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "finance_sign_valid": {
+        "columns": [
+          "amount",
+          "kind"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "finance_revision_positive": {
+        "columns": [
+          "sale_revision"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "finance_cancel_once": {
+        "columns": [
+          "sale_id"
+        ],
+        "orders": [
+          "ASC"
+        ],
+        "primary_key": false,
+        "unique": true,
+        "foreign_key": null,
+        "check": false,
+        "index": true,
+        "type": "idx",
+        "definition": null,
+        "options": null
+      },
+      "finance_date_kind_idx": {
+        "columns": [
+          "effective_date",
+          "kind",
+          "id"
+        ],
+        "orders": [
+          "ASC",
+          "ASC",
+          "ASC"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": false,
+        "index": true,
+        "type": "idx",
+        "definition": null,
+        "options": null
+      },
+      "finance_gross_once": {
+        "columns": [
+          "sale_id"
+        ],
+        "orders": [
+          "ASC"
+        ],
+        "primary_key": false,
+        "unique": true,
+        "foreign_key": null,
+        "check": false,
+        "index": true,
+        "type": "idx",
+        "definition": null,
+        "options": null
+      },
+      "sales_salefinancialentry_sale_id_fa8a24f1": {
+        "columns": [
+          "sale_id"
+        ],
+        "orders": [
+          "ASC"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": false,
+        "index": true,
+        "type": "idx",
+        "definition": null,
+        "options": null
+      }
+    },
+    "sales_sale": {
+      "sales_sale_pkey": {
+        "columns": [
+          "id"
+        ],
+        "primary_key": true,
+        "unique": true,
+        "foreign_key": null,
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sales_sale_cancellation_operation_id_key": {
+        "columns": [
+          "cancellation_operation_id"
+        ],
+        "primary_key": false,
+        "unique": true,
+        "foreign_key": null,
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sales_sale_cancellation_operati_0cacecb6_fk_sales_inv": {
+        "columns": [
+          "cancellation_operation_id"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": [
+          "sales_inventoryoperation",
+          "id"
+        ],
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sale_tracking_valid": {
+        "columns": [
+          "inventory_tracking"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sale_financial_tracking_valid": {
+        "columns": [
+          "financial_tracking"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sale_status_valid": {
+        "columns": [
+          "status"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sale_revision_valid": {
+        "columns": [
+          "revision",
+          "inventory_tracking"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "sale_cancel_link_valid": {
+        "columns": [
+          "cancellation_operation_id",
+          "status"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      }
+    },
+    "ingredients_ingredient": {
+      "ingredients_ingredient_pkey": {
+        "columns": [
+          "id"
+        ],
+        "primary_key": true,
+        "unique": true,
+        "foreign_key": null,
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "ingredients_ingredient_name_key": {
+        "columns": [
+          "name"
+        ],
+        "primary_key": false,
+        "unique": true,
+        "foreign_key": null,
+        "check": false,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "ing_stock_revision_valid": {
+        "columns": [
+          "quantity",
+          "stock_revision"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "ing_anchor_valid": {
+        "columns": [
+          "ledger_opening_quantity",
+          "ledger_started_at",
+          "stock_revision"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": true,
+        "index": false,
+        "definition": null,
+        "options": null
+      },
+      "ingredients_ingredient_name_a353317d_like": {
+        "columns": [
+          "name"
+        ],
+        "orders": [
+          "ASC"
+        ],
+        "primary_key": false,
+        "unique": false,
+        "foreign_key": null,
+        "check": false,
+        "index": true,
+        "type": "idx",
+        "definition": null,
+        "options": null
+      }
+    }
+  },
+  "numeric_types": [
+    [
+      "ingredients_ingredient",
+      "quantity",
+      "numeric",
+      20,
+      9
+    ],
+    [
+      "sales_saleconsumption",
+      "applied_quantity",
+      "numeric",
+      20,
+      9
+    ],
+    [
+      "sales_salefinancialentry",
+      "amount",
+      "numeric",
+      10,
+      2
+    ]
+  ],
+  "postgres_indexes": [
+    [
+      "sales_consumptionbasis",
+      "basis_rate_unique",
+      "CREATE UNIQUE INDEX basis_rate_unique ON public.sales_consumptionbasis USING btree (product_id, ingredient_id, unit, batch_quantity, yield_quantity)"
+    ],
+    [
+      "sales_consumptionbasis",
+      "sales_consumptionbasis_ingredient_id_b05ec909",
+      "CREATE INDEX sales_consumptionbasis_ingredient_id_b05ec909 ON public.sales_consumptionbasis USING btree (ingredient_id)"
+    ],
+    [
+      "sales_consumptionbasis",
+      "sales_consumptionbasis_pkey",
+      "CREATE UNIQUE INDEX sales_consumptionbasis_pkey ON public.sales_consumptionbasis USING btree (id)"
+    ],
+    [
+      "sales_inventoryoperation",
+      "invop_actor_key_unique",
+      "CREATE UNIQUE INDEX invop_actor_key_unique ON public.sales_inventoryoperation USING btree (actor_id, client_key)"
+    ],
+    [
+      "sales_inventoryoperation",
+      "invop_sale_cancel_once",
+      "CREATE UNIQUE INDEX invop_sale_cancel_once ON public.sales_inventoryoperation USING btree (sale_id) WHERE ((action)::text = 'sale_cancel'::text)"
+    ],
+    [
+      "sales_inventoryoperation",
+      "invop_sale_time_idx",
+      "CREATE INDEX invop_sale_time_idx ON public.sales_inventoryoperation USING btree (sale_id, created_at, id)"
+    ],
+    [
+      "sales_inventoryoperation",
+      "sales_inventoryoperation_ingredient_id_96d17395",
+      "CREATE INDEX sales_inventoryoperation_ingredient_id_96d17395 ON public.sales_inventoryoperation USING btree (ingredient_id)"
+    ],
+    [
+      "sales_inventoryoperation",
+      "sales_inventoryoperation_pkey",
+      "CREATE UNIQUE INDEX sales_inventoryoperation_pkey ON public.sales_inventoryoperation USING btree (id)"
+    ],
+    [
+      "sales_sale",
+      "sales_sale_cancellation_operation_id_key",
+      "CREATE UNIQUE INDEX sales_sale_cancellation_operation_id_key ON public.sales_sale USING btree (cancellation_operation_id)"
+    ],
+    [
+      "sales_sale",
+      "sales_sale_pkey",
+      "CREATE UNIQUE INDEX sales_sale_pkey ON public.sales_sale USING btree (id)"
+    ],
+    [
+      "sales_saleconsumption",
+      "sales_saleconsumption_basis_id_9ed87e5b",
+      "CREATE INDEX sales_saleconsumption_basis_id_9ed87e5b ON public.sales_saleconsumption USING btree (basis_id)"
+    ],
+    [
+      "sales_saleconsumption",
+      "sales_saleconsumption_operation_id_ef01268a",
+      "CREATE INDEX sales_saleconsumption_operation_id_ef01268a ON public.sales_saleconsumption USING btree (operation_id)"
+    ],
+    [
+      "sales_saleconsumption",
+      "sales_saleconsumption_pkey",
+      "CREATE UNIQUE INDEX sales_saleconsumption_pkey ON public.sales_saleconsumption USING btree (id)"
+    ],
+    [
+      "sales_saleconsumption",
+      "sales_saleconsumption_reversed_by_id_ad2f708b",
+      "CREATE INDEX sales_saleconsumption_reversed_by_id_ad2f708b ON public.sales_saleconsumption USING btree (reversed_by_id)"
+    ],
+    [
+      "sales_saleconsumption",
+      "sc_active_sale_basis_unique",
+      "CREATE UNIQUE INDEX sc_active_sale_basis_unique ON public.sales_saleconsumption USING btree (sale_id, basis_id) WHERE (reversed_by_id IS NULL)"
+    ],
+    [
+      "sales_saleconsumption",
+      "sc_basis_start_unique",
+      "CREATE UNIQUE INDEX sc_basis_start_unique ON public.sales_saleconsumption USING btree (basis_id, allocation_start)"
+    ],
+    [
+      "sales_saleconsumption",
+      "sc_sale_rev_basis_unique",
+      "CREATE UNIQUE INDEX sc_sale_rev_basis_unique ON public.sales_saleconsumption USING btree (sale_id, sale_revision, basis_id)"
+    ],
+    [
+      "sales_salefinancialentry",
+      "finance_cancel_once",
+      "CREATE UNIQUE INDEX finance_cancel_once ON public.sales_salefinancialentry USING btree (sale_id) WHERE ((kind)::text = 'cancellation'::text)"
+    ],
+    [
+      "sales_salefinancialentry",
+      "finance_date_kind_idx",
+      "CREATE INDEX finance_date_kind_idx ON public.sales_salefinancialentry USING btree (effective_date, kind, id)"
+    ],
+    [
+      "sales_salefinancialentry",
+      "finance_gross_once",
+      "CREATE UNIQUE INDEX finance_gross_once ON public.sales_salefinancialentry USING btree (sale_id) WHERE ((kind)::text = 'gross_sale'::text)"
+    ],
+    [
+      "sales_salefinancialentry",
+      "finance_sale_revision_unique",
+      "CREATE UNIQUE INDEX finance_sale_revision_unique ON public.sales_salefinancialentry USING btree (sale_id, sale_revision)"
+    ],
+    [
+      "sales_salefinancialentry",
+      "sales_salefinancialentry_operation_id_key",
+      "CREATE UNIQUE INDEX sales_salefinancialentry_operation_id_key ON public.sales_salefinancialentry USING btree (operation_id)"
+    ],
+    [
+      "sales_salefinancialentry",
+      "sales_salefinancialentry_pkey",
+      "CREATE UNIQUE INDEX sales_salefinancialentry_pkey ON public.sales_salefinancialentry USING btree (id)"
+    ],
+    [
+      "sales_salefinancialentry",
+      "sales_salefinancialentry_sale_id_fa8a24f1",
+      "CREATE INDEX sales_salefinancialentry_sale_id_fa8a24f1 ON public.sales_salefinancialentry USING btree (sale_id)"
+    ],
+    [
+      "sales_saleitem",
+      "sales_saleitem_pkey",
+      "CREATE UNIQUE INDEX sales_saleitem_pkey ON public.sales_saleitem USING btree (id)"
+    ],
+    [
+      "sales_saleitem",
+      "sales_saleitem_product_id_aeb6c9cd",
+      "CREATE INDEX sales_saleitem_product_id_aeb6c9cd ON public.sales_saleitem USING btree (product_id)"
+    ],
+    [
+      "sales_saleitem",
+      "sales_saleitem_sale_id_56e67045",
+      "CREATE INDEX sales_saleitem_sale_id_56e67045 ON public.sales_saleitem USING btree (sale_id)"
+    ],
+    [
+      "sales_saleitem",
+      "sales_saleitem_sale_id_product_id_fd265af3_uniq",
+      "CREATE UNIQUE INDEX sales_saleitem_sale_id_product_id_fd265af3_uniq ON public.sales_saleitem USING btree (sale_id, product_id)"
+    ],
+    [
+      "sales_stockmovement",
+      "movement_ing_rev_unique",
+      "CREATE UNIQUE INDEX movement_ing_rev_unique ON public.sales_stockmovement USING btree (ingredient_id, stock_revision)"
+    ],
+    [
+      "sales_stockmovement",
+      "movement_op_ing_unique",
+      "CREATE UNIQUE INDEX movement_op_ing_unique ON public.sales_stockmovement USING btree (operation_id, ingredient_id)"
+    ],
+    [
+      "sales_stockmovement",
+      "sales_stockmovement_pkey",
+      "CREATE UNIQUE INDEX sales_stockmovement_pkey ON public.sales_stockmovement USING btree (id)"
+    ]
+  ]
+}
