@@ -6,12 +6,15 @@ from django.db.models.functions import TruncMonth
 from django.utils import timezone
 from datetime import datetime, date
 
-from sales.models import Sale, SaleItem
+from sales.models import Sale
 from expenses.models import Expense
 from ingredients.models import Ingredient
 from ingredients.serializers import IngredientSerializer
 from products.models import Product
 from recipes.models import Recipe
+from sales.reporting import financial_summary
+from sales.services import current_items
+from decimal import Decimal, localcontext
 
 
 def parse_date(value):
@@ -25,70 +28,62 @@ class DashboardView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        today = timezone.now().date()
+        today = timezone.localdate()
         current_year = today.year
 
         # --- Date filters ---
         date_from = parse_date(request.query_params.get('date_from'))
         date_to = parse_date(request.query_params.get('date_to'))
+        if any(request.query_params.get(key) and parsed is None for key, parsed in [('date_from', date_from), ('date_to', date_to)]):
+            return Response({'success': False, 'error': 'Use YYYY-MM-DD dates.'}, status=400)
 
         # Default to current year if no filters
         if not date_from:
             date_from = date(current_year, 1, 1)
         if not date_to:
             date_to = today
+        if date_from > date_to:
+            return Response({'success': False, 'error': 'Date range is reversed.'}, status=400)
 
         # --- Filtered Totals ---
-        total_sales = Sale.objects.filter(
-            date__gte=date_from,
-            date__lte=date_to,
-        ).aggregate(total=Sum('total_amount'))['total'] or 0
+        sales_report = financial_summary(date_from, date_to)
+        total_sales = Decimal(sales_report['totals']['net_sales'])
 
         total_expenses = Expense.objects.filter(
             date__gte=date_from,
             date__lte=date_to,
         ).aggregate(total=Sum('amount'))['total'] or 0
 
-        net_profit = float(total_sales) - float(total_expenses)
+        with localcontext() as context:
+            context.prec = 50
+            net_profit = float(total_sales - total_expenses)
 
         # --- This month (always current month, unaffected by filter) ---
-        monthly_sales = Sale.objects.filter(
-            date__year=today.year,
-            date__month=today.month,
-        ).aggregate(total=Sum('total_amount'))['total'] or 0
+        monthly_sales = Decimal(financial_summary(today.replace(day=1), today)['totals']['net_sales'])
 
         monthly_expenses = Expense.objects.filter(
             date__year=today.year,
             date__month=today.month,
         ).aggregate(total=Sum('amount'))['total'] or 0
 
-        monthly_profit = float(monthly_sales) - float(monthly_expenses)
+        with localcontext() as context:
+            context.prec = 50
+            monthly_profit = float(monthly_sales - monthly_expenses)
 
         # --- Best selling (filtered) ---
-        best_selling = (
-            SaleItem.objects
-            .filter(
-                sale__date__gte=date_from,
-                sale__date__lte=date_to,
-            )
-            .values('product__id', 'product__name')
-            .annotate(
-                total_quantity=Sum('quantity'),
-                total_revenue=Sum('subtotal_amount'),
-            )
-            .order_by('-total_quantity')[:5]
-        )
+        # Current recorded product mix by ORIGINAL sale date, not a financial
+        # posting-date ledger. Never aggregate stale original SaleItem rows.
+        product_mix = {}
+        with localcontext() as context:
+            context.prec = 50
+            for sale in Sale.objects.filter(date__gte=date_from, date__lte=date_to, status='recorded').prefetch_related('sale_items__product'):
+                for item in current_items(sale):
+                    row = product_mix.setdefault(item['product'], {'product__id': item['product'], 'product__name': item['product_name'], 'total_quantity': 0, 'total_revenue': Decimal('0')})
+                    row['total_quantity'] += item['quantity']
+                    row['total_revenue'] += Decimal(item['unit_price']) * item['quantity']
+        best_selling = sorted(product_mix.values(), key=lambda row: (-row['total_quantity'], row['product__id']))[:5]
 
         # --- Monthly chart (filtered year range) ---
-        monthly_sales_chart = (
-            Sale.objects
-            .filter(date__gte=date_from, date__lte=date_to)
-            .annotate(month=TruncMonth('date'))
-            .values('month')
-            .annotate(total=Sum('total_amount'))
-            .order_by('month')
-        )
-
         monthly_expenses_chart = (
             Expense.objects
             .filter(date__gte=date_from, date__lte=date_to)
@@ -103,24 +98,28 @@ class DashboardView(APIView):
             'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
         ]
 
-        sales_by_month = {
-            entry['month'].month: float(entry['total'])
-            for entry in monthly_sales_chart
-        }
+        sales_by_month = {month: Decimal(values['net_sales']) for month, values in sales_report['months'].items()}
         expenses_by_month = {
-            entry['month'].month: float(entry['total'])
+            entry['month'].strftime('%Y-%m'): entry['total']
             for entry in monthly_expenses_chart
         }
-
-        chart_data = [
-            {
-                'month': months[i],
-                'sales': sales_by_month.get(i + 1, 0),
-                'expenses': expenses_by_month.get(i + 1, 0),
-                'profit': sales_by_month.get(i + 1, 0) - expenses_by_month.get(i + 1, 0),
-            }
-            for i in range(12)
-        ]
+        keys = []
+        year, month = date_from.year, 1 if date_from.year == date_to.year else date_from.month
+        last = date_to.year * 12 + (12 if date_from.year == date_to.year else date_to.month)
+        while year * 12 + month <= last:
+            keys.append(f'{year:04d}-{month:02d}')
+            year, month = (year + 1, 1) if month == 12 else (year, month + 1)
+        with localcontext() as context:
+            context.prec = 50
+            chart_data = [
+                {
+                    'month': months[int(key[-2:]) - 1] if date_from.year == date_to.year else key,
+                    'sales': float(sales_by_month.get(key, 0)),
+                    'expenses': float(expenses_by_month.get(key, 0)),
+                    'profit': float(sales_by_month.get(key, 0) - expenses_by_month.get(key, 0)),
+                }
+                for key in keys
+            ]
 
         # --- Low stock (unaffected by date filter) ---
         low_stock = Ingredient.objects.filter(
@@ -137,6 +136,7 @@ class DashboardView(APIView):
                     'date_to': date_to.isoformat(),
                 },
                 'totals': {
+                    **sales_report['totals'],
                     'total_sales': float(total_sales),
                     'total_expenses': float(total_expenses),
                     'net_profit': net_profit,
@@ -157,6 +157,8 @@ class DashboardView(APIView):
                 ],
                 'chart_data': chart_data,
                 'low_stock': low_stock_data,
+                'refund_status': 'not_tracked',
+                'product_mix_scope': 'current recorded items by original sale date; not posting-date net sales',
             },
             'message': '',
         })

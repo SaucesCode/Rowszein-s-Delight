@@ -103,7 +103,7 @@ export default function SaleFormPage() {
   const { data: sale, isLoading: saleLoading } = useSale(Number(id));
   const { data: productsData } = useProducts();
   const createSale = useCreateSale();
-  const updateSale = useUpdateSale(Number(id));
+  const updateSale = useUpdateSale(Number(id), sale?.revision);
 
   const products = productsData?.data?.results ?? [];
 
@@ -172,6 +172,7 @@ useEffect(() => {
             <input
               {...register("date")}
               type="date"
+              readOnly={isEdit}
               className="field-input mt-1"
               aria-invalid={!!errors.date}
             />

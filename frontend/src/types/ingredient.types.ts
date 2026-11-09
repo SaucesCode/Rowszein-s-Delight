@@ -3,7 +3,8 @@ export type Unit = "kg" | "g" | "ml" | "l" | "pcs" | "tbsp" | "tsp" | "cup";
 export interface Ingredient {
   id: number;
   name: string;
-  quantity: number;
+  quantity: number | string;
+  stock_revision: string;
   unit: Unit;
   cost_per_unit: number;
   supplier: string;
@@ -23,7 +24,7 @@ export interface Ingredient {
 
 export interface IngredientPayload {
   name: string;
-  quantity: number;
+  quantity: string;
   unit: Unit;
   cost_per_unit: number;
   supplier?: string;

@@ -1,6 +1,8 @@
 # Phase 0 verification results
 
-Latest checkpoint: [Package 1A.2 review](PHASE1A2_REVIEW.md)—PostgreSQL: 45 passing regressions/design experiments, **10 failing current-API requirements**. SQLite: 37 pass/8 PG-only skips and 7 fail/3 PG-only skips in separate suites. No new schema/migrations; these experiments do not establish integrated endpoint readiness.
+Latest checkpoint: [five-model implementation review](PHASE1A2_IMPLEMENTATION_CHECKPOINT.md)—**42 passing database-free arithmetic/metadata tests**, 10 passing exact frontend stock utility checks, passing TypeScript/Vite build and no static model/migration drift. Two additive migrations generated, **zero applied; zero database connection attempts** in the review harness. New API/DB/concurrency tests are defined but NOT RUN. All ten prior API failures remain unverified release blockers. No database integration runner is authorized at this checkpoint.
+
+Earlier [Package 1A.2 review](PHASE1A2_REVIEW.md): PostgreSQL 45 passing regressions/design experiments and **10 failing current-API requirements**; SQLite 37 pass/8 PG-only skips and 7 fail/3 PG-only skips. Those preserved results predate the five-model implementation and do not validate it. Do not rerun the historical commands below before disposable migration execution is explicitly approved; some initialize databases or overwrite old evidence.
 
 Subsequent work: [Phase 1A package 1A.1 results](PHASE1A_PROGRESS.md) reports **18/18 correctness regressions on SQLite and PostgreSQL 17.11**, a passing frontend build, and the schema approval checkpoint. The Phase 0 results below and `docs/audit/evidence/` remain the original baseline; the original defect probes are not the current correctness suite.
 

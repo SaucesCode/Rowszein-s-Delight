@@ -35,6 +35,7 @@ interface SaleRowProps {
 
 export default function SaleRow({ sale, onEdit, onDelete }: SaleRowProps) {
   const itemCount = sale.sale_items?.length ?? 0;
+  const retained = sale.status === "cancelled" || sale.inventory_tracking === "legacy_unknown";
 
   return (
     <div
@@ -58,6 +59,7 @@ export default function SaleRow({ sale, onEdit, onDelete }: SaleRowProps) {
           >
             {itemCount} {itemCount === 1 ? "item" : "items"}
           </span>
+          {retained && <span className="text-xs">{sale.status === "cancelled" ? "Cancelled · retained" : "Legacy · reconciliation required"}</span>}
           {wasEdited(sale) && (
             <span
               className="flex-shrink-0 font-body font-semibold rounded-full"
@@ -86,6 +88,7 @@ export default function SaleRow({ sale, onEdit, onDelete }: SaleRowProps) {
       <div className="flex-shrink-0 flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover/row:opacity-100 sm:group-focus-within/row:opacity-100 transition-opacity">
         <button
           onClick={onEdit}
+          disabled={retained}
           className="flex items-center justify-center rounded-lg transition-colors"
           style={{ width: 32, height: 32, color: "#B8A98D" }}
           onMouseOver={(e) => {
@@ -102,6 +105,7 @@ export default function SaleRow({ sale, onEdit, onDelete }: SaleRowProps) {
         </button>
         <button
           onClick={onDelete}
+          disabled={retained}
           className="flex items-center justify-center rounded-lg transition-colors"
           style={{ width: 32, height: 32, color: "#B8A98D" }}
           onMouseOver={(e) => {
@@ -112,7 +116,7 @@ export default function SaleRow({ sale, onEdit, onDelete }: SaleRowProps) {
             (e.currentTarget as HTMLElement).style.background = "transparent";
             (e.currentTarget as HTMLElement).style.color = "#B8A98D";
           }}
-          aria-label={`Delete sale from ${formatTime(sale.created_at)}`}
+          aria-label={`Cancel sale from ${formatTime(sale.created_at)}`}
         >
           <Trash2 size={15} strokeWidth={2} aria-hidden="true" />
         </button>

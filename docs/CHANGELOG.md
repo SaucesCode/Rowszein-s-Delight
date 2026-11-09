@@ -1,5 +1,11 @@
 # Revival changelog
 
+## 2026-11-09 — Five-model implementation; migrations generated, UNAPPLIED
+
+On `codex/phase-1a2-five-models`, implemented InventoryOperation, ConsumptionBasis, SaleConsumption, StockMovement and SaleFinancialEntry with exact applied-quantity reversals, monotonic allocation, stable database identities/revisions, cancellation uniqueness and cancellation-date signed financial reports. Original sale facts remain retained; legacy inventory changes/cancellation fail closed. Added coordinated stock/recipe paths and frontend contract support. Generated ingredient 0004 and sale 0003; statically inspected only. **No new migration executed**, including in disposable environments.
+
+42 database-free arithmetic/metadata tests and 10 frontend stock-utility checks pass; TypeScript/Vite build passes with existing warnings. API/rollback/concurrency definitions remain unexecuted; the ten prior failing API requirements remain release blockers. [Full checkpoint, exact schema, preservation/rollback and proposed disposable verification](PHASE1A2_IMPLEMENTATION_CHECKPOINT.md). Prior evidence preserved. Stopped awaiting explicit disposable PostgreSQL/SQLite migration/testing authorization; no production/later-phase work.
+
 ## 2026-11-09 — Package 1A.2 conditional design/test refinement
 
 Preserved 1A.1 in commit `b87d36d`; created `codex/phase-1a2-design-contracts`. Added an unwired Decimal/integer-quanta allocation/fingerprint kernel, 19 math/identity tests, eight PostgreSQL primitive experiments and ten desired current-API contracts. PostgreSQL passing suite: 45 pass; current-API requirements: 10 failures. SQLite passing suite: 37 pass/8 skips; current requirements: 7 failures/3 skips. Frontend build passes with existing warnings. The overall checks retain a failing exit code while requirements remain unmet.

@@ -81,3 +81,7 @@ Reason:
 localStorage is vulnerable to XSS — any injected script can steal the token.
 HttpOnly cookies are inaccessible to JavaScript entirely, eliminating that attack vector.
 withCredentials: true on Axios sends cookies automatically on every request.
+
+## 2026-11-09 — Five-model implementation authorization
+
+The owner approved InventoryOperation, ConsumptionBasis, SaleConsumption, StockMovement and SaleFinancialEntry implementation, additive migration generation/inspection, test definitions and documentation. The owner expressly withheld execution of every new migration, including disposable test-runner migrations. Cancellation uses signed financial reversals on the cancellation date (not a refund); inventory reverses exact applied snapshots, never redistributed rounding; the lifetime allocation cursor never decreases. Original sale facts and unverifiable legacy stock history remain preserved. Idempotency and cancellation uniqueness require database constraints; stale edits require revisions. See [implemented contract and remaining verification](PHASE1A2_IMPLEMENTATION_CHECKPOINT.md). All ten prior API blockers remain open; no production or later-phase approval is inferred.

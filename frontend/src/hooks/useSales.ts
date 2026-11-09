@@ -4,6 +4,11 @@ import { saleService } from "@/services/sale.service";
 import type { SaleFilters } from "@/services/sale.service";
 import type { SalePayload } from "@/types/sale.types";
 import toast from "react-hot-toast";
+import { useOperationIdentity, rejectedBeforeCommit } from "@/hooks/useOperationIdentity";
+
+export function useSalesSummary(filters: SaleFilters = {}) {
+  return useQuery({ queryKey: ["sales", "summary", filters], queryFn: () => saleService.financialSummary(filters) });
+}
 
 export function useSales(filters: SaleFilters = {}) {
   return useQuery({
@@ -23,32 +28,47 @@ export function useSale(id: number) {
 export function useCreateSale() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const identity = useOperationIdentity();
 
   return useMutation({
-    mutationFn: (payload: SalePayload) => saleService.create(payload),
+    mutationFn: (payload: SalePayload) => saleService.create(payload, identity.get("sale:create").key),
     onSuccess: () => {
+      identity.clear("sale:create");
       queryClient.invalidateQueries({ queryKey: ["sales"] });
+      queryClient.invalidateQueries({ queryKey: ["ingredients"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       toast.success("Sale recorded.");
       navigate("/sales");
     },
-    onError: () => {
+    onError: (error) => {
+      if (rejectedBeforeCommit(error)) identity.clear("sale:create");
       toast.error("Failed to record sale.");
     },
   });
 }
 
-export function useUpdateSale(id: number) {
+export function useUpdateSale(id: number, revision?: string) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const identity = useOperationIdentity();
 
   return useMutation({
-    mutationFn: (payload: SalePayload) => saleService.update(id, payload),
+    mutationFn: (payload: SalePayload) => {
+      if (revision === undefined) throw new Error("Reload this sale before updating.");
+      const operation = identity.get(`sale:update:${id}`, revision);
+      return saleService.update(id, payload, operation.key, operation.revision!);
+    },
     onSuccess: () => {
+      identity.clear(`sale:update:${id}`);
       queryClient.invalidateQueries({ queryKey: ["sales"] });
+      queryClient.invalidateQueries({ queryKey: ["ingredients"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       toast.success("Sale updated.");
       navigate("/sales");
     },
-    onError: () => {
+    onError: (error) => {
+      if (rejectedBeforeCommit(error)) identity.clear(`sale:update:${id}`);
+      queryClient.invalidateQueries({ queryKey: ["sales", id] });
       toast.error("Failed to update sale.");
     },
   });
@@ -56,15 +76,24 @@ export function useUpdateSale(id: number) {
 
 export function useDeleteSale() {
   const queryClient = useQueryClient();
+  const identity = useOperationIdentity();
 
   return useMutation({
-    mutationFn: (id: number) => saleService.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["sales"] });
-      toast.success("Sale deleted.");
+    mutationFn: ({ id, revision, reason }: { id: number; revision: string; reason: string }) => {
+      const operation = identity.get(`sale:cancel:${id}`, revision);
+      return saleService.delete(id, reason, operation.key, operation.revision!);
     },
-    onError: () => {
-      toast.error("Failed to delete sale.");
+    onSuccess: (_data, variables) => {
+      identity.clear(`sale:cancel:${variables.id}`);
+      queryClient.invalidateQueries({ queryKey: ["sales"] });
+      queryClient.invalidateQueries({ queryKey: ["ingredients"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      toast.success("Sale cancelled. No cash refund was recorded.");
+    },
+    onError: (error, variables) => {
+      if (rejectedBeforeCommit(error)) identity.clear(`sale:cancel:${variables.id}`);
+      queryClient.invalidateQueries({ queryKey: ["sales"] });
+      toast.error("Failed to cancel sale. Reload before retrying stale data.");
     },
   });
 }

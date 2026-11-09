@@ -15,6 +15,9 @@ export interface Sale {
   total_amount: number;
   created_at: string;
   updated_at: string;
+  revision: string;
+  status: "recorded" | "cancelled";
+  inventory_tracking: "legacy_unknown" | "tracked";
 }
 
 export interface SalePayload {

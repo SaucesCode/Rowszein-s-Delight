@@ -3,6 +3,7 @@ import { AlertTriangle, X } from "lucide-react";
 import { clsx } from "clsx";
 
 interface ConfirmDialogProps {
+  children?: React.ReactNode;
   open: boolean;
   title: string;
   description: string;
@@ -16,6 +17,7 @@ interface ConfirmDialogProps {
 }
 
 export default function ConfirmDialog({
+  children,
   open,
   title,
   description,
@@ -165,6 +167,7 @@ export default function ConfirmDialog({
         </div>
 
         {/* Actions */}
+        {children && <div className="px-5 py-3">{children}</div>}
         <div className="flex items-center justify-end gap-2 px-5 py-4">
           <button
             ref={cancelRef}

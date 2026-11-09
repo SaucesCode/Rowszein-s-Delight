@@ -61,3 +61,14 @@ Current evidence and limitations: [PHASE1A_PROGRESS.md](PHASE1A_PROGRESS.md). Th
 - [ ] Consistent reduced-motion treatment, including smooth scroll and sliding panels.
 
 Existing reduced-animation support, image alt text, explicit button labels in many shared controls, and error/loading states should be retained. A complete conformance audit has not been conducted. Use the [W3C WCAG 2.2 Recommendation](https://www.w3.org/TR/WCAG22/) for criterion-level verification rather than claiming accessibility from automated checks alone.
+
+## Current implementation checkpoint — 2026-11-09
+
+- [x] Five-model implementation and additive migration generation/static inspection authorized and completed for review.
+- [x] 42 database-free arithmetic/metadata tests and 10 frontend stock utility checks pass; TypeScript/Vite build passes.
+- [ ] Execution of the new migrations in disposable SQLite/PostgreSQL — explicitly NOT authorized yet.
+- [ ] Ten prior failing API requirements closed by actual passing API tests — all remain blockers.
+- [ ] New-schema PostgreSQL concurrency/rollback/reconciliation, backup/restore and browser/API verification.
+- [ ] AUTH-01/AUTH-02 and outstanding security/dependency issues — separate reviewed package.
+
+See [the implementation checkpoint](PHASE1A2_IMPLEMENTATION_CHECKPOINT.md). No production readiness or deployment approval is implied. Historical baseline assessments remain evidence of the earlier state.

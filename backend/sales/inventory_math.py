@@ -1,8 +1,4 @@
-"""Schema-free inventory design kernel; NOT connected to mutation endpoints.
-
-Stock uses exact integer quanta plus Decimal at the boundary. All proposed
-database/service integration still requires the database design approval.
-"""
+"""Exact stock arithmetic. Database integration awaits migration execution QA."""
 from dataclasses import dataclass
 from decimal import Decimal, localcontext
 from hashlib import sha256
@@ -55,6 +51,12 @@ def money_text(value):
         return format(Decimal(cents).scaleb(-2), ".2f")
 
 
+def signed_money_text(value):
+    """Preserve signed historical values without permitting new invalid prices."""
+    magnitude = money_text(value.copy_abs())
+    return '-' + magnitude if value < 0 else magnitude
+
+
 def _from_quanta(value):
     with localcontext() as context:
         context.prec = 50
@@ -90,6 +92,39 @@ def cumulative_quanta(basis, active_units):
 
 
 @dataclass(frozen=True)
+class Allocation:
+    start: int
+    end: int
+    applied_quantity: Decimal
+
+
+def allocate(basis, allocated_units, units):
+    """Consume a never-rewound cursor interval, not the active-unit count."""
+    _integer(allocated_units, 0, MAX_ACTIVE_UNITS, 'Allocation cursor')
+    _integer(units, 1, MAX_ACTIVE_UNITS, 'Units')
+    end = allocated_units + units
+    _integer(end, 1, MAX_ACTIVE_UNITS, 'Allocation end')
+    amount = cumulative_quanta(basis, end) - cumulative_quanta(basis, allocated_units)
+    value = _from_quanta(amount)
+    quantity_quanta(value)  # Reject unrepresentable snapshots, never round them.
+    return Allocation(allocated_units, end, value)
+
+
+def apply_deltas(available, deltas):
+    """Exact stored-snapshot credits/new deductions; no historical re-rounding."""
+    result = quantity_quanta(available)
+    for value in deltas:
+        if not isinstance(value, Decimal) or not value.is_finite():
+            raise ValueError('A finite signed Decimal is required')
+        result += (1 if value >= 0 else -1) * quantity_quanta(value.copy_abs())
+    if result < 0:
+        raise InsufficientStock('Aggregate projected ingredient stock would be negative')
+    if result > quantity_quanta(MAX_QUANTITY):
+        raise ValueError('Aggregate projected stock would exceed the supported range')
+    return _from_quanta(result)
+
+
+@dataclass(frozen=True)
 class Change:
     basis: Basis
     before_units: int
@@ -103,10 +138,10 @@ class Projection:
 
 
 def project_stock(available, unit, changes):
-    """Plan all changes for ONE ingredient before any persistent write.
+    """Prior design experiment, retained only for its historical probe tests.
 
-    Positive deltas credit stock. The caller must provide locked/current rows
-    and immutable basis snapshots. This function neither locks nor persists.
+    NOT the approved cancellation/update algorithm: services must use allocate
+    and apply_deltas with exact snapshots, never recompute active-unit rounding.
     """
     if unit not in UNITS:
         raise ValueError("Unsupported ingredient unit")

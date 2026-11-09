@@ -5,6 +5,11 @@ runner; it uses a generated database name/password and loopback port only.
 """
 import os
 import re
+import sys
+
+# Remove only after the owner's next explicit migration-execution approval.
+if any(command in sys.argv for command in ['test', 'migrate']):
+    raise RuntimeError('New-schema database execution is not authorized. Use schema_review_settings and the database-free review script.')
 
 os.environ.update(
     SECRET_KEY="local-regression-tests-only-not-a-deployment-key-1234567890",

@@ -3,6 +3,7 @@ from .models import Ingredient
 
 
 class IngredientSerializer(serializers.ModelSerializer):
+    stock_revision = serializers.CharField(read_only=True)
     is_low_stock = serializers.BooleanField(read_only=True)
     category_display = serializers.CharField(source='get_category_display', read_only=True)
     image_url = serializers.SerializerMethodField()
@@ -25,8 +26,9 @@ class IngredientSerializer(serializers.ModelSerializer):
             'is_low_stock',
             'created_at',
             'updated_at',
+            'stock_revision',
         ]
-        read_only_fields = ['id', 'is_low_stock', 'category_display', 'image_url', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'is_low_stock', 'category_display', 'image_url', 'created_at', 'updated_at', 'stock_revision']
         extra_kwargs = {
             'image': {'write_only': True, 'required': False},
         }
@@ -58,4 +60,14 @@ class IngredientSerializer(serializers.ModelSerializer):
     def validate_minimum_stock(self, value):
         if value < 0:
             raise serializers.ValidationError('Minimum stock cannot be negative.')
+        return value
+
+
+class StockAdjustmentSerializer(serializers.Serializer):
+    delta = serializers.DecimalField(max_digits=20, decimal_places=9)
+    reason = serializers.CharField(max_length=2000, allow_blank=False)
+
+    def validate_delta(self, value):
+        if not value:
+            raise serializers.ValidationError('Adjustment must be nonzero.')
         return value

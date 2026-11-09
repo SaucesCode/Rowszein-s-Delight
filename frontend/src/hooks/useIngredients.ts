@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ingredientService } from "@/services/ingredient.service";
 import type { IngredientPayload } from "@/types/ingredient.types";
 import toast from "react-hot-toast";
+import { useOperationIdentity, rejectedBeforeCommit } from "@/hooks/useOperationIdentity";
 
 export function useIngredients(page = 1) {
   return useQuery({
@@ -67,15 +68,23 @@ export function useUpdateIngredient(id: number) {
  */
 export function useUpdateStock(id: number) {
   const queryClient = useQueryClient();
+  const identity = useOperationIdentity();
 
   return useMutation({
-    mutationFn: (payload: IngredientPayload) => ingredientService.update(id, payload),
+    mutationFn: (payload: { delta: string; reason: string; revision: string }) => {
+      const operation = identity.get(`stock:adjust:${id}`, payload.revision);
+      return ingredientService.adjust(id, payload.delta, payload.reason, operation.key, operation.revision!);
+    },
     onSuccess: () => {
+      identity.clear(`stock:adjust:${id}`);
       queryClient.invalidateQueries({ queryKey: ["ingredients"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       toast.success("Stock updated.");
     },
-    onError: () => {
-      toast.error("Failed to update stock.");
+    onError: (error) => {
+      if (rejectedBeforeCommit(error)) identity.clear(`stock:adjust:${id}`);
+      queryClient.invalidateQueries({ queryKey: ["ingredients"] });
+      toast.error("Failed to update stock. Reload before retrying a stale balance.");
     },
   });
 }
