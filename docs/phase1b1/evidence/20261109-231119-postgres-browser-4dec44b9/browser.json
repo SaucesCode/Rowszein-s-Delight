@@ -1,0 +1,28 @@
+{
+  "checks": {
+    "real_cookie_login": {
+      "passed": true,
+      "detail": true
+    }
+  },
+  "mutations": [],
+  "screenshots": [],
+  "page_errors": [],
+  "console_errors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "external_requests_blocked": [],
+  "real_http_api": true,
+  "login_dom": [
+    {
+      "name": "username",
+      "type": "text"
+    },
+    {
+      "name": "password",
+      "type": "password"
+    }
+  ],
+  "passed": false,
+  "exception": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1b1\\browser_checks.py\", line 176, in <module>\n    before = business_snapshot()\n             ^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1b1\\browser_checks.py\", line 70, in business_snapshot\n    return {model.__name__: list(model.objects.order_by('pk').values()) for model in\n                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\django\\db\\models\\query.py\", line 400, in __iter__\n    self._fetch_all()\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\django\\db\\models\\query.py\", line 1928, in _fetch_all\n    self._result_cache = list(self._iterable_class(self))\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\django\\db\\models\\query.py\", line 210, in __iter__\n    for row in compiler.results_iter(\n               ^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\django\\db\\models\\sql\\compiler.py\", line 1525, in results_iter\n    results = self.execute_sql(\n              ^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\django\\db\\models\\sql\\compiler.py\", line 1572, in execute_sql\n    cursor = self.connection.cursor()\n             ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\django\\utils\\asyncio.py\", line 24, in inner\n    raise SynchronousOnlyOperation(message)\ndjango.core.exceptions.SynchronousOnlyOperation: You cannot call this from an async context - use a thread or sync_to_async.\n"
+}

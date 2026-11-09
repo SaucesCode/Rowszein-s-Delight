@@ -3,6 +3,7 @@ from datetime import timedelta
 
 from decouple import config
 import dj_database_url
+from accounts.origin_config import exact_origins
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -19,10 +20,10 @@ ALLOWED_HOSTS = config(
     default="localhost,127.0.0.1"
 ).split(",")
 
-CSRF_TRUSTED_ORIGINS = config(
+CSRF_TRUSTED_ORIGINS = exact_origins(config(
     "CSRF_TRUSTED_ORIGINS",
     default=""
-).split(",")
+), 'CSRF_TRUSTED_ORIGINS')
 
 # ------------------------------------------------------------------------------
 # APPLICATIONS
@@ -175,6 +176,7 @@ AUTH_USER_MODEL = "accounts.User"
 # ------------------------------------------------------------------------------
 
 REST_FRAMEWORK = {
+    "EXCEPTION_HANDLER": "accounts.security.api_exception_handler",
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "accounts.authentication.CookieJWTAuthentication",
     ),
@@ -211,12 +213,19 @@ SIMPLE_JWT = {
 # CORS
 # ------------------------------------------------------------------------------
 
-CORS_ALLOWED_ORIGINS = config(
+CORS_ALLOWED_ORIGINS = exact_origins(config(
     "CORS_ALLOWED_ORIGINS",
     default="http://localhost:5173",
-).split(",")
+), 'CORS_ALLOWED_ORIGINS')
 
 CORS_ALLOW_CREDENTIALS = True
+
+# Cookie JWTs use Django's cookie/header CSRF mechanism, not session storage.
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_DOMAIN = None
+CSRF_USE_SESSIONS = False
 
 # ------------------------------------------------------------------------------
 # SECURITY (PRODUCTION)

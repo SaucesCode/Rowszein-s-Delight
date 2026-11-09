@@ -4,6 +4,7 @@ import { ingredientService } from "@/services/ingredient.service";
 import type { IngredientPayload } from "@/types/ingredient.types";
 import toast from "react-hot-toast";
 import { useOperationIdentity } from "@/hooks/useOperationIdentity";
+import { apiErrorMessage } from "@/lib/csrfTransport";
 
 export function useIngredients(page = 1) {
   return useQuery({
@@ -84,7 +85,7 @@ export function useUpdateStock(id: number) {
     onError: (error) => {
       identity.reject(`stock:adjust:${id}`, error);
       queryClient.invalidateQueries({ queryKey: ["ingredients"] });
-      toast.error("Failed to update stock. Reload before retrying a stale balance.");
+      toast.error(apiErrorMessage(error, "Failed to update stock. Reload before retrying a stale balance."));
     },
   });
 }

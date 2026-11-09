@@ -34,7 +34,9 @@ export function beginIdentity(
 function knownRejection(error: unknown): boolean {
   if (!axios.isAxiosError(error) || !error.response) return false;
   const detail = JSON.stringify(error.response.data) ?? "";
-  return [400, 401, 403, 404, 409].includes(error.response.status) && !detail.includes("request identity was already used");
+  // Authentication/CSRF failures must retain the pending intent even on its
+  // first attempt; recovery must not generate a replacement operation UUID.
+  return [400, 404, 409].includes(error.response.status) && !detail.includes("request identity was already used");
 }
 
 export function rejectIdentity(storage: IdentityStorage, name: string, error: unknown): void {

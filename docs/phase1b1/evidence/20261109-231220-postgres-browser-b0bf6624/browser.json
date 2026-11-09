@@ -1,0 +1,335 @@
+{
+  "checks": {
+    "real_cookie_login": {
+      "passed": true,
+      "detail": true
+    },
+    "browser_cookie_missing_token_403_zero_business_writes": {
+      "passed": true,
+      "detail": true
+    },
+    "hostile_browser_form_valid_token_403_no_cookie_clear_or_business_writes": {
+      "passed": true,
+      "detail": true
+    },
+    "browser_stale_csrf_rejected_before_write": {
+      "passed": true,
+      "detail": true
+    },
+    "unknown_create_committed_once": {
+      "passed": true,
+      "detail": true
+    },
+    "browser_csrf_recovery_preserves_exact_intent": {
+      "passed": true,
+      "detail": true
+    },
+    "unknown_outcome_retains_identity": {
+      "passed": true,
+      "detail": [
+        {
+          "key": "rowszein_operation:1:sale:create",
+          "value": {
+            "key": "86ccaa7d-5a39-4f53-8ce7-a59d5e9577f1",
+            "hasPriorAttempt": false
+          }
+        }
+      ]
+    },
+    "unknown_payload_conflict_after_reload_is_rejected": {
+      "passed": true,
+      "detail": true
+    },
+    "conflict_retains_original_durable_identity": {
+      "passed": true,
+      "detail": true
+    },
+    "invalid_retry_rejected_without_mutation": {
+      "passed": true,
+      "detail": true
+    },
+    "validation_retry_does_not_create_duplicate": {
+      "passed": true,
+      "detail": 1
+    },
+    "unknown_identity_survives_later_validation_error": {
+      "passed": true,
+      "detail": true
+    },
+    "retry_uses_same_identity": {
+      "passed": true,
+      "detail": true
+    },
+    "retry_replays_without_duplicate": {
+      "passed": true,
+      "detail": true
+    },
+    "identity_cleared_only_after_success": {
+      "passed": true,
+      "detail": true
+    },
+    "single_fractional_deduction": {
+      "passed": true,
+      "detail": true
+    },
+    "edit_retains_original_value": {
+      "passed": true,
+      "detail": {
+        "id": 1,
+        "date": "2026-11-09",
+        "notes": "",
+        "sale_items": [
+          {
+            "id": 1,
+            "product": 1,
+            "quantity": 2,
+            "subtotal": "90.50",
+            "unit_price": "45.25",
+            "product_name": "Browser verification donut",
+            "subtotal_amount": "90.50"
+          }
+        ],
+        "total_amount": "90.50",
+        "original_total_amount": "50.00",
+        "status": "recorded",
+        "revision": "2",
+        "inventory_tracking": "tracked",
+        "financial_tracking": "ledger",
+        "created_at": "2026-11-09T15:12:52.458644+00:00",
+        "updated_at": "2026-11-09T15:12:57.814200+00:00"
+      }
+    },
+    "exact_edit_allocation": {
+      "passed": true,
+      "detail": true
+    },
+    "independent_edit_commits": {
+      "passed": true,
+      "detail": true
+    }
+  },
+  "mutations": [
+    {
+      "method": "POST",
+      "path": "/api/sales/",
+      "identity": "86ccaa7d-5a39-4f53-8ce7-a59d5e9577f1",
+      "revision": null,
+      "payload": {
+        "date": "2026-11-09",
+        "notes": "",
+        "sale_items": [
+          {
+            "product": 1,
+            "quantity": 1,
+            "unit_price": 50
+          }
+        ]
+      },
+      "status": 403,
+      "replayed": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/sales/",
+      "identity": "86ccaa7d-5a39-4f53-8ce7-a59d5e9577f1",
+      "revision": null,
+      "payload": {
+        "date": "2026-11-09",
+        "notes": "",
+        "sale_items": [
+          {
+            "product": 1,
+            "quantity": 1,
+            "unit_price": 50
+          }
+        ]
+      },
+      "status": 201,
+      "replayed": "false",
+      "response_lost_after_server_commit": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/sales/",
+      "identity": "86ccaa7d-5a39-4f53-8ce7-a59d5e9577f1",
+      "revision": null,
+      "payload": {
+        "date": "2026-11-09",
+        "notes": "",
+        "sale_items": [
+          {
+            "product": 1,
+            "quantity": 2,
+            "unit_price": 50
+          }
+        ]
+      },
+      "status": 409,
+      "replayed": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/sales/",
+      "identity": "86ccaa7d-5a39-4f53-8ce7-a59d5e9577f1",
+      "revision": null,
+      "payload": {
+        "date": "2026-11-09",
+        "notes": "",
+        "sale_items": [
+          {
+            "product": 1,
+            "quantity": 1,
+            "unit_price": 50.001
+          }
+        ]
+      },
+      "status": 400,
+      "replayed": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/sales/",
+      "identity": "86ccaa7d-5a39-4f53-8ce7-a59d5e9577f1",
+      "revision": null,
+      "payload": {
+        "date": "2026-11-09",
+        "notes": "",
+        "sale_items": [
+          {
+            "product": 1,
+            "quantity": 1,
+            "unit_price": 50
+          }
+        ]
+      },
+      "status": 201,
+      "replayed": "true"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/sales/1/",
+      "identity": "67c142d1-f04a-44f5-8995-0df54627d616",
+      "revision": "\"1\"",
+      "payload": {
+        "date": "2026-11-09",
+        "notes": "",
+        "sale_items": [
+          {
+            "product": 1,
+            "quantity": 2,
+            "unit_price": 45.25
+          }
+        ]
+      },
+      "status": 200,
+      "replayed": "false"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/sales/1/",
+      "identity": "5169f6eb-c21d-4566-8e73-2299b4db8cc4",
+      "revision": "\"2\"",
+      "payload": {
+        "date": "2026-11-09",
+        "notes": "",
+        "sale_items": [
+          {
+            "product": 1,
+            "quantity": 3,
+            "unit_price": 45.25
+          }
+        ]
+      },
+      "status": 409,
+      "replayed": null
+    }
+  ],
+  "screenshots": [
+    "browser-uncertain-create.png"
+  ],
+  "page_errors": [],
+  "console_errors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: net::ERR_CONNECTION_RESET",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)"
+  ],
+  "external_requests_blocked": [],
+  "real_http_api": true,
+  "login_dom": [
+    {
+      "name": "username",
+      "type": "text"
+    },
+    {
+      "name": "password",
+      "type": "password"
+    }
+  ],
+  "sale_form_dom": [
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "type": "submit",
+      "text": "Logout"
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "type": "submit",
+      "text": ""
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "type": "submit",
+      "text": ""
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "type": "submit",
+      "text": "Logout"
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "type": "submit",
+      "text": ""
+    },
+    {
+      "tag": "INPUT",
+      "name": "date",
+      "type": "date",
+      "text": null
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "type": "button",
+      "text": "Add Item"
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "type": "submit",
+      "text": "Record Sale"
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "type": "button",
+      "text": "Cancel"
+    }
+  ],
+  "identity_after_uncertain_validation": [
+    {
+      "key": "86ccaa7d-5a39-4f53-8ce7-a59d5e9577f1",
+      "hasPriorAttempt": true
+    }
+  ],
+  "passed": false,
+  "exception": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1b1\\browser_checks.py\", line 270, in <module>\n    expect(page.get_by_text('Failed to update sale.', exact=True)).to_be_visible()\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\sync_api\\_generated.py\", line 14811, in to_be_visible\n    self._sync(\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_sync_base.py\", line 111, in _sync\n    return task.result()\n           ^^^^^^^^^^^^^\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_assertions.py\", line 852, in to_be_visible\n    await self._expect_impl(\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_assertions.py\", line 128, in _expect_impl\n    _record_soft_or_raise(\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_assertions.py\", line 60, in _record_soft_or_raise\n    raise error\nAssertionError: Locator expected to be visible\nActual value: None\nError: element(s) not found \nCall log:\n  - Expect \"to_be_visible\" get_by_text(\"Failed to update sale.\", exact=True) with timeout 5000ms\n  - waiting for get_by_text(\"Failed to update sale.\", exact=True)\n\nAria snapshot:\n- complementary:\n  - link \"Rowszein's Delight Owner Panel\":\n    - /url: /\n    - paragraph: Rowszein's Delight\n    - paragraph: Owner Panel\n  - navigation \"Main navigation\":\n    - link \"Dashboard\":\n      - /url: /dashboard\n    - paragraph: Operations\n    - link \"Ingredients\":\n      - /url: /ingredients\n    - link \"Products\":\n      - /url: /products\n    - link \"Recipes\":\n      - /url: /recipes\n    - paragraph: Money\n    - link \"Sales\":\n      - /url: /sales\n    - link \"Expenses\":\n      - /url: /expenses\n    - link \"Profit Margins\":\n      - /url: /profit-margins\n  - button \"Logout\"\n  - button \"Collapse sidebar\" [expanded]\n- banner:\n  - link \"View live shop\":\n    - /url: /\n  - paragraph: disposable-browser-owner\n- main:\n  - text: Sale Date\n  - textbox: 2026-11-09\n  - paragraph: When did this sale take place?\n  - text: Notes\n  - textbox \"Any notes about this sale\u2026\": Independent concurrent operator correction\n  - paragraph: Optional \u2014 e.g. Morning batch, walk-in customers, event order\n  - paragraph: Items Sold\n  - paragraph: Add each product sold in this transaction\n  - button \"Add Item\"\n  - paragraph: Product\n  - paragraph: Qty\n  - paragraph: Unit Price (\u20b1)\n  - paragraph\n  - combobox \"Product for item 1\":\n    - option \"Select product\u2026\"\n    - option \"Browser verification donut\" [selected]\n  - spinbutton \"Quantity for item 1\": \"2\"\n  - spinbutton \"Unit price for item 1\": \"45.25\"\n  - button \"Remove item 1\" [disabled]\n  - text: Order Total \u20b190.50\n  - button \"Update Sale\"\n  - button \"Cancel\"\n- status: Sale revision is stale; reload before editing.\n"
+}

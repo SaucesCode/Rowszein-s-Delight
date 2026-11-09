@@ -5,6 +5,7 @@ import type { SaleFilters } from "@/services/sale.service";
 import type { SalePayload } from "@/types/sale.types";
 import toast from "react-hot-toast";
 import { useOperationIdentity } from "@/hooks/useOperationIdentity";
+import { apiErrorMessage } from "@/lib/csrfTransport";
 
 export function useSalesSummary(filters: SaleFilters = {}) {
   return useQuery({ queryKey: ["sales", "summary", filters], queryFn: () => saleService.financialSummary(filters) });
@@ -42,7 +43,7 @@ export function useCreateSale() {
     },
     onError: (error) => {
       identity.reject("sale:create", error);
-      toast.error("Failed to record sale.");
+      toast.error(apiErrorMessage(error, "Failed to record sale."));
     },
   });
 }
@@ -69,7 +70,7 @@ export function useUpdateSale(id: number, revision?: string) {
     onError: (error) => {
       identity.reject(`sale:update:${id}`, error);
       queryClient.invalidateQueries({ queryKey: ["sales", id] });
-      toast.error("Failed to update sale.");
+      toast.error(apiErrorMessage(error, "Failed to update sale."));
     },
   });
 }
@@ -93,7 +94,7 @@ export function useDeleteSale() {
     onError: (error, variables) => {
       identity.reject(`sale:cancel:${variables.id}`, error);
       queryClient.invalidateQueries({ queryKey: ["sales"] });
-      toast.error("Failed to cancel sale. Reload before retrying stale data.");
+      toast.error(apiErrorMessage(error, "Failed to cancel sale. Reload before retrying stale data."));
     },
   });
 }

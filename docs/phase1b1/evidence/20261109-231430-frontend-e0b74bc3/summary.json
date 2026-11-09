@@ -1,0 +1,52 @@
+{
+  "csrf-transport": {
+    "exit_code": 0,
+    "command": [
+      "node",
+      "docs/phase1b1/test_csrf_transport.mjs"
+    ]
+  },
+  "operation-identity": {
+    "exit_code": 0,
+    "command": [
+      "node",
+      "docs/phase1b1/test_operation_identity.mjs"
+    ]
+  },
+  "stock-preview": {
+    "exit_code": 0,
+    "command": [
+      "node",
+      "docs/phase1a3/test_stock_preview.mjs"
+    ]
+  },
+  "frontend-build": {
+    "exit_code": 0,
+    "command": [
+      "npm.cmd",
+      "run",
+      "build"
+    ]
+  },
+  "affected-lint": {
+    "exit_code": 0,
+    "command": [
+      "node",
+      "node_modules/eslint/bin/eslint.js",
+      "src/lib/csrfTransport.ts",
+      "src/lib/operationIdentity.ts",
+      "src/hooks/useAuth.ts",
+      "src/hooks/useIngredients.ts",
+      "src/hooks/useSales.ts",
+      "src/services/api.ts"
+    ]
+  },
+  "full-lint": {
+    "exit_code": 1,
+    "command": [
+      "npm.cmd",
+      "run",
+      "lint"
+    ]
+  }
+}

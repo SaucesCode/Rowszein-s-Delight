@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { authService } from "@/services/auth.services";
 import type { LoginCredentials } from "@/services/auth.services";
 import toast from "react-hot-toast";
+import { apiErrorMessage } from "@/lib/csrfTransport";
 
 export function useMe() {
   return useQuery({
@@ -18,13 +19,16 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: (credentials: LoginCredentials) => authService.login(credentials),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+    onSuccess: (response) => {
+      // Authentication transitions must not display another account's cached
+      // business data. Pending operation identities remain actor-scoped storage.
+      queryClient.clear();
+      queryClient.setQueryData(["auth", "me"], response.data);
       toast.success("Welcome back!");
       navigate("/dashboard");
     },
-    onError: () => {
-      toast.error("Invalid username or password.");
+    onError: (error) => {
+      toast.error(apiErrorMessage(error, "Invalid username or password."));
     },
   });
 }
@@ -40,8 +44,8 @@ export function useLogout() {
       toast.success("Logged out.");
       navigate("/login");
     },
-    onError: () => {
-      toast.error("Logout failed.");
+    onError: (error) => {
+      toast.error(apiErrorMessage(error, "Logout failed."));
     },
   });
 }

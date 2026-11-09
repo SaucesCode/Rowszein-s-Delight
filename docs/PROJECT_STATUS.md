@@ -6,7 +6,7 @@ Rowszein's Delight Management System
 
 ## Current Phase
 
-Phase 1B security audit/design complete for approval on `codex/phase-1b-security-audit`. AUTH-01/AUTH-02 reproduced and unresolved. No application security policy or schema implemented. The existing Phase 1A.3 ledger implementation is preserved and all 120 checks pass again on PostgreSQL.
+Package 1B.1 CSRF implementation and disposable verification complete for review on `codex/phase-1b1-csrf`, based on audit commit `d88f8c7`. AUTH-01 controls pass locally; production topology remains unverified. AUTH-02, session revocation, login throttling and dependency findings remain open. All 120 Phase 1A checks pass on PostgreSQL; no ledger/schema/migration changes.
 
 ## Completed
 
@@ -30,7 +30,7 @@ Phase 1B security audit/design complete for approval on `codex/phase-1b-security
 
 ## In Progress
 
-Approval checkpoint: [Phase 1B audit/design](PHASE1B_SECURITY_AUDIT_AND_DESIGN.md). Fifteen current controls pass; 13 desired security and 13 draft role contracts fail on each isolated engine. Proposed permissions and session decisions await owner approval. Earlier Phase 1A.3 evidence/build/browser results remain preserved.
+Review checkpoint: [Package 1B.1 implementation report](PHASE1B1_CSRF_IMPLEMENTATION_REPORT.md). The original desired security checks now show 10 passes/3 deferred failures on each isolated engine. All 26 new CSRF checks pass on both; 44 PostgreSQL browser checks and 37 frontend utility checks pass. Build/affected lint pass; full lint remains 12 existing errors/16 warnings. SQLite business checks: 103 passes/17 concurrency skips. All 13 role contracts remain failing, pending Package 1B.2 implementation. Earlier evidence is preserved.
 
 ## Not Started
 
@@ -40,11 +40,11 @@ Approval checkpoint: [Phase 1B audit/design](PHASE1B_SECURITY_AUDIT_AND_DESIGN.m
 
 ## Current Task
 
-STOPPED after security audit/design, awaiting approval of the CSRF design, owner/staff permission matrix and session/topology choices. No production changes/deployment, dummy data, UI redesign, SEO or unapproved role/security implementation is authorized.
+STOPPED after Package 1B.1 for owner review. D1–D4 owner/staff policies are approved in design, but Package 1B.2 implementation must wait for this review. D6 session architecture remains conditional and requires separate exact schema/infrastructure approval. No production access, deployment or later-phase work occurred.
 
 ## Notes
 
-The feature inventory above describes existing modules, not verified correctness or security. AUTH-01 and AUTH-02 remain unresolved, alongside outstanding dependency/security findings. The application is not represented as secure or production-ready.
+The feature inventory above describes existing modules, not verified correctness or security. AUTH-01 has local API/browser regression evidence; AUTH-02 and outstanding session/throttle/dependency/security findings still block production readiness. The application is not represented as secure or production-ready.
 
 Later phases require separate approval:
 

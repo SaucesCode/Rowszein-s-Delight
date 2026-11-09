@@ -1,5 +1,13 @@
 # Revival changelog
 
+## 2026-11-09 — Package 1B.1 CSRF protection; review checkpoint
+
+Created `codex/phase-1b1-csrf` from audit commit `d88f8c7`. Added Django masked-token bootstrap, explicit cookie-JWT/login/logout CSRF enforcement, exact configured Origin/HTTPS Referer validation, auth CSRF rotation and expired-cookie-safe logout. Axios sends the token, permits one proven pre-write CSRF recovery using the same intent, and retains pending UUIDs across 401/403/429. Auth response/cache/error handling is consistent; existing business error messages are preserved.
+
+Actual original security checks: before 13 failures, after 10 passes/3 deferred failures, on both engines. New CSRF checks: 26 pass per engine. PostgreSQL business suite: 120 pass; SQLite: 103 pass/17 skip. Real PostgreSQL browser: 44 pass. Frontend: 14 transport +13 identity +10 stock checks pass; build/affected lint pass; full lint retains 12 errors/16 warnings. All 13 role contracts remain red. Earlier evidence and ledger/migration files are preserved; no schema, role, persistent-session, lifetime, rate-limit or dependency changes. Only fresh owned disposable databases were migrated/tested and removed.
+
+[Implementation report and evidence](PHASE1B1_CSRF_IMPLEMENTATION_REPORT.md). AUTH-02, copied-token/password-change revocation, login throttling, unsupported dependencies and deployment topology remain open. No production access/deployment/later-phase work. STOPPED for review before Package 1B.2.
+
 ## 2026-11-09 — Phase 1B security audit and permission design only
 
 Created `codex/phase-1b-security-audit` from `dcf2500`. Inspected cookie JWT authentication, login/logout, Axios/route guards, endpoint permissions, expiry/refresh/revocation and throttling. Added isolated real-cookie CSRF/role/lifecycle audit tests and proposed CSRF transport, role matrix, session options, risk treatment and implementation/test packages. Fifteen current-behavior controls pass on PostgreSQL/SQLite; 13 desired security checks and 13 draft role contracts fail on each. Phase 1A remains green: PostgreSQL 120 passes, SQLite 103 passes/17 skips; frontend utility checks 10+12 pass. Both owned targets cleaned up, prior evidence intact.
