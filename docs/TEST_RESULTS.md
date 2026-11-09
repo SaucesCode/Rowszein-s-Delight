@@ -1,5 +1,7 @@
 # Phase 0 verification results
 
+Latest checkpoint: [Package 1A.2 review](PHASE1A2_REVIEW.md)—PostgreSQL: 45 passing regressions/design experiments, **10 failing current-API requirements**. SQLite: 37 pass/8 PG-only skips and 7 fail/3 PG-only skips in separate suites. No new schema/migrations; these experiments do not establish integrated endpoint readiness.
+
 Subsequent work: [Phase 1A package 1A.1 results](PHASE1A_PROGRESS.md) reports **18/18 correctness regressions on SQLite and PostgreSQL 17.11**, a passing frontend build, and the schema approval checkpoint. The Phase 0 results below and `docs/audit/evidence/` remain the original baseline; the original defect probes are not the current correctness suite.
 
 Run date: 2026-11-09. Baseline commit `78ee4a0`; no application fixes applied. OS Windows; Node 24.21.0; npm 12.0.2; Python 3.12.14. Declared application dependencies were installed without changing requirements or lockfile. Python audit tooling additionally includes pip-audit and Playwright; it is isolated from application requirements.

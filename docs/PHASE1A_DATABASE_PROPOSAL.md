@@ -1,5 +1,7 @@
 # Phase 1A — mandatory database design checkpoint
 
+Subsequent review: the owner conditionally approved design refinement only. This preliminary proposal is superseded by [Package 1A.2 exact final design](PHASE1A2_FINAL_DATABASE_DESIGN.md) and its [test/review report](PHASE1A2_REVIEW.md). No schema implementation or migrations are authorized yet.
+
 Status: **PROPOSAL ONLY; owner approval required. No model/schema changes or new migrations have been implemented.**
 
 The owner approved sales/inventory integrity only and required: “STOP for approval before applying schema changes.” The schema-free validation/rollback package is complete; full Phase 1A is not. [PHASE1A_PROGRESS.md](PHASE1A_PROGRESS.md) records the actual implementation and tests.

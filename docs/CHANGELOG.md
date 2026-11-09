@@ -1,5 +1,11 @@
 # Revival changelog
 
+## 2026-11-09 — Package 1A.2 conditional design/test refinement
+
+Preserved 1A.1 in commit `b87d36d`; created `codex/phase-1a2-design-contracts`. Added an unwired Decimal/integer-quanta allocation/fingerprint kernel, 19 math/identity tests, eight PostgreSQL primitive experiments and ten desired current-API contracts. PostgreSQL passing suite: 45 pass; current-API requirements: 10 failures. SQLite passing suite: 37 pass/8 skips; current requirements: 7 failures/3 skips. Frontend build passes with existing warnings. The overall checks retain a failing exit code while requirements remain unmet.
+
+Added [exact field/constraint/index/migration/rollback design](PHASE1A2_FINAL_DATABASE_DESIGN.md), [numerical/test evidence and review checkpoint](PHASE1A2_REVIEW.md), and separate artifacts under `docs/phase1a2/`. Simplified schema proposal; no new models, fields, indexes, constraints or migrations implemented. Existing endpoints/reporting and earlier evidence remain unchanged. No production data, deployment or later-phase work. Stopped for exact schema, fractional/legacy and financial-reporting decisions; migrations remain unauthorized.
+
 ## 2026-11-09 — Phase 1A package 1A.1; database approval checkpoint
 
 Preserved reviewed Phase 0 documents/evidence in commit `5e6991c`; created `codex/phase-1a-sales-inventory`. Added desired-behavior sales regressions first (18 tests, 13 failures against original code), then moved edit validation before restoration and wrapped HTTP create/update/delete in atomic transactions. All 18 tests pass on SQLite and disposable PostgreSQL 17.11; frontend production build passes with existing warnings. No model/schema changes or migrations were created.

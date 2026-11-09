@@ -17,6 +17,8 @@ Framework references: [ISO/IEC 25010:2023 product quality model](https://committ
 - [x] Schema-free validation/rollback package: 18 desired-behavior regressions pass on SQLite and PostgreSQL 17.11; build passes.
 - [ ] Phase 1A database design and business decisions approved.
 - [ ] Remaining inventory/history/idempotency/precision fixes and PostgreSQL concurrency verified.
+- [x] Conditional 1A.2 arithmetic and PostgreSQL primitive experiments executed; exact schema proposal prepared.
+- [ ] Exact new schema constraints/migrations and integrated API concurrency pass (current requirements remain red).
 
 Current evidence and limitations: [PHASE1A_PROGRESS.md](PHASE1A_PROGRESS.md). This does not close the broader product/security acceptance criteria below.
 

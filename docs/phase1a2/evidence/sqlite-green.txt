@@ -1,0 +1,96 @@
+Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+
+Found 45 test(s).
+Operations to perform:
+  Synchronize unmigrated apps: corsheaders, messages, rest_framework, staticfiles
+  Apply all migrations: accounts, admin, auth, contenttypes, expenses, ingredients, products, recipes, sales, sessions
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0001_initial... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying accounts.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying expenses.0001_initial... OK
+  Applying ingredients.0001_initial... OK
+  Applying ingredients.0002_ingredient_minimum_stock... OK
+  Applying ingredients.0003_ingredient_category_ingredient_image_and_more... OK
+  Applying products.0001_initial... OK
+  Applying products.0002_product_is_featured... OK
+  Applying products.0003_product_category... OK
+  Applying products.0004_category_product_category_fk... OK
+  Applying recipes.0001_initial... OK
+  Applying recipes.0002_recipe_yield_quantity... OK
+  Applying sales.0001_initial... OK
+  Applying sales.0002_saleitem_subtotal_amount... OK
+  Applying sessions.0001_initial... OK
+System check identified no issues (0 silenced).
+test_create_failure_after_first_deduction_rolls_back_every_write (sales.tests.SaleTransactionTests.test_create_failure_after_first_deduction_rolls_back_every_write) ... C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\django\core\handlers\base.py:61: UserWarning: No directory at: C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\staticfiles\
+  mw_instance = middleware(adapted_handler)
+ok
+test_create_failure_after_item_insertion_rolls_back_parent_and_items (sales.tests.SaleTransactionTests.test_create_failure_after_item_insertion_rolls_back_parent_and_items) ... ok
+test_create_failure_after_last_deduction_rolls_back_every_write (sales.tests.SaleTransactionTests.test_create_failure_after_last_deduction_rolls_back_every_write) ... ok
+test_delete_failure_after_deletion_restores_sale_items_and_stock (sales.tests.SaleTransactionTests.test_delete_failure_after_deletion_restores_sale_items_and_stock) ... ok
+test_delete_failure_during_restoration_rolls_back_partial_credits (sales.tests.SaleTransactionTests.test_delete_failure_during_restoration_rolls_back_partial_credits) ... ok
+test_failed_create_can_be_retried_without_residual_sale_or_stock_changes (sales.tests.SaleTransactionTests.test_failed_create_can_be_retried_without_residual_sale_or_stock_changes) ... ok
+test_invalid_create_has_no_persistent_effects (sales.tests.SaleTransactionTests.test_invalid_create_has_no_persistent_effects) ... ok
+test_invalid_put_nested_items_leaves_all_records_unchanged (sales.tests.SaleTransactionTests.test_invalid_put_nested_items_leaves_all_records_unchanged) ... ok
+test_invalid_update_after_recipe_change_does_not_restore_current_recipe (sales.tests.SaleTransactionTests.test_invalid_update_after_recipe_change_does_not_restore_current_recipe) ... ok
+test_invalid_update_after_recipe_removal_leaves_records_unchanged (sales.tests.SaleTransactionTests.test_invalid_update_after_recipe_removal_leaves_records_unchanged) ... ok
+test_repeated_invalid_patch_does_not_inflate_stock_or_change_sale (sales.tests.SaleTransactionTests.test_repeated_invalid_patch_does_not_inflate_stock_or_change_sale) ... ok
+test_response_serialization_failure_rolls_back_sale_and_inventory (sales.tests.SaleTransactionTests.test_response_serialization_failure_rolls_back_sale_and_inventory) ... ok
+test_successful_create_preserves_historical_price_and_decimal_totals (sales.tests.SaleTransactionTests.test_successful_create_preserves_historical_price_and_decimal_totals) ... ok
+test_successful_delete_restores_unchanged_recipe_and_retry_cannot_restore_again (sales.tests.SaleTransactionTests.test_successful_delete_restores_unchanged_recipe_and_retry_cannot_restore_again) ... ok
+test_successful_update_replaces_items_and_reconciles_unchanged_recipe (sales.tests.SaleTransactionTests.test_successful_update_replaces_items_and_reconciles_unchanged_recipe) ... ok
+test_update_failure_after_new_deduction_rolls_back_restore_and_replacement (sales.tests.SaleTransactionTests.test_update_failure_after_new_deduction_rolls_back_restore_and_replacement) ... ok
+test_update_failure_after_replacing_items_restores_original_items_and_prices (sales.tests.SaleTransactionTests.test_update_failure_after_replacing_items_restores_original_items_and_prices) ... ok
+test_update_failure_after_restore_rolls_back_stock_and_preserves_sale (sales.tests.SaleTransactionTests.test_update_failure_after_restore_rolls_back_stock_and_preserves_sale) ... ok
+test_changed_payload_action_target_or_revision_changes_fingerprint (sales.test_inventory_math.IntentFingerprintTests.test_changed_payload_action_target_or_revision_changes_fingerprint) ... ok
+test_explicit_money_normalization_makes_equivalent_input_equal (sales.test_inventory_math.IntentFingerprintTests.test_explicit_money_normalization_makes_equivalent_input_equal) ... ok
+test_float_and_implicit_decimal_inputs_are_rejected (sales.test_inventory_math.IntentFingerprintTests.test_float_and_implicit_decimal_inputs_are_rejected) ... ok
+test_key_order_does_not_change_fingerprint (sales.test_inventory_math.IntentFingerprintTests.test_key_order_does_not_change_fingerprint) ... ok
+test_aggregate_insufficiency_is_rejected_without_mutating_inputs (sales.test_inventory_math.InventoryMathTests.test_aggregate_insufficiency_is_rejected_without_mutating_inputs) ... ok
+test_cancellation_order_always_restores_all_stock (sales.test_inventory_math.InventoryMathTests.test_cancellation_order_always_restores_all_stock) ... ok
+test_cancelling_round_up_sale_uses_current_cumulative_allocation (sales.test_inventory_math.InventoryMathTests.test_cancelling_round_up_sale_uses_current_cumulative_allocation) ... ok
+test_cumulative_total_can_exceed_instantaneous_stock_column_limit (sales.test_inventory_math.InventoryMathTests.test_cumulative_total_can_exceed_instantaneous_stock_column_limit) ... ok
+test_deterministic_random_lifecycle_telescopes_without_drift (sales.test_inventory_math.InventoryMathTests.test_deterministic_random_lifecycle_telescopes_without_drift) ... ok
+test_global_decimal_context_cannot_change_allocation (sales.test_inventory_math.InventoryMathTests.test_global_decimal_context_cannot_change_allocation) ... ok
+test_half_quantum_ties_round_up_exactly (sales.test_inventory_math.InventoryMathTests.test_half_quantum_ties_round_up_exactly) ... ok
+test_invalid_and_out_of_range_numbers_are_rejected (sales.test_inventory_math.InventoryMathTests.test_invalid_and_out_of_range_numbers_are_rejected) ... ok
+test_money_and_stock_have_separate_precision_policies (sales.test_inventory_math.InventoryMathTests.test_money_and_stock_have_separate_precision_policies) ... ok
+test_net_reversal_and_replacement_are_validated_together (sales.test_inventory_math.InventoryMathTests.test_net_reversal_and_replacement_are_validated_together) ... ok
+test_overflow_credit_is_rejected (sales.test_inventory_math.InventoryMathTests.test_overflow_credit_is_rejected) ... ok
+test_recipe_change_uses_old_and_new_immutable_bases (sales.test_inventory_math.InventoryMathTests.test_recipe_change_uses_old_and_new_immutable_bases) ... ok
+test_three_separate_sales_consume_exactly_one_batch (sales.test_inventory_math.InventoryMathTests.test_three_separate_sales_consume_exactly_one_batch) ... ok
+test_units_are_never_implicitly_converted (sales.test_inventory_math.InventoryMathTests.test_units_are_never_implicitly_converted) ... ok
+test_update_and_cancellations_reconcile_to_opening_balance (sales.test_inventory_math.InventoryMathTests.test_update_and_cancellations_reconcile_to_opening_balance) ... ok
+test_competing_sales_reject_insufficient_aggregate_stock (locking_contracts.PostgreSQLProtocolExperiments.test_competing_sales_reject_insufficient_aggregate_stock) ... skipped 'Real PostgreSQL primitive experiments only'
+test_competing_updates_use_fresh_locked_revision (locking_contracts.PostgreSQLProtocolExperiments.test_competing_updates_use_fresh_locked_revision) ... skipped 'Real PostgreSQL primitive experiments only'
+test_concurrent_distinct_cancellations_restore_opening_stock (locking_contracts.PostgreSQLProtocolExperiments.test_concurrent_distinct_cancellations_restore_opening_stock) ... skipped 'Real PostgreSQL primitive experiments only'
+test_concurrent_duplicate_operation_credits_or_deducts_only_once (locking_contracts.PostgreSQLProtocolExperiments.test_concurrent_duplicate_operation_credits_or_deducts_only_once) ... skipped 'Real PostgreSQL primitive experiments only'
+test_duplicate_replay_survives_new_database_connection (locking_contracts.PostgreSQLProtocolExperiments.test_duplicate_replay_survives_new_database_connection) ... skipped 'Real PostgreSQL primitive experiments only'
+test_exception_after_locked_stock_write_rolls_back (locking_contracts.PostgreSQLProtocolExperiments.test_exception_after_locked_stock_write_rolls_back) ... skipped 'Real PostgreSQL primitive experiments only'
+test_three_competing_fractional_sales_reconcile_exact_batch (locking_contracts.PostgreSQLProtocolExperiments.test_three_competing_fractional_sales_reconcile_exact_batch) ... skipped 'Real PostgreSQL primitive experiments only'
+test_unique_identity_race_rolls_back_conflicting_disjoint_stock_write (locking_contracts.PostgreSQLProtocolExperiments.test_unique_identity_race_rolls_back_conflicting_disjoint_stock_write) ... skipped 'Real PostgreSQL primitive experiments only'
+
+----------------------------------------------------------------------
+Ran 45 tests in 0.959s
+
+OK (skipped=8)
+Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+

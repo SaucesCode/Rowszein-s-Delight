@@ -1,0 +1,87 @@
+{
+  "status": "Design-kernel examples, not application endpoint behavior",
+  "same_basis_lifecycle": [
+    {
+      "operation": "Sell A=1",
+      "stock_before": "1.000000000",
+      "delta": "-0.003333333",
+      "stock_after": "0.996666667"
+    },
+    {
+      "operation": "Sell B=1",
+      "stock_before": "0.996666667",
+      "delta": "-0.003333334",
+      "stock_after": "0.993333333"
+    },
+    {
+      "operation": "Sell C=1",
+      "stock_before": "0.993333333",
+      "delta": "-0.003333333",
+      "stock_after": "0.990000000"
+    },
+    {
+      "operation": "Update B=2",
+      "stock_before": "0.990000000",
+      "delta": "-0.003333333",
+      "stock_after": "0.986666667"
+    },
+    {
+      "operation": "Cancel A=1",
+      "stock_before": "0.986666667",
+      "delta": "0.003333333",
+      "stock_after": "0.990000000"
+    },
+    {
+      "operation": "Cancel B=2",
+      "stock_before": "0.990000000",
+      "delta": "0.006666667",
+      "stock_after": "0.996666667"
+    },
+    {
+      "operation": "Cancel C=1",
+      "stock_before": "0.996666667",
+      "delta": "0.003333333",
+      "stock_after": "1.000000000"
+    }
+  ],
+  "changed_or_removed_recipe": [
+    {
+      "operation": "Sell A using original basis",
+      "stock_before": "1.000000000",
+      "delta": "-0.003333333",
+      "stock_after": "0.996666667"
+    },
+    {
+      "operation": "Update A to different basis",
+      "stock_before": "0.996666667",
+      "delta": "-0.003333334",
+      "stock_after": "0.993333333"
+    },
+    {
+      "operation": "Cancel A after recipe removal",
+      "stock_before": "0.993333333",
+      "delta": "0.006666667",
+      "stock_after": "1.000000000"
+    }
+  ],
+  "serialized_order_of_three_concurrent_sales": [
+    {
+      "operation": "First lock winner",
+      "stock_before": "0.010000000",
+      "delta": "-0.003333333",
+      "stock_after": "0.006666667"
+    },
+    {
+      "operation": "Second lock winner",
+      "stock_before": "0.006666667",
+      "delta": "-0.003333334",
+      "stock_after": "0.003333333"
+    },
+    {
+      "operation": "Third lock winner",
+      "stock_before": "0.003333333",
+      "delta": "-0.003333333",
+      "stock_after": "0.000000000"
+    }
+  ]
+}
