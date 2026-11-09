@@ -1,5 +1,11 @@
 # Revival changelog
 
+## 2026-11-09 — Phase 1B security audit and permission design only
+
+Created `codex/phase-1b-security-audit` from `dcf2500`. Inspected cookie JWT authentication, login/logout, Axios/route guards, endpoint permissions, expiry/refresh/revocation and throttling. Added isolated real-cookie CSRF/role/lifecycle audit tests and proposed CSRF transport, role matrix, session options, risk treatment and implementation/test packages. Fifteen current-behavior controls pass on PostgreSQL/SQLite; 13 desired security checks and 13 draft role contracts fail on each. Phase 1A remains green: PostgreSQL 120 passes, SQLite 103 passes/17 skips; frontend utility checks 10+12 pass. Both owned targets cleaned up, prior evidence intact.
+
+[Approval document](PHASE1B_SECURITY_AUDIT_AND_DESIGN.md). No application/backend/frontend/permission behavior, dependency or schema/migration changed; no production access or deployment. AUTH-01/AUTH-02 remain unresolved. Stopped for business-role, CSRF/topology and session/throttle decisions before implementation.
+
 ## 2026-11-09 — Phase 1A.3 disposable database verification
 
 Preserved the implementation checkpoint in `570e227`; verified only fresh owned PostgreSQL 17.11/SQLite targets. All ten prior API blockers now pass on PostgreSQL; all 33 defined API/concurrency tests and 18 adapted 1A.1 regressions pass. Selected totals: PostgreSQL 120 pass/0 fail/0 error/0 skip; SQLite 103 pass/0 fail/0 error/17 skip. Repeated PostgreSQL concurrency: 80 passes across five 16-case runs. Browser: 28 passing real HTTP checks. Fresh/legacy upgrade, idempotence, unused reverse migrations and backup/restore verified; invalid stock fixture safely rejected without repair. Migration files/hashes unchanged; no new migration created.

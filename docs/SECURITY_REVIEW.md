@@ -1,5 +1,7 @@
 # Security review — Phase 0
 
+Latest: [Phase 1B security audit and proposed permission design](PHASE1B_SECURITY_AUDIT_AND_DESIGN.md), based on unchanged Phase 1A.3 application code. AUTH-01/AUTH-02 are reproduced and **remain unresolved**. Fifteen current-behavior controls pass; 13 security targets and 13 draft role contracts fail on both isolated engines. All 120 Phase 1A regressions pass on PostgreSQL. No security implementation, new schema, dependency upgrade or production change occurred; the owner/staff matrix and CSRF/session plan await approval. The original Phase 0 assessment below is historical; sales/inventory ledger work has since been verified as described in the Phase 1A.3 report.
+
 Date: 2026-11-09. Source and isolated tests only; production penetration testing and operational controls were not assessed. No production credentials, configuration, deployments or data were changed.
 
 ## Highest priorities

@@ -6,7 +6,7 @@ Rowszein's Delight Management System
 
 ## Current Phase
 
-Phase 1A.3 disposable sales/inventory verification complete for owner review. Both approved migrations applied only to owned disposable PostgreSQL/SQLite targets, with unchanged migration files. Ten former API blockers now pass on PostgreSQL. No production rollout or next package is authorized.
+Phase 1B security audit/design complete for approval on `codex/phase-1b-security-audit`. AUTH-01/AUTH-02 reproduced and unresolved. No application security policy or schema implemented. The existing Phase 1A.3 ledger implementation is preserved and all 120 checks pass again on PostgreSQL.
 
 ## Completed
 
@@ -30,7 +30,7 @@ Phase 1A.3 disposable sales/inventory verification complete for owner review. Bo
 
 ## In Progress
 
-Review checkpoint: [verification report](PHASE1A3_DATABASE_VERIFICATION_REPORT.md). PostgreSQL 120 passes; SQLite 103 passes/17 skips; repeated races 80 passes; browser 28 checks pass. Build/affected lint pass, full lint remains failed.
+Approval checkpoint: [Phase 1B audit/design](PHASE1B_SECURITY_AUDIT_AND_DESIGN.md). Fifteen current controls pass; 13 desired security and 13 draft role contracts fail on each isolated engine. Proposed permissions and session decisions await owner approval. Earlier Phase 1A.3 evidence/build/browser results remain preserved.
 
 ## Not Started
 
@@ -40,7 +40,7 @@ Review checkpoint: [verification report](PHASE1A3_DATABASE_VERIFICATION_REPORT.m
 
 ## Current Task
 
-STOPPED after the authorized disposable verification package, awaiting owner review. Proposed next package is separate AUTH-01/02 design/regression work. No deployment, production changes, Phase 2 demo data, UI redesign, SEO or automatic security implementation is authorized.
+STOPPED after security audit/design, awaiting approval of the CSRF design, owner/staff permission matrix and session/topology choices. No production changes/deployment, dummy data, UI redesign, SEO or unapproved role/security implementation is authorized.
 
 ## Notes
 

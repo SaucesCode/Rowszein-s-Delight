@@ -86,3 +86,15 @@ See [the implementation checkpoint](PHASE1A2_IMPLEMENTATION_CHECKPOINT.md). No p
 - [ ] Production data preflight/reconciliation, authorized backup/restore and any production rollout.
 
 See [the required verification report](PHASE1A3_DATABASE_VERIFICATION_REPORT.md). Stopped for owner review; no overall security/production-readiness claim.
+
+## Phase 1B audit/design checkpoint — 2026-11-09
+
+- [x] AUTH-01/AUTH-02 reproduced using real cookie authentication and enforced CSRF test mode.
+- [x] Login/logout/refresh/expiry/disabled-user/password-change/throttle behavior inspected and tested.
+- [x] CSRF/Origin design, draft owner/staff matrix, risk treatment and test/implementation packages proposed.
+- [x] Application code and prior evidence unchanged; Phase 1A PostgreSQL 120 passes, SQLite 103 passes/17 skips.
+- [ ] Owner approval of role scopes, staff pricing/dates, trusted origins and session/throttle policy.
+- [ ] Security implementation and actual passing CSRF/RBAC/revocation requirements.
+- [ ] Any separate session/revocation schema approval and migration authorization.
+
+The 13 desired security and 13 draft role tests fail on both engines; these are open findings, not security passes. See [the approval document](PHASE1B_SECURITY_AUDIT_AND_DESIGN.md). Stopped before implementation.

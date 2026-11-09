@@ -1,0 +1,89 @@
+{
+  "branch": "codex/phase-1b-security-audit",
+  "application_baseline": "dcf2500",
+  "application_files_changed": [],
+  "prior_evidence_changed": [],
+  "new_migrations": [],
+  "backends": {
+    "postgres": {
+      "current-behavior-controls": {
+        "tests": 15,
+        "pass": 15,
+        "fail": 0,
+        "error": 0,
+        "skip": 0,
+        "evidence": "docs/phase1b/evidence/20261109-221807-postgres-29538fc4/current-behavior-controls.json"
+      },
+      "desired-security-red": {
+        "tests": 13,
+        "pass": 0,
+        "fail": 13,
+        "error": 0,
+        "skip": 0,
+        "evidence": "docs/phase1b/evidence/20261109-221807-postgres-29538fc4/desired-security-red.json"
+      },
+      "proposed-roles-red": {
+        "tests": 13,
+        "pass": 0,
+        "fail": 13,
+        "error": 0,
+        "skip": 0,
+        "evidence": "docs/phase1b/evidence/20261109-221807-postgres-29538fc4/proposed-roles-red.json"
+      },
+      "phase1a-regressions": {
+        "tests": 120,
+        "pass": 120,
+        "fail": 0,
+        "error": 0,
+        "skip": 0,
+        "evidence": "docs/phase1b/evidence/20261109-221807-postgres-29538fc4/phase1a-regressions.json"
+      }
+    },
+    "sqlite": {
+      "current-behavior-controls": {
+        "tests": 15,
+        "pass": 15,
+        "fail": 0,
+        "error": 0,
+        "skip": 0,
+        "evidence": "docs/phase1b/evidence/20261109-221803-sqlite-5fe6a85a/current-behavior-controls.json"
+      },
+      "desired-security-red": {
+        "tests": 13,
+        "pass": 0,
+        "fail": 13,
+        "error": 0,
+        "skip": 0,
+        "evidence": "docs/phase1b/evidence/20261109-221803-sqlite-5fe6a85a/desired-security-red.json"
+      },
+      "proposed-roles-red": {
+        "tests": 13,
+        "pass": 0,
+        "fail": 13,
+        "error": 0,
+        "skip": 0,
+        "evidence": "docs/phase1b/evidence/20261109-221803-sqlite-5fe6a85a/proposed-roles-red.json"
+      },
+      "phase1a-regressions": {
+        "tests": 120,
+        "pass": 103,
+        "fail": 0,
+        "error": 0,
+        "skip": 17,
+        "evidence": "docs/phase1b/evidence/20261109-221803-sqlite-5fe6a85a/phase1a-regressions.json"
+      }
+    }
+  },
+  "environments": {
+    "postgres": "docs/phase1b/evidence/20261109-221807-postgres-29538fc4/environment.json",
+    "sqlite": "docs/phase1b/evidence/20261109-221803-sqlite-5fe6a85a/environment.json"
+  },
+  "source_sha256": {
+    "backend/accounts/authentication.py": "b7f76f6d758aaf5ed042f9b5921be36b275c4c4abef8deebf12e3b688c06b116",
+    "backend/accounts/views.py": "a778ec3e349c5f0cf467bc4128afc1f61f2b7a80e722248212f3a558b48b2a95",
+    "backend/backend/settings.py": "c303ca76820fdff8ece0f4805aaa75327eb79360f08e7ddb964f1c3447fc9279",
+    "frontend/src/services/api.ts": "973696c7ec434d12fd645d13626b091e21dde584ada35828d9bf6b1253d6c902",
+    "frontend/src/hooks/useAuth.ts": "f90fe9dc587fb6af1d69dc04faf3482b0bc3d3a71ce769cdb3f3ba2c437a77a6"
+  },
+  "all_owned_runtime_targets_removed": true
+}
