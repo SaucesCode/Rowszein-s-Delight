@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.http import HttpResponse
+from django.db import transaction
 from datetime import datetime
 import csv
 import io
@@ -46,6 +47,7 @@ class SaleListCreateView(generics.ListCreateAPIView):
             'message': '',
         })
 
+    @transaction.atomic
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
@@ -78,16 +80,19 @@ class SaleDetailView(generics.RetrieveUpdateDestroyAPIView):
             'message': '',
         })
 
+    @transaction.atomic
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        restore_inventory_for_sale(instance)
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         if not serializer.is_valid():
             return Response({
                 'success': False,
                 'error': serializer.errors,
             }, status=status.HTTP_400_BAD_REQUEST)
+        # A rejected edit must never credit inventory. Historical consumption
+        # snapshots and concurrency controls require the approved schema package.
+        restore_inventory_for_sale(instance)
         sale = serializer.save()
         deduct_inventory_for_sale(sale)
         return Response({
@@ -96,6 +101,7 @@ class SaleDetailView(generics.RetrieveUpdateDestroyAPIView):
             'message': 'Sale updated successfully.',
         })
 
+    @transaction.atomic
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         restore_inventory_for_sale(instance)

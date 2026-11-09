@@ -1,11 +1,11 @@
 # Revival roadmap and approval gates
 
-Date: 2026-11-09. This is a proposal based on [PROJECT_REVIVAL_AUDIT.md](PROJECT_REVIVAL_AUDIT.md), not authorization to implement later phases.
+Date: 2026-11-09. Based on [PROJECT_REVIVAL_AUDIT.md](PROJECT_REVIVAL_AUDIT.md). The owner has approved **Phase 1A sales/inventory integrity only**, with a mandatory approval checkpoint before schema work. Later phases and a separate authentication/security package are not authorized by that approval.
 
 | Phase | Work and dependencies | Acceptance evidence | Gate |
 | --- | --- | --- | --- |
-| 0 | Inspect current architecture; reproduce defects in memory DB; baseline build/lint/browser/security; preserve evidence | Audit, source locations, 22 backend probes, frontend date/import probes, 10 screenshots and scan/build logs | Complete; owner review pending |
-| 1 | Stabilize one module at a time; order below | Desired-behavior regression tests, actual business calculations, rollback/access-control checks; build/lint; API contract checks | Explicit approval before starting and after completion |
+| 0 | Inspect current architecture; reproduce defects in memory DB; baseline build/lint/browser/security; preserve evidence | Audit, source locations, 22 backend probes, frontend date/import probes, 10 screenshots and scan/build logs | Reviewed/approved; preserved in commit 5e6991c |
+| 1 | Stabilize one module at a time; order below | Desired-behavior regression tests, actual business calculations, rollback/access-control checks; build/lint; API contract checks | 1A.1 validation/rollback complete; full 1A pending schema approval and remaining implementation |
 | 2 | Deterministic, development/demo-only seeding after stock/cost fixes | Repeated seed creates no duplicates; dry-run writes nothing; totals/stock agree; verified-demo reset preserves unrelated records; no shared public credentials | Separate approval |
 | 3 | First present a brand-preserving design proposal; then implement approved scope | Desktop/mobile/tablet previews; keyboard, labels, dialog, contrast and zoom verification; workflow feedback | Separate design approval before substantial visuals; phase review after implementation |
 | 4 | Improve existing public storefront metadata/navigation/assets only | Truthful public metadata, route/indexing checks; private-page exclusion; no invented business facts | Separate approval |
@@ -48,4 +48,4 @@ Owner/staff privileges; legitimate products without recipes; stock base units/pr
 
 Use the audit branch as a reviewable baseline. Later changes should be grouped by module and purpose, with tests and additive migrations where feasible. Document backup requirements and reverse operations before schema work. Keep production settings/data untouched until separately approved. Do not introduce payments, loyalty, suppliers, deliveries or a replacement frontend without an approved business requirement.
 
-**Pending decision:** approve Phase 1 and its initial sales/inventory stabilization scope, or request changes to this roadmap.
+**Current checkpoint:** review [Phase 1A database proposal](PHASE1A_DATABASE_PROPOSAL.md) and [package 1A.1 results](PHASE1A_PROGRESS.md). Approve/revise the schema and listed business decisions before package 1A.2. Phase 1A is not complete; do not begin unrelated Phase 1 packages, Phase 2–4 or deployment.

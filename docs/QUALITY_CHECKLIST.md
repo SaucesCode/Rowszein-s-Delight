@@ -13,7 +13,12 @@ Framework references: [ISO/IEC 25010:2023 product quality model](https://committ
 - [x] Build/lint/dependency and browser baselines retained, including failures/warnings.
 - [x] Public SEO distinguished from private MIS access and utility pages.
 - [x] Roadmap includes explicit approval gates and no automatic deployment.
-- [ ] Phase 1 approval received.
+- [x] Phase 1A sales/inventory scope approved; schema requires another approval.
+- [x] Schema-free validation/rollback package: 18 desired-behavior regressions pass on SQLite and PostgreSQL 17.11; build passes.
+- [ ] Phase 1A database design and business decisions approved.
+- [ ] Remaining inventory/history/idempotency/precision fixes and PostgreSQL concurrency verified.
+
+Current evidence and limitations: [PHASE1A_PROGRESS.md](PHASE1A_PROGRESS.md). This does not close the broader product/security acceptance criteria below.
 
 ## Product quality targets using the requested ISO/IEC 25010:2023 characteristics
 
