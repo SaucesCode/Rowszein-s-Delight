@@ -1,0 +1,75 @@
+Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+
+AUDIT PROBES: baseline assertions plus existing defects; passing does not mean defects are fixed.
+Found 22 test(s).
+Operations to perform:
+  Synchronize unmigrated apps: corsheaders, messages, rest_framework, staticfiles
+  Apply all migrations: accounts, admin, auth, contenttypes, expenses, ingredients, products, recipes, sales, sessions
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0001_initial... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying accounts.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying expenses.0001_initial... OK
+  Applying ingredients.0001_initial... OK
+  Applying ingredients.0002_ingredient_minimum_stock... OK
+  Applying ingredients.0003_ingredient_category_ingredient_image_and_more... OK
+  Applying products.0001_initial... OK
+  Applying products.0002_product_is_featured... OK
+  Applying products.0003_product_category... OK
+  Applying products.0004_category_product_category_fk... OK
+  Applying recipes.0001_initial... OK
+  Applying recipes.0002_recipe_yield_quantity... OK
+  Applying sales.0001_initial... OK
+  Applying sales.0002_saleitem_subtotal_amount... OK
+  Applying sessions.0001_initial... OK
+System check identified no issues (0 silenced).
+test_baseline_anonymous_private_api_denied (__main__.ExistingBehaviorAudit.test_baseline_anonymous_private_api_denied) ... C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\.audit-venv\Lib\site-packages\django\core\handlers\base.py:61: UserWarning: No directory at: C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\staticfiles\
+  mw_instance = middleware(adapted_handler)
+ok
+test_baseline_api_rejects_negative_ingredient_cost (__main__.ExistingBehaviorAudit.test_baseline_api_rejects_negative_ingredient_cost) ... ok
+test_baseline_recipe_batch_and_unit_cost (__main__.ExistingBehaviorAudit.test_baseline_recipe_batch_and_unit_cost) ... ok
+test_baseline_valid_sale_totals_and_deduction (__main__.ExistingBehaviorAudit.test_baseline_valid_sale_totals_and_deduction) ... ok
+test_defect_chart_loses_same_month_across_years (__main__.ExistingBehaviorAudit.test_defect_chart_loses_same_month_across_years) ... ok
+test_defect_cookie_auth_write_accepted_without_csrf (__main__.ExistingBehaviorAudit.test_defect_cookie_auth_write_accepted_without_csrf) ... ok
+test_defect_cross_origin_simple_form_accepted_without_csrf (__main__.ExistingBehaviorAudit.test_defect_cross_origin_simple_form_accepted_without_csrf) ... ok
+test_defect_duplicate_post_records_and_deducts_twice (__main__.ExistingBehaviorAudit.test_defect_duplicate_post_records_and_deducts_twice) ... ok
+test_defect_invalid_sale_update_increases_stock (__main__.ExistingBehaviorAudit.test_defect_invalid_sale_update_increases_stock) ... ok
+test_defect_inventory_service_is_not_idempotent (__main__.ExistingBehaviorAudit.test_defect_inventory_service_is_not_idempotent) ... ok
+test_defect_negative_cost_allowed_through_model_validation (__main__.ExistingBehaviorAudit.test_defect_negative_cost_allowed_through_model_validation) ... ok
+test_defect_overselling_then_deleting_creates_stock (__main__.ExistingBehaviorAudit.test_defect_overselling_then_deleting_creates_stock) ... ok
+test_defect_public_list_exposes_unavailable_product_and_ignores_filter (__main__.ExistingBehaviorAudit.test_defect_public_list_exposes_unavailable_product_and_ignores_filter) ... ok
+test_defect_recipe_change_corrupts_restoration (__main__.ExistingBehaviorAudit.test_defect_recipe_change_corrupts_restoration) ... ok
+test_defect_recipe_deletion_loses_restoration (__main__.ExistingBehaviorAudit.test_defect_recipe_deletion_loses_restoration) ... ok
+test_defect_referenced_ingredient_delete_is_500 (__main__.ExistingBehaviorAudit.test_defect_referenced_ingredient_delete_is_500) ... ok
+test_defect_rounding_discards_small_deductions (__main__.ExistingBehaviorAudit.test_defect_rounding_discards_small_deductions) ... ok
+test_defect_sale_persists_after_deduction_failure (__main__.ExistingBehaviorAudit.test_defect_sale_persists_after_deduction_failure) ... ok
+test_defect_staff_can_delete_expense (__main__.ExistingBehaviorAudit.test_defect_staff_can_delete_expense) ... ok
+test_defect_unavailable_product_can_be_sold_without_recipe (__main__.ExistingBehaviorAudit.test_defect_unavailable_product_can_be_sold_without_recipe) ... ok
+test_measure_margin_query_growth (__main__.ExistingBehaviorAudit.test_measure_margin_query_growth) ... ok
+test_defect_subtotal_migration_does_not_backfill_existing_items (__main__.HistoricalMigrationAudit.test_defect_subtotal_migration_does_not_backfill_existing_items) ... ok
+MARGIN_QUERY_BASELINE one_product=4 six_products=9
+
+----------------------------------------------------------------------
+Ran 22 tests in 0.812s
+
+OK
+Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+

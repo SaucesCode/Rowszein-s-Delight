@@ -1,0 +1,6 @@
+configured_static_backend=django.contrib.staticfiles.storage.StaticFilesStorage
+resolved_static_storage=StaticFilesStorage
+atomic_requests=False
+login_throttle_classes=[]
+csrf_cookie_secure=True
+session_cookie_secure=True
