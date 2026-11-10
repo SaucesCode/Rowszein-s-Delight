@@ -1,0 +1,152 @@
+{
+  "observations": {
+    "storefront_dom_excerpt": "R\nRowszein's Delight\nMenu\nBestsellers\nWhy Us\nContact\nBAKED FRESH, EVERY SINGLE DAY\nSoft, sweet,\nhomemade donuts.\n\nHand-rolled donuts and desserts, made fresh each morning with real butter, real eggs, and a generous swirl of glaze. Pick your favorites \u2014 we'll do the rest.\n\nView Menu\nContact Us\n20 flavors\nDaily fresh batches\n\nMade with love\n\nSmall batch, big flavor\n\nfrom \u20b150.00\n\nBaked Fresh\n\nEvery batch is hand-rolled and baked fresh each morning.\n\nReal Ingredients\n\nButter, eggs, milk \u2014 no shortcuts, no artificial flavors.\n\nMade with Love\n\nA family recipe, perfected and small-batched with care.\n\nEasy Ordering\n\nBuild your order here, then message us to confirm.\n\nTHE WHOLE MENU\n\nPick your sweet\nAll\n20\nAudit category 01\n1\nAudit category 02\n1\nAudit category 03\n1\nAudit category 04\n1\nAudit category 05\n1\nAudit category 06\n1\nAudit category 07\n1\nAudit category 08\n1\nAudit category 09\n1\nAudit category 10\n1\nAudit category 11\n1\nAudit category 12\n1\nAudit category 13\n1\nAudit category 14\n1\nAudit category 15\n1\nAudit category 16\n1\nAudit category 17\n1\nAudit category 18\n1\nAudit category 19\n1\nAudit category 20\n1\nAudit product 01\n\u20b150.00\n\nAdd to cart\nAudit product 02\n\u20b150.00\n\nAdd to cart\nAudit product 03\n\u20b150.00\n\nAdd to cart\nAudit product 04\n\u20b150.00\n\nAdd to cart\nAudit product 05\n\u20b150.00\n\nAdd to cart\nAudit product 06\n\u20b150.00\n\nAdd to cart\nAudit product 07\n\u20b150.00\n\nAdd to cart\nAudit product 08\n\u20b150.00\n\nAdd to cart\nAudit product 09\n\u20b150.00\n\nAdd to cart\nAudit product 10\n\u20b150.00\n\nAdd to cart\nAudit product 11\n\u20b150.00\n\nAdd to cart\nAudit product 12\n\u20b150.00\n\nAdd to cart\nAudit product 13\n\u20b150.00\n\nAdd to cart\nAudit product 14\n\u20b150.00\n\nAdd to cart\nAudit product 15\n\u20b150.00\n\nAdd to cart\nAudit product 16\n\u20b150.00\n\nAdd to cart\nAudit product 17\n\u20b150.00\n\nAdd to cart\nAudit product 18\n\u20b150.00\n\nAdd to cart\nAudit product 19\n\u20b150.00\n\nAdd to cart\nAudit product 20\n\u20b150.00\n\nAdd to cart\nBULK & CUSTOM ORDERS\nBirthdays, offices, special events?\n\nMessage us a day ahead and we'll prepare your dozens \u2014 donut towers, themed boxes, dessert trays. Made fresh, just for your occasion.\n\nMessage Us\n\nSEND US A MESSAGE\n\nGet in touch\n\nQuestions or a special request? Drop us a note \u2014 we'll reply on Messenger or by email.\n\nYour Name\nPhone Number\nMessage\n\n0/1000\n\nSend on Messenger\nSend by Email\n\nOpens Messenger or your email app \u2014 nothing is stored on this site.\n\nR\n\nRowszein's Delight\n\nHave a question or want to place a custom order? Send us a message on Facebook or visit us in store. We'd love to hear from you.\n\n\u00a9 2026 Rowszein's Delight \u2014 Made with love\n\nRowszein's Delight\n\nOrder Summary\n\nCustomer\nWalk-in Customer\nDate\nNovember 10, 2026\nTime\n4:18:29 PM\nReference No.\nRD-20261110-24NC\nTotal\n\u20b10.00\n\nShow this to staff or send via message to place your order.\n\nYour Order\n\n0 items\n\nYour cart is empty\n\nAdd some treats from the menu to get started.",
+    "featured_product25_visible": {
+      "actual": false,
+      "expected": true,
+      "desired_behavior_passed": false
+    },
+    "login_controls_associated_labels": {
+      "actual": false,
+      "expected": true,
+      "desired_behavior_passed": false
+    },
+    "dashboard_filter_requests": [
+      "/api/dashboard/?date_from=2025-12-31&date_to=2026-11-10"
+    ],
+    "stock_row_text": "Audit ingredient 01\n\tother\t19.997 kg\t\u2014\t\u20b11.00\tSYNTHETIC-PRIVATE\t\nHealthy\t",
+    "exact_stock_quantity_visible": {
+      "actual": false,
+      "expected": true,
+      "desired_behavior_passed": false
+    },
+    "search_finds_off_page_ingredient25": {
+      "actual": false,
+      "expected": true,
+      "desired_behavior_passed": false
+    },
+    "confirmation_exposed_to_accessibility_tree": {
+      "actual": 1,
+      "expected": 1,
+      "desired_behavior_passed": true
+    },
+    "ingredient_list_detail_cache_shape": {
+      "actual": "",
+      "expected": "Audit ingredient 01",
+      "desired_behavior_passed": false
+    },
+    "ingredient_edit_quantity": "",
+    "recipe_product_options": {
+      "actual": 21,
+      "expected": 26,
+      "desired_behavior_passed": false
+    },
+    "recipe_ingredient_options": {
+      "actual": 21,
+      "expected": 26,
+      "desired_behavior_passed": false
+    },
+    "sale_product_options": {
+      "actual": 21,
+      "expected": 26,
+      "desired_behavior_passed": false
+    },
+    "mobile_sale_product_width": 42,
+    "mobile_document_no_horizontal_overflow": {
+      "actual": true,
+      "expected": true,
+      "desired_behavior_passed": true
+    },
+    "product_category_options": {
+      "actual": 21,
+      "expected": 26,
+      "desired_behavior_passed": false
+    },
+    "ingredient_cost_form_update_status": {
+      "actual": 200,
+      "expected": 200,
+      "desired_behavior_passed": true
+    },
+    "cached_recipe_cost_before_after": {
+      "before": "Audit product 02\n\tAudit category 02\t1 ingredient\t3 units\t\u20b10.01\t\u20b10.00\t",
+      "after": "Audit product 02\n\tAudit category 02\t1 ingredient\t3 units\t\u20b10.01\t\u20b10.00\t"
+    },
+    "ingredient_edit_invalidates_recipe_cost": {
+      "actual": false,
+      "expected": true,
+      "desired_behavior_passed": false
+    },
+    "missing_ingredient_shows_explicit_error": {
+      "actual": false,
+      "expected": true,
+      "desired_behavior_passed": false
+    },
+    "recipe_row_controls": [
+      {
+        "text": "",
+        "label": "Actions for Audit product 01 recipe"
+      }
+    ],
+    "recipe_edit_form_survives_list_navigation": {
+      "actual": true,
+      "expected": true,
+      "desired_behavior_passed": true
+    }
+  },
+  "api_gets": [
+    "/api/products/?page=1",
+    "/api/products/categories/",
+    "/api/auth/me/",
+    "/api/auth/csrf/",
+    "/api/auth/me/",
+    "/api/dashboard/?date_from=2025-12-31&date_to=2026-11-10",
+    "/api/auth/me/",
+    "/api/auth/me/",
+    "/api/ingredients/?page=1",
+    "/api/ingredients/low-stock/",
+    "/api/auth/me/",
+    "/api/auth/me/",
+    "/api/products/?page=1",
+    "/api/ingredients/?page=1",
+    "/api/auth/me/",
+    "/api/auth/me/",
+    "/api/products/?page=1",
+    "/api/auth/me/",
+    "/api/auth/me/",
+    "/api/products/categories/",
+    "/api/auth/me/",
+    "/api/auth/me/",
+    "/api/recipes/?page=1",
+    "/api/products/?page=1",
+    "/api/products/categories/",
+    "/api/ingredients/?page=1",
+    "/api/ingredients/low-stock/",
+    "/api/auth/me/",
+    "/api/ingredients/2/",
+    "/api/auth/csrf/",
+    "/api/ingredients/2/",
+    "/api/ingredients/?page=1",
+    "/api/ingredients/low-stock/",
+    "/api/auth/me/",
+    "/api/auth/me/",
+    "/api/auth/me/",
+    "/api/ingredients/99999/",
+    "/api/auth/me/",
+    "/api/auth/me/",
+    "/api/recipes/?page=1",
+    "/api/products/?page=1",
+    "/api/products/categories/",
+    "/api/ingredients/?page=1"
+  ],
+  "page_errors": [],
+  "blocked_external": [],
+  "screenshots": [
+    "01-public-pagination.png",
+    "02-inventory-search.png",
+    "03-ingredient-cache-collision.png",
+    "04-sale-mobile.png",
+    "05-missing-detail.png",
+    "06-recipe-cache-collision.png"
+  ],
+  "servers_stopped": true
+}

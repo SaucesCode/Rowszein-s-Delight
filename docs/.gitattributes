@@ -1,0 +1,4 @@
+# Preserve this audit's exact hashed evidence bytes across Windows checkouts.
+.gitattributes -text
+PHASE1C_FUNCTIONAL_QUALITY_AUDIT.md -text
+phase1c1/** -text
