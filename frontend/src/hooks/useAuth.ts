@@ -4,13 +4,18 @@ import { authService } from "@/services/auth.services";
 import type { LoginCredentials } from "@/services/auth.services";
 import toast from "react-hot-toast";
 import { apiErrorMessage } from "@/lib/csrfTransport";
+import { homeFor } from "@/lib/permissions";
 
 export function useMe() {
-  return useQuery({
+  const query = useQuery({
     queryKey: ["auth", "me"],
     queryFn: authService.me,
     retry: false,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
+  // A failed authority recheck must not keep rendering a previous owner view.
+  return { ...query, data: query.isError ? undefined : query.data };
 }
 
 export function useLogin() {
@@ -25,7 +30,7 @@ export function useLogin() {
       queryClient.clear();
       queryClient.setQueryData(["auth", "me"], response.data);
       toast.success("Welcome back!");
-      navigate("/dashboard");
+      navigate(homeFor(response.data));
     },
     onError: (error) => {
       toast.error(apiErrorMessage(error, "Invalid username or password."));

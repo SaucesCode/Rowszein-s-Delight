@@ -1,4 +1,4 @@
-"""Atomic commands for the new UNAPPLIED schema; integrated QA is pending."""
+"""Authorized atomic sale/stock commands preserving retained ledger history."""
 from collections import defaultdict
 from dataclasses import dataclass
 from decimal import Decimal, localcontext
@@ -16,6 +16,8 @@ from sales.financial_math import posting_amount
 from sales.inventory_math import Basis, MAX_ACTIVE_UNITS, UNITS, allocate, apply_deltas, intent_fingerprint, money_text, signed_money_text, quantity_quanta, quantity_text
 from sales.models import ConsumptionBasis, InventoryOperation, Sale, SaleConsumption, SaleFinancialEntry, SaleItem, StockMovement
 from sales.storage_precision import validate_quantity_storage
+from accounts.permissions import authorize_command
+from zoneinfo import ZoneInfo
 
 
 class Conflict(APIException):
@@ -48,26 +50,34 @@ def _replay(actor, key, fingerprint):
     op = InventoryOperation.objects.filter(actor=actor, client_key=key).first()
     if op is None:
         return None
+    role = authorize_command(actor, op.action)
+    if role == 'staff' and not Sale.objects.filter(pk=op.sale_id, inventory_tracking='tracked', financial_tracking='ledger',
+            operations__action='sale_create', operations__actor_id=actor.pk).exists():
+        from rest_framework.exceptions import PermissionDenied
+        raise PermissionDenied()
     if op.request_fingerprint != fingerprint:
         raise Conflict('This request identity was already used for a different payload or target.')
     return CommandResult(op.response_body, op.response_status, True)
 
 
-def _run(actor, key, fingerprint, callback):
-    replay = _replay(actor, key, fingerprint)
-    if replay:
-        return replay
+def _run(actor, key, fingerprint, callback, action):
     try:
         with transaction.atomic():
+            authorize_command(actor, action, lock=True)
+            replay = _replay(actor, key, fingerprint)
+            if replay:
+                return replay
             return callback()
     except IntegrityError as error:
         # Catch OUTSIDE the entire transaction, never retain losing stock writes.
         name = getattr(getattr(error.__cause__, 'diag', None), 'constraint_name', None)
         sqlite_identity = 'sales_inventoryoperation.actor_id, sales_inventoryoperation.client_key' in str(error)
         if name == 'invop_actor_key_unique' or sqlite_identity:
-            replay = _replay(actor, key, fingerprint)
-            if replay:
-                return replay
+            with transaction.atomic():
+                authorize_command(actor, action, lock=True)
+                replay = _replay(actor, key, fingerprint)
+                if replay:
+                    return replay
         if name in {'invop_sale_cancel_once', 'finance_cancel_once'}:
             raise Conflict('This sale already has a cancellation.') from error
         raise
@@ -133,6 +143,7 @@ def _basis_key(product, ingredient, unit, batch, batch_yield):
 
 
 def execute_sale(*, action, actor, key, data=None, sale_id=None, expected_revision=None, reason=''):
+    authorize_command(actor, action)
     data, reason = dict(data or {}), reason.strip()
     if action not in {'sale_create', 'sale_update', 'sale_cancel'}:
         raise ValidationError('Unsupported sale action.')
@@ -177,6 +188,12 @@ def execute_sale(*, action, actor, key, data=None, sale_id=None, expected_revisi
         products = {p.pk: p for p in Product.objects.select_for_update().filter(pk__in=product_ids).order_by('pk')}
         if set(products) != product_ids:
             raise ValidationError('A referenced product no longer exists.')
+        # Replay precedes current policy checks: never reprice posted history.
+        if authorize_command(actor, action) == 'staff':
+            if data.get('date') != timezone.localdate(timezone=ZoneInfo('Asia/Manila')):
+                raise ValidationError({'date': 'Staff must use the current Asia/Manila business date.'})
+            if any(item['unit_price'] != products[item['product'].pk].price for item in input_items or []):
+                raise ValidationError({'sale_items': 'Staff must use current catalog prices.'})
         originals = {} if sale is None else dict(sale.sale_items.values_list('product_id', 'pk'))
         new_items = old_items if input_items is None else _items(input_items, products, originals)
         if action == 'sale_create' and not new_items:
@@ -318,12 +335,13 @@ def execute_sale(*, action, actor, key, data=None, sale_id=None, expected_revisi
         return CommandResult(body, status)
 
     try:
-        return _run(actor, key, fingerprint, command)
+        return _run(actor, key, fingerprint, command, action)
     except ValueError as error:
         raise ValidationError({'inventory': str(error)}) from error
 
 
 def adjust_stock(*, actor, key, ingredient_id, expected_revision, delta, reason):
+    authorize_command(actor, 'stock_adjust')
     reason = reason.strip()
     if not reason or not delta:
         raise ValidationError('A nonzero delta and reason are required.')
@@ -360,6 +378,6 @@ def adjust_stock(*, actor, key, ingredient_id, expected_revision, delta, reason)
         return CommandResult(body, 200)
 
     try:
-        return _run(actor, key, fingerprint, command)
+        return _run(actor, key, fingerprint, command, 'stock_adjust')
     except ValueError as error:
         raise ValidationError({'inventory': str(error)}) from error

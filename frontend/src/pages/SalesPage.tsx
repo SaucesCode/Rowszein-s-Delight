@@ -15,6 +15,8 @@ import Pagination from "@/components/Pagination";
 import { exportService } from "@/services/export.service";
 import { getDateRange, PERIOD_OPTIONS, type Period } from "@/lib/dateRanges";
 import toast from "react-hot-toast";
+import { useMe } from "@/hooks/useAuth";
+import { can } from "@/lib/permissions";
 
 /* ─────────────────────────────────────────────
    GROUPING — by business date (sale.date), in
@@ -99,6 +101,8 @@ function SalesSkeleton() {
    PAGE
    ───────────────────────────────────────────── */
 export default function SalesPage() {
+  const { data: user } = useMe();
+  const canManage = can(user, "sales.update") && can(user, "sales.cancel");
   const [cancellationReason, setCancellationReason] = useState("");
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
@@ -113,7 +117,7 @@ export default function SalesPage() {
 
   const filters = { page, ...dateRange };
   const { data, isLoading, isError } = useSales(filters);
-  const { data: financialReport } = useSalesSummary(dateRange);
+  const { data: financialReport } = useSalesSummary(dateRange, can(user, "finance.read"));
   const deleteSale = useDeleteSale();
 
   const sales: Sale[] = data?.data?.results ?? [];
@@ -161,7 +165,7 @@ export default function SalesPage() {
         }
         action={
           <div className="hidden sm:flex items-center gap-2">
-            <ExportMenu onExportCSV={() => handleExport("csv")} onExportPDF={() => handleExport("pdf")} exporting={exporting} />
+            {can(user, "sales.export") && <ExportMenu onExportCSV={() => handleExport("csv")} onExportPDF={() => handleExport("pdf")} exporting={exporting} />}
             <button onClick={() => navigate("/sales/new")} className="btn-primary">
               <Plus size={16} strokeWidth={2.5} aria-hidden="true" />
               Record Sale
@@ -268,6 +272,7 @@ export default function SalesPage() {
                   <SaleRow
                     key={sale.id}
                     sale={sale}
+                    canManage={canManage}
                     onEdit={() => navigate(`/sales/${sale.id}/edit`)}
                     onDelete={() => setDeleteTarget(sale)}
                   />
@@ -280,7 +285,7 @@ export default function SalesPage() {
         </>
       )}
 
-      {financialReport && (
+      {can(user, "finance.read") && financialReport && (
         <p className="font-body text-sm my-4" aria-label="Posting-date financial totals">
           Gross ₱{financialReport.totals.gross_sales} · Adjustments ₱{financialReport.totals.sales_adjustments} · Cancellations ₱{financialReport.totals.cancellation_amount} · Net ₱{financialReport.totals.net_sales}. Cash refunds are not tracked.
         </p>

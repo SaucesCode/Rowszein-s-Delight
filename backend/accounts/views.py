@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -8,6 +8,7 @@ from django.conf import settings
 from django.middleware.csrf import get_token, rotate_token
 from django.utils.cache import patch_cache_control, patch_vary_headers
 from .security import enforce_csrf
+from .permissions import BusinessPermission, business_role
 
 from .serializers import LoginSerializer, UserSerializer
 
@@ -75,7 +76,7 @@ class LoginView(CSRFProtectedAuthView):
             password=serializer.validated_data['password'],
         )
 
-        if not user:
+        if not user or business_role(user) is None:
             return Response({
                 'success': False,
                 'error': {'code': 'invalid_credentials', 'message': 'Invalid username or password.'},
@@ -126,7 +127,8 @@ class LogoutView(CSRFProtectedAuthView):
 
 
 class MeView(PrivateAuthResponseView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'self.read', 'OPTIONS': 'self.read'}
 
     def get(self, request):
         return Response({

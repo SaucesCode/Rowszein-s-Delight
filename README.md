@@ -52,7 +52,7 @@ The project is being built incrementally, focusing on core business functionalit
 
 Project documentation can be found in the `docs/` folder.
 
-Latest review checkpoint: [Package 1B.1 CSRF implementation and verification](docs/PHASE1B1_CSRF_IMPLEMENTATION_REPORT.md). PostgreSQL business checks remain green; backend role enforcement, session revocation and login throttling remain open. The application is not production-ready.
+Latest review checkpoint: [Package 1B.2 RBAC implementation and verification](docs/PHASE1B2_RBAC_IMPLEMENTATION_REPORT.md). Owner/staff API permissions and controlled CSRF checks pass locally; all 120 PostgreSQL business checks remain green. Session revocation, login throttling, dependency findings and production verification remain open. The application is not production-ready.
 
 ## License
 

@@ -1,5 +1,5 @@
+from accounts.permissions import BusinessPermission
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.db.models import Sum, F
 from django.db.models.functions import TruncMonth
@@ -25,7 +25,8 @@ def parse_date(value):
 
 
 class DashboardView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'finance.read', 'OPTIONS': 'finance.read'}
 
     def get(self, request):
         today = timezone.localdate()
@@ -165,7 +166,8 @@ class DashboardView(APIView):
 
 
 class ProfitMarginView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'finance.read', 'OPTIONS': 'finance.read'}
 
     def get(self, request):
         products = Product.objects.all().order_by('name')

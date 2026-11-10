@@ -1,0 +1,37 @@
+November 10, 2026 - 10:28:59
+Django version 5.1.4, using settings 'verification_settings'
+Starting development server at http://127.0.0.1:18842/
+Quit the server with CTRL-BREAK.
+
+[10/Nov/2026 10:29:26] "GET /api/auth/me/ HTTP/1.1" 401 138
+[10/Nov/2026 10:29:27] "GET /api/auth/csrf/ HTTP/1.1" 200 118
+[10/Nov/2026 10:29:27] "POST /api/auth/login/ HTTP/1.1" 200 206
+[10/Nov/2026 10:29:27] "GET /api/auth/me/ HTTP/1.1" 200 109
+[10/Nov/2026 10:29:27] "GET /api/dashboard/?date_from=2025-12-31&date_to=2026-11-10 HTTP/1.1" 200 1261
+[10/Nov/2026 10:29:28] "POST /api/expenses/ HTTP/1.1" 403 128
+[10/Nov/2026 10:29:28] "GET /api/auth/csrf/ HTTP/1.1" 200 118
+[10/Nov/2026 10:29:28] "POST /api/auth/logout/ HTTP/1.1" 403 129
+[10/Nov/2026 10:29:28] "POST /api/expenses/ HTTP/1.1" 403 129
+[10/Nov/2026 10:29:30] "GET /api/auth/me/ HTTP/1.1" 200 109
+[10/Nov/2026 10:29:30] "GET /api/products/?page=1 HTTP/1.1" 200 544
+[10/Nov/2026 10:29:31] "GET /api/products/ HTTP/1.1" 200 544
+[10/Nov/2026 10:29:31] "GET /api/auth/csrf/ HTTP/1.1" 200 118
+[10/Nov/2026 10:29:31] "POST /api/sales/ HTTP/1.1" 403 128
+[10/Nov/2026 10:29:31] "GET /api/auth/csrf/ HTTP/1.1" 200 118
+[10/Nov/2026 10:29:31] "POST /api/sales/ HTTP/1.1" 201 496
+[10/Nov/2026 10:29:32] "GET /api/sales/ HTTP/1.1" 200 534
+[10/Nov/2026 10:29:32] "GET /api/sales/ HTTP/1.1" 200 534
+[10/Nov/2026 10:29:35] "GET /api/auth/me/ HTTP/1.1" 200 109
+[10/Nov/2026 10:29:36] "GET /api/products/?page=1 HTTP/1.1" 200 544
+[10/Nov/2026 10:29:37] "GET /api/auth/csrf/ HTTP/1.1" 200 118
+[10/Nov/2026 10:29:37] "POST /api/sales/ HTTP/1.1" 409 101
+[10/Nov/2026 10:29:37] "GET /api/sales/ HTTP/1.1" 200 534
+[10/Nov/2026 10:29:37] "POST /api/sales/ HTTP/1.1" 400 114
+[10/Nov/2026 10:29:37] "GET /api/sales/ HTTP/1.1" 200 534
+[10/Nov/2026 10:29:38] "POST /api/sales/ HTTP/1.1" 201 496
+[10/Nov/2026 10:29:38] "GET /api/sales/ HTTP/1.1" 200 534
+[10/Nov/2026 10:29:38] "GET /api/sales/?page=1&date_from=2026-11-10&date_to=2026-11-10 HTTP/1.1" 200 89
+[10/Nov/2026 10:29:38] "GET /api/sales/financial-summary/?date_from=2026-11-10&date_to=2026-11-10 HTTP/1.1" 200 369
+[10/Nov/2026 10:29:38] "GET /api/sales/ HTTP/1.1" 200 534
+[10/Nov/2026 10:29:38] "GET /api/sales/ HTTP/1.1" 200 534
+[10/Nov/2026 10:29:38] "GET /api/ingredients/ HTTP/1.1" 200 795

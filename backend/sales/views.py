@@ -1,6 +1,6 @@
+from accounts.permissions import BusinessPermission, visible_sales
 from rest_framework import generics, status
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.http import HttpResponse
 from datetime import datetime
@@ -16,7 +16,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from .models import Sale
 from .serializers import SaleSerializer, CancellationSerializer
 from .services import execute_sale, request_identity, current_items, sale_data
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import APIException, PermissionDenied
 from django.utils import timezone
 from .reporting import financial_summary
 
@@ -26,6 +26,8 @@ def command_response(request, *, action, data=None, pk=None, reason=''):
         key, revision = request_identity(request.headers.get('Idempotency-Key'), request.headers.get('If-Match'), action != 'sale_create')
         result = execute_sale(action=action, actor=request.user, key=key, expected_revision=revision,
                               data=data, sale_id=pk, reason=reason)
+    except PermissionDenied:
+        raise
     except APIException as error:
         return Response({'success': False, 'error': error.detail}, status=error.status_code)
     response = Response(result.body, status=result.status)
@@ -42,11 +44,12 @@ def parse_date(value):
 
 
 class SaleListCreateView(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'sales.read', 'POST': 'sales.create', 'OPTIONS': 'sales.read'}
     serializer_class = SaleSerializer
 
     def get_queryset(self):
-        queryset = Sale.objects.prefetch_related('sale_items__product')
+        queryset = visible_sales(Sale.objects.prefetch_related('sale_items__product'), self.request.user)
         date_from = parse_date(self.request.query_params.get('date_from'))
         date_to = parse_date(self.request.query_params.get('date_to'))
         if date_from:
@@ -75,9 +78,13 @@ class SaleListCreateView(generics.ListCreateAPIView):
 
 
 class SaleDetailView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'sales.read', 'PUT': 'sales.update', 'PATCH': 'sales.update', 'DELETE': 'sales.cancel', 'OPTIONS': 'sales.read'}
     serializer_class = SaleSerializer
     queryset = Sale.objects.prefetch_related('sale_items__product')
+
+    def get_queryset(self):
+        return visible_sales(super().get_queryset(), self.request.user)
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -107,7 +114,8 @@ class SaleDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class SaleFinancialSummaryView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'finance.read', 'OPTIONS': 'finance.read'}
 
     def get(self, request):
         today = timezone.localdate()
@@ -122,7 +130,8 @@ class SaleFinancialSummaryView(APIView):
 
 
 class SaleExportCSVView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'sales.export', 'OPTIONS': 'sales.export'}
 
     def get(self, request):
         queryset = Sale.objects.prefetch_related('sale_items__product')
@@ -155,7 +164,8 @@ class SaleExportCSVView(APIView):
 
 
 class SaleExportPDFView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'sales.export', 'OPTIONS': 'sales.export'}
 
     def get(self, request):
         queryset = Sale.objects.prefetch_related('sale_items__product')

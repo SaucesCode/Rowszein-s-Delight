@@ -31,9 +31,10 @@ interface SaleRowProps {
   sale: Sale;
   onEdit: () => void;
   onDelete: () => void;
+  canManage?: boolean;
 }
 
-export default function SaleRow({ sale, onEdit, onDelete }: SaleRowProps) {
+export default function SaleRow({ sale, onEdit, onDelete, canManage = true }: SaleRowProps) {
   const itemCount = sale.sale_items?.length ?? 0;
   const retained = sale.status === "cancelled" || sale.inventory_tracking === "legacy_unknown";
 
@@ -85,7 +86,7 @@ export default function SaleRow({ sale, onEdit, onDelete }: SaleRowProps) {
       </div>
 
       {/* Quick actions — always visible on touch, hover/focus-reveal on desktop */}
-      <div className="flex-shrink-0 flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover/row:opacity-100 sm:group-focus-within/row:opacity-100 transition-opacity">
+      {canManage && <div className="flex-shrink-0 flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover/row:opacity-100 sm:group-focus-within/row:opacity-100 transition-opacity">
         <button
           onClick={onEdit}
           disabled={retained}
@@ -120,7 +121,7 @@ export default function SaleRow({ sale, onEdit, onDelete }: SaleRowProps) {
         >
           <Trash2 size={15} strokeWidth={2} aria-hidden="true" />
         </button>
-      </div>
+      </div>}
     </div>
   );
 }

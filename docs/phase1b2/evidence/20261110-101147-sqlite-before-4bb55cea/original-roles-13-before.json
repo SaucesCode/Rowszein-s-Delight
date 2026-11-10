@@ -1,0 +1,86 @@
+{
+  "tests_run": 13,
+  "outcomes": [
+    {
+      "test": "security_cases.ProposedRoleContracts.test_django_superuser_flag_is_not_implicit_business_owner",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1b\\security_cases.py\", line 254, in test_django_superuser_flag_is_not_implicit_business_owner\n    self.assertEqual(self.stock_request(self.staff_client).status_code, 403)\nAssertionError: 200 != 403\n",
+      "seconds": 0.282
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_role_downgrade_applies_to_existing_token",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1b\\security_cases.py\", line 246, in test_role_downgrade_applies_to_existing_token\n    self.assertEqual(self.stock_request(self.owner_client).status_code, 403)\nAssertionError: 200 != 403\n",
+      "seconds": 0.046
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_staff_cannot_adjust_stock",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1b\\security_cases.py\", line 218, in test_staff_cannot_adjust_stock\n    self.assertEqual(self.stock_request(self.staff_client).status_code, 403)\nAssertionError: 200 != 403\n",
+      "seconds": 0.032
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_staff_cannot_cancel_own_recorded_sale",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1b\\security_cases.py\", line 229, in test_staff_cannot_cancel_own_recorded_sale\n    self.assertEqual(self.staff_client.delete(f'/api/sales/{pk}/', {'reason': 'Unauthorized cancellation'}, format='json', secure=True, HTTP_IDEMPOTENCY_KEY=str(uuid4()), HTTP_IF_MATCH='\"1\"').status_code, 403)\nAssertionError: 200 != 403\n",
+      "seconds": 0.062
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_staff_cannot_change_catalog_price",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1b\\security_cases.py\", line 211, in test_staff_cannot_change_catalog_price\n    self.assertEqual(self.staff_client.patch(f'/api/products/{self.product.pk}/', {'price': '0.01'}, format='json', secure=True).status_code, 403)\nAssertionError: 200 != 403\n",
+      "seconds": 0.031
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_staff_cannot_change_recipe",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1b\\security_cases.py\", line 214, in test_staff_cannot_change_recipe\n    self.assertEqual(self.staff_client.patch(f'/api/recipes/{self.recipe.pk}/', {'yield_quantity': 2}, format='json', secure=True).status_code, 403)\nAssertionError: 200 != 403\n",
+      "seconds": 0.063
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_staff_cannot_create_expense",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1b\\security_cases.py\", line 208, in test_staff_cannot_create_expense\n    self.assertEqual(self.staff_client.post('/api/expenses/', self.expense_payload(), format='json', secure=True).status_code, 403)\nAssertionError: 201 != 403\n",
+      "seconds": 0.047
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_staff_cannot_edit_own_recorded_sale",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1b\\security_cases.py\", line 224, in test_staff_cannot_edit_own_recorded_sale\n    self.assertEqual(self.staff_client.patch(f'/api/sales/{pk}/', {'notes': 'Unauthorized correction'}, format='json', secure=True, HTTP_IDEMPOTENCY_KEY=str(uuid4()), HTTP_IF_MATCH='\"1\"').status_code, 403)\nAssertionError: 200 != 403\n",
+      "seconds": 0.047
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_staff_cannot_export_sales",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1b\\security_cases.py\", line 242, in test_staff_cannot_export_sales\n    self.assertEqual(self.staff_client.get('/api/sales/export/csv/', secure=True).status_code, 403)\nAssertionError: 200 != 403\n",
+      "seconds": 0.031
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_staff_cannot_read_financial_summary",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1b\\security_cases.py\", line 233, in test_staff_cannot_read_financial_summary\n    self.assertEqual(self.staff_client.get('/api/sales/financial-summary/', secure=True).status_code, 403)\nAssertionError: 200 != 403\n",
+      "seconds": 0.016
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_staff_cannot_read_owner_dashboard",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1b\\security_cases.py\", line 239, in test_staff_cannot_read_owner_dashboard\n    self.assertEqual(self.staff_client.get('/api/dashboard/', secure=True).status_code, 403)\nAssertionError: 200 != 403\n",
+      "seconds": 0.046
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_staff_cannot_read_profit_margins",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1b\\security_cases.py\", line 236, in test_staff_cannot_read_profit_margins\n    self.assertEqual(self.staff_client.get('/api/dashboard/profit-margins/', secure=True).status_code, 403)\nAssertionError: 200 != 403\n",
+      "seconds": 0.032
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_unknown_role_fails_closed",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1b\\security_cases.py\", line 250, in test_unknown_role_fails_closed\n    self.assertEqual(self.stock_request(self.owner_client).status_code, 403)\nAssertionError: 200 != 403\n",
+      "seconds": 0.015
+    }
+  ],
+  "failures": 13,
+  "errors": 0,
+  "skipped": 0
+}

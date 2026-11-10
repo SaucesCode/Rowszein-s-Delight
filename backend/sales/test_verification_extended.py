@@ -226,7 +226,7 @@ class ExtendedConcurrencyTests(base.SalesFixture, TransactionTestCase):
     def test_two_operators_compete_for_last_stock(self):
         self.flour.quantity = Decimal('2')
         self.flour.save()
-        other = User.objects.create_user(username='second-operator')
+        other = User.objects.create_user(username='second-operator', role='admin')
 
         def second(client):
             client.force_authenticate(other)

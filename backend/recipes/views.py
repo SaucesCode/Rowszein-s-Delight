@@ -1,5 +1,5 @@
+from accounts.permissions import BusinessPermission
 from rest_framework import generics, status
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Recipe
@@ -9,7 +9,8 @@ from products.models import Product
 
 
 class RecipeListCreateView(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'recipes.manage', 'POST': 'recipes.manage', 'OPTIONS': 'recipes.manage'}
     serializer_class = RecipeSerializer
     queryset = Recipe.objects.select_related(
         'product'
@@ -44,7 +45,8 @@ class RecipeListCreateView(generics.ListCreateAPIView):
 
 
 class RecipeDetailView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'recipes.manage', 'PUT': 'recipes.manage', 'PATCH': 'recipes.manage', 'DELETE': 'recipes.manage', 'OPTIONS': 'recipes.manage'}
     serializer_class = RecipeSerializer
     queryset = Recipe.objects.select_related(
         'product'

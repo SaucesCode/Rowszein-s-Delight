@@ -23,7 +23,7 @@ from sales.models import Sale, SaleItem
 
 class ReleaseBlockerContracts(TransactionTestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="pending-contract")
+        self.user = User.objects.create_user(username="pending-contract", role='admin')
         self.client = APIClient()
         self.client.force_authenticate(self.user)
         category = Category.objects.create(slug="pending-contract", name="Pending contract")

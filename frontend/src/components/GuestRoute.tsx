@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useMe } from "@/hooks/useAuth";
+import { homeFor } from "@/lib/permissions";
 
 export default function GuestRoute() {
   const { data: user, isLoading } = useMe();
@@ -13,7 +14,7 @@ export default function GuestRoute() {
   }
 
   if (user) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to={homeFor(user)} replace />;
   }
 
   return <Outlet />;

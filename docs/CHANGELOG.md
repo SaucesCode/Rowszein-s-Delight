@@ -1,5 +1,13 @@
 # Revival changelog
 
+## 2026-11-10 — Package 1B.2 RBAC; review checkpoint
+
+Created `codex/phase-1b2-rbac` from approved `d696a74`. Added centralized capabilities and explicit action mappings, default-deny private APIs, staff own-tracked-sale query/object scoping, operational field projections, public-safe catalog reads and cache privacy. Staff sale commands require current catalog prices and the current Manila date after successful replay checks. PostgreSQL shared actor locks serialize ledger authorization with role changes without serializing parallel commands by the same actor. Django admin requires business-owner and existing technical permissions; history remains read-only. Frontend navigation/routes, readonly staff screens, price/date controls and authority-cache refresh reflect backend permissions.
+
+Original role checks: 13 failures before, 13 passes after on each engine. Final PostgreSQL suites: 194 passes/3 deferred failures/0 errors; SQLite: 173 passes/3 deferred failures/21 skips/0 errors. All 120 PostgreSQL business checks and 26 CSRF regressions remain passing. New RBAC suite includes four real-cookie PostgreSQL concurrency checks. Browser: 68 passes. Frontend: 47 utility passes; build and affected lint pass; full lint retains 8 errors/16 warnings. Only three business fixture role keywords changed; AST comparison confirms all other test code/assertions unchanged. No models, migrations, dependencies, token lifetimes or ledger math/reporting changed. Prior evidence preserved; all databases were owned disposable targets.
+
+[Required implementation report](PHASE1B2_RBAC_IMPLEMENTATION_REPORT.md). Logout/password-change revocation and login throttling still fail their requirements. No production access, deployment, session implementation or later-phase work. STOPPED after 1B.2 for owner review before 1B.3 design/schema approval.
+
 ## 2026-11-09 — Package 1B.1 CSRF protection; review checkpoint
 
 Created `codex/phase-1b1-csrf` from audit commit `d88f8c7`. Added Django masked-token bootstrap, explicit cookie-JWT/login/logout CSRF enforcement, exact configured Origin/HTTPS Referer validation, auth CSRF rotation and expired-cookie-safe logout. Axios sends the token, permits one proven pre-write CSRF recovery using the same intent, and retains pending UUIDs across 401/403/429. Auth response/cache/error handling is consistent; existing business error messages are preserved.

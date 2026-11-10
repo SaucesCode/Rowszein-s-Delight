@@ -1,0 +1,39 @@
+PASS: real_cookie_login
+PASS: browser_cookie_missing_token_403_zero_business_writes
+PASS: hostile_browser_form_valid_token_403_no_cookie_clear_or_business_writes
+PASS: hostile_browser_business_form_with_cookie_and_valid_token_403_zero_writes
+PASS: browser_stale_csrf_rejected_before_write
+PASS: unknown_create_committed_once
+PASS: browser_csrf_recovery_preserves_exact_intent
+PASS: unknown_outcome_retains_identity
+PASS: unknown_payload_conflict_after_reload_is_rejected
+PASS: conflict_retains_original_durable_identity
+PASS: invalid_retry_rejected_without_mutation
+PASS: validation_retry_does_not_create_duplicate
+PASS: unknown_identity_survives_later_validation_error
+PASS: retry_uses_same_identity
+PASS: retry_replays_without_duplicate
+PASS: identity_cleared_only_after_success
+PASS: single_fractional_deduction
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b2\browser_checks.py", line 265, in <module>
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 11021, in click
+    self._sync(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_locator.py", line 174, in click
+    return await self._frame._click(self._selector, strict=True, **params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_frame.py", line 598, in _click
+    await self._channel.send("click", self._timeout, locals_to_params(locals()))
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 78, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 636, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for get_by_role("button", name=re.compile(r"Edit sale from"))
+
+

@@ -1,0 +1,16 @@
+{
+  "baseline": "d696a74",
+  "branch": "codex/phase-1b2-rbac",
+  "database_initialized": false,
+  "protected_files": 539,
+  "protected_changes": [],
+  "new_migrations": [],
+  "business_test_changes": "Exactly three explicit admin fixture roles; all other AST nodes/assertions unchanged",
+  "python_ast_files": 28,
+  "frontend_backend_capabilities_match": true,
+  "csrf_core_guards_unchanged": true,
+  "ledger_migration_sha256": {
+    "backend/ingredients/migrations/0004_inventory_integrity.py": "6b16f329b58d1dd2385c053f8bda98466f77f2483eafa275a6d66f810ef4843c",
+    "backend/sales/migrations/0003_inventory_integrity.py": "56b12876f54896011f31b8c089bf0553e6f5c047481eaddba7eb25d6502cff14"
+  }
+}

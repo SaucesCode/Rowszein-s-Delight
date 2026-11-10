@@ -1,0 +1,19 @@
+PASS: parallel bootstrap is single-flight
+PASS: bootstrap failure is recoverable without dispatch
+PASS: late bootstrap cannot replace a rotated login token
+PASS: parallel rejection recovery is single-flight and reuses newer token
+PASS: masked-token validation rejects malformed values
+PASS: safe reads avoid bootstrap and unsafe requests use masked header
+PASS: foreign and non-API destinations are rejected before dispatch or bootstrap
+PASS: bootstrap errors prevent a business request
+PASS: one CSRF retry preserves exact body UUID revision and uses new token
+PASS: repeated CSRF rejection stops after one recovery
+PASS: 401 general403 Origin failures and429 never auto-replay
+PASS: safe request403 is never auto-retried
+PASS: successful login and logout adopt rotated token for next operation
+PASS: structured authentication errors and legacy business fallbacks remain readable
+{
+  "tests": 14,
+  "failures": 0,
+  "database_access": false
+}

@@ -30,7 +30,7 @@ CSRF_TRUSTED_ORIGINS = exact_origins(config(
 # ------------------------------------------------------------------------------
 
 DJANGO_APPS = [
-    "django.contrib.admin",
+    "accounts.admin_config.BusinessAdminConfig",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -60,6 +60,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # ------------------------------------------------------------------------------
 
 MIDDLEWARE = [
+    "accounts.middleware.APIResponsePrivacy",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -181,10 +182,12 @@ REST_FRAMEWORK = {
         "accounts.authentication.CookieJWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticated",
+        "accounts.permissions.BusinessPermission",
     ),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 20,
+    "DEFAULT_METADATA_CLASS": None,
+    "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
 }
 
 # ------------------------------------------------------------------------------

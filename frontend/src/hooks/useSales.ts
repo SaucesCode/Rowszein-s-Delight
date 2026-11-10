@@ -7,8 +7,8 @@ import toast from "react-hot-toast";
 import { useOperationIdentity } from "@/hooks/useOperationIdentity";
 import { apiErrorMessage } from "@/lib/csrfTransport";
 
-export function useSalesSummary(filters: SaleFilters = {}) {
-  return useQuery({ queryKey: ["sales", "summary", filters], queryFn: () => saleService.financialSummary(filters) });
+export function useSalesSummary(filters: SaleFilters = {}, enabled = true) {
+  return useQuery({ queryKey: ["sales", "summary", filters], queryFn: () => saleService.financialSummary(filters), enabled });
 }
 
 export function useSales(filters: SaleFilters = {}) {

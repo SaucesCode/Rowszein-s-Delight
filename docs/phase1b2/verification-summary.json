@@ -1,0 +1,179 @@
+{
+  "package": "1B.2 RBAC",
+  "baseline": "d696a74",
+  "api": {
+    "postgres": {
+      "before": "evidence/20261110-101336-postgres-before-11c92624",
+      "after": "evidence/20261110-104454-postgres-all-bd779992",
+      "suites": {
+        "original_security_13_after": {
+          "tests_run": 13,
+          "failures": 3,
+          "errors": 0,
+          "skipped": 0,
+          "exit_code": 1
+        },
+        "csrf_regressions": {
+          "tests_run": 26,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "exit_code": 0
+        },
+        "phase1a_120": {
+          "tests_run": 120,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "exit_code": 0
+        },
+        "original_roles_13": {
+          "tests_run": 13,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "exit_code": 0
+        },
+        "rbac_regressions": {
+          "tests_run": 25,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "exit_code": 0
+        }
+      },
+      "outcome_totals": {
+        "pass": 194,
+        "fail": 3,
+        "error": 0,
+        "skip": 0
+      },
+      "deferred_failures": [
+        "test_logout_invalidates_copied_access_cookie",
+        "test_password_change_invalidates_existing_access_cookie",
+        "test_repeated_bad_login_is_rate_limited"
+      ]
+    },
+    "sqlite": {
+      "before": "evidence/20261110-101147-sqlite-before-4bb55cea",
+      "after": "evidence/20261110-104450-sqlite-all-f4131dc6",
+      "suites": {
+        "original_security_13_after": {
+          "tests_run": 13,
+          "failures": 3,
+          "errors": 0,
+          "skipped": 0,
+          "exit_code": 1
+        },
+        "csrf_regressions": {
+          "tests_run": 26,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "exit_code": 0
+        },
+        "phase1a_120": {
+          "tests_run": 120,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 17,
+          "exit_code": 0
+        },
+        "original_roles_13": {
+          "tests_run": 13,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "exit_code": 0
+        },
+        "rbac_regressions": {
+          "tests_run": 25,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 4,
+          "exit_code": 0
+        }
+      },
+      "outcome_totals": {
+        "pass": 173,
+        "fail": 3,
+        "error": 0,
+        "skip": 21
+      },
+      "deferred_failures": [
+        "test_logout_invalidates_copied_access_cookie",
+        "test_password_change_invalidates_existing_access_cookie",
+        "test_repeated_bad_login_is_rate_limited"
+      ]
+    }
+  },
+  "browser": {
+    "evidence": "evidence/20261110-105147-postgres-browser-84994e82",
+    "passed_checks": 68,
+    "page_errors": [],
+    "staff_ui_requests": 25,
+    "cleanup": {
+      "runtime_removed": true,
+      "owned_container_removed": true,
+      "production_access": false
+    }
+  },
+  "frontend": {
+    "evidence": "evidence/20261110-103709-frontend-4475e4cd",
+    "permissions_pass": 10,
+    "csrf_transport_pass": 14,
+    "identity_pass": 13,
+    "stock_pass": 10,
+    "build_exit": 0,
+    "affected_lint_exit": 0,
+    "affected_lint_warnings": 1,
+    "full_lint_exit": 1,
+    "full_lint_errors": 8,
+    "full_lint_warnings": 16
+  },
+  "static": {
+    "evidence": "evidence/20261110-105441-static-8b15762a",
+    "baseline": "d696a74",
+    "branch": "codex/phase-1b2-rbac",
+    "database_initialized": false,
+    "protected_files": 539,
+    "protected_changes": [],
+    "new_migrations": [],
+    "business_test_changes": "Exactly three explicit admin fixture roles; all other AST nodes/assertions unchanged",
+    "python_ast_files": 28,
+    "frontend_backend_capabilities_match": true,
+    "csrf_core_guards_unchanged": true,
+    "ledger_migration_sha256": {
+      "backend/ingredients/migrations/0004_inventory_integrity.py": "6b16f329b58d1dd2385c053f8bda98466f77f2483eafa275a6d66f810ef4843c",
+      "backend/sales/migrations/0003_inventory_integrity.py": "56b12876f54896011f31b8c089bf0553e6f5c047481eaddba7eb25d6502cff14"
+    }
+  },
+  "all_attempts": [
+    "evidence/20261110-101147-sqlite-before-4bb55cea",
+    "evidence/20261110-101150-postgres-before-9dc08537",
+    "evidence/20261110-101336-postgres-before-11c92624",
+    "evidence/20261110-101730-sqlite-all-8192559d",
+    "evidence/20261110-101734-postgres-all-e9d894a4",
+    "evidence/20261110-102443-sqlite-all-008fc470",
+    "evidence/20261110-102447-postgres-all-452284b9",
+    "evidence/20261110-102637-frontend-22d152d1",
+    "evidence/20261110-102831-postgres-browser-323325ee",
+    "evidence/20261110-103052-postgres-browser-b7ece81e",
+    "evidence/20261110-103216-static-65f656c1",
+    "evidence/20261110-103427-postgres-browser-ebce6489",
+    "evidence/20261110-103709-frontend-4475e4cd",
+    "evidence/20261110-103718-postgres-browser-ce294248",
+    "evidence/20261110-104126-static-f51eb8ca",
+    "evidence/20261110-104333-static-ecbcc483",
+    "evidence/20261110-104450-sqlite-all-f4131dc6",
+    "evidence/20261110-104454-postgres-all-bd779992",
+    "evidence/20261110-105020-resources-2b46bd83",
+    "evidence/20261110-105023-static-969b76e8",
+    "evidence/20261110-105147-postgres-browser-84994e82",
+    "evidence/20261110-105441-static-8b15762a",
+    "evidence/20261110-105720-resources-ad5baff1"
+  ],
+  "new_migrations": false,
+  "production_access": false,
+  "production_ready": false
+}

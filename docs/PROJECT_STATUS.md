@@ -6,7 +6,7 @@ Rowszein's Delight Management System
 
 ## Current Phase
 
-Package 1B.1 CSRF implementation and disposable verification complete for review on `codex/phase-1b1-csrf`, based on audit commit `d88f8c7`. AUTH-01 controls pass locally; production topology remains unverified. AUTH-02, session revocation, login throttling and dependency findings remain open. All 120 Phase 1A checks pass on PostgreSQL; no ledger/schema/migration changes.
+Package 1B.2 RBAC implementation and disposable verification complete for review on `codex/phase-1b2-rbac`, based on approved `d696a74`. AUTH-02 has controlled local API/browser evidence; AUTH-01 protections remain intact. All 120 Phase 1A checks pass on PostgreSQL. Models, migrations and stock/financial calculations are unchanged. Session revocation, throttling, dependency findings and production topology remain open.
 
 ## Completed
 
@@ -30,7 +30,7 @@ Package 1B.1 CSRF implementation and disposable verification complete for review
 
 ## In Progress
 
-Review checkpoint: [Package 1B.1 implementation report](PHASE1B1_CSRF_IMPLEMENTATION_REPORT.md). The original desired security checks now show 10 passes/3 deferred failures on each isolated engine. All 26 new CSRF checks pass on both; 44 PostgreSQL browser checks and 37 frontend utility checks pass. Build/affected lint pass; full lint remains 12 existing errors/16 warnings. SQLite business checks: 103 passes/17 concurrency skips. All 13 role contracts remain failing, pending Package 1B.2 implementation. Earlier evidence is preserved.
+Review checkpoint: [Package 1B.2 report](PHASE1B2_RBAC_IMPLEMENTATION_REPORT.md). All 13 original role requirements and 26 CSRF regressions pass on both engines. New RBAC suite: PostgreSQL 25 passes; SQLite 21 passes/4 PostgreSQL skips. Business suite: PostgreSQL 120 passes; SQLite 103 passes/17 skips. Browser: 68 passes. Frontend: 47 utility passes; build/affected lint pass. Full lint retains 8 errors/16 warnings, down from 12 errors after typing the touched sale form. Overall backend checks still return failure for the three deferred revocation/throttle requirements. Prior evidence remains intact.
 
 ## Not Started
 
@@ -40,11 +40,11 @@ Review checkpoint: [Package 1B.1 implementation report](PHASE1B1_CSRF_IMPLEMENTA
 
 ## Current Task
 
-STOPPED after Package 1B.1 for owner review. D1–D4 owner/staff policies are approved in design, but Package 1B.2 implementation must wait for this review. D6 session architecture remains conditional and requires separate exact schema/infrastructure approval. No production access, deployment or later-phase work occurred.
+STOPPED after Package 1B.2 for owner review. D1–D4 are implemented with route/action/object/queryset/field protections and staff price/date checks after successful replay. D6 requires separate exact schema/infrastructure approval before implementation. No production access, deployment or later-phase work occurred.
 
 ## Notes
 
-The feature inventory above describes existing modules, not verified correctness or security. AUTH-01 has local API/browser regression evidence; AUTH-02 and outstanding session/throttle/dependency/security findings still block production readiness. The application is not represented as secure or production-ready.
+The feature inventory above describes existing modules, not production assurance. AUTH-01 and AUTH-02 now have controlled local evidence; session/throttle/dependency/security findings and production deployment verification still block production readiness. The application is not represented as secure or production-ready.
 
 Later phases require separate approval:
 

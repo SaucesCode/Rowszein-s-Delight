@@ -28,7 +28,7 @@ from sales.reporting import financial_summary
 
 class SalesFixture:
     def setUp(self):
-        self.user = User.objects.create_user(username='ledger-test')
+        self.user = User.objects.create_user(username='ledger-test', role='admin')
         self.client = APIClient()
         self.client.force_authenticate(self.user)
         category = Category.objects.create(slug='ledger-test', name='Ledger test')

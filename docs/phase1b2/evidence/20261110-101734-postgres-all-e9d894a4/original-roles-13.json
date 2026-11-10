@@ -1,0 +1,86 @@
+{
+  "tests_run": 13,
+  "outcomes": [
+    {
+      "test": "security_cases.ProposedRoleContracts.test_django_superuser_flag_is_not_implicit_business_owner",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.422
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_role_downgrade_applies_to_existing_token",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.109
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_staff_cannot_adjust_stock",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.172
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_staff_cannot_cancel_own_recorded_sale",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.171
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_staff_cannot_change_catalog_price",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.125
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_staff_cannot_change_recipe",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.156
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_staff_cannot_create_expense",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.281
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_staff_cannot_edit_own_recorded_sale",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.313
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_staff_cannot_export_sales",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.093
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_staff_cannot_read_financial_summary",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.094
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_staff_cannot_read_owner_dashboard",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.11
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_staff_cannot_read_profit_margins",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.157
+    },
+    {
+      "test": "security_cases.ProposedRoleContracts.test_unknown_role_fails_closed",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.11
+    }
+  ],
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0
+}

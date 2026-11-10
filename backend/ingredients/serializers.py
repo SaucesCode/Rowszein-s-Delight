@@ -68,6 +68,15 @@ class IngredientSerializer(serializers.ModelSerializer):
         return value
 
 
+class OperationalIngredientSerializer(serializers.ModelSerializer):
+    is_low_stock = serializers.BooleanField(read_only=True)
+
+    class Meta:
+        model = Ingredient
+        fields = ['id', 'name', 'quantity', 'unit', 'is_low_stock']
+        read_only_fields = fields
+
+
 class StockAdjustmentSerializer(serializers.Serializer):
     delta = serializers.DecimalField(max_digits=20, decimal_places=9)
     reason = serializers.CharField(max_length=2000, allow_blank=False)
