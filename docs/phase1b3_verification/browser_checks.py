@@ -111,6 +111,11 @@ try:
         def api(path): return context.request.get(FRONT+'/api/'+path)
         def claims(): return session_tokens.decode(cookie('access_token'),'access',allow_expired=True)
         def counts(): return db(lambda:[model.objects.count() for model in (Sale,InventoryOperation,StockMovement,SaleFinancialEntry)])
+        def wait_business(total):
+            end=time.monotonic()+10
+            while len(result['business_requests'])<total and time.monotonic()<end:
+                page.wait_for_timeout(50)  # Pump real route/response callbacks.
+            if len(result['business_requests'])<total: raise AssertionError('Expected business response was not observed.')
         def fill_sale():
             go('/sales/new')
             result['sale_form_dom']=page.locator('input,select,button').evaluate_all('els=>els.map(e=>({tag:e.tagName,name:e.name,text:e.tagName==="BUTTON"?e.innerText:undefined}))')
@@ -128,7 +133,7 @@ try:
         check('web_locks_available',page.evaluate('Boolean(navigator.locks)'))
         shot('01-owner')
         fill_sale();page.get_by_role('button',name='Record Sale',exact=True).click()
-        page.wait_for_timeout(800)
+        wait_business(1)
         check('lost_committed_response_recorded',len(result['business_requests'])==1 and result['business_requests'][0].get('response_lost'))
         before=counts();check('one_sale_after_lost_response',before==[1,1,2,1])
         time.sleep(1.2)
@@ -139,7 +144,7 @@ try:
         expired=jwt.encode(payload,settings.AUTH_SESSION_SIGNING_KEY,algorithm='HS256')
         context.add_cookies([{'name':'access_token','value':expired,'domain':'127.0.0.1','path':'/','httpOnly':True,'sameSite':'Lax'}])
         auth_before=len(result['auth_requests'])
-        page.get_by_role('button',name='Record Sale',exact=True).click();page.wait_for_timeout(700)
+        page.get_by_role('button',name='Record Sale',exact=True).click();wait_business(2)
         check('uncertain_sale_401_has_no_automatic_refresh',not any(item['path'].endswith('/refresh/') for item in result['auth_requests'][auth_before:]))
         check('unauthorized_retry_has_zero_business_writes',counts()==before)
         go('/login');page.get_by_role('button',name='Renew an existing session',exact=True).click()
@@ -169,7 +174,7 @@ try:
             dialog.get_by_placeholder('0',exact=True).fill('0.000000001')
             dialog.locator('textarea').fill('Controlled session stock retry')
             return dialog
-        dialog=fill_stock();dialog.get_by_role('button',name='Save',exact=True).click();page.wait_for_timeout(700)
+        dialog=fill_stock();dialog.get_by_role('button',name='Save',exact=True).click();wait_business(4)
         before_stock=counts();check('uncertain_stock_committed_once',before_stock==[1,2,3,1])
         payload=claims();payload['exp']=int(time.time())-1
         expired=jwt.encode(payload,settings.AUTH_SESSION_SIGNING_KEY,algorithm='HS256')

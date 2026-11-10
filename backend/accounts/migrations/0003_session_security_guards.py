@@ -195,7 +195,7 @@ def install(apps, schema_editor):
         for name, table, event, function, level in PG_TRIGGERS:
             schema_editor.execute(f'CREATE TRIGGER {name} {event} ON public.{table} FOR EACH {level} EXECUTE FUNCTION public.{function}()')
     elif vendor == 'sqlite':
-        for sql in SQLITE_TRIGGERS.values(): schema_editor.execute(sql)
+        for sql in SQLITE_TRIGGERS.values(): schema_editor.execute(sql, params=None)
     else:
         raise RuntimeError('Unreviewed session database backend.')
 

@@ -19,16 +19,8 @@ spec.loader.exec_module(harness)
 
 
 def approved_hashes():
-    items=json.loads((ROOT/'docs/phase1b3_static/evidence/schema-manifest.json').read_text())['migrations']
-    result={}
-    for item in items:
-        original=subprocess.check_output(['git','show','30a9a61:'+item['file']],cwd=ROOT)
-        expected=hashlib.sha256(original.replace(b'\r\n',b'\n')).hexdigest()
-        actual=hashlib.sha256((ROOT/item['file']).read_text(encoding='utf-8-sig').encode()).hexdigest()
-        if actual!=expected or actual!=item['sha256_utf8_lf']:
-            raise RuntimeError('Migration no longer matches approved checkpoint.')
-        result[item['file']]=actual
-    return result
+    from migration_approval import verify_migrations
+    return verify_migrations(ROOT)
 
 
 def child(env,folder,name,args):
@@ -54,7 +46,7 @@ if __name__=='__main__':
     parser.add_argument('--scope',choices=['preflight','schema','diagnostic','security','business','concurrency','rbac','browser','all'],default='security')
     args=parser.parse_args()
     hashes=approved_hashes()  # Before resource creation or migration execution.
-    folder=HERE/'evidence'/(time.strftime('%Y%m%d-%H%M%S')+'-'+args.backend+'-'+args.scope+'-'+uuid4().hex[:8])
+    folder=HERE/'evidence'/(time.strftime('%Y%m%d-%H%M%S')+'-corrected-'+args.backend+'-'+args.scope+'-'+uuid4().hex[:8])
     folder.mkdir(parents=True)
     results={}
     with harness.disposable(args.backend,folder) as (env,runtime,container):
@@ -70,7 +62,8 @@ if __name__=='__main__':
         # Add a separate current approval; do not remove the older guards.
         marker=runtime/'target.json'
         target=json.loads(marker.read_text())
-        target.update(session_security_authorization='Phase 1B.3 disposable verification of 30a9a61',session_migration_hashes=hashes)
+        target.update(session_security_authorization='Phase 1B.3 disposable verification of 30a9a61',session_migration_hashes=hashes,
+            corrected_migration_owner_approval='2026-11-10 exact SQLite literal fix')
         marker.write_text(json.dumps(target),encoding='utf-8')
         env={key:value for key,value in env.items() if not key.startswith(('AUTH_','CSRF_','CORS_','SESSION_'))}
         env.update(DJANGO_SETTINGS_MODULE='verification_settings',PYTHONIOENCODING='utf-8',
@@ -78,7 +71,8 @@ if __name__=='__main__':
             ROWSZEIN_SESSION_TEST_KEY=secrets.token_urlsafe(48),ROWSZEIN_RATE_TEST_KEY=secrets.token_urlsafe(48))
         metadata=json.loads((folder/'environment.json').read_text())
         metadata.update(package='Phase 1B.3 disposable verification',approval_baseline='30a9a61',new_migration_hashes=hashes,
-            additional_authorization_guard=True,settings='phase1b3_verification/verification_settings.py',dotenv_discovery=False)
+            additional_authorization_guard=True,settings='phase1b3_verification/verification_settings.py',dotenv_discovery=False,
+            corrected_hash_approval='Explicit owner reply: Approve corrected hash and fresh disposable tests')
         if container: metadata['verified_hostconfig_tmpfs']=tmpfs
         (folder/'environment.json').write_text(json.dumps(metadata,indent=2),encoding='utf-8')
         # Capture actual plan and SQL before any migration executes.

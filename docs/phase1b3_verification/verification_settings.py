@@ -1,5 +1,4 @@
 """Additional 1B.3 approval gate, retaining every previous ownership guard."""
-import hashlib
 import json
 import os
 from pathlib import Path
@@ -11,10 +10,11 @@ if (ROOT/'.verification-runtime').resolve() not in marker.parents or not marker.
 target=json.loads(marker.read_text())
 if target.get('session_security_authorization')!='Phase 1B.3 disposable verification of 30a9a61':
     raise RuntimeError('Explicit session migration authorization missing.')
-approved=json.loads((ROOT/'docs/phase1b3_static/evidence/schema-manifest.json').read_text())['migrations']
-for item in approved:
-    digest=hashlib.sha256((ROOT/item['file']).read_text(encoding='utf-8-sig').encode()).hexdigest()
-    if digest!=item['sha256_utf8_lf'] or target.get('session_migration_hashes',{}).get(item['file'])!=digest:
+if target.get('corrected_migration_owner_approval')!='2026-11-10 exact SQLite literal fix':
+    raise RuntimeError('A fresh corrected-migration verification marker is required.')
+from migration_approval import verify_migrations
+for path,digest in verify_migrations(ROOT).items():
+    if target.get('session_migration_hashes',{}).get(path)!=digest:
         raise RuntimeError('Unreviewed migration hash; rebuild/review before execution.')
 from backend.disposable_verification_settings import *  # noqa: E402,F403
 
