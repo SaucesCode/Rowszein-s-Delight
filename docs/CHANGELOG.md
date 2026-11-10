@@ -1,5 +1,11 @@
 # Revival changelog
 
+## 2026-11-10 — Phase 1B.3 approved SQLite correction; final verification
+
+Owner explicitly approved the prepared one-line params=None correction and revised 0003 SHA `3b8156d1eee07b1e73affde5898d47888b237e579913c785e99a6652eabe9e2c`. Commit `b9957e0` records that exact migration change, explicit approval and strict original-plus-correction hash checks. Original 0002 and all historical evidence remain intact; no old target was patched in place. Five guard tests reject any unapproved migration/approval edits. Fresh full PostgreSQL suites pass (120 business; 93 security plus one SQLite-only skip; 28 concurrency; 21 RBAC; 28 schema checks). Fresh SQLite suites pass (103 business/17 skips; 91 security/3 skips; 21 RBAC; 27 schema checks; PostgreSQL-only concurrency group explicitly skipped). Each engine has 33 real-browser passes, including native multi-tab Web Locks and uncertain sale/stock retry identities. All three original release blockers now have passing real API evidence on both engines.
+
+Retained original failures and archived the pre-correction report/summary. Test browser response observation replaces an unreliable fixed delay; sandbox-only setup failures remain recorded. Frontend's unchanged 52 utility checks/build/focused lint evidence remains valid. Twenty-eight disposable database cleanup records are verified; no production access, deployment, dependency upgrade or later-phase work. [Final report](PHASE1B3_DATABASE_VERIFICATION_REPORT.md). STOPPED for owner review; production readiness is not claimed.
+
 ## 2026-11-10 — Phase 1B.3 disposable execution; SQLite correction review
 
 Executed only the two approved, hash-matched migrations on fresh independently owned PostgreSQL 17/SQLite targets. Added an extra approval/hash/SQL-review gate over the preserved isolation harness. PostgreSQL final results: business 120 pass; security/operations 93 pass/1 SQLite-only skip; prior RBAC 21 pass; concurrency 28 pass/0 skips/timeouts; schema/upgrade/backup/reverse/cleanup 28 pass; real Edge/React/Web Locks browser 33 pass. Frontend 52 utility assertions plus build/affected lint pass. SQLite business 103 pass/17 PostgreSQL skips and schema/preservation 27 pass, but security records 67 pass/17 fail; focused reproduction records one failure/one error. Initial failures and prior evidence remain intact.

@@ -1,0 +1,68 @@
+{
+  "tests_run": 10,
+  "outcomes": [
+    {
+      "test": "operational_cases.OperationalContracts.test_database_permission_outage_retains_logout_proofs",
+      "status": "skip",
+      "detail": "Real PostgreSQL permission outage",
+      "seconds": 0.0
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_default_lr_sixty_malformed_submissions_then_429",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.703
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_default_rr_thirty_invalid_refreshes_then_429",
+      "status": "pass",
+      "detail": null,
+      "seconds": 2.625
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_disabled_database_guard_fails_closed_then_recovers",
+      "status": "skip",
+      "detail": "Actual PostgreSQL disabled-trigger admission check",
+      "seconds": 0.0
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_exact_five_minute_boundary_and_dual_key_no_reset",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.281
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_fifty_thousand_bucket_cap_and_bounded_cleanup",
+      "status": "skip",
+      "detail": "Production-size PostgreSQL allocation cap/cleanup test",
+      "seconds": 0.0
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_limiter_database_debit_round_trip",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.094
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_missing_keys_fail_closed_without_creating_session",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.125
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_sqlite_trigger_retains_epoch_format_literal",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_unverified_proxy_never_falls_back_to_shared_peer",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.031
+    }
+  ],
+  "failures": 0,
+  "errors": 0,
+  "skipped": 3
+}

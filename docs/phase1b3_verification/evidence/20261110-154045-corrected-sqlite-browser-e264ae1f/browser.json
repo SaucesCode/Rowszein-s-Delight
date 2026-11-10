@@ -1,0 +1,77 @@
+{
+  "checks": {
+    "real_owner_cookie_login": true,
+    "access_lifetime_exactly_900_seconds": true,
+    "jwt_cookies_httponly": true,
+    "web_locks_available": true,
+    "lost_committed_response_recorded": false
+  },
+  "business_requests": [],
+  "auth_requests": [
+    {
+      "path": "/api/auth/login/",
+      "method": "POST"
+    }
+  ],
+  "screenshots": [
+    "01-owner.png"
+  ],
+  "external_requests_blocked": [],
+  "page_errors": [],
+  "real_tabs": true,
+  "real_web_locks": true,
+  "no_authenticator_mock": true,
+  "sale_form_dom": [
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "text": "Logout"
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "text": ""
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "text": ""
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "text": "Logout"
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "text": ""
+    },
+    {
+      "tag": "INPUT",
+      "name": "date",
+      "text": null
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "text": "Add Item"
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "text": "Record Sale"
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "text": "Cancel"
+    }
+  ],
+  "failure": {
+    "type": "AssertionError",
+    "message": "lost_committed_response_recorded",
+    "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1b3_verification\\browser_checks.py\", line 132, in <module>\n    check('lost_committed_response_recorded',len(result['business_requests'])==1 and result['business_requests'][0].get('response_lost'))\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1b3_verification\\browser_checks.py\", line 30, in check\n    if not value: raise AssertionError(name)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: lost_committed_response_recorded\n"
+  },
+  "servers_stopped": true
+}

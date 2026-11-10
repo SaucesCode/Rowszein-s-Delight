@@ -1,0 +1,24 @@
+{
+  "migration-plan": {
+    "missing_result": true,
+    "exit_code": 0
+  },
+  "schema-sql": {
+    "missing_result": true,
+    "exit_code": 0
+  },
+  "guard-sql": {
+    "missing_result": true,
+    "exit_code": 0
+  },
+  "browser": {
+    "checks_run": 0,
+    "passed": 0,
+    "failure": {
+      "type": "RuntimeError",
+      "message": "browser-backend startup timeout",
+      "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1b3_verification\\browser_checks.py\", line 56, in <module>\n    launch([sys.executable,'-B',str(Path(__file__).with_name('serve_browser_backend.py'))],ROOT,18842,'browser-backend',env)\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1b3_verification\\browser_checks.py\", line 46, in launch\n    raise RuntimeError(name+' startup timeout')\nRuntimeError: browser-backend startup timeout\n"
+    },
+    "exit_code": 1
+  }
+}

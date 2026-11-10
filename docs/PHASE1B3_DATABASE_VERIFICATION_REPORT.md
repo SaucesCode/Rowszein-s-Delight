@@ -1,8 +1,8 @@
 # Phase 1B.3 — disposable database verification checkpoint
 
-Date: 2026-11-10 (Asia/Shanghai). Approved candidate: `30a9a61`. Verification branch: `codex/phase-1b3-disposable-verification`. Focused corrective commit: `c94d20f`.
+Date: 2026-11-10 (Asia/Shanghai). Starting candidate: `30a9a61`. Verification branch: `codex/phase-1b3-disposable-verification`. Corrective commits: `c94d20f` (transport/fixtures), `b9957e0` (owner-approved SQLite migration correction).
 
-**Result: PostgreSQL verification passes; package remains incomplete because SQLite throttling fails closed with 503.** The exact SQLite correction is prepared but unapplied, awaiting authorization for its changed migration hash. No production database access, deployment, Redis, dependency upgrade, demo dataset, SEO or redesign occurred.
+**Result: the controlled disposable verification package is complete. PostgreSQL and SQLite pass their applicable final suites, and all three original release blockers have passing real API evidence on both engines.** The owner explicitly approved the corrected migration hash, and only fresh disposable targets received it. Original failed runs and the [earlier incomplete report](phase1b3_verification/REPORT_BEFORE_SQLITE_CORRECTION.md) are preserved. No production database access, deployment, Redis, dependency upgrade, demo dataset, SEO or redesign occurred. This is not production-readiness approval.
 
 ## Authorization, isolation and migration provenance
 
@@ -10,14 +10,16 @@ All database activity used newly created targets from the existing ownership-ver
 
 PostgreSQL **17.11** used the existing postgres:17-alpine image (`sha256:f02121de6f74d30d8a94cd1d9584125e2178d7e6c377d8130112d4e52d867995`), local desktop-linux named-pipe Docker context, generated database/owner names and random credentials, loopback publication, and a 384-MiB tmpfs. Persistent/bind mounts are refused; explicit HostConfig.Tmpfs checks supplement the original mount guard. SQLite **3.53.1** used separately owned UUID runtime directories/files. PostgreSQL read-committed isolation and UTC server timezone were recorded. Detailed identity/context/mount metadata is retained per run without credentials.
 
-The two approved migrations remained **byte-for-byte unchanged after canonical UTF-8/LF normalization**:
+Migration 0002 remains unchanged. Migration 0003 contains only the exact one-line revision explicitly approved in the owner's reply, “Approve corrected hash and fresh disposable tests.” Current executed hashes use canonical UTF-8/LF normalization:
 
 | Migration | SHA-256 |
 | --- | --- |
 | accounts/0002_auththrottlebucket_devicesession_user_session_epoch_and_more.py | `238e349a75556bc354d059052f79affff693137ec8af06ca01a3db01eebe2cf6` |
-| accounts/0003_session_security_guards.py | `0a1693d44a00f043bc066807056754675700138a71d5ad27a9148b589e7f4c51` |
+| accounts/0003_session_security_guards.py | `3b8156d1eee07b1e73affde5898d47888b237e579913c785e99a6652eabe9e2c` |
 
-The harness compares both the original committed blobs and static manifest before execution. Migration plans and actual generated 0002 SQL were captured/reviewed on separate preflight targets; subsequent executions must match those reviewed SQL hashes. Django sqlmigrate cannot render RunPython: the approved guard strings were reviewed separately, then installed definitions were inspected on the real servers. Initial failure evidence is preserved rather than overwritten.
+The original 0003 hash was `0a1693d44a00f043bc066807056754675700138a71d5ad27a9148b589e7f4c51`. Original committed blobs/static manifests remain intact. The revised gate checks those originals, the explicit [owner approval](phase1b3_verification/corrected-migration-approval.json), the new fixed hash and the exact permitted one-line transformation; arbitrary further edits are rejected. Both parent harness and child settings validate it. Five database-free guard tests pass, including changed 0002, extra 0003 edits, altered approval and missing owner record. No verification safeguard was removed and no already-migrated database was patched in place.
+
+Migration plans and actual generated 0002 SQL were captured/reviewed on separate preflight targets; subsequent executions match those reviewed SQL hashes. Django sqlmigrate cannot render RunPython: approved source/body hashes and actual installed definitions are also checked. The corrected SQLite stored trigger retains literal strftime('%s', ...) and successfully records real login failures. No new model, constraint, policy or migration number was introduced.
 
 ## Actual test outcomes
 
@@ -25,19 +27,22 @@ These are separate suite executions, **not an aggregate of unique tests**; concu
 
 | Final relevant execution | Passed | Failed | Errors | Skipped | Evidence directory under docs/phase1b3_verification/evidence |
 | --- | ---: | ---: | ---: | ---: | --- |
-| PostgreSQL Phase 1A business suite | 120 | 0 | 0 | 0 | 20261110-144155-postgres-business-73cd9250 |
-| PostgreSQL security/session/roles/CSRF/operations | 93 | 0 | 0 | 1 | 20261110-150433-postgres-security-bf7a071d |
-| PostgreSQL session + prior business/RBAC concurrency | 28 | 0 | 0 | 0 | 20261110-145954-postgres-concurrency-71e16a88 |
-| Previous RBAC sequential suite, explicit V2 fixtures | 21 | 0 | 0 | 0 | 20261110-144556-postgres-rbac-cce877fa |
-| PostgreSQL upgrade/schema/backup/reverse/cleanup checks | 28 | 0 | 0 | 0 | 20261110-150447-postgres-schema-2a80069a |
-| Real Edge/React/PostgreSQL browser checks | 33 | 0 | 0 | 0 | 20261110-151057-postgres-browser-a027024d |
-| SQLite Phase 1A business suite | 103 | 0 | 0 | 17 | 20261110-144607-sqlite-business-27fab103 |
-| SQLite security suite, original migration | 67 | 17 | 0 | 0 | 20261110-143457-sqlite-security-f88c2ac7 |
-| SQLite focused trigger/debit reproduction | 0 | 1 | 1 | 0 | 20261110-144141-sqlite-diagnostic-b5748ee5 |
-| SQLite upgrade/schema/backup/reverse/cleanup checks | 27 | 0 | 0 | 0 | 20261110-150819-sqlite-schema-bbfdb7b5 |
+| PostgreSQL Phase 1A business suite | 120 | 0 | 0 | 0 | 20261110-153547-corrected-postgres-all-dbad0066 |
+| PostgreSQL security/session/roles/CSRF/operations | 93 | 0 | 0 | 1 | same corrected PostgreSQL full-run directory |
+| PostgreSQL session + prior business/RBAC concurrency | 28 | 0 | 0 | 0 | same corrected PostgreSQL full-run directory |
+| Previous RBAC sequential suite, explicit V2 fixtures | 21 | 0 | 0 | 0 | same corrected PostgreSQL full-run directory |
+| PostgreSQL upgrade/schema/backup/reverse/cleanup checks | 28 | 0 | 0 | 0 | same corrected PostgreSQL full-run directory |
+| Real Edge/React/PostgreSQL browser checks | 33 | 0 | 0 | 0 | 20261110-151057-postgres-browser-a027024d (unchanged PostgreSQL branch, before SQLite-only fix) |
+| SQLite Phase 1A business suite | 103 | 0 | 0 | 17 | 20261110-153458-corrected-sqlite-all-b7c06893 |
+| SQLite security/session/roles/CSRF/operations | 91 | 0 | 0 | 3 | same corrected SQLite full-run directory |
+| SQLite previous RBAC sequential suite | 21 | 0 | 0 | 0 | same corrected SQLite full-run directory |
+| SQLite PostgreSQL-only concurrency probes | 0 | 0 | 0 | 28 | same corrected SQLite full-run directory |
+| SQLite upgrade/schema/backup/reverse/cleanup checks | 27 | 0 | 0 | 0 | same corrected SQLite full-run directory |
+| Real Edge/React/corrected-SQLite browser checks | 33 | 0 | 0 | 0 | 20261110-154306-corrected-sqlite-browser-347f5033 |
+| Exact migration-approval guard unit tests | 5 | 0 | 0 | 0 | 20261110-154830-corrected-approval-guard-581b0044 |
 | Frontend utility assertions | 52 | 0 | 0 | 0 | 20261110-150715-frontend-ca4f3d0b |
 
-The one PostgreSQL security skip is a **SQLite-specific stored-DDL formatting test**, not a missing PostgreSQL security/concurrency requirement. SQLite's 17 skips are the existing PostgreSQL-only concurrency/storage cases. SQLite schema checks passing establish installation/preservation, **not correct throttle-trigger semantics**; the separately recorded reproduction proves those semantics fail.
+The one PostgreSQL security skip is a **SQLite-specific stored-DDL formatting test**. SQLite's three security skips exercise PostgreSQL permission-denial, production-size allocation-cap and disabled-trigger behavior, all passing on PostgreSQL. Its 17 business skips and separate 28 concurrency skips are explicitly PostgreSQL-only; none counts as a SQLite concurrency pass. Original failing SQLite security (67 pass/17 fail) and focused reproduction (one fail/one error) remain preserved. Final stored-DDL and debit tests now pass. Diagnostic operational subsets also pass (PostgreSQL 9/10 with one skip; SQLite 7/10 with three skips); these duplicate cases already included in security totals.
 
 Frontend totals: 14 CSRF transport, 13 operation identity, 10 stock quantity, 10 permissions, 5 auth lifecycle assertions. TypeScript/Vite build and focused lint pass. Existing CSS @import-order and large-bundle warnings remain. No dependency versions changed. Full unrelated lint/dependency remediation is not claimed.
 
@@ -47,15 +52,15 @@ Frontend totals: 14 CSRF transport, 13 operation identity, 10 stock quantity, 10
 | --- | --- | --- |
 | Copied access JWT invalid after logout | PASS, positive before/logout/401 after, API and browser | PASS in original desired test and new positive-control regression |
 | Existing access JWT invalid after password change | PASS, original/new API tests and browser | PASS in original desired test and new regression |
-| Repeated incorrect logins reliably throttled | PASS: five failures recorded; subsequent request 429; independent-worker threshold and shared account/IP cases pass | FAIL: valid counter writes rejected; login fails closed with 503 rather than usable throttling |
+| Repeated incorrect logins reliably throttled | PASS: five failures recorded; subsequent request 429; independent-worker threshold and shared account/IP cases pass | PASS after approved correction: valid failure events persist and the next request is 429; boundaries, NAT/IP overlap and key rotation pass |
 
-The original 13 role requirements pass on PostgreSQL and SQLite. All original 26 CSRF assertions pass on PostgreSQL after preserving the existing public authentication_required error code. The SQLite full security suite remains failed because login-related CSRF controls cannot complete while its throttle trigger is broken. Do not declare all blockers resolved across the supported verification environments or call this production-ready.
+The original 13 role requirements and all original 26 CSRF assertions pass on **both** engines, preserving the public authentication_required error code and existing denial assertions. The three session/throttling blockers are resolved for controlled local verification of this candidate. Production security/readiness is not established; the outstanding deployment, dependency and operational gates below remain.
 
 ## Schema, preservation and database guards
 
 Fresh installations applied the two approved new migrations successfully on both engines. Upgrade rehearsals began at the accepted 1B.2 schema, with synthetic historical users, roles, group/direct permissions, category/product/recipe/ingredient records, a tracked sale/item, operation UUID, consumption basis/snapshot, stock movement and signed financial posting. Exact logical snapshots before/after upgrade matched. IDs, prices, ownership and ledger values were preserved; no consumption history or session history was fabricated. Epoch initialization was 1; new security tables began empty.
 
-Actual constraints/indexes/FKs and installed PostgreSQL trigger/function definitions are recorded in schema.json. PostgreSQL installed all five expected triggers with the approved timing; SQLite installed all seven names, but its two throttle bodies contain the formatting defect described below. Reapplying the migration graph produced an empty plan. Account security-field updates advanced epochs exactly once, and revoked existing families. Ordinary last_login changes did not invalidate the new login.
+Actual constraints/indexes/FKs and installed PostgreSQL trigger/function definitions are recorded in schema.json. PostgreSQL installed all five expected triggers with approved timing; corrected SQLite installed all seven with the intended literal timestamp format. Reapplying the migration graph produced an empty plan. Account security-field updates advanced epochs exactly once and revoked existing families. Ordinary last_login changes did not invalidate the new login.
 
 Real negative-write cases reject direct epoch no-ops/decreases, terminal session resurrection, immutable device identity and invalid generation/hash changes, malformed scopes/key versions/digests, booleans/nonordered timestamp arrays and other invalid bucket states. Exact database exception classes/messages are retained in schema.json and the regression logs. Raw SQL and QuerySet security-field mutations are exercised independently of model save hooks.
 
@@ -87,7 +92,7 @@ All **28** final concurrency cases passed with independent connections; none was
 
 Cases cover five-failure admission across workers, single refresh successor followed by terminal duplicate reuse, a committed role downgrade before a waiting sale/stock request, expiry sampled after lock contention, admitted sale/stock completion before logout, competing last stock and same actor/request UUID across valid device sessions. Original exact inventory/revision/financial assertions remain.
 
-Exclusive admin User locking **does block ordinary same-user API work**. A controlled 0.200-second admin hold delayed the API by **0.266 seconds**, after an observed lock wait, and both completed below the configured two-second lock timeout. This is a bounded functional measurement, not a production throughput/SLO approval. Slow admin exports or heavy password hashing can still cause honest 503s or delay logout. Real deployment load/NAT/long-export testing remains outstanding; no lock policy was weakened.
+Exclusive admin User locking **does block ordinary same-user API work**. The final corrected-candidate run measured **0.344 seconds** of API delay during a controlled 0.200-second admin hold; the earlier run measured 0.266 seconds. Both observed the lock wait and completed below the configured two-second lock timeout. This is a bounded functional measurement, not a production throughput/SLO approval. Slow admin exports or heavy password hashing can still cause honest 503s or delay logout. Real deployment load/NAT/long-export testing remains outstanding; no lock policy was weakened.
 
 ## Browser verification and reconciliation
 
@@ -114,25 +119,25 @@ Usability observations: strict reuse may require sign-in after a lost committed 
 1. **V1 fixture adapter**: attempted to patch a nonexistent APIClient symbol in the inherited 1A.1 compatibility module. Corrected only the fixture target; all 120 PostgreSQL business checks subsequently pass. Initial pre-test crashes remain recorded.
 2. **V3 public 401 contract**: preserved authentication_required, adding precise session reason separately, so the unchanged CSRF error assertion passes. No status/authorization/business assertion was relaxed. This and fixture/observer corrections are committed at **c94d20f**.
 3. **Observer/selector assumptions**: fixed stale pg_stat_activity observation; used the actual Record Sale label; tested the existing Access restricted screen instead of assuming a redirect. Browser failures and their unexecuted remainder remain preserved; final 33-check run passes. Historical 1B.2 test source was not rewritten; the explicit versioned fixture diff documents V2 credentials, protected-unused-user cleanup, actual middleware and the 26th refresh route.
-4. **V2 SQLite DDL defect — OPEN**: schema_editor.execute(sql) with its default empty parameter tuple changes literal strftime('%s', ...) into strftime('?', ...). Actual stored-trigger SQL and direct debit regression prove this. Valid timestamp events are rejected with `IntegrityError: invalid throttle events`; HTTP authentication correctly fails closed with 503. This is not healthy throttling and is not counted as a pass.
+4. **V2 SQLite DDL defect — FIXED in b9957e0**: schema_editor.execute(sql) with its default empty parameter tuple changed literal strftime('%s', ...) into strftime('?', ...). Original stored-trigger inspection/debit regressions and 503 failures remain recorded. After the exact correction below, new SQLite targets retain the proper literal, valid events are recorded, and all applicable final security/operational tests pass.
 
-The prepared correction is exactly:
+The approved and executed correction is exactly:
 
 ```diff
 - for sql in SQLITE_TRIGGERS.values(): schema_editor.execute(sql)
 + for sql in SQLITE_TRIGGERS.values(): schema_editor.execute(sql, params=None)
 ```
 
-It changes no field, quota, revocation or business rule, but **changes migration 0003's hash**. Your mandatory pre-execution requirement says hashes must match the static checkpoint; therefore it has not been edited/applied under an inferred exception. [Exact proposed patch](phase1b3_verification/PROPOSED_SQLITE_MIGRATION_FIX.diff), [full proposed hash](phase1b3_verification/proposed-migration-hash.json): `3b8156d1eee07b1e73affde5898d47888b237e579913c785e99a6652eabe9e2c`. A pending owner question requests explicit authorization for that corrected hash and new disposable targets. No already-migrated target will be patched in place, and no hash/ownership guard will be removed.
+It changes no field, quota, revocation or business rule, but changes migration 0003's hash. Execution was initially stopped at that review boundary. The owner then explicitly approved the exact correction/hash and fresh disposable tests. [Original patch artifact](phase1b3_verification/PROPOSED_SQLITE_MIGRATION_FIX.diff), [historical proposal hash record](phase1b3_verification/proposed-migration-hash.json), and [current explicit approval](phase1b3_verification/corrected-migration-approval.json) retain the complete provenance. Every corrected run used hash `3b8156d1eee07b1e73affde5898d47888b237e579913c785e99a6652eabe9e2c`. No already-migrated target was patched in place; no hash/ownership guard was removed. Five guard regressions verify that the newly allowed change cannot admit unrelated migration edits.
 
-SQLite after-correction security/operational/RBAC/browser results are **UNTESTED**. No passing PostgreSQL or schema-installation result substitutes for that work.
+Corrected SQLite security/operational/RBAC/browser results are now passing real executions, not inferred from PostgreSQL. Setup failures are retained: a sandboxed browser launch could not reach its loopback server; a later fixed-delay probe checked before a real 201 response arrived. The final fresh run used local loopback permissions and response-completion observation with all original business assertions intact. No application timeout or authentication policy was relaxed.
 
 ## Cleanup, remaining risks and next step
 
-Each database run retains cleanup.json proving removal of its own UUID runtime directory and, for PostgreSQL, its own identity-labelled container. The package summary verifies **23 database cleanup records** and zero remaining owned runtime directories. A final Docker label-filtered query returned no verification containers; frontend/backend ports are checked separately. Browser results record stopped frontend/backend processes. Backup copies were destroyed with their targets. No unrelated container, user database or production resource was removed. Docker Desktop itself is an existing local service and was not globally stopped. See [machine-readable verification summary](phase1b3_verification/verification-summary.json).
+Each database run retains cleanup.json proving removal of its own UUID runtime directory and, for PostgreSQL, its own identity-labelled container. The package summary verifies **28 database cleanup records** and zero remaining owned runtime directories. A final Docker label-filtered query returned no verification containers; frontend/backend ports are checked separately. Browser results record stopped frontend/backend processes. Backup copies were destroyed with their targets. No unrelated container, user database or production resource was removed. Docker Desktop itself is an existing local service and was not globally stopped. See [current machine-readable summary](phase1b3_verification/verification-summary.json) and [preserved pre-correction summary](phase1b3_verification/verification-summary-before-sqlite-correction.json).
 
-Remaining release/operations gates: the SQLite correction/reverification; actual production TLS/Origin/proxy trust and runtime DB privileges; signing/HMAC rotation and secret ownership; retention/monitoring schedules; fenced restore/HA guarantees; real office/load/long-export budgets; unsupported dependency findings; and separately authorized deployment checks. The metadata/exception tests do not prove protection against a privileged database owner replacing trigger bodies. Production remains unauthorized and the application is not represented as secure/production-ready.
+Remaining release/operations gates: actual production TLS/Origin/proxy trust and runtime DB privileges; signing/HMAC rotation and secret ownership; retention/monitoring schedules; fenced restore/HA guarantees; real office/load/long-export budgets; unsupported dependency findings; and separately authorized deployment checks. SQLite provides sequential compatibility evidence, not PostgreSQL-style concurrency assurance. The metadata/exception tests do not prove protection against a privileged database owner replacing trigger bodies. Production remains unauthorized and the application is not represented as secure/production-ready.
 
-**Next step: owner approval of the exact corrected 0003 hash, then fresh SQLite migration/security/operational/RBAC verification and a confirming fresh PostgreSQL schema check.** Retain original failing evidence and report the before/after outcomes. After that, return for owner review before any next package. Do not start demo data, dependency upgrades, redesign, SEO or production work.
+**Recommended next package, subject to owner review: a focused functional-bug/code-quality audit and prioritized repair plan.** Track dependency-security and production operational validation as separate explicit work packages. No new package has begun. Do not start demo data, redesign, SEO or production work without separate authorization.
 
-**STOPPED at the revised-migration review boundary; current package has an explicit unresolved SQLite failure.**
+**STOPPED after the completed Phase 1B.3 disposable verification package for owner review.**

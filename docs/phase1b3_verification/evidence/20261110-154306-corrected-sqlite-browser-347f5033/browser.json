@@ -1,0 +1,236 @@
+{
+  "checks": {
+    "real_owner_cookie_login": true,
+    "access_lifetime_exactly_900_seconds": true,
+    "jwt_cookies_httponly": true,
+    "web_locks_available": true,
+    "lost_committed_response_recorded": true,
+    "one_sale_after_lost_response": true,
+    "expired_token_fixture_has_valid_chronology": true,
+    "uncertain_sale_401_has_no_automatic_refresh": true,
+    "unauthorized_retry_has_zero_business_writes": true,
+    "explicit_renewal_preserves_exact_pending_uuid_and_body": true,
+    "historical_success_replayed_once": true,
+    "full_financial_inventory_reconciliation": true,
+    "actual_simultaneous_tabs_rotate_without_reuse": true,
+    "family_remains_active_after_tabs": true,
+    "uncertain_stock_committed_once": true,
+    "refresh_failure_does_not_replay_uncertain_stock": true,
+    "stock_reauthentication_preserves_uuid_revision_and_body": true,
+    "stock_replay_does_not_repeat_adjustment": true,
+    "stock_retry_financial_inventory_reconciliation": true,
+    "failed_logout_honest_ui_and_live_session": true,
+    "logout_copied_access_rejected": true,
+    "staff_operational_stock_page_renders": true,
+    "staff_private_navigation_hidden": true,
+    "staff_stock_fields_safe": true,
+    "staff_business_date_readonly": true,
+    "staff_unit_price_readonly": true,
+    "staff_financial_ui_access_restricted": true,
+    "role_downgrade_revokes_live_browser": true,
+    "password_change_revokes_browser_cookie": true,
+    "authentication_polling_does_not_renew_idle": true,
+    "idle_expiry_denies_refresh_without_business_replay": true,
+    "absolute_expiry_denies_refresh_without_business_replay": true,
+    "no_page_script_errors": true
+  },
+  "business_requests": [
+    {
+      "path": "/api/sales/",
+      "method": "POST",
+      "uuid": "a8bf6e36-3b93-482b-8f9b-a529cd47984c",
+      "revision": null,
+      "body": {
+        "date": "2026-11-09",
+        "notes": "",
+        "sale_items": [
+          {
+            "product": 1,
+            "quantity": 1,
+            "unit_price": 50
+          }
+        ]
+      },
+      "status": 201,
+      "replayed": "false",
+      "response_lost": true
+    },
+    {
+      "path": "/api/sales/",
+      "method": "POST",
+      "uuid": "a8bf6e36-3b93-482b-8f9b-a529cd47984c",
+      "revision": null,
+      "body": {
+        "date": "2026-11-09",
+        "notes": "",
+        "sale_items": [
+          {
+            "product": 1,
+            "quantity": 1,
+            "unit_price": 50
+          }
+        ]
+      },
+      "status": 401,
+      "replayed": null
+    },
+    {
+      "path": "/api/sales/",
+      "method": "POST",
+      "uuid": "a8bf6e36-3b93-482b-8f9b-a529cd47984c",
+      "revision": null,
+      "body": {
+        "date": "2026-11-09",
+        "notes": "",
+        "sale_items": [
+          {
+            "product": 1,
+            "quantity": 1,
+            "unit_price": 50
+          }
+        ]
+      },
+      "status": 201,
+      "replayed": "true"
+    },
+    {
+      "path": "/api/ingredients/1/adjustments/",
+      "method": "POST",
+      "uuid": "1396f6b3-dde1-427b-ac03-e4acacf7c689",
+      "revision": "\"1\"",
+      "body": {
+        "delta": "0.000000001",
+        "reason": "Controlled session stock retry"
+      },
+      "status": 200,
+      "replayed": "false",
+      "response_lost": true
+    },
+    {
+      "path": "/api/ingredients/1/adjustments/",
+      "method": "POST",
+      "uuid": "1396f6b3-dde1-427b-ac03-e4acacf7c689",
+      "revision": "\"1\"",
+      "body": {
+        "delta": "0.000000001",
+        "reason": "Controlled session stock retry"
+      },
+      "status": 200,
+      "replayed": "true"
+    }
+  ],
+  "auth_requests": [
+    {
+      "path": "/api/auth/login/",
+      "method": "POST"
+    },
+    {
+      "path": "/api/auth/refresh/",
+      "method": "POST"
+    },
+    {
+      "path": "/api/auth/refresh/",
+      "method": "POST"
+    },
+    {
+      "path": "/api/auth/refresh/",
+      "method": "POST"
+    },
+    {
+      "path": "/api/auth/login/",
+      "method": "POST"
+    },
+    {
+      "path": "/api/auth/logout/",
+      "method": "POST"
+    },
+    {
+      "path": "/api/auth/login/",
+      "method": "POST"
+    },
+    {
+      "path": "/api/auth/logout/",
+      "method": "POST"
+    },
+    {
+      "path": "/api/auth/login/",
+      "method": "POST"
+    },
+    {
+      "path": "/api/auth/login/",
+      "method": "POST"
+    },
+    {
+      "path": "/api/auth/login/",
+      "method": "POST"
+    },
+    {
+      "path": "/api/auth/refresh/",
+      "method": "POST"
+    },
+    {
+      "path": "/api/auth/refresh/",
+      "method": "POST"
+    }
+  ],
+  "screenshots": [
+    "01-owner.png",
+    "02-stock-retry.png",
+    "02-pending-logout.png",
+    "03-staff.png",
+    "04-expired-session.png"
+  ],
+  "external_requests_blocked": [],
+  "page_errors": [],
+  "real_tabs": true,
+  "real_web_locks": true,
+  "no_authenticator_mock": true,
+  "sale_form_dom": [
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "text": "Logout"
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "text": ""
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "text": ""
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "text": "Logout"
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "text": ""
+    },
+    {
+      "tag": "INPUT",
+      "name": "date",
+      "text": null
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "text": "Add Item"
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "text": "Record Sale"
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "text": "Cancel"
+    }
+  ],
+  "servers_stopped": true
+}
