@@ -4,6 +4,7 @@ from datetime import timedelta
 from decouple import config
 import dj_database_url
 from accounts.origin_config import exact_origins
+import json
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -70,6 +71,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "accounts.session_middleware.SessionTransactionMiddleware",
+    "accounts.admin_sessions.AdminSessionMiddleware",
 ]
 
 ROOT_URLCONF = "backend.urls"
@@ -195,8 +198,8 @@ REST_FRAMEWORK = {
 # ------------------------------------------------------------------------------
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(hours=8),
     "ROTATE_REFRESH_TOKENS": True,
     "AUTH_COOKIE": "access_token",
     "AUTH_COOKIE_REFRESH": "refresh_token",
@@ -211,6 +214,16 @@ SIMPLE_JWT = {
         default="Lax" if DEBUG else "None",
     ),
 }
+
+# No fallback to SECRET_KEY or a per-worker in-memory limiter. Missing verified
+# configuration fails authentication closed; bootstrap/cleanup remain separate.
+AUTH_SESSION_SIGNING_KEY = config('AUTH_SESSION_SIGNING_KEY', default='')
+AUTH_SESSION_ENV = config('AUTH_SESSION_ENV', default='')
+AUTH_RATE_KEYS = json.loads(config('AUTH_RATE_KEYS', default='{}'))
+AUTH_RATE_LIMITS = json.loads(config('AUTH_RATE_LIMITS', default='{"LA":5,"LI":20,"LR":60,"RR":30}'))
+AUTH_MAX_BUCKET_ROWS = config('AUTH_MAX_BUCKET_ROWS', default=50000, cast=int)
+AUTH_PROXY_MODE = config('AUTH_PROXY_MODE', default='direct' if DEBUG else 'unconfigured')
+AUTH_TRUSTED_PROXY_CIDRS = [value.strip() for value in config('AUTH_TRUSTED_PROXY_CIDRS',default='').split(',') if value.strip()]
 
 # ------------------------------------------------------------------------------
 # CORS

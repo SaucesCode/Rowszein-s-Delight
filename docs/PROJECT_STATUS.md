@@ -6,7 +6,7 @@ Rowszein's Delight Management System
 
 ## Current Phase
 
-Package 1B.2 is accepted at `8d8fe47` for controlled local development. Phase 1B.3 session/revocation/login-limiting DESIGN ONLY is complete for approval on `codex/phase-1b3-session-design`. No application, test, dependency, infrastructure or migration changes. AUTH-01/AUTH-02 retain accepted local evidence; the three session/throttle requirements, dependency findings and production topology remain open.
+Package 1B.2 is accepted at `8d8fe47` for controlled local development. Conditional 1B.3 architecture approval authorized the **static implementation checkpoint**, now complete on `codex/phase-1b3-static-implementation` from design baseline `f4ee98d`. [Exact schema/implementation report](PHASE1B3_SESSION_SCHEMA_IMPLEMENTATION_CHECKPOINT.md): two security models, trigger-owned User epoch, device-bound JWT/strict refresh, shared PostgreSQL limiter, admin/frontend support and written gated tests. Two additive migrations generated, **neither applied anywhere**. Actual database-free results: 76 backend +42 frontend checks pass, build and focused lint pass; dummy-backend checks make no database connections. No new-schema API, concurrency or browser verification was run. No production, deployment, dependency upgrade or infrastructure changes. AUTH-01/AUTH-02 retain their prior local evidence; all three session/throttle release blockers, dependency findings and production topology remain open. STOP for exact-schema/disposable-migration approval.
 
 ## Completed
 

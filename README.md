@@ -52,7 +52,7 @@ The project is being built incrementally, focusing on core business functionalit
 
 Project documentation can be found in the `docs/` folder.
 
-Latest checkpoint: [Phase 1B.3 session and login-limiting design](docs/PHASE1B3_SESSION_SECURITY_DESIGN.md), awaiting approval before implementation or new migrations. [Accepted 1B.2 verification](docs/PHASE1B2_RBAC_IMPLEMENTATION_REPORT.md) remains preserved. Session revocation, login throttling, dependency findings and production verification remain open. The application is not production-ready.
+Latest checkpoint: [Phase 1B.3 static implementation and exact schema review](docs/PHASE1B3_SESSION_SCHEMA_IMPLEMENTATION_CHECKPOINT.md) on `codex/phase-1b3-static-implementation`. Two additive migrations are generated **but unapplied**. Database-free checks: 76 backend and 42 frontend passes; build/affected lint pass. No database/API/concurrency/browser execution on the new schema is authorized. [Accepted 1B.2 verification](docs/PHASE1B2_RBAC_IMPLEMENTATION_REPORT.md) remains preserved. Session revocation, login throttling, dependency findings and production verification remain open. The application is not production-ready. STOP before migration execution pending owner approval.
 
 ## License
 

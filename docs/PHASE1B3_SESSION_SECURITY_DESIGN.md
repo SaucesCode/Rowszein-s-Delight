@@ -1,5 +1,7 @@
 # Phase 1B.3 — session revocation and login rate-limiting design
 
+> Update 2026-11-10: this design's `f4ee98d` review checkpoint received conditional architecture approval. The [static implementation and exact-schema checkpoint](PHASE1B3_SESSION_SCHEMA_IMPLEMENTATION_CHECKPOINT.md) reconciles D7–D16, supersedes direct epoch increments, and documents two generated **unapplied** migrations. Original proposal text below is retained for traceability; no database verification or deployment has been performed for the new schema.
+
 Date: 2026-11-10, Asia/Shanghai. Baseline: accepted `8d8fe47`. Design branch: `codex/phase-1b3-session-design`.
 
 **DESIGN ONLY — implementation, new migrations and infrastructure are not authorized.** No application code, database, dependency or existing test is changed by this document. The three security requirements remain release blockers. Production access and deployment remain unauthorized.

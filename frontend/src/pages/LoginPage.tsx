@@ -1,7 +1,8 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLogin } from "@/hooks/useAuth";
+import { useLogin, useRenewSession } from "@/hooks/useAuth";
+import { apiErrorMessage } from "@/lib/csrfTransport";
 
 /* ─────────────────────────────────────────────
    SCHEMA
@@ -43,6 +44,7 @@ function Field({
    ───────────────────────────────────────────── */
 export default function LoginPage() {
   const login = useLogin();
+  const renew = useRenewSession();
 
   const {
     register,
@@ -73,6 +75,11 @@ export default function LoginPage() {
           Sign in to manage your shop
         </p>
       </div>
+
+      <button type="button" className="mb-4 text-sm underline" disabled={renew.isPending || login.isPending}
+        onClick={() => renew.mutate()}>
+        {renew.isPending ? "Renewing session…" : "Renew an existing session"}
+      </button>
 
       {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
@@ -123,7 +130,7 @@ export default function LoginPage() {
           role="alert"
         >
           <p className="font-body" style={{ fontSize: 13, color: "#B91C1C" }}>
-            Incorrect username or password. Please try again.
+            {apiErrorMessage(login.error, "Sign-in failed. Please try again.")}
           </p>
         </div>
       )}

@@ -1,5 +1,11 @@
 # Revival changelog
 
+## 2026-11-10 — Phase 1B.3 static implementation; migrations UNAPPLIED
+
+Conditional architecture approval reconciled D7–D16 before code changes. On `codex/phase-1b3-static-implementation`, added DeviceSession, AuthThrottleBucket and trigger-controlled User.session_epoch; generated accounts/0002 additive model operations and accounts/0003 vendor guard installation. Added bound V2 JWTs, strict refresh rotation/reuse, database-checked admission/activity/revocation, shared atomic login quotas, verified ingress policy, protected admin sessions/password changes, cleanup tooling and explicit cross-tab-coordinated frontend renewal. Preserved ledger models/math/history and original test/evidence files. [Exact checkpoint](PHASE1B3_SESSION_SCHEMA_IMPLEMENTATION_CHECKPOINT.md) records schema, triggers, ordered operations, compatibility gaps, cutover/restore risks and the future disposable test plan.
+
+Actually executed without a database: 76 backend pure/metadata tests, 42 frontend checks, TypeScript/Vite build, focused lint and dummy-backend system/migration-state checks pass. Zero connection/cursor attempts in guarded static runners. API/concurrency/security/admin/compatibility tests were written but **not run**. No new migration was executed, no database accessed, and no deployment/service/dependency/later-phase work performed. The three release blockers remain OPEN. STOPPED for exact-schema approval and separate disposable migration/test authorization.
+
 ## 2026-11-10 — Phase 1B.3 session/rate-limiting design only
 
 Accepted 1B.2 at `8d8fe47`; created `codex/phase-1b3-session-design`. Added [exact session/revocation/login-limiting design](PHASE1B3_SESSION_SECURITY_DESIGN.md): two proposed security models, User epoch/database guards, 15m/30m/8h policy, strict refresh reuse, cookie/admin recovery, PostgreSQL rolling counters and Redis alternative, proxy trust, outages, retention, migration/backup/rollback and race tests. Explicit D7–D16 owner decisions precede implementation. Calls out hash-upgrade revocation, same-session serialization, and stronger reauthentication expectations after role changes without relaxing existing assertions.

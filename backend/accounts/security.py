@@ -44,7 +44,10 @@ def api_exception_handler(error, context):
     response = exception_handler(error, context)
     if response is None:
         return None
-    if isinstance(error, CSRFViolation):
+    from .session_errors import SessionEnded, AuthUnavailable
+    if isinstance(error, (SessionEnded, AuthUnavailable)):
+        response.data = {'success':False,'error':{'code':error.default_code,'message':str(error.detail)}}
+    elif isinstance(error, CSRFViolation):
         response.data = {'success': False, 'error': {'code': 'csrf_failed',
             'message': str(error.detail), 'retryable': error.retryable}}
     elif response.status_code in {401, 403, 429}:
@@ -56,7 +59,7 @@ def api_exception_handler(error, context):
         response.data = {'success': False, 'error': {'code': code, 'message': message}}
         if response.status_code == 429 and str(response.get('Retry-After', '')).isdigit():
             response.data['error']['retry_after'] = int(response['Retry-After'])
-    if response.status_code in {401, 403, 429}:
+    if response.status_code in {401, 403, 429, 503}:
         patch_cache_control(response, no_store=True)
         patch_vary_headers(response, ['Cookie'])
     return response
