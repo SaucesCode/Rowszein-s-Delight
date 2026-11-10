@@ -1,0 +1,51 @@
+November 10, 2026 - 16:18:10
+Django version 5.1.4, using settings 'audit_settings'
+Starting development server at http://127.0.0.1:18842/
+Quit the server with CTRL-BREAK.
+
+[10/Nov/2026 16:18:29] "GET /api/products/categories/ HTTP/1.1" 200 2208
+[10/Nov/2026 16:18:29] "GET /api/products/?page=1 HTTP/1.1" 200 4928
+[10/Nov/2026 16:18:32] "GET /api/auth/me/ HTTP/1.1" 401 138
+[10/Nov/2026 16:18:37] "GET /api/auth/csrf/ HTTP/1.1" 200 118
+[10/Nov/2026 16:18:38] "POST /api/auth/login/ HTTP/1.1" 200 193
+[10/Nov/2026 16:18:38] "GET /api/dashboard/?date_from=2025-12-31&date_to=2026-11-10 HTTP/1.1" 200 1261
+[10/Nov/2026 16:18:38] "GET /api/auth/me/ HTTP/1.1" 200 96
+[10/Nov/2026 16:18:39] "GET /api/auth/me/ HTTP/1.1" 200 96
+[10/Nov/2026 16:18:40] "GET /api/ingredients/?page=1 HTTP/1.1" 200 7444
+[10/Nov/2026 16:18:40] "GET /api/auth/me/ HTTP/1.1" 200 96
+[10/Nov/2026 16:18:40] "GET /api/ingredients/low-stock/ HTTP/1.1" 200 39
+[10/Nov/2026 16:18:43] "GET /api/auth/me/ HTTP/1.1" 200 96
+[10/Nov/2026 16:18:43] "GET /api/ingredients/?page=1 HTTP/1.1" 200 7444
+[10/Nov/2026 16:18:43] "GET /api/auth/me/ HTTP/1.1" 200 96
+[10/Nov/2026 16:18:43] "GET /api/products/?page=1 HTTP/1.1" 200 8768
+[10/Nov/2026 16:18:45] "GET /api/auth/me/ HTTP/1.1" 200 96
+[10/Nov/2026 16:18:45] "GET /api/auth/me/ HTTP/1.1" 200 96
+[10/Nov/2026 16:18:45] "GET /api/products/?page=1 HTTP/1.1" 200 8768
+[10/Nov/2026 16:18:49] "GET /api/auth/me/ HTTP/1.1" 200 96
+[10/Nov/2026 16:18:49] "GET /api/auth/me/ HTTP/1.1" 200 96
+[10/Nov/2026 16:18:49] "GET /api/products/categories/ HTTP/1.1" 200 4488
+[10/Nov/2026 16:18:51] "GET /api/auth/me/ HTTP/1.1" 200 96
+C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\rest_framework\pagination.py:207: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'recipes.models.Recipe'> QuerySet.
+  paginator = self.django_paginator_class(queryset, page_size)
+[10/Nov/2026 16:18:52] "GET /api/recipes/?page=1 HTTP/1.1" 200 7093
+[10/Nov/2026 16:18:52] "GET /api/auth/me/ HTTP/1.1" 200 96
+[10/Nov/2026 16:18:52] "GET /api/products/?page=1 HTTP/1.1" 200 8768
+[10/Nov/2026 16:18:52] "GET /api/products/categories/ HTTP/1.1" 200 4488
+[10/Nov/2026 16:18:53] "GET /api/ingredients/low-stock/ HTTP/1.1" 200 39
+[10/Nov/2026 16:18:53] "GET /api/ingredients/?page=1 HTTP/1.1" 200 7444
+[10/Nov/2026 16:18:53] "GET /api/auth/me/ HTTP/1.1" 200 96
+[10/Nov/2026 16:18:54] "GET /api/ingredients/2/ HTTP/1.1" 200 401
+[10/Nov/2026 16:18:54] "GET /api/auth/csrf/ HTTP/1.1" 200 118
+[10/Nov/2026 16:18:54] "PUT /api/ingredients/2/ HTTP/1.1" 200 434
+[10/Nov/2026 16:18:55] "GET /api/ingredients/2/ HTTP/1.1" 200 402
+[10/Nov/2026 16:18:55] "GET /api/ingredients/low-stock/ HTTP/1.1" 200 39
+[10/Nov/2026 16:18:55] "GET /api/ingredients/?page=1 HTTP/1.1" 200 7445
+[10/Nov/2026 16:18:55] "GET /api/auth/me/ HTTP/1.1" 200 96
+[10/Nov/2026 16:18:57] "GET /api/auth/me/ HTTP/1.1" 200 96
+[10/Nov/2026 16:18:57] "GET /api/auth/me/ HTTP/1.1" 200 96
+[10/Nov/2026 16:18:57] "GET /api/ingredients/99999/ HTTP/1.1" 404 51
+[10/Nov/2026 16:18:59] "GET /api/auth/me/ HTTP/1.1" 200 96
+[10/Nov/2026 16:19:00] "GET /api/auth/me/ HTTP/1.1" 200 96
+[10/Nov/2026 16:19:00] "GET /api/products/?page=1 HTTP/1.1" 200 8768
+[10/Nov/2026 16:19:00] "GET /api/recipes/?page=1 HTTP/1.1" 200 7093
+[10/Nov/2026 16:19:00] "GET /api/products/categories/ HTTP/1.1" 200 4488

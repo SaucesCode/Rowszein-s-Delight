@@ -1,0 +1,30 @@
+{
+  "npm-audit": {
+    "exit_code": 1,
+    "command": [
+      "npm.cmd",
+      "audit",
+      "--json",
+      "--ignore-scripts",
+      "--package-lock-only",
+      "--registry=https://registry.npmjs.org/"
+    ]
+  },
+  "pip-audit": {
+    "exit_code": 1,
+    "command": [
+      "C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pip_audit",
+      "--local",
+      "--format=json",
+      "--progress-spinner=off",
+      "--cache-dir",
+      "C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\.verification-runtime\\ad114e4fbd18467ea222d48c3d0d77ee\\advisory-cache"
+    ]
+  },
+  "cleanup": {
+    "owned_runtime_removed": true
+  }
+}

@@ -1,0 +1,38 @@
+featured_product25_visible: {"actual": false, "expected": true, "desired_behavior_passed": false}
+login_controls_associated_labels: {"actual": false, "expected": true, "desired_behavior_passed": false}
+exact_stock_quantity_visible: {"actual": false, "expected": true, "desired_behavior_passed": false}
+search_finds_off_page_ingredient25: {"actual": false, "expected": true, "desired_behavior_passed": false}
+confirmation_exposed_to_accessibility_tree: {"actual": 1, "expected": 1, "desired_behavior_passed": true}
+ingredient_list_detail_cache_shape: {"actual": "", "expected": "Audit ingredient 01", "desired_behavior_passed": false}
+recipe_product_options: {"actual": 21, "expected": 26, "desired_behavior_passed": false}
+recipe_ingredient_options: {"actual": 0, "expected": 26, "desired_behavior_passed": false}
+sale_product_options: {"actual": 0, "expected": 26, "desired_behavior_passed": false}
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1c1\browser_audit.py", line 117, in <module>
+    result['observations']['mobile_sale_product_width']=page.locator('select[name="sale_items.0.product"]').bounding_box()['width']
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 10814, in bounding_box
+    self._sync(self._impl_obj.bounding_box(timeout=to_milliseconds(timeout)))
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_locator.py", line 142, in bounding_box
+    return await self._with_element(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_locator.py", line 123, in _with_element
+    handle = await self.element_handle(timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_locator.py", line 334, in element_handle
+    handle = await self._frame.wait_for_selector(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_frame.py", line 395, in wait_for_selector
+    await self._channel.send(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 78, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 636, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Locator.bounding_box: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("select[name=\"sale_items.0.product\"]")
+

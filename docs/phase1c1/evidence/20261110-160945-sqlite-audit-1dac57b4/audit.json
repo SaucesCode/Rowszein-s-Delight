@@ -1,0 +1,158 @@
+{
+  "tests_run": 25,
+  "outcomes": [
+    {
+      "test": "audit_cases.AuditCases.test_bounds_database_rejects_negative_expense",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1c1\\audit_cases.py\", line 60, in test_bounds_database_rejects_negative_expense\n    with self.assertRaises(IntegrityError, msg='Database stores a negative expense.'):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: IntegrityError not raised : Database stores a negative expense.\n",
+      "seconds": 0.047
+    },
+    {
+      "test": "audit_cases.AuditCases.test_bounds_database_rejects_negative_product_price",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1c1\\audit_cases.py\", line 55, in test_bounds_database_rejects_negative_product_price\n    with self.assertRaises(IntegrityError, msg='Database stores a negative product price.'):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: IntegrityError not raised : Database stores a negative product price.\n",
+      "seconds": 0.047
+    },
+    {
+      "test": "audit_cases.AuditCases.test_bounds_database_rejects_negative_recipe_quantity",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1c1\\audit_cases.py\", line 65, in test_bounds_database_rejects_negative_recipe_quantity\n    with self.assertRaises(IntegrityError, msg='Database stores negative recipe usage.'):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: IntegrityError not raised : Database stores negative recipe usage.\n",
+      "seconds": 0.063
+    },
+    {
+      "test": "audit_cases.AuditCases.test_catalog_featured_filter_honored",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1c1\\audit_cases.py\", line 77, in test_catalog_featured_filter_honored\n    self.assertEqual(response.data['data']['count'], 0, 'Unfeatured product included in featured query.')\nAssertionError: 1 != 0 : Unfeatured product included in featured query.\n",
+      "seconds": 0.078
+    },
+    {
+      "test": "audit_cases.AuditCases.test_category_protected_delete_returns_conflict",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1c1\\audit_cases.py\", line 72, in test_category_protected_delete_returns_conflict\n    self.assertEqual(response.status_code, 409, 'Protected category deletion must not return 500.')\nAssertionError: 503 != 409 : Protected category deletion must not return 500.\n",
+      "seconds": 0.047
+    },
+    {
+      "test": "audit_cases.AuditCases.test_control_api_rejects_negative_cost_without_writes",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1c1\\audit_cases.py\", line 119, in test_control_api_rejects_negative_cost_without_writes\n    self.assertEqual(self.ingredient.cost_per_unit, before)\nAssertionError: Decimal('1.00') != '1'\n",
+      "seconds": 0.078
+    },
+    {
+      "test": "audit_cases.AuditCases.test_control_cancel_exact_inventory_and_signed_finance",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.125
+    },
+    {
+      "test": "audit_cases.AuditCases.test_control_cross_year_months_remain_distinct",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.078
+    },
+    {
+      "test": "audit_cases.AuditCases.test_control_dashboard_bad_dates_rejected",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.047
+    },
+    {
+      "test": "audit_cases.AuditCases.test_control_expense_crud_csv_pdf",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.11
+    },
+    {
+      "test": "audit_cases.AuditCases.test_control_ingredient_protected_delete_returns_conflict",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.047
+    },
+    {
+      "test": "audit_cases.AuditCases.test_control_pagination_exposes_all_records_on_page_two",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.188
+    },
+    {
+      "test": "audit_cases.AuditCases.test_control_recipe_update_and_delete",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.078
+    },
+    {
+      "test": "audit_cases.AuditCases.test_control_sales_pdf_generation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.094
+    },
+    {
+      "test": "audit_cases.AuditCases.test_control_staff_denied_zero_ledger_writes",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.063
+    },
+    {
+      "test": "audit_cases.AuditCases.test_control_unavailable_public_product_hidden",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.062
+    },
+    {
+      "test": "audit_cases.AuditCases.test_cost01_database_rejects_negative_cost",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1c1\\audit_cases.py\", line 50, in test_cost01_database_rejects_negative_cost\n    with self.assertRaises(IntegrityError, msg='Database stores a negative ingredient cost.'):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: IntegrityError not raised : Database stores a negative ingredient cost.\n",
+      "seconds": 0.047
+    },
+    {
+      "test": "audit_cases.AuditCases.test_cost01_model_rejects_negative_cost",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1c1\\audit_cases.py\", line 46, in test_cost01_model_rejects_negative_cost\n    with self.assertRaises(ValidationError, msg='Negative cost passes full_clean.'):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ValidationError not raised : Negative cost passes full_clean.\n",
+      "seconds": 0.047
+    },
+    {
+      "test": "audit_cases.AuditCases.test_csv_expense_text_neutralizes_formulas",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1c1\\audit_cases.py\", line 94, in test_csv_expense_text_neutralizes_formulas\n    self.assertFalse(row[3].startswith('='), 'CSV quoting leaves executable spreadsheet formula text.')\nAssertionError: True is not false : CSV quoting leaves executable spreadsheet formula text.\n",
+      "seconds": 0.078
+    },
+    {
+      "test": "audit_cases.AuditCases.test_csv_sales_text_neutralizes_formulas",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1c1\\audit_cases.py\", line 99, in test_csv_sales_text_neutralizes_formulas\n    self.assertFalse(any(cell.startswith('=') for cell in rows[1]), 'Sale notes remain a spreadsheet formula.')\nAssertionError: True is not false : Sale notes remain a spreadsheet formula.\n",
+      "seconds": 0.094
+    },
+    {
+      "test": "audit_cases.AuditCases.test_dashboard_month_to_date_expenses_exclude_future",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1c1\\audit_cases.py\", line 105, in test_dashboard_month_to_date_expenses_exclude_future\n    self.assertEqual(response.data['data']['this_month']['expenses'], 0, 'Sales use month-to-date but expenses include future dates.')\nAssertionError: 25.0 != 0 : Sales use month-to-date but expenses include future dates.\n",
+      "seconds": 0.078
+    },
+    {
+      "test": "audit_cases.AuditCases.test_expense_export_malformed_date_rejected",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1c1\\audit_cases.py\", line 89, in test_expense_export_malformed_date_rejected\n    self.assertEqual(self.get('/api/expenses/export/csv/?date_to=bad').status_code, 400)\nAssertionError: 200 != 400\n",
+      "seconds": 0.063
+    },
+    {
+      "test": "audit_cases.AuditCases.test_expenses_malformed_date_rejected",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1c1\\audit_cases.py\", line 83, in test_expenses_malformed_date_rejected\n    self.assertEqual(self.get('/api/expenses/?date_from=bad').status_code, 400)\nAssertionError: 200 != 400\n",
+      "seconds": 0.047
+    },
+    {
+      "test": "audit_cases.AuditCases.test_sales_malformed_date_rejected",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1c1\\audit_cases.py\", line 80, in test_sales_malformed_date_rejected\n    self.assertEqual(self.get('/api/sales/?date_from=bad').status_code, 400)\nAssertionError: 200 != 400\n",
+      "seconds": 0.063
+    },
+    {
+      "test": "audit_cases.AuditCases.test_sales_reversed_dates_rejected",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1c1\\audit_cases.py\", line 86, in test_sales_reversed_dates_rejected\n    self.assertEqual(self.get('/api/sales/?date_from=2026-11-10&date_to=2026-11-01').status_code, 400)\nAssertionError: 200 != 400\n",
+      "seconds": 0.047
+    }
+  ],
+  "failures": 15,
+  "errors": 0,
+  "skipped": 0
+}

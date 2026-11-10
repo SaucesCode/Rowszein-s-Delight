@@ -1,0 +1,252 @@
+{
+  "baseline": "fdd46a3",
+  "branch": "codex/phase-1c1-functional-quality-audit",
+  "production_access": false,
+  "deployment": false,
+  "new_migrations": false,
+  "application_changes": false,
+  "suites": {
+    "20261110-161539-postgres-preservation-6bdbbd02": {
+      "tests": 250,
+      "passed": 249,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "by_group": {
+        "sales": 120,
+        "session_api_contracts": 32,
+        "security_compatibility": 50,
+        "csrf_regressions": 2,
+        "operational_cases": 9,
+        "rbac_compatibility": 25,
+        "session_concurrency": 11
+      }
+    },
+    "20261110-161821-sqlite-preservation-ab40b178": {
+      "tests": 250,
+      "passed": 215,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 35,
+      "by_group": {
+        "sales": 103,
+        "session_api_contracts": 32,
+        "security_compatibility": 50,
+        "csrf_regressions": 2,
+        "operational_cases": 7,
+        "rbac_compatibility": 21
+      }
+    }
+  },
+  "audit_probes": {
+    "20261110-160945-sqlite-audit-1dac57b4": {
+      "tests_run": 25,
+      "failures": 15,
+      "errors": 0,
+      "skipped": 0
+    },
+    "20261110-161145-postgres-audit-9337de12": {
+      "tests_run": 25,
+      "failures": 14,
+      "errors": 0,
+      "skipped": 0
+    },
+    "20261110-161536-sqlite-audit-c602142d": {
+      "tests_run": 25,
+      "failures": 14,
+      "errors": 0,
+      "skipped": 0
+    },
+    "20261110-162639-sqlite-audit-ec6c6cea": {
+      "tests_run": 27,
+      "failures": 14,
+      "errors": 0,
+      "skipped": 0
+    },
+    "20261110-162643-postgres-audit-dee2f6f4": {
+      "tests_run": 27,
+      "failures": 14,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "lint": {
+    "errors": 8,
+    "warnings": 16
+  },
+  "python_advisories": {
+    "reported_records": 112,
+    "packages": [
+      {
+        "package": "django",
+        "version": "5.1.4",
+        "unique_cves": 20
+      },
+      {
+        "package": "django-allauth",
+        "version": "65.13.1",
+        "unique_cves": 1
+      },
+      {
+        "package": "djangorestframework",
+        "version": "3.15.2",
+        "unique_cves": 5
+      },
+      {
+        "package": "djangorestframework-simplejwt",
+        "version": "5.3.1",
+        "unique_cves": 1
+      },
+      {
+        "package": "pillow",
+        "version": "10.4.0",
+        "unique_cves": 50
+      },
+      {
+        "package": "python-dotenv",
+        "version": "1.2.1",
+        "unique_cves": 1
+      },
+      {
+        "package": "requests",
+        "version": "2.32.5",
+        "unique_cves": 1
+      }
+    ]
+  },
+  "npm_advisories": {
+    "info": 0,
+    "low": 1,
+    "moderate": 18,
+    "high": 17,
+    "critical": 1,
+    "total": 37
+  },
+  "npm_direct_affected": [
+    "@eslint/js",
+    "axios",
+    "eslint",
+    "postcss",
+    "react-router-dom",
+    "shadcn",
+    "typescript-eslint",
+    "vite",
+    "zod"
+  ],
+  "phase0_evidence": {
+    "checked": 28,
+    "mismatches": []
+  },
+  "accepted_tracked_files_changed": [],
+  "python_syntax": {
+    "parsed": 132,
+    "errors": 0
+  },
+  "runtime_directories_remaining": [],
+  "browser_ports_closed": {
+    "18841": true,
+    "18842": true
+  },
+  "latest_completed_browser": {
+    "evidence": "docs\\phase1c1\\evidence\\20261110-162338-postgres-browser-1fc6c9e1\\browser.json",
+    "checks": {
+      "featured_product25_visible": {
+        "actual": false,
+        "expected": true,
+        "desired_behavior_passed": false
+      },
+      "login_controls_associated_labels": {
+        "actual": false,
+        "expected": true,
+        "desired_behavior_passed": false
+      },
+      "exact_stock_quantity_visible": {
+        "actual": false,
+        "expected": true,
+        "desired_behavior_passed": false
+      },
+      "search_finds_off_page_ingredient25": {
+        "actual": false,
+        "expected": true,
+        "desired_behavior_passed": false
+      },
+      "confirmation_exposed_to_accessibility_tree": {
+        "actual": 1,
+        "expected": 1,
+        "desired_behavior_passed": true
+      },
+      "ingredient_list_detail_cache_shape": {
+        "actual": "",
+        "expected": "Audit ingredient 01",
+        "desired_behavior_passed": false
+      },
+      "recipe_product_options": {
+        "actual": 21,
+        "expected": 26,
+        "desired_behavior_passed": false
+      },
+      "recipe_ingredient_options": {
+        "actual": 21,
+        "expected": 26,
+        "desired_behavior_passed": false
+      },
+      "sale_product_options": {
+        "actual": 21,
+        "expected": 26,
+        "desired_behavior_passed": false
+      },
+      "mobile_document_no_horizontal_overflow": {
+        "actual": true,
+        "expected": true,
+        "desired_behavior_passed": true
+      },
+      "product_category_options": {
+        "actual": 21,
+        "expected": 26,
+        "desired_behavior_passed": false
+      },
+      "ingredient_cost_form_update_status": {
+        "actual": 200,
+        "expected": 200,
+        "desired_behavior_passed": true
+      },
+      "ingredient_notes_can_be_cleared": {
+        "actual": "SYNTHETIC-TO-CLEAR",
+        "expected": "",
+        "desired_behavior_passed": false
+      },
+      "ingredient_edit_invalidates_recipe_cost": {
+        "actual": false,
+        "expected": true,
+        "desired_behavior_passed": false
+      },
+      "missing_ingredient_shows_explicit_error": {
+        "actual": false,
+        "expected": true,
+        "desired_behavior_passed": false
+      },
+      "recipe_edit_form_survives_list_navigation": {
+        "actual": false,
+        "expected": true,
+        "desired_behavior_passed": false
+      },
+      "recipe_edit_product_matches_existing": {
+        "actual": "0",
+        "expected": "1",
+        "desired_behavior_passed": false
+      },
+      "staff_stock_has_exact_quantity": {
+        "actual": true,
+        "expected": true,
+        "desired_behavior_passed": true
+      },
+      "staff_supplier_hidden": {
+        "actual": 0,
+        "expected": 0,
+        "desired_behavior_passed": true
+      }
+    },
+    "page_errors": [],
+    "servers_stopped": true
+  }
+}

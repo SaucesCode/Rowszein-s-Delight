@@ -1,0 +1,19 @@
+November 10, 2026 - 16:15:18
+Django version 5.1.4, using settings 'audit_settings'
+Starting development server at http://127.0.0.1:18842/
+Quit the server with CTRL-BREAK.
+
+[10/Nov/2026 16:15:47] "GET /api/auth/me/ HTTP/1.1" 401 138
+[10/Nov/2026 16:15:48] "GET /api/auth/csrf/ HTTP/1.1" 200 118
+[10/Nov/2026 16:15:49] "POST /api/auth/login/ HTTP/1.1" 200 193
+[10/Nov/2026 16:15:50] "GET /api/auth/me/ HTTP/1.1" 200 96
+[10/Nov/2026 16:15:51] "GET /api/ingredients/low-stock/ HTTP/1.1" 200 39
+[10/Nov/2026 16:15:51] "GET /api/ingredients/?page=1 HTTP/1.1" 200 7444
+[10/Nov/2026 16:15:51] "GET /api/auth/me/ HTTP/1.1" 200 96
+[10/Nov/2026 16:15:55] "GET /api/auth/me/ HTTP/1.1" 200 96
+[10/Nov/2026 16:15:55] "GET /api/auth/me/ HTTP/1.1" 200 96
+[10/Nov/2026 16:15:55] "GET /api/ingredients/?page=1 HTTP/1.1" 200 7444
+[10/Nov/2026 16:15:55] "GET /api/products/?page=1 HTTP/1.1" 200 8768
+[10/Nov/2026 16:15:57] "GET /api/auth/me/ HTTP/1.1" 200 96
+[10/Nov/2026 16:15:57] "GET /api/auth/me/ HTTP/1.1" 200 96
+[10/Nov/2026 16:15:57] "GET /api/products/?page=1 HTTP/1.1" 200 8768
