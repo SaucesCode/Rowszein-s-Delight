@@ -1,5 +1,11 @@
 # Revival changelog
 
+## 2026-11-10 — Phase 1B.3 session/rate-limiting design only
+
+Accepted 1B.2 at `8d8fe47`; created `codex/phase-1b3-session-design`. Added [exact session/revocation/login-limiting design](PHASE1B3_SESSION_SECURITY_DESIGN.md): two proposed security models, User epoch/database guards, 15m/30m/8h policy, strict refresh reuse, cookie/admin recovery, PostgreSQL rolling counters and Redis alternative, proxy trust, outages, retention, migration/backup/rollback and race tests. Explicit D7–D16 owner decisions precede implementation. Calls out hash-upgrade revocation, same-session serialization, and stronger reauthentication expectations after role changes without relaxing existing assertions.
+
+Documentation only. No application/test/dependency changes, database access, new migration generation/execution, service provisioning or deployment. Prior results/evidence are inherited and unchanged; the three revocation/throttling release blockers remain open. STOPPED for design approval.
+
 ## 2026-11-10 — Package 1B.2 RBAC; review checkpoint
 
 Created `codex/phase-1b2-rbac` from approved `d696a74`. Added centralized capabilities and explicit action mappings, default-deny private APIs, staff own-tracked-sale query/object scoping, operational field projections, public-safe catalog reads and cache privacy. Staff sale commands require current catalog prices and the current Manila date after successful replay checks. PostgreSQL shared actor locks serialize ledger authorization with role changes without serializing parallel commands by the same actor. Django admin requires business-owner and existing technical permissions; history remains read-only. Frontend navigation/routes, readonly staff screens, price/date controls and authority-cache refresh reflect backend permissions.

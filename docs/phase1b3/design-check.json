@@ -1,0 +1,20 @@
+{
+  "baseline": "8d8fe47",
+  "branch": "codex/phase-1b3-session-design",
+  "scope": "documentation_only",
+  "documentation_paths": [
+    "README.md",
+    "docs/CHANGELOG.md",
+    "docs/PHASE1B3_SESSION_SECURITY_DESIGN.md",
+    "docs/PROJECT_STATUS.md",
+    "docs/phase1b3/design-check.json"
+  ],
+  "application_and_previous_evidence_changes": [],
+  "new_migrations": [],
+  "database_access": false,
+  "infrastructure_changes": false,
+  "runtime_tests_run": false,
+  "sections_checked": 17,
+  "explicit_owner_decisions": 10,
+  "design_sha256": "bde87b7ab75d54c4611837c88bef6cfac9735aa73b72d39fc3cc2af2e79d1144"
+}

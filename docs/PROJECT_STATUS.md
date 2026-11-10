@@ -6,7 +6,7 @@ Rowszein's Delight Management System
 
 ## Current Phase
 
-Package 1B.2 RBAC implementation and disposable verification complete for review on `codex/phase-1b2-rbac`, based on approved `d696a74`. AUTH-02 has controlled local API/browser evidence; AUTH-01 protections remain intact. All 120 Phase 1A checks pass on PostgreSQL. Models, migrations and stock/financial calculations are unchanged. Session revocation, throttling, dependency findings and production topology remain open.
+Package 1B.2 is accepted at `8d8fe47` for controlled local development. Phase 1B.3 session/revocation/login-limiting DESIGN ONLY is complete for approval on `codex/phase-1b3-session-design`. No application, test, dependency, infrastructure or migration changes. AUTH-01/AUTH-02 retain accepted local evidence; the three session/throttle requirements, dependency findings and production topology remain open.
 
 ## Completed
 
@@ -30,7 +30,7 @@ Package 1B.2 RBAC implementation and disposable verification complete for review
 
 ## In Progress
 
-Review checkpoint: [Package 1B.2 report](PHASE1B2_RBAC_IMPLEMENTATION_REPORT.md). All 13 original role requirements and 26 CSRF regressions pass on both engines. New RBAC suite: PostgreSQL 25 passes; SQLite 21 passes/4 PostgreSQL skips. Business suite: PostgreSQL 120 passes; SQLite 103 passes/17 skips. Browser: 68 passes. Frontend: 47 utility passes; build/affected lint pass. Full lint retains 8 errors/16 warnings, down from 12 errors after typing the touched sale form. Overall backend checks still return failure for the three deferred revocation/throttle requirements. Prior evidence remains intact.
+Approval checkpoint: [Phase 1B.3 exact design](PHASE1B3_SESSION_SECURITY_DESIGN.md). Proposes DeviceSession, AuthThrottleBucket, a User epoch and database guards; strict refresh replay handling; shared PostgreSQL counters; cookie/admin recovery; cutover/rollback and race tests. D7–D16 require owner approval. Accepted [1B.2 results](PHASE1B2_RBAC_IMPLEMENTATION_REPORT.md) remain inherited evidence: all 13 roles, 26 CSRF and 120 PostgreSQL business checks pass; SQLite business 103 passes/17 skips; new RBAC 25 PostgreSQL passes/21 SQLite passes plus 4 skips; browser 68, frontend 47. Full lint still has 8 errors/16 warnings. No runtime tests were rerun for this documentation-only design.
 
 ## Not Started
 
@@ -40,7 +40,7 @@ Review checkpoint: [Package 1B.2 report](PHASE1B2_RBAC_IMPLEMENTATION_REPORT.md)
 
 ## Current Task
 
-STOPPED after Package 1B.2 for owner review. D1–D4 are implemented with route/action/object/queryset/field protections and staff price/date checks after successful replay. D6 requires separate exact schema/infrastructure approval before implementation. No production access, deployment or later-phase work occurred.
+STOPPED at the Phase 1B.3 design checkpoint. Await approval of the exact schema, guards, refresh/idle semantics, limiter and operational decisions before implementation. No new migration was created or executed; no production access, deployment or later-phase work occurred. Any future disposable migration application also requires explicit authorization.
 
 ## Notes
 
