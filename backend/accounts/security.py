@@ -46,7 +46,8 @@ def api_exception_handler(error, context):
         return None
     from .session_errors import SessionEnded, AuthUnavailable
     if isinstance(error, (SessionEnded, AuthUnavailable)):
-        response.data = {'success':False,'error':{'code':error.default_code,'message':str(error.detail)}}
+        code = 'authentication_required' if isinstance(error, SessionEnded) else error.default_code
+        response.data = {'success':False,'error':{'code':code,'reason':error.default_code,'message':str(error.detail)}}
     elif isinstance(error, CSRFViolation):
         response.data = {'success': False, 'error': {'code': 'csrf_failed',
             'message': str(error.detail), 'retryable': error.retryable}}

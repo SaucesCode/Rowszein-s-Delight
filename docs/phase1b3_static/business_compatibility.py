@@ -28,7 +28,9 @@ class BusinessSessionClient(APIClient):
 
 @contextmanager
 def phase1a_cookie_fixtures():
-    modules=['sales.tests','sales.test_phase1a1_compat','sales.test_verification_extended','sales.test_release_blockers']
+    # Phase1A1 compatibility inherits SalesFixture's binding from sales.tests;
+    # it has no separate APIClient symbol to patch.
+    modules=['sales.tests','sales.test_verification_extended','sales.test_release_blockers']
     patches=[patch.object(import_module(name),'APIClient',BusinessSessionClient) for name in modules]
     try:
         for item in patches: item.start()

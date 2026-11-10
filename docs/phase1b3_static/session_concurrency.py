@@ -10,18 +10,19 @@ from django.db import connection, connections, transaction
 from django.test import TransactionTestCase, override_settings
 from accounts.models import User, DeviceSession
 from sales.models import Sale, InventoryOperation
-from session_api_contracts import SessionAPIContracts, TEST_AUTH, cookie_client, bind_fixture
+import session_api_contracts as _fixtures
+from session_api_contracts import TEST_AUTH, cookie_client, bind_fixture
 
 
 @skipUnless(connection.vendor=='postgresql','Requires independent PostgreSQL row locks; SQLite proves no concurrency.')
 @override_settings(**TEST_AUTH)
 class SessionConcurrencyContracts(TransactionTestCase):
-    password=SessionAPIContracts.password
-    setUp=SessionAPIContracts.setUp
-    state=SessionAPIContracts.state
-    sale=SessionAPIContracts.sale
-    login=SessionAPIContracts.login
-    me=SessionAPIContracts.me
+    password=_fixtures.SessionAPIContracts.password
+    setUp=_fixtures.SessionAPIContracts.setUp
+    state=_fixtures.SessionAPIContracts.state
+    sale=_fixtures.SessionAPIContracts.sale
+    login=_fixtures.SessionAPIContracts.login
+    me=_fixtures.SessionAPIContracts.me
 
     def stock(self,client):
         self.ingredient.refresh_from_db()
@@ -43,9 +44,12 @@ class SessionConcurrencyContracts(TransactionTestCase):
         while monotonic()<until:
             if pids:
                 with connection.cursor() as cursor:
+                    cursor.execute('SELECT pg_stat_clear_snapshot()')
                     cursor.execute('SELECT wait_event_type FROM pg_stat_activity WHERE pid=%s',[pids[0]])
                     row=cursor.fetchone()
-                if row and row[0]=='Lock': return
+                if row and row[0]=='Lock':
+                    print(f'Observed independent PostgreSQL Lock wait, backend={pids[0]}',flush=True)
+                    return
             sleep(.01)
         self.fail('Required independent row-lock wait was not observed.')
 
@@ -161,3 +165,77 @@ class SessionConcurrencyContracts(TransactionTestCase):
         before=self.state()
         self.assertEqual(self.stock(cookie_client(self.tokens)).status_code,401)
         self.assertEqual(self.state(),before)
+
+    def test_queued_logout_commits_before_refresh(self):
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            with transaction.atomic():
+                User.objects.select_for_update().get(pk=self.owner.pk)
+                logout_pid=[]
+                logout_future=pool.submit(self.worker,lambda:cookie_client(self.tokens).post('/api/auth/logout/',secure=True),logout_pid)
+                self.wait_for_lock(logout_pid)
+                refresh_pid=[]
+                refresh_future=pool.submit(self.worker,lambda:cookie_client(self.tokens).post('/api/auth/refresh/',secure=True),refresh_pid)
+                self.wait_for_lock(refresh_pid)
+            self.assertEqual(logout_future.result(timeout=10).status_code,200)
+            self.assertEqual(refresh_future.result(timeout=10).status_code,401)
+        self.row.refresh_from_db()
+        self.assertEqual(self.row.refresh_generation,0)
+        self.assertEqual(self.row.revocation_reason,'logout')
+
+    def test_queued_password_change_commits_before_refresh(self):
+        from django.contrib.auth.hashers import make_password
+        encoded=make_password('synthetic-replacement-password')
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            with transaction.atomic():
+                User.objects.select_for_update().get(pk=self.owner.pk)
+                change_pid=[]
+                change_future=pool.submit(self.worker,lambda:User.objects.filter(pk=self.owner.pk).update(password=encoded),change_pid)
+                self.wait_for_lock(change_pid)
+                refresh_pid=[]
+                refresh_future=pool.submit(self.worker,lambda:cookie_client(self.tokens).post('/api/auth/refresh/',secure=True),refresh_pid)
+                self.wait_for_lock(refresh_pid)
+            self.assertEqual(change_future.result(timeout=10),1)
+            self.assertEqual(refresh_future.result(timeout=10).status_code,401)
+        self.assertEqual(self.me().status_code,401)
+
+    def test_admin_exclusive_guard_contention_is_observed_and_bounded(self):
+        from threading import Event
+        from types import SimpleNamespace
+        from django.contrib.sessions.backends.db import SessionStore
+        from django.test import RequestFactory
+        from django.http import HttpResponse
+        from accounts.admin_sessions import AdminSessionMiddleware
+        User.objects.filter(pk=self.owner.pk).update(is_staff=True,is_superuser=True)
+        self.owner.refresh_from_db()
+        admin=cookie_client()
+        response=admin.post('/admin/login/',{'username':self.owner.username,'password':self.password},secure=True)
+        self.assertEqual(response.status_code,302)
+        key=admin.session.session_key
+        _,tokens=bind_fixture(self.owner)
+        entered,release=Event(),Event()
+        def slow_admin():
+            native=RequestFactory().get('/admin/',secure=True)
+            native.user=self.owner
+            native.session=SessionStore(session_key=key)
+            native.resolver_match=SimpleNamespace(url_name='index')
+            def callback(request):
+                entered.set()
+                if not release.wait(4): raise RuntimeError('Admin callback release timeout')
+                return HttpResponse('controlled admin callback')
+            return AdminSessionMiddleware.invoke(native,callback,(),{},exclusive=True,started=monotonic())
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            admin_future=pool.submit(self.worker,slow_admin)
+            try:
+                self.assertTrue(entered.wait(4))
+                pid=[];started=monotonic()
+                api_future=pool.submit(self.worker,lambda:self.me(cookie_client(tokens)),pid)
+                self.wait_for_lock(pid)
+                sleep(.2)
+                release.set()
+                self.assertEqual(admin_future.result(timeout=8).status_code,200)
+                self.assertEqual(api_future.result(timeout=8).status_code,200)
+                elapsed=monotonic()-started
+                self.assertGreaterEqual(elapsed,.2)
+                self.assertLess(elapsed,2)
+                print(f'Measured admin-induced API delay: {elapsed:.3f}s (controlled 0.200s hold)',flush=True)
+            finally: release.set()
