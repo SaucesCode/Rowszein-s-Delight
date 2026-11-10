@@ -1,0 +1,10 @@
+{
+  "expected_rejection": true,
+  "silent_repair": false,
+  "fixture": "separate owned default database",
+  "exception_type": "IntegrityError",
+  "message": "CHECK constraint failed: ing_stock_revision_valid",
+  "quantity_unchanged": "-1.00",
+  "migration_recorded": false,
+  "fixture_stopped": true
+}

@@ -1,17 +1,39 @@
+from accounts.permissions import BusinessPermission, business_role
 from rest_framework import generics, status
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django.db.models import Count
+from django.db import transaction
+from django.db.models.deletion import ProtectedError
 
 from .models import Category, Product
 from .serializers import CategorySerializer, ProductSerializer
+from .serializers import OperationalCategorySerializer, OperationalProductSerializer
+from accounts.authentication import PublicCatalogAuthentication
 
 
-class CategoryListCreateView(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+class CatalogProjection:
+    def get_serializer_class(self):
+        if business_role(self.request.user) == 'admin':
+            return self.serializer_class
+        return self.operational_serializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if not self.request.user.is_authenticated:
+            if queryset.model is Product:
+                return queryset.filter(is_available=True, category__is_active=True)
+            return queryset.filter(is_active=True)
+        return queryset
+
+
+class CategoryListCreateView(CatalogProjection, generics.ListCreateAPIView):
+    authentication_classes = [PublicCatalogAuthentication]
+    operational_serializer = OperationalCategorySerializer
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'catalog.public', 'POST': 'catalog.manage', 'OPTIONS': 'catalog.read'}
     serializer_class = CategorySerializer
-    queryset = Category.objects.annotate(product_count=Count('products'))
+    queryset = Category.objects.annotate(product_count=Count('products')).order_by('sort_order', 'name', 'pk')
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
@@ -37,8 +59,10 @@ class CategoryListCreateView(generics.ListCreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 
-class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAuthenticated]
+class CategoryDetailView(CatalogProjection, generics.RetrieveUpdateDestroyAPIView):
+    operational_serializer = OperationalCategorySerializer
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'catalog.read', 'PUT': 'catalog.manage', 'PATCH': 'catalog.manage', 'DELETE': 'catalog.manage', 'OPTIONS': 'catalog.read'}
     serializer_class = CategorySerializer
     queryset = Category.objects.annotate(product_count=Count('products'))
 
@@ -79,8 +103,11 @@ class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
         }, status=status.HTTP_200_OK)
 
 
-class ProductListCreateView(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+class ProductListCreateView(CatalogProjection, generics.ListCreateAPIView):
+    authentication_classes = [PublicCatalogAuthentication]
+    operational_serializer = OperationalProductSerializer
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'catalog.public', 'POST': 'catalog.manage', 'OPTIONS': 'catalog.read'}
     serializer_class = ProductSerializer
     queryset = Product.objects.select_related('category')
     parser_classes = [MultiPartParser, FormParser, JSONParser]
@@ -112,8 +139,10 @@ class ProductListCreateView(generics.ListCreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 
-class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAuthenticated]
+class ProductDetailView(CatalogProjection, generics.RetrieveUpdateDestroyAPIView):
+    operational_serializer = OperationalProductSerializer
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'catalog.read', 'PUT': 'catalog.manage', 'PATCH': 'catalog.manage', 'DELETE': 'catalog.manage', 'OPTIONS': 'catalog.read'}
     serializer_class = ProductSerializer
     queryset = Product.objects.select_related('category')
     parser_classes = [MultiPartParser, FormParser, JSONParser]
@@ -148,9 +177,14 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
             'message': 'Product updated successfully.',
         })
 
+    @transaction.atomic
     def destroy(self, request, *args, **kwargs):
+        self.queryset = Product.objects.select_for_update()
         instance = self.get_object()
-        instance.delete()
+        try:
+            instance.delete()
+        except ProtectedError:
+            return Response({'success': False, 'error': 'This product is referenced by retained sales or consumption history and cannot be deleted.'}, status=409)
         return Response({
             'success': True,
             'data': None,

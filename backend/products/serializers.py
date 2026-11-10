@@ -69,3 +69,24 @@ class ProductSerializer(serializers.ModelSerializer):
         if value <= 0:
             raise serializers.ValidationError('Price must be greater than zero.')
         return value
+
+
+class OperationalCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'slug', 'name', 'description', 'is_active', 'sort_order']
+        read_only_fields = fields
+
+
+class OperationalProductSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+    category = OperationalCategorySerializer(read_only=True)
+
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'description', 'price', 'image_url', 'category', 'is_available', 'is_featured']
+        read_only_fields = fields
+
+    def get_image_url(self, obj):
+        request = self.context.get('request')
+        return request.build_absolute_uri(obj.image.url) if obj.image and request else None

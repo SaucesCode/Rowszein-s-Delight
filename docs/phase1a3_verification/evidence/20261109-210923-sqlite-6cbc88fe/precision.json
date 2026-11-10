@@ -1,0 +1,20 @@
+{
+  "tests_run": 2,
+  "outcomes": [
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_initial_quantity_is_exact_or_rejected_before_storage",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\sales\\test_verification_extended.py\", line 78, in test_initial_quantity_is_exact_or_rejected_before_storage\n    self.assertEqual(response.status_code, 400)\nAssertionError: 201 != 400\n",
+      "seconds": 0.063
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_adjustment_result_is_exact_or_rejected_before_storage",
+      "status": "fail",
+      "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\sales\\test_verification_extended.py\", line 90, in test_adjustment_result_is_exact_or_rejected_before_storage\n    self.assertEqual(response.status_code, 400)\nAssertionError: 200 != 400\n",
+      "seconds": 0.046
+    }
+  ],
+  "failures": 2,
+  "errors": 0,
+  "skipped": 0
+}

@@ -1,0 +1,19 @@
+PASS: fresh install applies approved sales migration
+PASS: fresh install applies approved ingredient migration
+PASS: second migration application is a no-op
+PASS: unused schema contains no sale/operation history
+PASS: unused reversal removes new tables
+PASS: unused reversal removes added ingredient fields
+PASS: auxiliary database name is disposable
+PASS: disposable backup restores exact historical rows in a second database
+PASS: upgrade preserves every original field, ID, date, timestamp, price and quantity
+PASS: historical baseline hashes agree
+PASS: legacy safeguards default without reconstruction
+PASS: legacy stock anchors remain unknown
+PASS: upgrade invents no operation, rate, consumption, movement or financial history
+PASS: PostgreSQL numeric stock/snapshot/money precision matches design
+PASS: partial unique index exists: invop_sale_cancel_once
+PASS: partial unique index exists: sc_active_sale_basis_unique
+PASS: partial unique index exists: finance_gross_once
+PASS: partial unique index exists: finance_cancel_once
+Migration/backup verification complete; only owned disposable databases used.

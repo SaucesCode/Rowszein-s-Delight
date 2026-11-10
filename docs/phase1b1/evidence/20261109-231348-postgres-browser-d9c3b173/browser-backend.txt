@@ -1,0 +1,14 @@
+November 09, 2026 - 23:14:00
+Django version 5.1.4, using settings 'verification_settings'
+Starting development server at http://127.0.0.1:18842/
+Quit the server with CTRL-BREAK.
+
+[09/Nov/2026 23:14:14] "GET /api/auth/me/ HTTP/1.1" 401 138
+[09/Nov/2026 23:14:14] "GET /api/auth/csrf/ HTTP/1.1" 200 118
+[09/Nov/2026 23:14:14] "POST /api/auth/login/ HTTP/1.1" 200 206
+[09/Nov/2026 23:14:15] "GET /api/auth/me/ HTTP/1.1" 200 109
+[09/Nov/2026 23:14:15] "POST /api/expenses/ HTTP/1.1" 403 128
+[09/Nov/2026 23:14:15] "GET /api/dashboard/?date_from=2025-12-31&date_to=2026-11-09 HTTP/1.1" 200 1261
+[09/Nov/2026 23:14:15] "GET /api/auth/csrf/ HTTP/1.1" 200 118
+[09/Nov/2026 23:14:16] "POST /api/auth/logout/ HTTP/1.1" 403 129
+[09/Nov/2026 23:14:16] "POST /api/expenses/ HTTP/1.1" 403 9999

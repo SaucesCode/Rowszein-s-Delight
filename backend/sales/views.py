@@ -1,9 +1,10 @@
+from accounts.permissions import BusinessPermission, visible_sales
 from rest_framework import generics, status
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.http import HttpResponse
 from datetime import datetime
+from decimal import Decimal, localcontext
 import csv
 import io
 
@@ -13,8 +14,26 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from reportlab.lib.styles import getSampleStyleSheet
 
 from .models import Sale
-from .serializers import SaleSerializer
-from .services import deduct_inventory_for_sale, restore_inventory_for_sale
+from .serializers import SaleSerializer, CancellationSerializer
+from .services import execute_sale, request_identity, current_items, sale_data
+from rest_framework.exceptions import APIException, PermissionDenied
+from django.utils import timezone
+from .reporting import financial_summary
+
+
+def command_response(request, *, action, data=None, pk=None, reason=''):
+    try:
+        key, revision = request_identity(request.headers.get('Idempotency-Key'), request.headers.get('If-Match'), action != 'sale_create')
+        result = execute_sale(action=action, actor=request.user, key=key, expected_revision=revision,
+                              data=data, sale_id=pk, reason=reason)
+    except PermissionDenied:
+        raise
+    except APIException as error:
+        return Response({'success': False, 'error': error.detail}, status=error.status_code)
+    response = Response(result.body, status=result.status)
+    response['Idempotency-Replayed'] = 'true' if result.replayed else 'false'
+    response['ETag'] = f'"{result.body["data"]["revision"]}"'
+    return response
 
 
 def parse_date(value):
@@ -25,11 +44,12 @@ def parse_date(value):
 
 
 class SaleListCreateView(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'sales.read', 'POST': 'sales.create', 'OPTIONS': 'sales.read'}
     serializer_class = SaleSerializer
 
     def get_queryset(self):
-        queryset = Sale.objects.prefetch_related('sale_items__product')
+        queryset = visible_sales(Sale.objects.prefetch_related('sale_items__product'), self.request.user)
         date_from = parse_date(self.request.query_params.get('date_from'))
         date_to = parse_date(self.request.query_params.get('date_to'))
         if date_from:
@@ -54,20 +74,17 @@ class SaleListCreateView(generics.ListCreateAPIView):
                 'error': serializer.errors,
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        sale = serializer.save()
-        deduct_inventory_for_sale(sale)
-
-        return Response({
-            'success': True,
-            'data': serializer.data,
-            'message': 'Sale recorded successfully.',
-        }, status=status.HTTP_201_CREATED)
+        return command_response(request, action='sale_create', data=serializer.validated_data)
 
 
 class SaleDetailView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'sales.read', 'PUT': 'sales.update', 'PATCH': 'sales.update', 'DELETE': 'sales.cancel', 'OPTIONS': 'sales.read'}
     serializer_class = SaleSerializer
     queryset = Sale.objects.prefetch_related('sale_items__product')
+
+    def get_queryset(self):
+        return visible_sales(super().get_queryset(), self.request.user)
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -80,35 +97,41 @@ class SaleDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        restore_inventory_for_sale(instance)
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        # Validate shape/values before the service obtains locks or writes.
+        serializer = self.get_serializer(data=request.data, partial=partial)
         if not serializer.is_valid():
             return Response({
                 'success': False,
                 'error': serializer.errors,
             }, status=status.HTTP_400_BAD_REQUEST)
-        sale = serializer.save()
-        deduct_inventory_for_sale(sale)
-        return Response({
-            'success': True,
-            'data': serializer.data,
-            'message': 'Sale updated successfully.',
-        })
+        return command_response(request, action='sale_update', pk=kwargs['pk'], data=serializer.validated_data)
 
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        restore_inventory_for_sale(instance)
-        instance.delete()
-        return Response({
-            'success': True,
-            'data': None,
-            'message': 'Sale deleted successfully.',
-        }, status=status.HTTP_200_OK)
+        serializer = CancellationSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({'success': False, 'error': serializer.errors}, status=400)
+        return command_response(request, action='sale_cancel', pk=kwargs['pk'], reason=serializer.validated_data['reason'])
+
+
+class SaleFinancialSummaryView(APIView):
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'finance.read', 'OPTIONS': 'finance.read'}
+
+    def get(self, request):
+        today = timezone.localdate()
+        date_from = parse_date(request.query_params.get('date_from'))
+        date_to = parse_date(request.query_params.get('date_to'))
+        if any(request.query_params.get(key) and parsed is None for key, parsed in [('date_from', date_from), ('date_to', date_to)]):
+            return Response({'success': False, 'error': 'Use YYYY-MM-DD dates.'}, status=400)
+        date_from, date_to = date_from or today.replace(month=1, day=1), date_to or today
+        if date_from > date_to:
+            return Response({'success': False, 'error': 'Date range is reversed.'}, status=400)
+        return Response({'success': True, 'data': financial_summary(date_from, date_to), 'message': ''})
 
 
 class SaleExportCSVView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'sales.export', 'OPTIONS': 'sales.export'}
 
     def get(self, request):
         queryset = Sale.objects.prefetch_related('sale_items__product')
@@ -123,26 +146,26 @@ class SaleExportCSVView(APIView):
         response['Content-Disposition'] = 'attachment; filename="sales.csv"'
 
         writer = csv.writer(response)
-        writer.writerow(['Sale ID', 'Date', 'Items', 'Notes', 'Total Amount'])
+        writer.writerow(['Sale ID', 'Original Date', 'Status', 'Current Items', 'Notes', 'Original Amount', 'Current Transaction Value (not net sales)'])
 
         for sale in queryset:
-            items_summary = ', '.join(
-                f"{item.product.name} x{item.quantity}"
-                for item in sale.sale_items.all()
-            )
+            items_summary = ', '.join(f"{item['product_name']} x{item['quantity']}" for item in current_items(sale))
             writer.writerow([
                 sale.id,
                 sale.date,
+                sale.status,
                 items_summary,
                 sale.notes,
                 sale.total_amount,
+                sale_data(sale)['total_amount'],
             ])
 
         return response
 
 
 class SaleExportPDFView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'sales.export', 'OPTIONS': 'sales.export'}
 
     def get(self, request):
         queryset = Sale.objects.prefetch_related('sale_items__product')
@@ -158,7 +181,8 @@ class SaleExportPDFView(APIView):
         styles = getSampleStyleSheet()
         elements = []
 
-        elements.append(Paragraph("Sales Report", styles['Title']))
+        elements.append(Paragraph("Sales History (not posting-date net sales)", styles['Title']))
+        elements.append(Paragraph("Original transaction values include cancelled records. For gross, adjustments, cancellations and net sales use the posting-date financial report. Cancellation does not record a cash refund.", styles['Normal']))
         elements.append(Paragraph(
             f"Rowszein's Delight — Generated {datetime.now().strftime('%B %d, %Y')}",
             styles['Normal']
@@ -167,22 +191,24 @@ class SaleExportPDFView(APIView):
 
         table_data = [['Sale ID', 'Date', 'Items', 'Notes', 'Total']]
 
-        total_revenue = 0
+        total_revenue = Decimal('0.00')
         for sale in queryset:
             items_summary = ', '.join(
                 f"{item.product.name} x{item.quantity}"
                 for item in sale.sale_items.all()
             )
             table_data.append([
-                str(sale.id),
+                f"{sale.id} ({sale.status})",
                 str(sale.date),
                 items_summary,
                 sale.notes or '—',
                 f"₱{sale.total_amount:,.2f}",
             ])
-            total_revenue += float(sale.total_amount)
+            with localcontext() as context:
+                context.prec = 50
+                total_revenue += sale.total_amount
 
-        table_data.append(['', '', '', 'Total Revenue', f"₱{total_revenue:,.2f}"])
+        table_data.append(['', '', '', 'Original values', f"₱{total_revenue:,.2f}"])
 
         table = Table(table_data, colWidths=[50, 70, 180, 100, 80])
         table.setStyle(TableStyle([

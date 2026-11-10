@@ -1,12 +1,16 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm, useFieldArray, useWatch } from "react-hook-form";
+import type { Control } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSale, useCreateSale, useUpdateSale } from "@/hooks/useSales";
 import { useProducts } from "@/hooks/useProducts";
 import { Plus, Trash2 } from "lucide-react";
 import SkeletonTable from "@/components/SkeletonTable";
+import { useMe } from "@/hooks/useAuth";
+import { manilaDate } from "@/lib/permissions";
+import type { Product } from "@/types/product.types";
 
 /* ─────────────────────────────────────────────
    SCHEMA
@@ -68,10 +72,10 @@ function Field({
 /* ─────────────────────────────────────────────
    ORDER TOTAL — live computed total
    ───────────────────────────────────────────── */
-function OrderTotal({ control }: { control: any }) {
+function OrderTotal({ control }: { control: Control<SaleFormInput, unknown, SaleForm> }) {
   const items = useWatch({ control, name: "sale_items" });
   const total =
-    items?.reduce((sum: number, item: any) => {
+    items?.reduce((sum: number, item) => {
       const qty = Number(item.quantity) || 0;
       const price = Number(item.unit_price) || 0;
       return sum + qty * price;
@@ -96,6 +100,8 @@ function OrderTotal({ control }: { control: any }) {
    PAGE
    ───────────────────────────────────────────── */
 export default function SaleFormPage() {
+  const { data: user } = useMe();
+  const isStaff = user?.role === "staff";
   const { id } = useParams();
   const navigate = useNavigate();
   const isEdit = !!id;
@@ -103,9 +109,9 @@ export default function SaleFormPage() {
   const { data: sale, isLoading: saleLoading } = useSale(Number(id));
   const { data: productsData } = useProducts();
   const createSale = useCreateSale();
-  const updateSale = useUpdateSale(Number(id));
+  const updateSale = useUpdateSale(Number(id), sale?.revision);
 
-  const products = productsData?.data?.results ?? [];
+  const products: Product[] = productsData?.data?.results ?? [];
 
   const {
     register,
@@ -119,6 +125,10 @@ export default function SaleFormPage() {
   });
 
   const { fields, append, remove } = useFieldArray({ control, name: "sale_items" });
+
+  useEffect(() => {
+    if (isStaff && !isEdit) setValue("date", manilaDate());
+  }, [isStaff, isEdit, setValue]);
 
 useEffect(() => {
   if (sale) {
@@ -138,7 +148,7 @@ useEffect(() => {
 
   /* Auto-fill unit price when product is selected */
   const handleProductChange = (index: number, productId: number) => {
-    const product = products.find((p: any) => p.id === productId);
+    const product = products.find(p => p.id === productId);
     if (product) {
       setValue(`sale_items.${index}.unit_price`, Number(product.price));
     }
@@ -172,6 +182,7 @@ useEffect(() => {
             <input
               {...register("date")}
               type="date"
+              readOnly={isEdit || isStaff}
               className="field-input mt-1"
               aria-invalid={!!errors.date}
             />
@@ -267,7 +278,7 @@ useEffect(() => {
                     aria-invalid={!!errors.sale_items?.[index]?.product}
                   >
                     <option value={0}>Select product…</option>
-                    {products.map((p: any) => (
+                    {products.filter(p => !isStaff || p.is_available).map(p => (
                       <option key={p.id} value={p.id}>
                         {p.name}
                       </option>
@@ -302,6 +313,7 @@ useEffect(() => {
                 <div>
                   <input
                     {...register(`sale_items.${index}.unit_price`)}
+                    readOnly={isStaff}
                     type="number"
                     step="0.01"
                     min="0"

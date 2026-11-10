@@ -234,18 +234,13 @@ export default function IngredientsPage() {
     deleteIngredient.mutate(deleteTarget.id, { onSettled: () => setDeleteTarget(null) });
   };
 
-  const handleStockSave = (resultingQuantity: number) => {
+  const handleStockSave = (delta: string, reason: string) => {
     if (!stockTarget) return;
     updateStock.mutate(
       {
-        name: stockTarget.name,
-        quantity: resultingQuantity,
-        unit: stockTarget.unit,
-        cost_per_unit: Number(stockTarget.cost_per_unit),
-        supplier: stockTarget.supplier,
-        minimum_stock: Number(stockTarget.minimum_stock),
-        category: stockTarget.category,
-        notes: stockTarget.notes,
+        delta,
+        reason,
+        revision: stockTarget.stock_revision,
       },
       { onSuccess: () => setStockTarget(null) },
     );

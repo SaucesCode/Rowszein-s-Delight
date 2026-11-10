@@ -327,7 +327,7 @@ export default function DashboardPage() {
       {/* KPI row — the 4 questions the dashboard must answer, nothing more */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          label="Total sales"
+          label="Net sales"
           value={formatPeso(totals.total_sales)}
           icon={ShoppingCart}
           tone="neutral"

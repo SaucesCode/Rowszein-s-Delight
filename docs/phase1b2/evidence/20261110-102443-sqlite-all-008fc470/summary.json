@@ -1,0 +1,37 @@
+{
+  "original_security_13_after": {
+    "tests_run": 13,
+    "failures": 3,
+    "errors": 0,
+    "skipped": 0,
+    "exit_code": 1
+  },
+  "csrf_regressions": {
+    "tests_run": 26,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "exit_code": 0
+  },
+  "phase1a_120": {
+    "tests_run": 120,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 17,
+    "exit_code": 0
+  },
+  "original_roles_13": {
+    "tests_run": 13,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "exit_code": 0
+  },
+  "rbac_regressions": {
+    "tests_run": 25,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 4,
+    "exit_code": 0
+  }
+}

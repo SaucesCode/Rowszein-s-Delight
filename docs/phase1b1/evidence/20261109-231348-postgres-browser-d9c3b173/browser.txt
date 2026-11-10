@@ -1,0 +1,1012 @@
+PASS: real_cookie_login
+PASS: browser_cookie_missing_token_403_zero_business_writes
+PASS: hostile_browser_form_valid_token_403_no_cookie_clear_or_business_writes
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 208, in <module>
+    and hostile_write.value.status == 403 and hostile_write.value.json()['error']['retryable'] is False and business_snapshot() == before)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22298, in json
+    return mapping.from_maybe_impl(self._sync(self._impl_obj.json()))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 933, in json
+    return json.loads(await self.text())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 5 column 1 (char 4)
+
+socket.send() raised exception.
+socket.send() raised exception.
+socket.send() raised exception.
+socket.send() raised exception.
+socket.send() raised exception.
+Exception in callback Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:546
+handle: <Handle Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:546>
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 208, in <module>
+    and hostile_write.value.status == 403 and hostile_write.value.json()['error']['retryable'] is False and business_snapshot() == before)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22298, in json
+    return mapping.from_maybe_impl(self._sync(self._impl_obj.json()))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 933, in json
+    return json.loads(await self.text())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 5 column 1 (char 4)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 547, in _done_callback
+    exc = future.exception()
+          ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_browser_context.py", line 267, in _on_route
+    handled = await route_handler.handle(route)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 443, in handle
+    return await self._handle_internal(route)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 479, in _handle_internal
+    await handler_finished_future
+asyncio.exceptions.CancelledError
+Exception in callback wait_for_future.<locals>.resume(<Task cancell...twork.py:545>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py:67
+handle: <Handle wait_for_future.<locals>.resume(<Task cancell...twork.py:545>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py:67>
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 208, in <module>
+    and hostile_write.value.status == 403 and hostile_write.value.json()['error']['retryable'] is False and business_snapshot() == before)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22298, in json
+    return mapping.from_maybe_impl(self._sync(self._impl_obj.json()))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 933, in json
+    return json.loads(await self.text())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 5 column 1 (char 4)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py", line 68, in resume
+    g_self.switch()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 470, in _handler
+    self.handler(route, route.request)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_impl_to_api_mapping.py", line 140, in wrapper_func
+    return handler(
+           ^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 133, in route_local
+    route.continue_()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22486, in continue_
+    self._sync(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 558, in continue_
+    return await self._handle_route(_inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 504, in _handle_route
+    await callback()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 556, in _inner
+    await self._inner_continue(False)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 562, in _inner_continue
+    await self._race_with_page_close(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 599, in _race_with_page_close
+    await asyncio.wait(
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\tasks.py", line 464, in wait
+    return await _wait(fs, timeout, return_when, loop)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\tasks.py", line 550, in _wait
+    await waiter
+asyncio.exceptions.CancelledError
+Exception in callback wait_for_future.<locals>.resume(<Task cancell...twork.py:545>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py:67
+handle: <Handle wait_for_future.<locals>.resume(<Task cancell...twork.py:545>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py:67>
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 208, in <module>
+    and hostile_write.value.status == 403 and hostile_write.value.json()['error']['retryable'] is False and business_snapshot() == before)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22298, in json
+    return mapping.from_maybe_impl(self._sync(self._impl_obj.json()))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 933, in json
+    return json.loads(await self.text())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 5 column 1 (char 4)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py", line 68, in resume
+    g_self.switch()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 470, in _handler
+    self.handler(route, route.request)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_impl_to_api_mapping.py", line 140, in wrapper_func
+    return handler(
+           ^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 133, in route_local
+    route.continue_()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22486, in continue_
+    self._sync(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 558, in continue_
+    return await self._handle_route(_inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 504, in _handle_route
+    await callback()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 556, in _inner
+    await self._inner_continue(False)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 562, in _inner_continue
+    await self._race_with_page_close(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 599, in _race_with_page_close
+    await asyncio.wait(
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\tasks.py", line 464, in wait
+    return await _wait(fs, timeout, return_when, loop)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\tasks.py", line 550, in _wait
+    await waiter
+asyncio.exceptions.CancelledError
+Exception in callback wait_for_future.<locals>.resume(<Task cancell...twork.py:545>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py:67
+handle: <Handle wait_for_future.<locals>.resume(<Task cancell...twork.py:545>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py:67>
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 208, in <module>
+    and hostile_write.value.status == 403 and hostile_write.value.json()['error']['retryable'] is False and business_snapshot() == before)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22298, in json
+    return mapping.from_maybe_impl(self._sync(self._impl_obj.json()))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 933, in json
+    return json.loads(await self.text())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 5 column 1 (char 4)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py", line 68, in resume
+    g_self.switch()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 470, in _handler
+    self.handler(route, route.request)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_impl_to_api_mapping.py", line 140, in wrapper_func
+    return handler(
+           ^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 133, in route_local
+    route.continue_()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22486, in continue_
+    self._sync(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 558, in continue_
+    return await self._handle_route(_inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 504, in _handle_route
+    await callback()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 556, in _inner
+    await self._inner_continue(False)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 562, in _inner_continue
+    await self._race_with_page_close(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 599, in _race_with_page_close
+    await asyncio.wait(
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\tasks.py", line 464, in wait
+    return await _wait(fs, timeout, return_when, loop)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\tasks.py", line 550, in _wait
+    await waiter
+asyncio.exceptions.CancelledError
+Exception in callback Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:546
+handle: <Handle Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:546>
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 208, in <module>
+    and hostile_write.value.status == 403 and hostile_write.value.json()['error']['retryable'] is False and business_snapshot() == before)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22298, in json
+    return mapping.from_maybe_impl(self._sync(self._impl_obj.json()))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 933, in json
+    return json.loads(await self.text())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 5 column 1 (char 4)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 547, in _done_callback
+    exc = future.exception()
+          ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_browser_context.py", line 267, in _on_route
+    handled = await route_handler.handle(route)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 443, in handle
+    return await self._handle_internal(route)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 479, in _handle_internal
+    await handler_finished_future
+asyncio.exceptions.CancelledError
+Exception in callback Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:546
+handle: <Handle Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:546>
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 208, in <module>
+    and hostile_write.value.status == 403 and hostile_write.value.json()['error']['retryable'] is False and business_snapshot() == before)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22298, in json
+    return mapping.from_maybe_impl(self._sync(self._impl_obj.json()))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 933, in json
+    return json.loads(await self.text())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 5 column 1 (char 4)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 547, in _done_callback
+    exc = future.exception()
+          ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_browser_context.py", line 267, in _on_route
+    handled = await route_handler.handle(route)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 443, in handle
+    return await self._handle_internal(route)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 479, in _handle_internal
+    await handler_finished_future
+asyncio.exceptions.CancelledError
+Exception in callback wait_for_future.<locals>.resume(<Task cancell...twork.py:545>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py:67
+handle: <Handle wait_for_future.<locals>.resume(<Task cancell...twork.py:545>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py:67>
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 208, in <module>
+    and hostile_write.value.status == 403 and hostile_write.value.json()['error']['retryable'] is False and business_snapshot() == before)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22298, in json
+    return mapping.from_maybe_impl(self._sync(self._impl_obj.json()))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 933, in json
+    return json.loads(await self.text())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 5 column 1 (char 4)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py", line 68, in resume
+    g_self.switch()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 470, in _handler
+    self.handler(route, route.request)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_impl_to_api_mapping.py", line 140, in wrapper_func
+    return handler(
+           ^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 133, in route_local
+    route.continue_()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22486, in continue_
+    self._sync(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 558, in continue_
+    return await self._handle_route(_inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 504, in _handle_route
+    await callback()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 556, in _inner
+    await self._inner_continue(False)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 562, in _inner_continue
+    await self._race_with_page_close(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 599, in _race_with_page_close
+    await asyncio.wait(
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\tasks.py", line 464, in wait
+    return await _wait(fs, timeout, return_when, loop)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\tasks.py", line 550, in _wait
+    await waiter
+asyncio.exceptions.CancelledError
+Exception in callback Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:546
+handle: <Handle Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:546>
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 208, in <module>
+    and hostile_write.value.status == 403 and hostile_write.value.json()['error']['retryable'] is False and business_snapshot() == before)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22298, in json
+    return mapping.from_maybe_impl(self._sync(self._impl_obj.json()))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 933, in json
+    return json.loads(await self.text())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 5 column 1 (char 4)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 547, in _done_callback
+    exc = future.exception()
+          ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_browser_context.py", line 267, in _on_route
+    handled = await route_handler.handle(route)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 443, in handle
+    return await self._handle_internal(route)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 479, in _handle_internal
+    await handler_finished_future
+asyncio.exceptions.CancelledError
+Exception in callback Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:546
+handle: <Handle Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:546>
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 208, in <module>
+    and hostile_write.value.status == 403 and hostile_write.value.json()['error']['retryable'] is False and business_snapshot() == before)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22298, in json
+    return mapping.from_maybe_impl(self._sync(self._impl_obj.json()))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 933, in json
+    return json.loads(await self.text())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 5 column 1 (char 4)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 547, in _done_callback
+    exc = future.exception()
+          ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_browser_context.py", line 267, in _on_route
+    handled = await route_handler.handle(route)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 443, in handle
+    return await self._handle_internal(route)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 479, in _handle_internal
+    await handler_finished_future
+asyncio.exceptions.CancelledError
+Exception in callback Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:546
+handle: <Handle Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:546>
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 208, in <module>
+    and hostile_write.value.status == 403 and hostile_write.value.json()['error']['retryable'] is False and business_snapshot() == before)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22298, in json
+    return mapping.from_maybe_impl(self._sync(self._impl_obj.json()))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 933, in json
+    return json.loads(await self.text())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 5 column 1 (char 4)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 547, in _done_callback
+    exc = future.exception()
+          ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_browser_context.py", line 267, in _on_route
+    handled = await route_handler.handle(route)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 443, in handle
+    return await self._handle_internal(route)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 479, in _handle_internal
+    await handler_finished_future
+asyncio.exceptions.CancelledError
+Exception in callback wait_for_future.<locals>.resume(<Task cancell...twork.py:545>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py:67
+handle: <Handle wait_for_future.<locals>.resume(<Task cancell...twork.py:545>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py:67>
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 208, in <module>
+    and hostile_write.value.status == 403 and hostile_write.value.json()['error']['retryable'] is False and business_snapshot() == before)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22298, in json
+    return mapping.from_maybe_impl(self._sync(self._impl_obj.json()))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 933, in json
+    return json.loads(await self.text())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 5 column 1 (char 4)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py", line 68, in resume
+    g_self.switch()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 470, in _handler
+    self.handler(route, route.request)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_impl_to_api_mapping.py", line 140, in wrapper_func
+    return handler(
+           ^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 133, in route_local
+    route.continue_()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22486, in continue_
+    self._sync(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 558, in continue_
+    return await self._handle_route(_inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 504, in _handle_route
+    await callback()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 556, in _inner
+    await self._inner_continue(False)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 562, in _inner_continue
+    await self._race_with_page_close(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 599, in _race_with_page_close
+    await asyncio.wait(
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\tasks.py", line 464, in wait
+    return await _wait(fs, timeout, return_when, loop)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\tasks.py", line 550, in _wait
+    await waiter
+asyncio.exceptions.CancelledError
+Exception in callback wait_for_future.<locals>.resume(<Task cancell...twork.py:545>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py:67
+handle: <Handle wait_for_future.<locals>.resume(<Task cancell...twork.py:545>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py:67>
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 208, in <module>
+    and hostile_write.value.status == 403 and hostile_write.value.json()['error']['retryable'] is False and business_snapshot() == before)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22298, in json
+    return mapping.from_maybe_impl(self._sync(self._impl_obj.json()))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 933, in json
+    return json.loads(await self.text())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 5 column 1 (char 4)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py", line 68, in resume
+    g_self.switch()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 470, in _handler
+    self.handler(route, route.request)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_impl_to_api_mapping.py", line 140, in wrapper_func
+    return handler(
+           ^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 133, in route_local
+    route.continue_()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22486, in continue_
+    self._sync(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 558, in continue_
+    return await self._handle_route(_inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 504, in _handle_route
+    await callback()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 556, in _inner
+    await self._inner_continue(False)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 562, in _inner_continue
+    await self._race_with_page_close(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 599, in _race_with_page_close
+    await asyncio.wait(
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\tasks.py", line 464, in wait
+    return await _wait(fs, timeout, return_when, loop)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\tasks.py", line 550, in _wait
+    await waiter
+asyncio.exceptions.CancelledError
+Exception in callback wait_for_future.<locals>.resume(<Task cancell...twork.py:545>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py:67
+handle: <Handle wait_for_future.<locals>.resume(<Task cancell...twork.py:545>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py:67>
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 208, in <module>
+    and hostile_write.value.status == 403 and hostile_write.value.json()['error']['retryable'] is False and business_snapshot() == before)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22298, in json
+    return mapping.from_maybe_impl(self._sync(self._impl_obj.json()))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 933, in json
+    return json.loads(await self.text())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 5 column 1 (char 4)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py", line 68, in resume
+    g_self.switch()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 470, in _handler
+    self.handler(route, route.request)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_impl_to_api_mapping.py", line 140, in wrapper_func
+    return handler(
+           ^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 133, in route_local
+    route.continue_()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22486, in continue_
+    self._sync(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 558, in continue_
+    return await self._handle_route(_inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 504, in _handle_route
+    await callback()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 556, in _inner
+    await self._inner_continue(False)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 562, in _inner_continue
+    await self._race_with_page_close(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 599, in _race_with_page_close
+    await asyncio.wait(
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\tasks.py", line 464, in wait
+    return await _wait(fs, timeout, return_when, loop)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\tasks.py", line 550, in _wait
+    await waiter
+asyncio.exceptions.CancelledError
+Exception in callback Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:546
+handle: <Handle Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:546>
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 208, in <module>
+    and hostile_write.value.status == 403 and hostile_write.value.json()['error']['retryable'] is False and business_snapshot() == before)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22298, in json
+    return mapping.from_maybe_impl(self._sync(self._impl_obj.json()))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 933, in json
+    return json.loads(await self.text())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 5 column 1 (char 4)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 547, in _done_callback
+    exc = future.exception()
+          ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_browser_context.py", line 267, in _on_route
+    handled = await route_handler.handle(route)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 443, in handle
+    return await self._handle_internal(route)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 479, in _handle_internal
+    await handler_finished_future
+asyncio.exceptions.CancelledError
+Exception in callback wait_for_future.<locals>.resume(<Task cancell...twork.py:545>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py:67
+handle: <Handle wait_for_future.<locals>.resume(<Task cancell...twork.py:545>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py:67>
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 208, in <module>
+    and hostile_write.value.status == 403 and hostile_write.value.json()['error']['retryable'] is False and business_snapshot() == before)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22298, in json
+    return mapping.from_maybe_impl(self._sync(self._impl_obj.json()))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 933, in json
+    return json.loads(await self.text())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 5 column 1 (char 4)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py", line 68, in resume
+    g_self.switch()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 470, in _handler
+    self.handler(route, route.request)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_impl_to_api_mapping.py", line 140, in wrapper_func
+    return handler(
+           ^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 133, in route_local
+    route.continue_()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22486, in continue_
+    self._sync(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 558, in continue_
+    return await self._handle_route(_inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 504, in _handle_route
+    await callback()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 556, in _inner
+    await self._inner_continue(False)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 562, in _inner_continue
+    await self._race_with_page_close(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 599, in _race_with_page_close
+    await asyncio.wait(
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\tasks.py", line 464, in wait
+    return await _wait(fs, timeout, return_when, loop)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\tasks.py", line 550, in _wait
+    await waiter
+asyncio.exceptions.CancelledError
+Exception in callback Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:546
+handle: <Handle Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:546>
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 208, in <module>
+    and hostile_write.value.status == 403 and hostile_write.value.json()['error']['retryable'] is False and business_snapshot() == before)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22298, in json
+    return mapping.from_maybe_impl(self._sync(self._impl_obj.json()))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 933, in json
+    return json.loads(await self.text())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 5 column 1 (char 4)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 547, in _done_callback
+    exc = future.exception()
+          ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_browser_context.py", line 267, in _on_route
+    handled = await route_handler.handle(route)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 443, in handle
+    return await self._handle_internal(route)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 479, in _handle_internal
+    await handler_finished_future
+asyncio.exceptions.CancelledError
+Exception in callback Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:546
+handle: <Handle Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:546>
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 208, in <module>
+    and hostile_write.value.status == 403 and hostile_write.value.json()['error']['retryable'] is False and business_snapshot() == before)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22298, in json
+    return mapping.from_maybe_impl(self._sync(self._impl_obj.json()))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 933, in json
+    return json.loads(await self.text())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 5 column 1 (char 4)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 547, in _done_callback
+    exc = future.exception()
+          ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_browser_context.py", line 267, in _on_route
+    handled = await route_handler.handle(route)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 443, in handle
+    return await self._handle_internal(route)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 479, in _handle_internal
+    await handler_finished_future
+asyncio.exceptions.CancelledError
+Exception in callback wait_for_future.<locals>.resume(<Task cancell...twork.py:545>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py:67
+handle: <Handle wait_for_future.<locals>.resume(<Task cancell...twork.py:545>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py:67>
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 208, in <module>
+    and hostile_write.value.status == 403 and hostile_write.value.json()['error']['retryable'] is False and business_snapshot() == before)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22298, in json
+    return mapping.from_maybe_impl(self._sync(self._impl_obj.json()))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 933, in json
+    return json.loads(await self.text())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\json\decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 5 column 1 (char 4)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_greenlets.py", line 68, in resume
+    g_self.switch()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 470, in _handler
+    self.handler(route, route.request)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_impl_to_api_mapping.py", line 140, in wrapper_func
+    return handler(
+           ^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 133, in route_local
+    route.continue_()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 22486, in continue_
+    self._sync(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 558, in continue_
+    return await self._handle_route(_inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 504, in _handle_route
+    await callback()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 556, in _inner
+    await self._inner_continue(False)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 562, in _inner_continue
+    await self._race_with_page_close(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_network.py", line 599, in _race_with_page_close
+    await asyncio.wait(
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\tasks.py", line 464, in wait
+    return await _wait(fs, timeout, return_when, loop)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\tasks.py", line 550, in _wait
+    await waiter
+asyncio.exceptions.CancelledError
+Task was destroyed but it is pending!
+task: <Task cancelling name='Task-372' coro=<Channel.send() running at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:78> wait_for=<Future finished result=None>>
+Future exception was never retrieved
+future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
+playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed
+Task was destroyed but it is pending!
+task: <Task cancelling name='Task-375' coro=<Channel.send() running at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:78> wait_for=<Future finished result=None>>
+Future exception was never retrieved
+future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
+playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed
+Task was destroyed but it is pending!
+task: <Task cancelling name='Task-378' coro=<Channel.send() running at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:78> wait_for=<Future finished result=None>>
+Future exception was never retrieved
+future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
+playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed
+Task was destroyed but it is pending!
+task: <Task cancelling name='Task-381' coro=<Channel.send() running at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:78> wait_for=<Future finished result=None>>
+Future exception was never retrieved
+future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
+playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed
+Task was destroyed but it is pending!
+task: <Task cancelling name='Task-384' coro=<Channel.send() running at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:78> wait_for=<Future finished result=None>>
+Future exception was never retrieved
+future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
+playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed
+Task was destroyed but it is pending!
+task: <Task cancelling name='Task-393' coro=<Channel.send() running at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:78> wait_for=<Future finished result=None>>
+Task was destroyed but it is pending!
+task: <Task cancelling name='Task-387' coro=<Channel.send() running at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:78> wait_for=<Future finished result=None>>
+Task was destroyed but it is pending!
+task: <Task cancelling name='Task-396' coro=<Channel.send() running at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:78> wait_for=<Future finished result=None>>
+Task was destroyed but it is pending!
+task: <Task cancelling name='Task-390' coro=<Channel.send() running at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:78> wait_for=<Future finished result=None>>
+Future exception was never retrieved
+future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
+playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed
+Future exception was never retrieved
+future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
+playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed
+Future exception was never retrieved
+future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
+playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed
+Future exception was never retrieved
+future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
+playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed

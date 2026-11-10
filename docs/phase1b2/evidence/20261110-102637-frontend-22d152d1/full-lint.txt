@@ -1,0 +1,92 @@
+
+C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\frontend\src\components\ingredients\StockStatusBadge.tsx
+  16:17  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\frontend\src\components\recipes\RecipeCostPreview.tsx
+  26:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\frontend\src\components\ui\button.tsx
+  67:18  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\frontend\src\pages\DashboardPage.tsx
+  321:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  482:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\frontend\src\pages\ExpenseFormPage.tsx
+  197:28  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\frontend\src\pages\ExpenseFormPage.tsx:197:28
+  195 |   });
+  196 |
+> 197 |   const selectedCategory = watch("category");
+      |                            ^^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  198 |
+  199 |   useEffect(() => {
+  200 |     if (expense) {  react-hooks/incompatible-library
+
+C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\frontend\src\pages\ExpensesPage.tsx
+  97:9  warning  The 'expenses' logical expression could make the dependencies of useMemo Hook (at line 107) change on every render. To fix this, wrap the initialization of 'expenses' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  97:9  warning  The 'expenses' logical expression could make the dependencies of useMemo Hook (at line 124) change on every render. To fix this, wrap the initialization of 'expenses' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\frontend\src\pages\IngredientFormPage.tsx
+  123:33  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\frontend\src\pages\IngredientFormPage.tsx:123:33
+  121 |         notes: ingredient.notes,
+  122 |       });
+> 123 |       if (ingredient.image_url) setImagePreview(ingredient.image_url);
+      |                                 ^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  124 |     }
+  125 |   }, [ingredient, reset]);
+  126 |  react-hooks/set-state-in-effect
+
+C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\frontend\src\pages\IngredientsPage.tsx
+  173:9  warning  The 'pageIngredients' logical expression could make the dependencies of useMemo Hook (at line 198) change on every render. To fix this, wrap the initialization of 'pageIngredients' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  173:9  warning  The 'pageIngredients' logical expression could make the dependencies of useMemo Hook (at line 206) change on every render. To fix this, wrap the initialization of 'pageIngredients' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  173:9  warning  The 'pageIngredients' logical expression could make the dependencies of useMemo Hook (at line 228) change on every render. To fix this, wrap the initialization of 'pageIngredients' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\frontend\src\pages\ProductFormPage.tsx
+  172:23  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\frontend\src\pages\ProductFormPage.tsx:172:23
+  170 |   });
+  171 |
+> 172 |   const isAvailable = watch("is_available");
+      |                       ^^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  173 |   const isFeatured = watch("is_featured");
+  174 |   const selectedCategoryId = watch("category_id");
+  175 |  react-hooks/incompatible-library
+
+C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\frontend\src\pages\ProductsPage.tsx
+  129:9  warning  The 'allProducts' logical expression could make the dependencies of useMemo Hook (at line 151) change on every render. To fix this, wrap the initialization of 'allProducts' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  129:9  warning  The 'allProducts' logical expression could make the dependencies of useMemo Hook (at line 161) change on every render. To fix this, wrap the initialization of 'allProducts' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  130:9  warning  The 'categories' logical expression could make the dependencies of useMemo Hook (at line 170) change on every render. To fix this, wrap the initialization of 'categories' in its own useMemo() Hook    react-hooks/exhaustive-deps
+
+C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\frontend\src\pages\RecipeFormPage.tsx
+  151:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  274:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\frontend\src\pages\RecipesPage.tsx
+  154:9  warning  The 'recipes' logical expression could make the dependencies of useMemo Hook (at line 179) change on every render. To fix this, wrap the initialization of 'recipes' in its own useMemo() Hook    react-hooks/exhaustive-deps
+  154:9  warning  The 'recipes' logical expression could make the dependencies of useMemo Hook (at line 195) change on every render. To fix this, wrap the initialization of 'recipes' in its own useMemo() Hook    react-hooks/exhaustive-deps
+  154:9  warning  The 'recipes' logical expression could make the dependencies of useMemo Hook (at line 206) change on every render. To fix this, wrap the initialization of 'recipes' in its own useMemo() Hook    react-hooks/exhaustive-deps
+  163:9  warning  The 'products' logical expression could make the dependencies of useMemo Hook (at line 170) change on every render. To fix this, wrap the initialization of 'products' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  163:9  warning  The 'products' logical expression could make the dependencies of useMemo Hook (at line 179) change on every render. To fix this, wrap the initialization of 'products' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\frontend\src\pages\SalesPage.tsx
+  123:9  warning  The 'sales' logical expression could make the dependencies of useMemo Hook (at line 127) change on every render. Move it inside the useMemo callback. Alternatively, wrap the initialization of 'sales' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+âœ– 24 problems (8 errors, 16 warnings)
+
+npm notice run frontend@0.0.0 lint
+npm notice run eslint .

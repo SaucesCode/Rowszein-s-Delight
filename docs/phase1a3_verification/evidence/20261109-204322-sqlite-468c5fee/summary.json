@@ -1,0 +1,23 @@
+{
+  "release_blockers": {
+    "tests_run": 10,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3,
+    "exit_code": 0
+  },
+  "defined_api_concurrency": {
+    "tests_run": 33,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 8,
+    "exit_code": 0
+  },
+  "pure_metadata": {
+    "tests_run": 42,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "exit_code": 0
+  }
+}

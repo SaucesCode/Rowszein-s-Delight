@@ -67,42 +67,15 @@ class SaleSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        items_data = validated_data.pop('sale_items')
-        sale = Sale.objects.create(**validated_data)
-
-        SaleItem.objects.bulk_create([
-            SaleItem(
-                sale=sale,
-                product=item['product'],
-                quantity=item['quantity'],
-                unit_price=item['unit_price'],
-                subtotal_amount=item['quantity'] * item['unit_price'],
-            )
-            for item in items_data
-        ])
-
-        sale.compute_total()
-        return sale
+        raise serializers.ValidationError('Use the transactional sale command service.')
 
     def update(self, instance, validated_data):
-        items_data = validated_data.pop('sale_items', None)
+        raise serializers.ValidationError('Use the transactional sale command service.')
 
-        instance.date = validated_data.get('date', instance.date)
-        instance.notes = validated_data.get('notes', instance.notes)
-        instance.save()
+    def to_representation(self, instance):
+        from .services import sale_data
+        return sale_data(instance)
 
-        if items_data is not None:
-            instance.sale_items.all().delete()
-            SaleItem.objects.bulk_create([
-                SaleItem(
-                    sale=instance,
-                    product=item['product'],
-                    quantity=item['quantity'],
-                    unit_price=item['unit_price'],
-                    subtotal_amount=item['quantity'] * item['unit_price'],
-                )
-                for item in items_data
-            ])
-            instance.compute_total()
 
-        return instance
+class CancellationSerializer(serializers.Serializer):
+    reason = serializers.CharField(max_length=2000, allow_blank=False)

@@ -1,35 +1,31 @@
 import { useEffect, useState } from "react";
 import { X, PackagePlus, PackageMinus } from "lucide-react";
 import type { Ingredient } from "@/types/ingredient.types";
+import { stockQuanta, stockText } from "@/lib/stockQuantity";
 
 interface UpdateStockModalProps {
   ingredient: Ingredient | null;
   loading?: boolean;
-  onSave: (resultingQuantity: number) => void;
+  onSave: (delta: string, reason: string) => void;
   onCancel: () => void;
 }
 
-export default function UpdateStockModal({
+export default function UpdateStockModal(props: UpdateStockModalProps) {
+  if (!props.ingredient) return null;
+  return <StockAdjustmentDialog key={props.ingredient.id} {...props} ingredient={props.ingredient} />;
+}
+
+function StockAdjustmentDialog({
   ingredient,
   loading = false,
   onSave,
   onCancel,
-}: UpdateStockModalProps) {
+}: Omit<UpdateStockModalProps, "ingredient"> & { ingredient: Ingredient }) {
   const [mode, setMode] = useState<"add" | "deduct">("add");
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
 
-  // Reset the form fresh every time a different ingredient is targeted
   useEffect(() => {
-    if (ingredient) {
-      setMode("add");
-      setAmount("");
-      setNote("");
-    }
-  }, [ingredient]);
-
-  useEffect(() => {
-    if (!ingredient) return;
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onCancel();
     };
@@ -37,16 +33,23 @@ export default function UpdateStockModal({
     return () => document.removeEventListener("keydown", handleKey);
   }, [ingredient, onCancel]);
 
-  if (!ingredient) return null;
-
-  const current = Number(ingredient.quantity);
-  const delta = Number(amount) || 0;
-  const resulting = mode === "add" ? current + delta : Math.max(0, current - delta);
-  const isValid = delta > 0;
+  const current = String(ingredient.quantity);
+  let delta = "0.000000000";
+  let resulting = "Invalid quantity";
+  let isValid = false;
+  try {
+    const magnitude = stockQuanta(amount || "0");
+    const change = mode === "add" ? magnitude : -magnitude;
+    const projected = stockQuanta(current) + change;
+    delta = stockText(change);
+    stockQuanta(stockText(projected)); // Also reject projected field overflow.
+    resulting = stockText(projected);
+    isValid = magnitude > 0n && projected >= 0n && note.trim().length > 0;
+  } catch { /* Invalid input is not submitted. */ }
 
   const handleSave = () => {
     if (!isValid) return;
-    onSave(resulting);
+    onSave(delta, note.trim());
   };
 
   return (
@@ -56,7 +59,6 @@ export default function UpdateStockModal({
       onClick={e => {
         if (e.target === e.currentTarget) onCancel();
       }}
-      aria-hidden="true"
     >
       <div
         role="dialog"
@@ -86,7 +88,7 @@ export default function UpdateStockModal({
               Update Stock
             </h2>
             <p className="font-body mt-1 truncate" style={{ fontSize: 13, color: "#9B6644" }}>
-              {ingredient.name} — currently {current.toLocaleString("en-PH")} {ingredient.unit}
+              {ingredient.name} — currently {current} {ingredient.unit}
             </p>
           </div>
           <button
@@ -150,7 +152,7 @@ export default function UpdateStockModal({
             <input
               type="number"
               min="0"
-              step="0.01"
+              step="0.000000001"
               value={amount}
               onChange={e => setAmount(e.target.value)}
               placeholder="0"
@@ -163,7 +165,7 @@ export default function UpdateStockModal({
             <label className="field-label">
               Note{" "}
               <span className="font-body" style={{ color: "#A8A49B", fontWeight: 400 }}>
-                (optional)
+                (required)
               </span>
             </label>
             <textarea
@@ -187,7 +189,7 @@ export default function UpdateStockModal({
               className="font-heading font-semibold"
               style={{ fontSize: 16, color: "#6B4226" }}
             >
-              {resulting.toLocaleString("en-PH")} {ingredient.unit}
+              {resulting} {ingredient.unit}
             </span>
           </div>
         </div>

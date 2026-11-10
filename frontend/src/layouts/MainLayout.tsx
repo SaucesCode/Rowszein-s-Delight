@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { clsx } from "clsx";
 import { NAV_GROUPS, FLAT_NAV_ITEMS } from "@/config/navigation";
+import { canVisit } from "@/lib/permissions";
 
 /* ─────────────────────────────────────────────
    PAGE META — drives the browser tab title only.
@@ -147,6 +148,8 @@ function SidebarContent({
   onNavigate?: () => void;
 }) {
   const logout = useLogout();
+  const { data: user } = useMe();
+  const navigation = NAV_GROUPS.map(group => ({ ...group, items: group.items.filter(item => canVisit(user, item.to)) })).filter(group => group.items.length);
 
   return (
     <div className="flex h-full flex-col">
@@ -180,7 +183,7 @@ function SidebarContent({
               className="font-body leading-tight"
               style={{ fontSize: 11.5, color: "#9B6644" }}
             >
-              Owner Panel
+              {user?.role === "admin" ? "Owner Panel" : "Staff workspace"}
             </p>
           </div>
         )}
@@ -200,7 +203,7 @@ function SidebarContent({
         className={clsx("flex-1 overflow-y-auto py-4 space-y-1", collapsed ? "px-2" : "px-3")}
         aria-label="Main navigation"
       >
-        {NAV_GROUPS.map((group, groupIndex) => (
+        {navigation.map((group, groupIndex) => (
           <div
             key={group.label ?? `group-${groupIndex}`}
             className={groupIndex > 0 ? "pt-3" : ""}

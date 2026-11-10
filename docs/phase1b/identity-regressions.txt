@@ -1,0 +1,17 @@
+PASS: first attempt is persisted before dispatch
+PASS: retry retains UUID and original revision
+PASS: first known rejection may clear an uncommitted identity
+PASS: identity conflict never clears a pending UUID
+PASS: network loss retains identity
+PASS: later validation cannot forget an uncertain earlier commit
+PASS: later auth and stale errors cannot forget earlier attempts
+PASS: server failure is uncertain on the first attempt
+PASS: old pending identities migrate conservatively on retry
+PASS: corrupt storage fails closed instead of inventing a UUID
+PASS: storage failure prevents request dispatch
+PASS: confirmed success permits a new independent operation
+{
+  "tests": 12,
+  "failures": 0,
+  "database_access": false
+}

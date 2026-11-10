@@ -12,6 +12,7 @@ import type { Unit } from "@/types/ingredient.types";
 import { INGREDIENT_CATEGORIES } from "@/types/ingredient.types";
 import { ImageOff, Upload } from "lucide-react";
 import SkeletonTable from "@/components/SkeletonTable";
+import { stockQuanta } from "@/lib/stockQuantity";
 
 /* ─────────────────────────────────────────────
    CONSTANTS
@@ -33,7 +34,9 @@ const UNITS: { value: Unit; label: string }[] = [
 const ingredientSchema = z.object({
   name: z.string().min(1, "Ingredient name is required"),
   category: z.string().optional(),
-  quantity: z.coerce.number().min(0, "Quantity cannot be negative"),
+  quantity: z.string().refine((text) => {
+    try { return stockQuanta(text) >= 0n; } catch { return false; }
+  }, "Use a nonnegative quantity with at most nine decimal places within the supported range."),
   unit: z.enum(["kg", "g", "ml", "l", "pcs", "tbsp", "tsp", "cup"]),
   cost_per_unit: z.coerce.number().min(0.01, "Cost per unit must be greater than ₱0"),
   minimum_stock: z.coerce.number().min(0, "Minimum stock cannot be negative"),
@@ -110,7 +113,7 @@ export default function IngredientFormPage() {
       reset({
         name: ingredient.name,
         category: ingredient.category,
-        quantity: ingredient.quantity,
+        quantity: String(ingredient.quantity),
         unit: ingredient.unit,
         cost_per_unit: ingredient.cost_per_unit,
         supplier: ingredient.supplier,
@@ -235,14 +238,15 @@ export default function IngredientFormPage() {
         <div className="grid grid-cols-2 gap-4">
           <Field
             label="Current Quantity"
-            helper="How much you currently have in stock"
+            helper={isEdit ? "Use the stock adjustment action to change inventory with a reason." : "How much you currently have in stock"}
             error={errors.quantity?.message}
             required
           >
             <input
               {...register("quantity")}
+              readOnly={isEdit}
               type="number"
-              step="0.01"
+              step="0.000000001"
               min="0"
               className="field-input mt-1"
               placeholder="0"

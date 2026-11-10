@@ -1,0 +1,10 @@
+{
+  "migration": {
+    "exit_code": 0,
+    "result_file": "migration-upgrade-backup.json"
+  },
+  "invalid_fixture": {
+    "exit_code": 0,
+    "result_file": "invalid-fixture.json"
+  }
+}

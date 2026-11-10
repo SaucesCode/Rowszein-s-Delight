@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSales, useDeleteSale } from "@/hooks/useSales";
+import { useSales, useDeleteSale, useSalesSummary } from "@/hooks/useSales";
 import type { Sale } from "@/types/sale.types";
 import { Plus, ShoppingCart, SearchX } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
@@ -15,6 +15,8 @@ import Pagination from "@/components/Pagination";
 import { exportService } from "@/services/export.service";
 import { getDateRange, PERIOD_OPTIONS, type Period } from "@/lib/dateRanges";
 import toast from "react-hot-toast";
+import { useMe } from "@/hooks/useAuth";
+import { can } from "@/lib/permissions";
 
 /* ─────────────────────────────────────────────
    GROUPING — by business date (sale.date), in
@@ -99,6 +101,9 @@ function SalesSkeleton() {
    PAGE
    ───────────────────────────────────────────── */
 export default function SalesPage() {
+  const { data: user } = useMe();
+  const canManage = can(user, "sales.update") && can(user, "sales.cancel");
+  const [cancellationReason, setCancellationReason] = useState("");
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [period, setPeriod] = useState<Period>("today");
@@ -112,6 +117,7 @@ export default function SalesPage() {
 
   const filters = { page, ...dateRange };
   const { data, isLoading, isError } = useSales(filters);
+  const { data: financialReport } = useSalesSummary(dateRange, can(user, "finance.read"));
   const deleteSale = useDeleteSale();
 
   const sales: Sale[] = data?.data?.results ?? [];
@@ -125,8 +131,8 @@ export default function SalesPage() {
   const hasActiveFilters = period !== "today" || !!search;
 
   const handleDeleteConfirm = () => {
-    if (!deleteTarget) return;
-    deleteSale.mutate(deleteTarget.id, { onSettled: () => setDeleteTarget(null) });
+    if (!deleteTarget || !cancellationReason.trim()) return;
+    deleteSale.mutate({ id: deleteTarget.id, revision: deleteTarget.revision, reason: cancellationReason.trim() }, { onSuccess: () => { setDeleteTarget(null); setCancellationReason(""); } });
   };
 
   const handleExport = async (type: "csv" | "pdf") => {
@@ -154,12 +160,12 @@ export default function SalesPage() {
         title="Sales"
         description={
           !isLoading && !isError
-            ? `${totalCount} sale${totalCount !== 1 ? "s" : ""} · ₱${pageTotal.toLocaleString("en-PH", { minimumFractionDigits: 2 })} on this page`
+            ? `${totalCount} sale${totalCount !== 1 ? "s" : ""} · ₱${pageTotal.toLocaleString("en-PH", { minimumFractionDigits: 2 })} transaction values on this page (includes cancelled records; not net sales)`
             : "Track all revenue transactions"
         }
         action={
           <div className="hidden sm:flex items-center gap-2">
-            <ExportMenu onExportCSV={() => handleExport("csv")} onExportPDF={() => handleExport("pdf")} exporting={exporting} />
+            {can(user, "sales.export") && <ExportMenu onExportCSV={() => handleExport("csv")} onExportPDF={() => handleExport("pdf")} exporting={exporting} />}
             <button onClick={() => navigate("/sales/new")} className="btn-primary">
               <Plus size={16} strokeWidth={2.5} aria-hidden="true" />
               Record Sale
@@ -266,6 +272,7 @@ export default function SalesPage() {
                   <SaleRow
                     key={sale.id}
                     sale={sale}
+                    canManage={canManage}
                     onEdit={() => navigate(`/sales/${sale.id}/edit`)}
                     onDelete={() => setDeleteTarget(sale)}
                   />
@@ -278,6 +285,11 @@ export default function SalesPage() {
         </>
       )}
 
+      {can(user, "finance.read") && financialReport && (
+        <p className="font-body text-sm my-4" aria-label="Posting-date financial totals">
+          Gross ₱{financialReport.totals.gross_sales} · Adjustments ₱{financialReport.totals.sales_adjustments} · Cancellations ₱{financialReport.totals.cancellation_amount} · Net ₱{financialReport.totals.net_sales}. Cash refunds are not tracked.
+        </p>
+      )}
       {/* Mobile floating action button */}
       <button
         onClick={() => navigate("/sales/new")}
@@ -297,18 +309,21 @@ export default function SalesPage() {
 
       <ConfirmDialog
         open={!!deleteTarget}
-        title="Delete sale?"
+        title="Cancel sale?"
         description={
           deleteTarget
-            ? `This sale of ₱${Number(deleteTarget.total_amount).toFixed(2)} will be permanently removed. This cannot be undone.`
+            ? `Preserve this sale, reverse its recorded consumption, and post a cancellation on today's business date. No cash refund will be recorded. Unverified legacy sales require reconciliation.`
             : ""
         }
-        confirmLabel="Delete"
+        confirmLabel="Cancel sale"
         destructive
         loading={deleteSale.isPending}
         onConfirm={handleDeleteConfirm}
         onCancel={() => setDeleteTarget(null)}
-      />
+      >
+        <label htmlFor="cancellation-reason" className="field-label">Cancellation reason</label>
+        <textarea id="cancellation-reason" className="field-input" required maxLength={2000} value={cancellationReason} onChange={event => setCancellationReason(event.target.value)} />
+      </ConfirmDialog>
     </div>
   );
 }

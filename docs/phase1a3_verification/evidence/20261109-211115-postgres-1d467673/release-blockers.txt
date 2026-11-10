@@ -1,0 +1,63 @@
+Found 10 test(s).
+Operations to perform:
+  Synchronize unmigrated apps: corsheaders, messages, rest_framework, staticfiles
+  Apply all migrations: accounts, admin, auth, contenttypes, expenses, ingredients, products, recipes, sales, sessions
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0001_initial... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying accounts.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying expenses.0001_initial... OK
+  Applying ingredients.0001_initial... OK
+  Applying ingredients.0002_ingredient_minimum_stock... OK
+  Applying ingredients.0003_ingredient_category_ingredient_image_and_more... OK
+  Applying ingredients.0004_inventory_integrity... OK
+  Applying products.0001_initial... OK
+  Applying products.0002_product_is_featured... OK
+  Applying products.0003_product_category... OK
+  Applying products.0004_category_product_category_fk... OK
+  Applying recipes.0001_initial... OK
+  Applying recipes.0002_recipe_yield_quantity... OK
+  Applying sales.0001_initial... OK
+  Applying sales.0002_saleitem_subtotal_amount... OK
+  Applying sales.0003_inventory_integrity... OK
+  Applying sessions.0001_initial... OK
+System check identified no issues (0 silenced).
+Creating test database for alias 'default' ('test_rowszein_verify_7dad7c6b6cd84c4688070f1c4fd4a710')...
+
+test_cancellation_after_recipe_change_restores_original_consumption (sales.test_release_blockers.ReleaseBlockerContracts.test_cancellation_after_recipe_change_restores_original_consumption) ... C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\django\core\handlers\base.py:61: UserWarning: No directory at: C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\.verification-runtime\7dad7c6b6cd84c4688070f1c4fd4a710\static\
+  mw_instance = middleware(adapted_handler)
+ok
+test_cancellation_preserves_original_sale_and_items (sales.test_release_blockers.ReleaseBlockerContracts.test_cancellation_preserves_original_sale_and_items) ... ok
+test_competing_sales_only_one_can_consume_last_stock (sales.test_release_blockers.ReleaseBlockerContracts.test_competing_sales_only_one_can_consume_last_stock) ... ok
+test_concurrent_duplicate_request_creates_only_one_sale (sales.test_release_blockers.ReleaseBlockerContracts.test_concurrent_duplicate_request_creates_only_one_sale) ... ok
+test_concurrent_stale_sale_edits_reject_second_revision (sales.test_release_blockers.ReleaseBlockerContracts.test_concurrent_stale_sale_edits_reject_second_revision) ... ok
+test_conflicting_payload_same_request_identity_is_rejected (sales.test_release_blockers.ReleaseBlockerContracts.test_conflicting_payload_same_request_identity_is_rejected) ... ok
+test_fractional_three_separate_sales_consume_one_batch (sales.test_release_blockers.ReleaseBlockerContracts.test_fractional_three_separate_sales_consume_one_batch) ... ok
+test_insufficient_stock_rejects_entire_sale (sales.test_release_blockers.ReleaseBlockerContracts.test_insufficient_stock_rejects_entire_sale) ... ok
+test_same_successful_request_identity_replays_original_sale (sales.test_release_blockers.ReleaseBlockerContracts.test_same_successful_request_identity_replays_original_sale) ... ok
+test_unverifiable_legacy_sale_is_not_automatically_restored (sales.test_release_blockers.ReleaseBlockerContracts.test_unverifiable_legacy_sale_is_not_automatically_restored) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 6.458s
+
+OK
+Destroying test database for alias 'default' ('test_rowszein_verify_7dad7c6b6cd84c4688070f1c4fd4a710')...
+

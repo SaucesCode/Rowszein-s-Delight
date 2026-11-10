@@ -52,6 +52,8 @@ The project is being built incrementally, focusing on core business functionalit
 
 Project documentation can be found in the `docs/` folder.
 
+Latest checkpoint: [Phase 1B.3 session and login-limiting design](docs/PHASE1B3_SESSION_SECURITY_DESIGN.md), awaiting approval before implementation or new migrations. [Accepted 1B.2 verification](docs/PHASE1B2_RBAC_IMPLEMENTATION_REPORT.md) remains preserved. Session revocation, login throttling, dependency findings and production verification remain open. The application is not production-ready.
+
 ## License
 
 This project is being developed for learning, portfolio, and business management purposes.

@@ -1,6 +1,6 @@
+from accounts.permissions import BusinessPermission
 from rest_framework import generics, status
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.http import HttpResponse
 from datetime import datetime
@@ -24,7 +24,8 @@ def parse_date(value):
 
 
 class ExpenseListCreateView(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'expenses.manage', 'POST': 'expenses.manage', 'OPTIONS': 'expenses.manage'}
     serializer_class = ExpenseSerializer
 
     def get_queryset(self):
@@ -61,7 +62,8 @@ class ExpenseListCreateView(generics.ListCreateAPIView):
 
 
 class ExpenseDetailView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'expenses.manage', 'PUT': 'expenses.manage', 'PATCH': 'expenses.manage', 'DELETE': 'expenses.manage', 'OPTIONS': 'expenses.manage'}
     serializer_class = ExpenseSerializer
     queryset = Expense.objects.all()
 
@@ -101,7 +103,8 @@ class ExpenseDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ExpenseExportCSVView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'expenses.manage', 'OPTIONS': 'expenses.manage'}
 
     def get(self, request):
         queryset = Expense.objects.all()
@@ -131,7 +134,8 @@ class ExpenseExportCSVView(APIView):
 
 
 class ExpenseExportPDFView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'expenses.manage', 'OPTIONS': 'expenses.manage'}
 
     def get(self, request):
         queryset = Expense.objects.all()

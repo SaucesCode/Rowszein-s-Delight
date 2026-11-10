@@ -17,6 +17,19 @@ import SalesPage from "@/pages/SalesPage";
 import SaleFormPage from "@/pages/SaleFormPage";
 import ProfitMarginsPage from "@/pages/ProfitMarginsPage";
 import GuestRoute from "@/components/GuestRoute";
+import { useMe } from "@/hooks/useAuth";
+import { can } from "@/lib/permissions";
+import { OperationalCatalogPage, OperationalStockPage } from "@/pages/OperationalPages";
+
+function CatalogRoute() {
+  const { data: user } = useMe();
+  return can(user, "catalog.manage") ? <ProductsPage /> : <OperationalCatalogPage />;
+}
+
+function StockRoute() {
+  const { data: user } = useMe();
+  return can(user, "stock.manage") ? <IngredientsPage /> : <OperationalStockPage />;
+}
 
 const router = createBrowserRouter([
   // ── Public — shop landing page, no auth required ──
@@ -49,10 +62,10 @@ const router = createBrowserRouter([
         element: <MainLayout />,
         children: [
           { path: "/dashboard", element: <DashboardPage /> },
-          { path: "/ingredients", element: <IngredientsPage /> },
+          { path: "/ingredients", element: <StockRoute /> },
           { path: "/ingredients/new", element: <IngredientFormPage /> },
           { path: "/ingredients/:id/edit", element: <IngredientFormPage /> },
-          { path: "/products", element: <ProductsPage /> },
+          { path: "/products", element: <CatalogRoute /> },
           { path: "/products/new", element: <ProductFormPage /> },
           { path: "/products/:id/edit", element: <ProductFormPage /> },
           { path: "/recipes", element: <RecipesPage /> },

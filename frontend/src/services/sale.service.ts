@@ -18,18 +18,22 @@ export const saleService = {
     return response.data.data;
   },
 
-  create: async (payload: SalePayload) => {
-    const response = await api.post("/sales/", payload);
+  create: async (payload: SalePayload, key: string) => {
+    const response = await api.post("/sales/", payload, { headers: { "Idempotency-Key": key } });
     return response.data;
   },
 
-  update: async (id: number, payload: SalePayload) => {
-    const response = await api.put(`/sales/${id}/`, payload);
+  update: async (id: number, payload: SalePayload, key: string, revision: string) => {
+    const response = await api.put(`/sales/${id}/`, payload, { headers: { "Idempotency-Key": key, "If-Match": `"${revision}"` } });
     return response.data;
   },
 
-  delete: async (id: number) => {
-    const response = await api.delete(`/sales/${id}/`);
+  delete: async (id: number, reason: string, key: string, revision: string) => {
+    const response = await api.delete(`/sales/${id}/`, { data: { reason }, headers: { "Idempotency-Key": key, "If-Match": `"${revision}"` } });
     return response.data;
+  },
+  financialSummary: async (filters: SaleFilters = {}) => {
+    const response = await api.get("/sales/financial-summary/", { params: filters });
+    return response.data.data;
   },
 };

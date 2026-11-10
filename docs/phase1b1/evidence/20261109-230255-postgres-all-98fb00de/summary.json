@@ -1,0 +1,22 @@
+{
+  "original_security_13_after": {
+    "tests_run": 0,
+    "errors": 1,
+    "exit_code": 1
+  },
+  "csrf_regressions": {
+    "tests_run": 0,
+    "errors": 1,
+    "exit_code": 1
+  },
+  "phase1a_120": {
+    "tests_run": 0,
+    "errors": 1,
+    "exit_code": 1
+  },
+  "pending_1b2_roles": {
+    "tests_run": 0,
+    "errors": 1,
+    "exit_code": 1
+  }
+}

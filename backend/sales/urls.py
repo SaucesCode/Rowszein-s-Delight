@@ -4,6 +4,7 @@ from .views import (
     SaleDetailView,
     SaleExportCSVView,
     SaleExportPDFView,
+    SaleFinancialSummaryView,
 )
 
 urlpatterns = [
@@ -11,4 +12,5 @@ urlpatterns = [
     path('<int:pk>/', SaleDetailView.as_view(), name='sale-detail'),
     path('export/csv/', SaleExportCSVView.as_view(), name='sale-export-csv'),
     path('export/pdf/', SaleExportPDFView.as_view(), name='sale-export-pdf'),
+    path('financial-summary/', SaleFinancialSummaryView.as_view(), name='sale-financial-summary'),
 ]

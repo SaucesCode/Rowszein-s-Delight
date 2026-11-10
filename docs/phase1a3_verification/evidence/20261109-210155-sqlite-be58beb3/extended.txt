@@ -1,0 +1,66 @@
+Found 11 test(s).
+Operations to perform:
+  Synchronize unmigrated apps: corsheaders, messages, rest_framework, staticfiles
+  Apply all migrations: accounts, admin, auth, contenttypes, expenses, ingredients, products, recipes, sales, sessions
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0001_initial... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying accounts.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying expenses.0001_initial... OK
+  Applying ingredients.0001_initial... OK
+  Applying ingredients.0002_ingredient_minimum_stock... OK
+  Applying ingredients.0003_ingredient_category_ingredient_image_and_more... OK
+  Applying ingredients.0004_inventory_integrity... OK
+  Applying products.0001_initial... OK
+  Applying products.0002_product_is_featured... OK
+  Applying products.0003_product_category... OK
+  Applying products.0004_category_product_category_fk... OK
+  Applying recipes.0001_initial... OK
+  Applying recipes.0002_recipe_yield_quantity... OK
+  Applying sales.0001_initial... OK
+  Applying sales.0002_saleitem_subtotal_amount... OK
+  Applying sales.0003_inventory_integrity... OK
+  Applying sessions.0001_initial... OK
+System check identified no issues (0 silenced).
+Creating test database for alias 'default' ('C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\.verification-runtime\fb9d8d169b5d42a1b7b049173dfb9cdb\test.sqlite3')...
+
+Destroying old test database for alias 'default' ('C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\.verification-runtime\fb9d8d169b5d42a1b7b049173dfb9cdb\test.sqlite3')...
+
+test_actual_checks_unique_keys_and_foreign_keys (sales.test_verification_extended.ExtendedIntegrityTests.test_actual_checks_unique_keys_and_foreign_keys) ... C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\django\core\handlers\base.py:61: UserWarning: No directory at: C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\.verification-runtime\fb9d8d169b5d42a1b7b049173dfb9cdb\static\
+  mw_instance = middleware(adapted_handler)
+ok
+test_deterministic_lifecycle_reconciles_after_every_operation (sales.test_verification_extended.ExtendedIntegrityTests.test_deterministic_lifecycle_reconciles_after_every_operation) ... ok
+test_frontend_compatibility_read_endpoints_and_validation (sales.test_verification_extended.ExtendedIntegrityTests.test_frontend_compatibility_read_endpoints_and_validation) ... ok
+test_gross_adjustment_cancellation_dates_and_no_refund (sales.test_verification_extended.ExtendedIntegrityTests.test_gross_adjustment_cancellation_dates_and_no_refund) ... ok
+test_postgresql_maximum_precision_roundtrips_without_lost_quanta (sales.test_verification_extended.ExtendedIntegrityTests.test_postgresql_maximum_precision_roundtrips_without_lost_quanta) ... skipped 'SQLite numeric storage cannot establish full PostgreSQL Decimal(20,9) precision'
+test_protected_history_and_immutable_quantities (sales.test_verification_extended.ExtendedIntegrityTests.test_protected_history_and_immutable_quantities) ... ok
+test_cancellation_competing_with_edit (sales.test_verification_extended.ExtendedConcurrencyTests.test_cancellation_competing_with_edit) ... skipped 'Requires real independent PostgreSQL transactions'
+test_multiple_products_and_ingredients_in_opposite_request_orders (sales.test_verification_extended.ExtendedConcurrencyTests.test_multiple_products_and_ingredients_in_opposite_request_orders) ... skipped 'Requires real independent PostgreSQL transactions'
+test_real_ingredient_lock_wait_is_observed_then_commits (sales.test_verification_extended.ExtendedConcurrencyTests.test_real_ingredient_lock_wait_is_observed_then_commits) ... skipped 'Requires real independent PostgreSQL transactions'
+test_recipe_change_competing_with_sale (sales.test_verification_extended.ExtendedConcurrencyTests.test_recipe_change_competing_with_sale) ... skipped 'Requires real independent PostgreSQL transactions'
+test_two_operators_compete_for_last_stock (sales.test_verification_extended.ExtendedConcurrencyTests.test_two_operators_compete_for_last_stock) ... skipped 'Requires real independent PostgreSQL transactions'
+
+----------------------------------------------------------------------
+Ran 11 tests in 28.537s
+
+OK (skipped=6)
+Destroying test database for alias 'default' ('C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\.verification-runtime\fb9d8d169b5d42a1b7b049173dfb9cdb\test.sqlite3')...
+

@@ -1,0 +1,158 @@
+{
+  "tests_run": 25,
+  "outcomes": [
+    {
+      "test": "rbac_regressions.RBACRegressions.test_admin_site_requires_business_owner_and_existing_technical_permissions",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.453
+    },
+    {
+      "test": "rbac_regressions.RBACRegressions.test_api_endpoint_inventory_has_explicit_default_deny_mapping",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.125
+    },
+    {
+      "test": "rbac_regressions.RBACRegressions.test_claimed_tracking_without_creation_actor_does_not_grant_ownership",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.125
+    },
+    {
+      "test": "rbac_regressions.RBACRegressions.test_default_unmapped_private_action_denied_even_for_owner",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.062
+    },
+    {
+      "test": "rbac_regressions.RBACRegressions.test_direct_command_stale_actor_cannot_bypass_current_database_role",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.125
+    },
+    {
+      "test": "rbac_regressions.RBACRegressions.test_downgrade_denies_previously_successful_owner_response_replay",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.11
+    },
+    {
+      "test": "rbac_regressions.RBACRegressions.test_every_owner_only_route_and_method_denies_staff_before_validation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.5
+    },
+    {
+      "test": "rbac_regressions.RBACRegressions.test_exact_staff_replay_survives_catalog_price_date_recipe_availability_changes",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.141
+    },
+    {
+      "test": "rbac_regressions.RBACRegressions.test_operational_stock_exact_allowlist_on_all_read_paths",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.14
+    },
+    {
+      "test": "rbac_regressions.RBACRegressions.test_other_staff_sale_hidden_even_when_id_is_known",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.141
+    },
+    {
+      "test": "rbac_regressions.RBACRegressions.test_own_sale_list_detail_and_counts_exclude_other_and_legacy",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.375
+    },
+    {
+      "test": "rbac_regressions.RBACRegressions.test_owner_positive_custom_price_date_management_and_reconciliation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.579
+    },
+    {
+      "test": "rbac_regressions.RBACRegressions.test_private_read_matrix_for_anonymous_unknown_inactive",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.625
+    },
+    {
+      "test": "rbac_regressions.RBACRegressions.test_public_catalog_projection_and_invalid_cookie_availability",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.171
+    },
+    {
+      "test": "rbac_regressions.RBACRegressions.test_staff_allowed_sale_keeps_csrf_and_source_rejection_before_writes",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.172
+    },
+    {
+      "test": "rbac_regressions.RBACRegressions.test_staff_current_price_rejected_before_any_write",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.437
+    },
+    {
+      "test": "rbac_regressions.RBACRegressions.test_staff_date_is_explicit_manila_not_server_utc",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.157
+    },
+    {
+      "test": "rbac_regressions.RBACRegressions.test_staff_options_and_html_do_not_leak_owner_serializer_fields",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.078
+    },
+    {
+      "test": "rbac_regressions.RBACRegressions.test_staff_technical_superuser_admin_http_write_is_blocked_without_mutation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.157
+    },
+    {
+      "test": "rbac_regressions.RBACRegressions.test_stored_owner_edit_cannot_be_disclosed_through_staff_create_replay",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.187
+    },
+    {
+      "test": "rbac_regressions.RBACRegressions.test_unknown_inactive_deleted_and_flag_mismatched_users_fail_closed",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.235
+    },
+    {
+      "test": "rbac_concurrency.RBACConcurrencyTests.test_duplicate_staff_identity_parallel_commits_one_sale",
+      "status": "skip",
+      "detail": "Requires independent PostgreSQL row locks",
+      "seconds": 0.0
+    },
+    {
+      "test": "rbac_concurrency.RBACConcurrencyTests.test_pending_role_downgrade_commits_before_command_recheck_then_denies",
+      "status": "skip",
+      "detail": "Requires independent PostgreSQL row locks",
+      "seconds": 0.0
+    },
+    {
+      "test": "rbac_concurrency.RBACConcurrencyTests.test_shared_actor_lock_allows_command_commit_before_role_change",
+      "status": "skip",
+      "detail": "Requires independent PostgreSQL row locks",
+      "seconds": 0.0
+    },
+    {
+      "test": "rbac_concurrency.RBACConcurrencyTests.test_two_staff_compete_for_last_stock_with_real_cookies",
+      "status": "skip",
+      "detail": "Requires independent PostgreSQL row locks",
+      "seconds": 0.0
+    }
+  ],
+  "failures": 0,
+  "errors": 0,
+  "skipped": 4
+}

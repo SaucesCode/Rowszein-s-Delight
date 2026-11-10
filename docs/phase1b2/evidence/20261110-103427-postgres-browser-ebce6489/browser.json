@@ -1,0 +1,1243 @@
+{
+  "checks": {
+    "real_cookie_login": {
+      "passed": true,
+      "detail": true
+    },
+    "browser_cookie_missing_token_403_zero_business_writes": {
+      "passed": true,
+      "detail": true
+    },
+    "hostile_browser_form_valid_token_403_no_cookie_clear_or_business_writes": {
+      "passed": true,
+      "detail": true
+    },
+    "hostile_browser_business_form_with_cookie_and_valid_token_403_zero_writes": {
+      "passed": true,
+      "detail": true
+    },
+    "browser_stale_csrf_rejected_before_write": {
+      "passed": true,
+      "detail": true
+    },
+    "unknown_create_committed_once": {
+      "passed": true,
+      "detail": true
+    },
+    "browser_csrf_recovery_preserves_exact_intent": {
+      "passed": true,
+      "detail": true
+    },
+    "unknown_outcome_retains_identity": {
+      "passed": true,
+      "detail": [
+        {
+          "key": "rowszein_operation:1:sale:create",
+          "value": {
+            "key": "7d84c767-8d70-44c9-a6c7-4cb8b8042dec",
+            "hasPriorAttempt": false
+          }
+        }
+      ]
+    },
+    "unknown_payload_conflict_after_reload_is_rejected": {
+      "passed": true,
+      "detail": true
+    },
+    "conflict_retains_original_durable_identity": {
+      "passed": true,
+      "detail": true
+    },
+    "invalid_retry_rejected_without_mutation": {
+      "passed": true,
+      "detail": true
+    },
+    "validation_retry_does_not_create_duplicate": {
+      "passed": true,
+      "detail": 1
+    },
+    "unknown_identity_survives_later_validation_error": {
+      "passed": true,
+      "detail": true
+    },
+    "retry_uses_same_identity": {
+      "passed": true,
+      "detail": true
+    },
+    "retry_replays_without_duplicate": {
+      "passed": true,
+      "detail": true
+    },
+    "identity_cleared_only_after_success": {
+      "passed": true,
+      "detail": true
+    },
+    "single_fractional_deduction": {
+      "passed": true,
+      "detail": true
+    },
+    "edit_retains_original_value": {
+      "passed": true,
+      "detail": {
+        "id": 1,
+        "date": "2026-11-10",
+        "notes": "",
+        "sale_items": [
+          {
+            "id": 1,
+            "product": 1,
+            "quantity": 2,
+            "subtotal": "90.50",
+            "unit_price": "45.25",
+            "product_name": "Browser verification donut",
+            "subtotal_amount": "90.50"
+          }
+        ],
+        "total_amount": "90.50",
+        "original_total_amount": "50.00",
+        "status": "recorded",
+        "revision": "2",
+        "inventory_tracking": "tracked",
+        "financial_tracking": "ledger",
+        "created_at": "2026-11-10T02:34:50.163414+00:00",
+        "updated_at": "2026-11-10T02:34:53.962731+00:00"
+      }
+    },
+    "exact_edit_allocation": {
+      "passed": true,
+      "detail": true
+    },
+    "independent_edit_commits": {
+      "passed": true,
+      "detail": true
+    },
+    "stale_edit_rejected_and_refreshed": {
+      "passed": true,
+      "detail": true
+    },
+    "cancellation_dialog_exposed_to_accessibility_tree": {
+      "passed": true,
+      "detail": true
+    },
+    "cancellation_retains_sale": {
+      "passed": true,
+      "detail": true
+    },
+    "cancellation_restores_exact_snapshot": {
+      "passed": true,
+      "detail": true
+    },
+    "financial_no_double_subtraction_or_refund": {
+      "passed": true,
+      "detail": {
+        "totals": {
+          "gross_sales": "50.00",
+          "sales_adjustments": "40.50",
+          "signed_cancellations": "-90.50",
+          "cancellation_amount": "90.50",
+          "net_sales": "0.00",
+          "legacy_sales": "0.00"
+        },
+        "months": {
+          "2026-11": {
+            "gross_sales": "50.00",
+            "sales_adjustments": "40.50",
+            "signed_cancellations": "-90.50",
+            "cancellation_amount": "90.50",
+            "net_sales": "0.00",
+            "legacy_sales": "0.00"
+          }
+        },
+        "legacy_record_count": 0,
+        "legacy_nonpositive_count": 0,
+        "refund_status": "not_tracked",
+        "source_policy": "legacy_source sale totals plus ledger postings; no overlap"
+      }
+    },
+    "stock_dialog_exposed_to_accessibility_tree": {
+      "passed": true,
+      "detail": true
+    },
+    "exact_stock_adjustment_string": {
+      "passed": true,
+      "detail": true
+    },
+    "stock_dialog_reopens_with_fresh_fields": {
+      "passed": true,
+      "detail": true
+    },
+    "insufficient_validation_preserves_state": {
+      "passed": true,
+      "detail": true
+    },
+    "known_validation_failure_clears_identity": {
+      "passed": true,
+      "detail": true
+    },
+    "dashboard_matches_financial_report": {
+      "passed": true,
+      "detail": {
+        "gross_sales": "50.00",
+        "sales_adjustments": "40.50",
+        "signed_cancellations": "-90.50",
+        "cancellation_amount": "90.50",
+        "net_sales": "0.00",
+        "legacy_sales": "0.00",
+        "total_sales": 0.0,
+        "total_expenses": 0.0,
+        "net_profit": 0.0
+      }
+    },
+    "original_line_retained_after_browser_edit_cancel": {
+      "passed": true,
+      "detail": true
+    },
+    "expired_access_sale_401_no_write_retains_first_identity": {
+      "passed": true,
+      "detail": true
+    },
+    "real_login_works_with_expired_access_cookie": {
+      "passed": true,
+      "detail": true
+    },
+    "reauthentication_does_not_automatically_replay_sale": {
+      "passed": true,
+      "detail": true
+    },
+    "same_owner_reauth_reuses_original_sale_uuid_once": {
+      "passed": true,
+      "detail": true
+    },
+    "auth_recovery_sale_exact_cancellation": {
+      "passed": true,
+      "detail": true
+    },
+    "real_logout_expired_access_clears_both_jwt_cookies": {
+      "passed": true,
+      "detail": true
+    },
+    "logout_rotates_csrf_secret": {
+      "passed": true,
+      "detail": true
+    },
+    "real_login_ignores_malformed_access_and_rotates_csrf": {
+      "passed": true,
+      "detail": true
+    },
+    "real_logout_valid_access_succeeds": {
+      "passed": true,
+      "detail": true
+    },
+    "final_browser_financial_and_inventory_conservation": {
+      "passed": true,
+      "detail": true
+    },
+    "staff_login_lands_on_own_sales": {
+      "passed": true,
+      "detail": true
+    },
+    "staff_navigation_excludes_owner_sections": {
+      "passed": true,
+      "detail": true
+    },
+    "staff_history_initially_empty_despite_three_other_sales": {
+      "passed": true,
+      "detail": true
+    },
+    "staff_sales_page_has_no_export_or_financial_totals": {
+      "passed": true,
+      "detail": true
+    },
+    "staff_stock_screen_has_no_cost_supplier_export_or_write_controls": {
+      "passed": true,
+      "detail": true
+    },
+    "staff_http_stock_projection_exact_allowlist": {
+      "passed": true,
+      "detail": true
+    },
+    "staff_catalog_read_only_controls": {
+      "passed": true,
+      "detail": true
+    },
+    "staff_direct_owner_routes_blocked_before_mount": {
+      "passed": true,
+      "detail": true
+    },
+    "staff_ui_never_requests_financial_or_owner_endpoints": {
+      "passed": true,
+      "detail": true
+    },
+    "staff_cookie_api_catalog_write_403_zero_business_mutations": {
+      "passed": true,
+      "detail": true
+    },
+    "staff_cannot_fetch_known_owner_sale_id": {
+      "passed": true,
+      "detail": true
+    },
+    "staff_direct_financial_and_private_api_denied_zero_writes": {
+      "passed": true,
+      "detail": true
+    },
+    "staff_date_and_catalog_price_controls_readonly": {
+      "passed": true,
+      "detail": true
+    },
+    "staff_records_exact_current_price_and_date_sale": {
+      "passed": true,
+      "detail": true
+    },
+    "staff_own_history_has_no_other_records_or_edit_cancel_buttons": {
+      "passed": true,
+      "detail": true
+    },
+    "staff_own_edit_cancel_http_403_preserve_all_ledgers": {
+      "passed": true,
+      "detail": true
+    },
+    "owner_relogin_gets_full_projection_and_management_controls": {
+      "passed": true,
+      "detail": true
+    },
+    "owner_relogin_sees_all_sales_without_staff_cache_leak": {
+      "passed": true,
+      "detail": true
+    },
+    "staff_owner_financial_report_conserves_postings": {
+      "passed": true,
+      "detail": true
+    },
+    "anonymous_storefront_renders_with_expired_cookie": {
+      "passed": true,
+      "detail": true
+    },
+    "anonymous_catalog_projection_has_no_private_metadata": {
+      "passed": true,
+      "detail": true
+    },
+    "public_cookie_fallback_does_not_open_private_api": {
+      "passed": true,
+      "detail": true
+    },
+    "no_uncaught_browser_errors": {
+      "passed": true,
+      "detail": []
+    },
+    "original_line_still_retained_after_auth_recovery": {
+      "passed": true,
+      "detail": true
+    }
+  },
+  "mutations": [
+    {
+      "method": "POST",
+      "path": "/api/sales/",
+      "identity": "7d84c767-8d70-44c9-a6c7-4cb8b8042dec",
+      "revision": null,
+      "payload": {
+        "date": "2026-11-10",
+        "notes": "",
+        "sale_items": [
+          {
+            "product": 1,
+            "quantity": 1,
+            "unit_price": 50
+          }
+        ]
+      },
+      "status": 403,
+      "replayed": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/sales/",
+      "identity": "7d84c767-8d70-44c9-a6c7-4cb8b8042dec",
+      "revision": null,
+      "payload": {
+        "date": "2026-11-10",
+        "notes": "",
+        "sale_items": [
+          {
+            "product": 1,
+            "quantity": 1,
+            "unit_price": 50
+          }
+        ]
+      },
+      "status": 201,
+      "replayed": "false",
+      "response_lost_after_server_commit": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/sales/",
+      "identity": "7d84c767-8d70-44c9-a6c7-4cb8b8042dec",
+      "revision": null,
+      "payload": {
+        "date": "2026-11-10",
+        "notes": "",
+        "sale_items": [
+          {
+            "product": 1,
+            "quantity": 2,
+            "unit_price": 50
+          }
+        ]
+      },
+      "status": 409,
+      "replayed": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/sales/",
+      "identity": "7d84c767-8d70-44c9-a6c7-4cb8b8042dec",
+      "revision": null,
+      "payload": {
+        "date": "2026-11-10",
+        "notes": "",
+        "sale_items": [
+          {
+            "product": 1,
+            "quantity": 1,
+            "unit_price": 50.001
+          }
+        ]
+      },
+      "status": 400,
+      "replayed": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/sales/",
+      "identity": "7d84c767-8d70-44c9-a6c7-4cb8b8042dec",
+      "revision": null,
+      "payload": {
+        "date": "2026-11-10",
+        "notes": "",
+        "sale_items": [
+          {
+            "product": 1,
+            "quantity": 1,
+            "unit_price": 50
+          }
+        ]
+      },
+      "status": 201,
+      "replayed": "true"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/sales/1/",
+      "identity": "f7076221-b942-4c8a-9fa6-f4987f9d7261",
+      "revision": "\"1\"",
+      "payload": {
+        "date": "2026-11-10",
+        "notes": "",
+        "sale_items": [
+          {
+            "product": 1,
+            "quantity": 2,
+            "unit_price": 45.25
+          }
+        ]
+      },
+      "status": 200,
+      "replayed": "false"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/sales/1/",
+      "identity": "ae0bd504-073e-4d09-8f28-7ff3f124b0e1",
+      "revision": "\"2\"",
+      "payload": {
+        "date": "2026-11-10",
+        "notes": "",
+        "sale_items": [
+          {
+            "product": 1,
+            "quantity": 3,
+            "unit_price": 45.25
+          }
+        ]
+      },
+      "status": 409,
+      "replayed": null
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/sales/1/",
+      "identity": "928e6846-3686-41d2-a40b-78a5fe8f2687",
+      "revision": "\"3\"",
+      "payload": {
+        "reason": "Disposable browser cancellation verification"
+      },
+      "status": 200,
+      "replayed": "false"
+    },
+    {
+      "method": "POST",
+      "path": "/api/ingredients/1/adjustments/",
+      "identity": "99116c97-dd97-4a62-998a-20cf1a0b36c8",
+      "revision": "\"3\"",
+      "payload": {
+        "delta": "0.000000001",
+        "reason": "Observed count correction, not a refund"
+      },
+      "status": 200,
+      "replayed": "false"
+    },
+    {
+      "method": "POST",
+      "path": "/api/sales/",
+      "identity": "85c30533-2ebc-4033-b9b8-443aa0550831",
+      "revision": null,
+      "payload": {
+        "date": "2026-11-10",
+        "notes": "",
+        "sale_items": [
+          {
+            "product": 1,
+            "quantity": 100000,
+            "unit_price": 50
+          }
+        ]
+      },
+      "status": 400,
+      "replayed": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/sales/",
+      "identity": "4d479c4a-d7f3-4c7f-9a0b-0792f2059d4a",
+      "revision": null,
+      "payload": {
+        "date": "2026-11-10",
+        "notes": "",
+        "sale_items": [
+          {
+            "product": 1,
+            "quantity": 1,
+            "unit_price": 50
+          }
+        ]
+      },
+      "status": 401,
+      "replayed": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/sales/",
+      "identity": "4d479c4a-d7f3-4c7f-9a0b-0792f2059d4a",
+      "revision": null,
+      "payload": {
+        "date": "2026-11-10",
+        "notes": "",
+        "sale_items": [
+          {
+            "product": 1,
+            "quantity": 1,
+            "unit_price": 50
+          }
+        ]
+      },
+      "status": 201,
+      "replayed": "false"
+    },
+    {
+      "method": "POST",
+      "path": "/api/sales/",
+      "identity": "198a9ad4-5670-4718-89ce-975c39667194",
+      "revision": null,
+      "payload": {
+        "date": "2026-11-10",
+        "notes": "",
+        "sale_items": [
+          {
+            "product": 1,
+            "quantity": 1,
+            "unit_price": 50
+          }
+        ]
+      },
+      "status": 201,
+      "replayed": "false"
+    }
+  ],
+  "screenshots": [
+    "browser-uncertain-create.png",
+    "browser-stale-conflict.png",
+    "browser-cancelled-history.png",
+    "browser-inventory-after-adjustment.png",
+    "browser-dashboard-reconciled.png",
+    "staff-stock-projection.png",
+    "staff-readonly-catalog.png",
+    "staff-own-tracked-history.png",
+    "anonymous-storefront.png"
+  ],
+  "page_errors": [],
+  "console_errors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: net::ERR_CONNECTION_RESET",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "external_requests_blocked": [],
+  "real_http_api": true,
+  "staff_ui_requests": [
+    {
+      "method": "GET",
+      "path": "/api/auth/me/"
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login/"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sales/?page=1&date_from=2026-11-10&date_to=2026-11-10"
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me/"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ingredients/?page=1"
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me/"
+    },
+    {
+      "method": "GET",
+      "path": "/api/products/?page=1"
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me/"
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me/"
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me/"
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me/"
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me/"
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me/"
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me/"
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me/"
+    },
+    {
+      "method": "GET",
+      "path": "/api/products/?page=1"
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/csrf/"
+    },
+    {
+      "method": "POST",
+      "path": "/api/sales/"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sales/?page=1&date_from=2026-11-10&date_to=2026-11-10"
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/logout/"
+    }
+  ],
+  "login_dom": [
+    {
+      "name": "username",
+      "type": "text"
+    },
+    {
+      "name": "password",
+      "type": "password"
+    }
+  ],
+  "sale_form_dom": [
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "type": "submit",
+      "text": "Logout"
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "type": "submit",
+      "text": ""
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "type": "submit",
+      "text": ""
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "type": "submit",
+      "text": "Logout"
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "type": "submit",
+      "text": ""
+    },
+    {
+      "tag": "INPUT",
+      "name": "date",
+      "type": "date",
+      "text": null
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "type": "button",
+      "text": "Add Item"
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "type": "submit",
+      "text": "Record Sale"
+    },
+    {
+      "tag": "BUTTON",
+      "name": "",
+      "type": "button",
+      "text": "Cancel"
+    }
+  ],
+  "identity_after_uncertain_validation": [
+    {
+      "key": "7d84c767-8d70-44c9-a6c7-4cb8b8042dec",
+      "hasPriorAttempt": true
+    }
+  ],
+  "stock_dialog_dom": [
+    {
+      "tag": "BUTTON",
+      "type": "submit",
+      "placeholder": null,
+      "text": ""
+    },
+    {
+      "tag": "BUTTON",
+      "type": "button",
+      "placeholder": null,
+      "text": "Add Stock"
+    },
+    {
+      "tag": "BUTTON",
+      "type": "button",
+      "placeholder": null,
+      "text": "Deduct Stock"
+    },
+    {
+      "tag": "INPUT",
+      "type": "number",
+      "placeholder": "0",
+      "text": null
+    },
+    {
+      "tag": "TEXTAREA",
+      "type": "textarea",
+      "placeholder": "e.g. Restocked from SM Supermarket",
+      "text": null
+    },
+    {
+      "tag": "BUTTON",
+      "type": "submit",
+      "placeholder": null,
+      "text": "Cancel"
+    },
+    {
+      "tag": "BUTTON",
+      "type": "submit",
+      "placeholder": null,
+      "text": "Save"
+    }
+  ],
+  "database_reconciliation": {
+    "sales": [
+      {
+        "id": 4,
+        "date": "2026-11-10",
+        "notes": "",
+        "total_amount": "50.00",
+        "created_at": "2026-11-10 02:35:25.388398+00:00",
+        "updated_at": "2026-11-10 02:35:25.395700+00:00",
+        "inventory_tracking": "tracked",
+        "financial_tracking": "ledger",
+        "status": "recorded",
+        "revision": 1,
+        "current_items": [
+          {
+            "id": 4,
+            "product": 1,
+            "quantity": 1,
+            "subtotal": "50.00",
+            "unit_price": "50.00",
+            "product_name": "Browser verification donut",
+            "subtotal_amount": "50.00"
+          }
+        ],
+        "cancellation_operation_id": null
+      },
+      {
+        "id": 3,
+        "date": "2026-11-10",
+        "notes": "OTHER-STAFF-PRIVATE-HISTORY",
+        "total_amount": "50.00",
+        "created_at": "2026-11-10 02:35:11.803152+00:00",
+        "updated_at": "2026-11-10 02:35:11.809220+00:00",
+        "inventory_tracking": "tracked",
+        "financial_tracking": "ledger",
+        "status": "recorded",
+        "revision": 1,
+        "current_items": [
+          {
+            "id": 3,
+            "product": 1,
+            "quantity": 1,
+            "subtotal": "50.00",
+            "unit_price": "50.00",
+            "product_name": "Browser verification donut",
+            "subtotal_amount": "50.00"
+          }
+        ],
+        "cancellation_operation_id": null
+      },
+      {
+        "id": 2,
+        "date": "2026-11-10",
+        "notes": "",
+        "total_amount": "50.00",
+        "created_at": "2026-11-10 02:35:09.378640+00:00",
+        "updated_at": "2026-11-10 02:35:09.655173+00:00",
+        "inventory_tracking": "tracked",
+        "financial_tracking": "ledger",
+        "status": "cancelled",
+        "revision": 2,
+        "current_items": [
+          {
+            "id": 2,
+            "product": 1,
+            "quantity": 1,
+            "subtotal": "50.00",
+            "unit_price": "50.00",
+            "product_name": "Browser verification donut",
+            "subtotal_amount": "50.00"
+          }
+        ],
+        "cancellation_operation_id": 7
+      },
+      {
+        "id": 1,
+        "date": "2026-11-10",
+        "notes": "Independent concurrent operator correction",
+        "total_amount": "50.00",
+        "created_at": "2026-11-10 02:34:50.163414+00:00",
+        "updated_at": "2026-11-10 02:34:57.285013+00:00",
+        "inventory_tracking": "tracked",
+        "financial_tracking": "ledger",
+        "status": "cancelled",
+        "revision": 4,
+        "current_items": [
+          {
+            "id": 1,
+            "product": 1,
+            "quantity": 2,
+            "subtotal": "90.50",
+            "unit_price": "45.25",
+            "product_name": "Browser verification donut",
+            "subtotal_amount": "90.50"
+          }
+        ],
+        "cancellation_operation_id": 4
+      }
+    ],
+    "original_items": [
+      {
+        "id": 1,
+        "sale_id": 1,
+        "product_id": 1,
+        "quantity": 1,
+        "unit_price": "50.00",
+        "subtotal_amount": "50.00"
+      },
+      {
+        "id": 2,
+        "sale_id": 2,
+        "product_id": 1,
+        "quantity": 1,
+        "unit_price": "50.00",
+        "subtotal_amount": "50.00"
+      },
+      {
+        "id": 3,
+        "sale_id": 3,
+        "product_id": 1,
+        "quantity": 1,
+        "unit_price": "50.00",
+        "subtotal_amount": "50.00"
+      },
+      {
+        "id": 4,
+        "sale_id": 4,
+        "product_id": 1,
+        "quantity": 1,
+        "unit_price": "50.00",
+        "subtotal_amount": "50.00"
+      }
+    ],
+    "operations": 9,
+    "consumptions": [
+      {
+        "id": 1,
+        "sale_id": 1,
+        "sale_revision": 1,
+        "basis_id": 1,
+        "operation_id": 1,
+        "allocation_start": 0,
+        "units": 1,
+        "applied_quantity": "0.003333333",
+        "reversed_by_id": 2
+      },
+      {
+        "id": 2,
+        "sale_id": 1,
+        "sale_revision": 1,
+        "basis_id": 2,
+        "operation_id": 1,
+        "allocation_start": 0,
+        "units": 1,
+        "applied_quantity": "0.003333333",
+        "reversed_by_id": 2
+      },
+      {
+        "id": 3,
+        "sale_id": 1,
+        "sale_revision": 2,
+        "basis_id": 1,
+        "operation_id": 2,
+        "allocation_start": 1,
+        "units": 2,
+        "applied_quantity": "0.006666667",
+        "reversed_by_id": 4
+      },
+      {
+        "id": 4,
+        "sale_id": 1,
+        "sale_revision": 2,
+        "basis_id": 2,
+        "operation_id": 2,
+        "allocation_start": 1,
+        "units": 2,
+        "applied_quantity": "0.006666667",
+        "reversed_by_id": 4
+      },
+      {
+        "id": 5,
+        "sale_id": 2,
+        "sale_revision": 1,
+        "basis_id": 1,
+        "operation_id": 6,
+        "allocation_start": 3,
+        "units": 1,
+        "applied_quantity": "0.003333333",
+        "reversed_by_id": 7
+      },
+      {
+        "id": 6,
+        "sale_id": 2,
+        "sale_revision": 1,
+        "basis_id": 2,
+        "operation_id": 6,
+        "allocation_start": 3,
+        "units": 1,
+        "applied_quantity": "0.003333333",
+        "reversed_by_id": 7
+      },
+      {
+        "id": 7,
+        "sale_id": 3,
+        "sale_revision": 1,
+        "basis_id": 1,
+        "operation_id": 8,
+        "allocation_start": 4,
+        "units": 1,
+        "applied_quantity": "0.003333334",
+        "reversed_by_id": null
+      },
+      {
+        "id": 8,
+        "sale_id": 3,
+        "sale_revision": 1,
+        "basis_id": 2,
+        "operation_id": 8,
+        "allocation_start": 4,
+        "units": 1,
+        "applied_quantity": "0.003333334",
+        "reversed_by_id": null
+      },
+      {
+        "id": 9,
+        "sale_id": 4,
+        "sale_revision": 1,
+        "basis_id": 1,
+        "operation_id": 9,
+        "allocation_start": 5,
+        "units": 1,
+        "applied_quantity": "0.003333333",
+        "reversed_by_id": null
+      },
+      {
+        "id": 10,
+        "sale_id": 4,
+        "sale_revision": 1,
+        "basis_id": 2,
+        "operation_id": 9,
+        "allocation_start": 5,
+        "units": 1,
+        "applied_quantity": "0.003333333",
+        "reversed_by_id": null
+      }
+    ],
+    "movements": [
+      {
+        "id": 1,
+        "operation_id": 1,
+        "ingredient_id": 1,
+        "stock_revision": 1,
+        "unit": "kg",
+        "quantity_delta": "-0.003333333",
+        "balance_after": "19.996666667"
+      },
+      {
+        "id": 2,
+        "operation_id": 1,
+        "ingredient_id": 2,
+        "stock_revision": 1,
+        "unit": "l",
+        "quantity_delta": "-0.003333333",
+        "balance_after": "9.996666667"
+      },
+      {
+        "id": 3,
+        "operation_id": 2,
+        "ingredient_id": 1,
+        "stock_revision": 2,
+        "unit": "kg",
+        "quantity_delta": "-0.003333334",
+        "balance_after": "19.993333333"
+      },
+      {
+        "id": 4,
+        "operation_id": 2,
+        "ingredient_id": 2,
+        "stock_revision": 2,
+        "unit": "l",
+        "quantity_delta": "-0.003333334",
+        "balance_after": "9.993333333"
+      },
+      {
+        "id": 5,
+        "operation_id": 4,
+        "ingredient_id": 1,
+        "stock_revision": 3,
+        "unit": "kg",
+        "quantity_delta": "0.006666667",
+        "balance_after": "20.000000000"
+      },
+      {
+        "id": 6,
+        "operation_id": 4,
+        "ingredient_id": 2,
+        "stock_revision": 3,
+        "unit": "l",
+        "quantity_delta": "0.006666667",
+        "balance_after": "10.000000000"
+      },
+      {
+        "id": 7,
+        "operation_id": 5,
+        "ingredient_id": 1,
+        "stock_revision": 4,
+        "unit": "kg",
+        "quantity_delta": "1E-9",
+        "balance_after": "20.000000001"
+      },
+      {
+        "id": 8,
+        "operation_id": 6,
+        "ingredient_id": 1,
+        "stock_revision": 5,
+        "unit": "kg",
+        "quantity_delta": "-0.003333333",
+        "balance_after": "19.996666668"
+      },
+      {
+        "id": 9,
+        "operation_id": 6,
+        "ingredient_id": 2,
+        "stock_revision": 4,
+        "unit": "l",
+        "quantity_delta": "-0.003333333",
+        "balance_after": "9.996666667"
+      },
+      {
+        "id": 10,
+        "operation_id": 7,
+        "ingredient_id": 1,
+        "stock_revision": 6,
+        "unit": "kg",
+        "quantity_delta": "0.003333333",
+        "balance_after": "20.000000001"
+      },
+      {
+        "id": 11,
+        "operation_id": 7,
+        "ingredient_id": 2,
+        "stock_revision": 5,
+        "unit": "l",
+        "quantity_delta": "0.003333333",
+        "balance_after": "10.000000000"
+      },
+      {
+        "id": 12,
+        "operation_id": 8,
+        "ingredient_id": 1,
+        "stock_revision": 7,
+        "unit": "kg",
+        "quantity_delta": "-0.003333334",
+        "balance_after": "19.996666667"
+      },
+      {
+        "id": 13,
+        "operation_id": 8,
+        "ingredient_id": 2,
+        "stock_revision": 6,
+        "unit": "l",
+        "quantity_delta": "-0.003333334",
+        "balance_after": "9.996666666"
+      },
+      {
+        "id": 14,
+        "operation_id": 9,
+        "ingredient_id": 1,
+        "stock_revision": 8,
+        "unit": "kg",
+        "quantity_delta": "-0.003333333",
+        "balance_after": "19.993333334"
+      },
+      {
+        "id": 15,
+        "operation_id": 9,
+        "ingredient_id": 2,
+        "stock_revision": 7,
+        "unit": "l",
+        "quantity_delta": "-0.003333333",
+        "balance_after": "9.993333333"
+      }
+    ],
+    "postings": [
+      {
+        "id": 1,
+        "sale_id": 1,
+        "operation_id": 1,
+        "sale_revision": 1,
+        "kind": "gross_sale",
+        "effective_date": "2026-11-10",
+        "amount": "50.00"
+      },
+      {
+        "id": 2,
+        "sale_id": 1,
+        "operation_id": 2,
+        "sale_revision": 2,
+        "kind": "sale_adjustment",
+        "effective_date": "2026-11-10",
+        "amount": "40.50"
+      },
+      {
+        "id": 3,
+        "sale_id": 1,
+        "operation_id": 4,
+        "sale_revision": 4,
+        "kind": "cancellation",
+        "effective_date": "2026-11-10",
+        "amount": "-90.50"
+      },
+      {
+        "id": 4,
+        "sale_id": 2,
+        "operation_id": 6,
+        "sale_revision": 1,
+        "kind": "gross_sale",
+        "effective_date": "2026-11-10",
+        "amount": "50.00"
+      },
+      {
+        "id": 5,
+        "sale_id": 2,
+        "operation_id": 7,
+        "sale_revision": 2,
+        "kind": "cancellation",
+        "effective_date": "2026-11-10",
+        "amount": "-50.00"
+      },
+      {
+        "id": 6,
+        "sale_id": 3,
+        "operation_id": 8,
+        "sale_revision": 1,
+        "kind": "gross_sale",
+        "effective_date": "2026-11-10",
+        "amount": "50.00"
+      },
+      {
+        "id": 7,
+        "sale_id": 4,
+        "operation_id": 9,
+        "sale_revision": 1,
+        "kind": "gross_sale",
+        "effective_date": "2026-11-10",
+        "amount": "50.00"
+      }
+    ]
+  },
+  "passed": true
+}

@@ -21,7 +21,10 @@ class Ingredient(models.Model):
         OTHER = 'other', 'Other'
 
     name = models.CharField(max_length=100, unique=True)
-    quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    quantity = models.DecimalField(max_digits=20, decimal_places=9, default=0)
+    stock_revision = models.BigIntegerField(default=0)
+    ledger_opening_quantity = models.DecimalField(max_digits=20, decimal_places=9, null=True, blank=True, default=None)
+    ledger_started_at = models.DateTimeField(null=True, blank=True, default=None)
     unit = models.CharField(max_length=10, choices=Unit.choices)
     cost_per_unit = models.DecimalField(max_digits=10, decimal_places=2)
     supplier = models.CharField(max_length=100, blank=True, default='')
@@ -42,6 +45,10 @@ class Ingredient(models.Model):
 
     class Meta:
         ordering = ['name']
+        constraints = [
+            models.CheckConstraint(condition=models.Q(quantity__gte=0, stock_revision__gte=0), name='ing_stock_revision_valid'),
+            models.CheckConstraint(condition=(models.Q(ledger_opening_quantity__isnull=True, ledger_started_at__isnull=True, stock_revision=0) | models.Q(ledger_opening_quantity__gte=0, ledger_opening_quantity__isnull=False, ledger_started_at__isnull=False)), name='ing_anchor_valid'),
+        ]
 
     def __str__(self):
         return f"{self.name} ({self.unit})"

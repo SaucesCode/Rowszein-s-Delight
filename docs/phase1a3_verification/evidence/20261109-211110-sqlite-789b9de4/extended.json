@@ -1,0 +1,86 @@
+{
+  "tests_run": 13,
+  "outcomes": [
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_actual_checks_unique_keys_and_foreign_keys",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.109
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_adjustment_result_is_exact_or_rejected_before_storage",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.032
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_deterministic_lifecycle_reconciles_after_every_operation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 12.828
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_frontend_compatibility_read_endpoints_and_validation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.125
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_gross_adjustment_cancellation_dates_and_no_refund",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.125
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_initial_quantity_is_exact_or_rejected_before_storage",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.016
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_postgresql_maximum_precision_roundtrips_without_lost_quanta",
+      "status": "skip",
+      "detail": "SQLite numeric storage cannot establish full PostgreSQL Decimal(20,9) precision",
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_protected_history_and_immutable_quantities",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.078
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedConcurrencyTests.test_cancellation_competing_with_edit",
+      "status": "skip",
+      "detail": "Requires real independent PostgreSQL transactions",
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedConcurrencyTests.test_multiple_products_and_ingredients_in_opposite_request_orders",
+      "status": "skip",
+      "detail": "Requires real independent PostgreSQL transactions",
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedConcurrencyTests.test_real_ingredient_lock_wait_is_observed_then_commits",
+      "status": "skip",
+      "detail": "Requires real independent PostgreSQL transactions",
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedConcurrencyTests.test_recipe_change_competing_with_sale",
+      "status": "skip",
+      "detail": "Requires real independent PostgreSQL transactions",
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedConcurrencyTests.test_two_operators_compete_for_last_stock",
+      "status": "skip",
+      "detail": "Requires real independent PostgreSQL transactions",
+      "seconds": 0.0
+    }
+  ],
+  "failures": 0,
+  "errors": 0,
+  "skipped": 6
+}

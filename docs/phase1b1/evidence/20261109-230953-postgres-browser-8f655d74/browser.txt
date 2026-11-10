@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 75, in <module>
+    launch([sys.executable, '-B', '-m', 'http.server', '18843', '--bind', '127.0.0.1', '--directory', str(attacker)], ROOT, 18843, 'browser-hostile-origin', {})
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b1\browser_checks.py", line 48, in launch
+    raise RuntimeError(name + ' exited; see its dedicated log')
+RuntimeError: browser-hostile-origin exited; see its dedicated log
+

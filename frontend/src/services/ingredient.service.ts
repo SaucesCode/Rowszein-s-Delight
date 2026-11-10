@@ -1,10 +1,10 @@
 import api from "./api";
 import type { Ingredient, IngredientPayload } from "@/types/ingredient.types";
 
-const toFormData = (payload: IngredientPayload): FormData => {
+const toFormData = (payload: IngredientPayload, includeQuantity = true): FormData => {
   const formData = new FormData();
   formData.append("name", payload.name);
-  formData.append("quantity", String(payload.quantity));
+  if (includeQuantity) formData.append("quantity", String(payload.quantity));
   formData.append("unit", payload.unit);
   formData.append("cost_per_unit", String(payload.cost_per_unit));
   formData.append("supplier", payload.supplier ?? "");
@@ -41,7 +41,7 @@ export const ingredientService = {
   },
 
   update: async (id: number, payload: IngredientPayload) => {
-    const response = await api.put(`/ingredients/${id}/`, toFormData(payload), {
+    const response = await api.put(`/ingredients/${id}/`, toFormData(payload, false), {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
@@ -49,6 +49,10 @@ export const ingredientService = {
 
   delete: async (id: number) => {
     const response = await api.delete(`/ingredients/${id}/`);
+    return response.data;
+  },
+  adjust: async (id: number, delta: string, reason: string, key: string, revision: string) => {
+    const response = await api.post(`/ingredients/${id}/adjustments/`, { delta, reason }, { headers: { "Idempotency-Key": key, "If-Match": `"${revision}"` } });
     return response.data;
   },
 };
