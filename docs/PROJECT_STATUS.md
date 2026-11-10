@@ -6,7 +6,7 @@ Rowszein's Delight Management System
 
 ## Current Phase
 
-Package 1B.2 is accepted at `8d8fe47` for controlled local development. Phase 1B.3 session/revocation/login-limiting DESIGN ONLY is complete for approval on `codex/phase-1b3-session-design`. No application, test, dependency, infrastructure or migration changes. AUTH-01/AUTH-02 retain accepted local evidence; the three session/throttle requirements, dependency findings and production topology remain open.
+Phase 1B.3 disposable verification is complete for owner review on `codex/phase-1b3-disposable-verification`. Following the explicit revised-hash approval, commit `b9957e0` applies only the prepared SQLite literal-format correction and narrows the migration verifier to that exact approved change. [Final report](PHASE1B3_DATABASE_VERIFICATION_REPORT.md): fresh PostgreSQL 17 has 120 business passes, 93 security passes/1 SQLite-only skip, 28 concurrency passes, 21 RBAC passes and 28 schema/restore checks. Fresh SQLite has 103 business passes/17 PostgreSQL skips, 91 security passes/3 PostgreSQL skips, 21 RBAC passes and 27 schema/restore checks; its separate PostgreSQL concurrency group has 28 skips, no claimed passes. Original 13 role and 26 CSRF requirements and all three session/throttling blockers pass on both engines. Browser: 33 passes per engine. Frontend: 52 utility passes, build/focused lint pass; five approval-guard units pass. Original failures, static evidence and the earlier incomplete report are preserved. All disposable targets/servers are removed. STOP after 1B.3; production/dependency/operational validation remains outstanding and no next package or deployment is authorized.
 
 ## Completed
 

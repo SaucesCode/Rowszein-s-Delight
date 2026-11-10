@@ -1,0 +1,45 @@
+PASS real_owner_cookie_login
+PASS access_lifetime_exactly_900_seconds
+PASS jwt_cookies_httponly
+PASS web_locks_available
+PASS lost_committed_response_recorded
+PASS one_sale_after_lost_response
+PASS expired_token_fixture_has_valid_chronology
+PASS uncertain_sale_401_has_no_automatic_refresh
+PASS unauthorized_retry_has_zero_business_writes
+PASS explicit_renewal_preserves_exact_pending_uuid_and_body
+PASS historical_success_replayed_once
+PASS full_financial_inventory_reconciliation
+PASS actual_simultaneous_tabs_rotate_without_reuse
+PASS family_remains_active_after_tabs
+PASS failed_logout_honest_ui_and_live_session
+PASS logout_copied_access_rejected
+PASS staff_operational_stock_page_renders
+PASS staff_private_navigation_hidden
+PASS staff_stock_fields_safe
+PASS staff_business_date_readonly
+PASS staff_unit_price_readonly
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b3_verification\browser_checks.py", line 184, in <module>
+    go('/expenses');page.wait_for_url('**/sales')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 21446, in wait_for_url
+    self._sync(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_page.py", line 592, in wait_for_url
+    return await self._main_frame.wait_for_url(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_frame.py", line 289, in wait_for_url
+    async with self.expect_navigation(
+               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_event_context_manager.py", line 33, in __aexit__
+    await self._future
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_frame.py", line 265, in continuation
+    event = await waiter.result()
+            ^^^^^^^^^^^^^^^^^^^^^
+playwright._impl._errors.TimeoutError: Timeout 30000ms exceeded.
+=========================== logs ===========================
+waiting for navigation to "**/sales" until 'load'
+============================================================

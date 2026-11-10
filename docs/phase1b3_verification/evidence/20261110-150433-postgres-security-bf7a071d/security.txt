@@ -1,0 +1,164 @@
+Found 94 test(s).
+Operations to perform:
+  Synchronize unmigrated apps: corsheaders, messages, rest_framework, staticfiles
+  Apply all migrations: accounts, admin, auth, contenttypes, expenses, ingredients, products, recipes, sales, sessions
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0001_initial... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying accounts.0001_initial... OK
+  Applying accounts.0002_auththrottlebucket_devicesession_user_session_epoch_and_more... OK
+  Applying accounts.0003_session_security_guards... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying expenses.0001_initial... OK
+  Applying ingredients.0001_initial... OK
+  Applying ingredients.0002_ingredient_minimum_stock... OK
+  Applying ingredients.0003_ingredient_category_ingredient_image_and_more... OK
+  Applying ingredients.0004_inventory_integrity... OK
+  Applying products.0001_initial... OK
+  Applying products.0002_product_is_featured... OK
+  Applying products.0003_product_category... OK
+  Applying products.0004_category_product_category_fk... OK
+  Applying recipes.0001_initial... OK
+  Applying recipes.0002_recipe_yield_quantity... OK
+  Applying sales.0001_initial... OK
+  Applying sales.0002_saleitem_subtotal_amount... OK
+  Applying sales.0003_inventory_integrity... OK
+  Applying sessions.0001_initial... OK
+System check identified no issues (0 silenced).
+Creating test database for alias 'default' ('test_rowszein_verify_19f834049a94491bb46114fdb175189d')...
+
+test_account_transaction_exception_rolls_back_epoch_and_revocations (session_api_contracts.SessionAPIContracts.test_account_transaction_exception_rolls_back_epoch_and_revocations) ... C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\django\core\handlers\base.py:61: UserWarning: No directory at: C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\.verification-runtime\19f834049a94491bb46114fdb175189d\static\
+  mw_instance = middleware(adapted_handler)
+ok
+test_activity_persistence_failure_rolls_back_all_business_writes (session_api_contracts.SessionAPIContracts.test_activity_persistence_failure_rolls_back_all_business_writes) ... ok
+test_admin_and_api_failures_share_account_limit (session_api_contracts.SessionAPIContracts.test_admin_and_api_failures_share_account_limit) ... Authentication quota denied
+ok
+test_admin_login_epoch_change_and_password_change_require_fresh_login (session_api_contracts.SessionAPIContracts.test_admin_login_epoch_change_and_password_change_require_fresh_login) ... ok
+test_auth_polling_bootstrap_and_denials_never_renew_activity (session_api_contracts.SessionAPIContracts.test_auth_polling_bootstrap_and_denials_never_renew_activity) ... ok
+test_automatic_hash_upgrade_issues_current_epoch_and_revokes_old (session_api_contracts.SessionAPIContracts.test_automatic_hash_upgrade_issues_current_epoch_and_revokes_old) ... ok
+test_csrf_origin_and_legacy_cookies_cause_zero_business_writes (session_api_contracts.SessionAPIContracts.test_csrf_origin_and_legacy_cookies_cause_zero_business_writes) ... ok
+test_database_device_guards_reject_identity_generation_and_resurrection (session_api_contracts.SessionAPIContracts.test_database_device_guards_reject_identity_generation_and_resurrection) ... ok
+test_direct_epoch_updates_even_noops_are_rejected (session_api_contracts.SessionAPIContracts.test_direct_epoch_updates_even_noops_are_rejected) ... ok
+test_expired_access_locator_logout_recovery (session_api_contracts.SessionAPIContracts.test_expired_access_locator_logout_recovery) ... ok
+test_failed_logout_keeps_proof_cookies_and_never_claims_success (session_api_contracts.SessionAPIContracts.test_failed_logout_keeps_proof_cookies_and_never_claims_success) ... ok
+test_financial_and_inventory_reconciliation_survives_sessions (session_api_contracts.SessionAPIContracts.test_financial_and_inventory_reconciliation_survives_sessions) ... ok
+test_fresh_session_same_actor_exact_replay_does_not_reprice (session_api_contracts.SessionAPIContracts.test_fresh_session_same_actor_exact_replay_does_not_reprice) ... ok
+test_guard_absence_cannot_enable_partial_schema_login (session_api_contracts.SessionAPIContracts.test_guard_absence_cannot_enable_partial_schema_login) ... ok
+test_idle_and_absolute_boundaries_deny_and_do_not_write_business (session_api_contracts.SessionAPIContracts.test_idle_and_absolute_boundaries_deny_and_do_not_write_business) ... ok
+test_locator_cannot_authenticate_or_refresh (session_api_contracts.SessionAPIContracts.test_locator_cannot_authenticate_or_refresh) ... ok
+test_logout_current_device_only_and_repeat (session_api_contracts.SessionAPIContracts.test_logout_current_device_only_and_repeat) ... ok
+test_logout_invalidates_copied_access_cookie (session_api_contracts.SessionAPIContracts.test_logout_invalidates_copied_access_cookie) ... ok
+test_logout_without_identifiable_proof_is_explicit_cleanup_only (session_api_contracts.SessionAPIContracts.test_logout_without_identifiable_proof_is_explicit_cleanup_only) ... ok
+test_missing_and_epoch_mismatched_sessions_cannot_write (session_api_contracts.SessionAPIContracts.test_missing_and_epoch_mismatched_sessions_cannot_write) ... ok
+test_nat_ip_limit_across_distinct_accounts (session_api_contracts.SessionAPIContracts.test_nat_ip_limit_across_distinct_accounts) ... Authentication quota denied
+ok
+test_password_change_invalidates_existing_access_cookie (session_api_contracts.SessionAPIContracts.test_password_change_invalidates_existing_access_cookie) ... ok
+test_queryset_and_raw_sql_security_changes_revoke (session_api_contracts.SessionAPIContracts.test_queryset_and_raw_sql_security_changes_revoke) ... ok
+test_refresh_csrf_and_source_fail_before_rotation (session_api_contracts.SessionAPIContracts.test_refresh_csrf_and_source_fail_before_rotation) ... ok
+test_refresh_rotates_once_without_activity_or_absolute_extension (session_api_contracts.SessionAPIContracts.test_refresh_rotates_once_without_activity_or_absolute_extension) ... Refresh reuse revoked a family
+ok
+test_repeated_bad_login_is_rate_limited (session_api_contracts.SessionAPIContracts.test_repeated_bad_login_is_rate_limited) ... Authentication quota denied
+ok
+test_revoked_session_cannot_read_successful_idempotent_response (session_api_contracts.SessionAPIContracts.test_revoked_session_cannot_read_successful_idempotent_response) ... ok
+test_session_admission_samples_clock_after_user_and_device_locks (session_api_contracts.SessionAPIContracts.test_session_admission_samples_clock_after_user_and_device_locks) ... ok
+test_session_creation_exception_rolls_back_row_and_does_not_issue_cookies (session_api_contracts.SessionAPIContracts.test_session_creation_exception_rolls_back_row_and_does_not_issue_cookies) ... ok
+test_staff_technical_flags_cannot_login_admin (session_api_contracts.SessionAPIContracts.test_staff_technical_flags_cannot_login_admin) ... ok
+test_throttle_outage_and_row_cap_fail_closed (session_api_contracts.SessionAPIContracts.test_throttle_outage_and_row_cap_fail_closed) ... ok
+test_unknown_accounts_success_and_spoofed_headers_share_counter_rules (session_api_contracts.SessionAPIContracts.test_unknown_accounts_success_and_spoofed_headers_share_counter_rules) ... Authentication quota denied
+ok
+test_all_unsafe_methods_without_token_have_no_writes (security_compatibility.CSRFRegression24.test_all_unsafe_methods_without_token_have_no_writes) ... ok
+test_authentication_rotation_preserves_successful_sale_replay (security_compatibility.CSRFRegression24.test_authentication_rotation_preserves_successful_sale_replay) ... ok
+test_bearer_header_does_not_bypass_cookie_csrf (security_compatibility.CSRFRegression24.test_bearer_header_does_not_bypass_cookie_csrf) ... ok
+test_bootstrap_ignores_expired_and_malformed_access (security_compatibility.CSRFRegression24.test_bootstrap_ignores_expired_and_malformed_access) ... ok
+test_bootstrap_is_read_only (security_compatibility.CSRFRegression24.test_bootstrap_is_read_only) ... ok
+test_bootstrap_masked_httponly_host_cookie_and_no_cache (security_compatibility.CSRFRegression24.test_bootstrap_masked_httponly_host_cookie_and_no_cache) ... ok
+test_expired_or_malformed_cookie_login_and_logout (security_compatibility.CSRFRegression24.test_expired_or_malformed_cookie_login_and_logout) ... ok
+test_hostile_origin_with_matching_token_has_no_writes (security_compatibility.CSRFRegression24.test_hostile_origin_with_matching_token_has_no_writes) ... ok
+test_https_missing_bad_or_insecure_referer_rejected (security_compatibility.CSRFRegression24.test_https_missing_bad_or_insecure_referer_rejected) ... ok
+test_https_trusted_referer_without_origin_works (security_compatibility.CSRFRegression24.test_https_trusted_referer_without_origin_works) ... ok
+test_json_token_body_does_not_replace_required_header (security_compatibility.CSRFRegression24.test_json_token_body_does_not_replace_required_header) ... ok
+test_login_and_logout_rejections_issue_no_auth_cookies (security_compatibility.CSRFRegression24.test_login_and_logout_rejections_issue_no_auth_cookies) ... ok
+test_login_rotates_csrf_and_keeps_jwts_out_of_json (security_compatibility.CSRFRegression24.test_login_rotates_csrf_and_keeps_jwts_out_of_json) ... ok
+test_logout_is_csrf_protected_idempotent_cookie_cleanup (security_compatibility.CSRFRegression24.test_logout_is_csrf_protected_idempotent_cookie_cleanup) ... ok
+test_loopback_http_requires_explicit_trusted_origin (security_compatibility.CSRFRegression24.test_loopback_http_requires_explicit_trusted_origin) ... ok
+test_malformed_csrf_tokens_rejected (security_compatibility.CSRFRegression24.test_malformed_csrf_tokens_rejected) ... ok
+test_missing_cookie_rejected_despite_well_formed_header (security_compatibility.CSRFRegression24.test_missing_cookie_rejected_despite_well_formed_header) ... ok
+test_null_and_lookalike_origins_fail_closed (security_compatibility.CSRFRegression24.test_null_and_lookalike_origins_fail_closed) ... ok
+test_rejected_sale_can_use_same_uuid_after_csrf_recovery (security_compatibility.CSRFRegression24.test_rejected_sale_can_use_same_uuid_after_csrf_recovery) ... ok
+test_rejected_stock_adjustment_does_not_reserve_uuid_or_revision (security_compatibility.CSRFRegression24.test_rejected_stock_adjustment_does_not_reserve_uuid_or_revision) ... ok
+test_rotated_login_rejects_old_csrf_before_business_write (security_compatibility.CSRFRegression24.test_rotated_login_rejects_old_csrf_before_business_write) ... ok
+test_secure_cookie_when_https_setting_enabled (security_compatibility.CSRFRegression24.test_secure_cookie_when_https_setting_enabled) ... ok
+test_supported_form_token_works_for_trusted_login (security_compatibility.CSRFRegression24.test_supported_form_token_works_for_trusted_login) ... ok
+test_unauthenticated_or_invalid_jwt_write_is_401_without_writes (security_compatibility.CSRFRegression24.test_unauthenticated_or_invalid_jwt_write_is_401_without_writes) ... ok
+test_django_superuser_flag_is_not_implicit_business_owner (security_compatibility.OriginalRoles13.test_django_superuser_flag_is_not_implicit_business_owner) ... ok
+test_role_downgrade_applies_to_existing_token (security_compatibility.OriginalRoles13.test_role_downgrade_applies_to_existing_token) ... ok
+test_staff_cannot_adjust_stock (security_compatibility.OriginalRoles13.test_staff_cannot_adjust_stock) ... ok
+test_staff_cannot_cancel_own_recorded_sale (security_compatibility.OriginalRoles13.test_staff_cannot_cancel_own_recorded_sale) ... ok
+test_staff_cannot_change_catalog_price (security_compatibility.OriginalRoles13.test_staff_cannot_change_catalog_price) ... ok
+test_staff_cannot_change_recipe (security_compatibility.OriginalRoles13.test_staff_cannot_change_recipe) ... ok
+test_staff_cannot_create_expense (security_compatibility.OriginalRoles13.test_staff_cannot_create_expense) ... ok
+test_staff_cannot_edit_own_recorded_sale (security_compatibility.OriginalRoles13.test_staff_cannot_edit_own_recorded_sale) ... ok
+test_staff_cannot_export_sales (security_compatibility.OriginalRoles13.test_staff_cannot_export_sales) ... ok
+test_staff_cannot_read_financial_summary (security_compatibility.OriginalRoles13.test_staff_cannot_read_financial_summary) ... ok
+test_staff_cannot_read_owner_dashboard (security_compatibility.OriginalRoles13.test_staff_cannot_read_owner_dashboard) ... ok
+test_staff_cannot_read_profit_margins (security_compatibility.OriginalRoles13.test_staff_cannot_read_profit_margins) ... ok
+test_unknown_role_fails_closed (security_compatibility.OriginalRoles13.test_unknown_role_fails_closed) ... ok
+test_cookie_write_with_invalid_csrf_is_denied (security_compatibility.OriginalSecurity13.test_cookie_write_with_invalid_csrf_is_denied) ... ok
+test_cookie_write_without_csrf_is_denied_before_persistence (security_compatibility.OriginalSecurity13.test_cookie_write_without_csrf_is_denied_before_persistence) ... ok
+test_expired_cookie_does_not_prevent_valid_relogin (security_compatibility.OriginalSecurity13.test_expired_cookie_does_not_prevent_valid_relogin) ... ok
+test_expired_cookie_logout_still_clears_browser_auth (security_compatibility.OriginalSecurity13.test_expired_cookie_logout_still_clears_browser_auth) ... ok
+test_hostile_origin_even_with_matching_csrf_is_denied (security_compatibility.OriginalSecurity13.test_hostile_origin_even_with_matching_csrf_is_denied) ... ok
+test_https_missing_origin_and_referer_is_denied (security_compatibility.OriginalSecurity13.test_https_missing_origin_and_referer_is_denied) ... ok
+test_login_with_hostile_origin_is_denied (security_compatibility.OriginalSecurity13.test_login_with_hostile_origin_is_denied) ... ok
+test_login_without_csrf_is_denied (security_compatibility.OriginalSecurity13.test_login_without_csrf_is_denied) ... ok
+test_logout_invalidates_copied_access_cookie (security_compatibility.OriginalSecurity13.test_logout_invalidates_copied_access_cookie) ... ok
+test_logout_with_hostile_origin_is_denied (security_compatibility.OriginalSecurity13.test_logout_with_hostile_origin_is_denied) ... ok
+test_logout_without_csrf_is_denied (security_compatibility.OriginalSecurity13.test_logout_without_csrf_is_denied) ... ok
+test_password_change_invalidates_existing_access_cookie (security_compatibility.OriginalSecurity13.test_password_change_invalidates_existing_access_cookie) ... ok
+test_repeated_bad_login_is_rate_limited (security_compatibility.OriginalSecurity13.test_repeated_bad_login_is_rate_limited) ... Authentication quota denied
+Authentication quota denied
+Authentication quota denied
+Authentication quota denied
+Authentication quota denied
+Authentication quota denied
+Authentication quota denied
+ok
+test_consistent_401_403_429_and_retry_after (csrf_regressions.SecurityTransportUnitTests.test_consistent_401_403_429_and_retry_after) ... ok
+test_origin_configuration_no_wildcards_credentials_paths_or_remote_http (csrf_regressions.SecurityTransportUnitTests.test_origin_configuration_no_wildcards_credentials_paths_or_remote_http) ... ok
+test_database_permission_outage_retains_logout_proofs (operational_cases.OperationalContracts.test_database_permission_outage_retains_logout_proofs) ... ok
+test_default_lr_sixty_malformed_submissions_then_429 (operational_cases.OperationalContracts.test_default_lr_sixty_malformed_submissions_then_429) ... Authentication quota denied
+ok
+test_default_rr_thirty_invalid_refreshes_then_429 (operational_cases.OperationalContracts.test_default_rr_thirty_invalid_refreshes_then_429) ... Authentication quota denied
+ok
+test_disabled_database_guard_fails_closed_then_recovers (operational_cases.OperationalContracts.test_disabled_database_guard_fails_closed_then_recovers) ... ok
+test_exact_five_minute_boundary_and_dual_key_no_reset (operational_cases.OperationalContracts.test_exact_five_minute_boundary_and_dual_key_no_reset) ... Authentication quota denied
+ok
+test_fifty_thousand_bucket_cap_and_bounded_cleanup (operational_cases.OperationalContracts.test_fifty_thousand_bucket_cap_and_bounded_cleanup) ... ok
+test_limiter_database_debit_round_trip (operational_cases.OperationalContracts.test_limiter_database_debit_round_trip) ... ok
+test_missing_keys_fail_closed_without_creating_session (operational_cases.OperationalContracts.test_missing_keys_fail_closed_without_creating_session) ... ok
+test_sqlite_trigger_retains_epoch_format_literal (operational_cases.OperationalContracts.test_sqlite_trigger_retains_epoch_format_literal) ... skipped 'SQLite DDL formatting regression'
+test_unverified_proxy_never_falls_back_to_shared_peer (operational_cases.OperationalContracts.test_unverified_proxy_never_falls_back_to_shared_peer) ... ok
+
+----------------------------------------------------------------------
+Ran 94 tests in 80.618s
+
+OK (skipped=1)
+Destroying test database for alias 'default' ('test_rowszein_verify_19f834049a94491bb46114fdb175189d')...
+

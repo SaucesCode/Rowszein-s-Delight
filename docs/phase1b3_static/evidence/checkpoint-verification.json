@@ -1,0 +1,52 @@
+{
+  "baseline": "f4ee98d",
+  "branch": "codex/phase-1b3-static-implementation",
+  "schema_executed": false,
+  "database_connections": 0,
+  "new_migrations_applied": 0,
+  "production_access": false,
+  "deployment": false,
+  "protected_tracked_files_unchanged": 694,
+  "csrf_enforcement_ast_unchanged": true,
+  "backend_static": {
+    "schema_executed": false,
+    "database_access_attempts": 0,
+    "python_files_parsed": 130,
+    "tests_run": 76,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "labels": [
+      "pure_contracts.PolicyContracts",
+      "pure_contracts.CodecContracts",
+      "pure_contracts.SchemaContracts",
+      "sales.test_approved_math",
+      "sales.test_inventory_math",
+      "sales.test_schema_contracts",
+      "sales.test_storage_precision",
+      "csrf_regressions.SecurityTransportUnitTests"
+    ],
+    "integration_tests_run": false,
+    "release_blockers": "OPEN"
+  },
+  "frontend_checks": {
+    "csrf_transport": 14,
+    "operation_identity": 13,
+    "permissions": 10,
+    "auth_lifecycle": 5,
+    "total": 42,
+    "failures": 0,
+    "real_browser": false
+  },
+  "frontend_build": "PASS (existing CSS/chunk warnings)",
+  "focused_frontend_lint": "PASS",
+  "django_dummy_backend_check": "PASS",
+  "migration_state_drift": "NONE",
+  "integration_api_concurrency_admin_browser": "NOT RUN: awaiting migration authorization",
+  "release_blockers": {
+    "logout_copied_access": "OPEN",
+    "password_change_existing_access": "OPEN",
+    "shared_login_throttling": "OPEN"
+  },
+  "changed_file_count": 53
+}

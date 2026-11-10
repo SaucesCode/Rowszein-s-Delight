@@ -50,7 +50,22 @@ export function useLogout() {
       navigate("/login");
     },
     onError: (error) => {
-      toast.error(apiErrorMessage(error, "Logout failed."));
+      toast.error("Logout not confirmed. Retry before leaving this terminal. " + apiErrorMessage(error, ""));
     },
+  });
+}
+
+export function useRenewSession() {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  return useMutation({
+    mutationFn: authService.refresh,
+    retry: false,
+    onSuccess: (response) => {
+      queryClient.clear();
+      queryClient.setQueryData(["auth", "me"], response.data);
+      navigate(homeFor(response.data));
+    },
+    onError: () => toast.error("Session renewal was not confirmed. Sign in again. Pending sales have not been retried."),
   });
 }

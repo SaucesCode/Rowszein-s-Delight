@@ -64,6 +64,8 @@ def _run(actor, key, fingerprint, callback, action):
     try:
         with transaction.atomic():
             authorize_command(actor, action, lock=True)
+            from accounts.device_sessions import require_session
+            require_session(actor)
             replay = _replay(actor, key, fingerprint)
             if replay:
                 return replay
@@ -75,6 +77,8 @@ def _run(actor, key, fingerprint, callback, action):
         if name == 'invop_actor_key_unique' or sqlite_identity:
             with transaction.atomic():
                 authorize_command(actor, action, lock=True)
+                from accounts.device_sessions import require_session
+                require_session(actor)
                 replay = _replay(actor, key, fingerprint)
                 if replay:
                     return replay

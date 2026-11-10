@@ -1,0 +1,94 @@
+--- preserved phase1b2/rbac_regressions.py
++++ versioned phase1b3/rbac_compatibility.py
+@@ -7,10 +7,13 @@
+ 
+ from django.conf import settings
+ from django.contrib import admin
+-from django.test import TestCase, RequestFactory
++from django.test import TransactionTestCase, RequestFactory, override_settings
+ from rest_framework.response import Response
+ from rest_framework.views import APIView
+-from security_cases import CookieFixture
++from security_compatibility import V2CookieFixture as CookieFixture
++from session_api_contracts import TEST_AUTH
++from django.db.models.deletion import ProtectedError
++from accounts.models import DeviceSession
+ from accounts.models import User
+ from expenses.models import Expense
+ from ingredients.models import Ingredient
+@@ -19,7 +22,8 @@
+ from sales.models import Sale, SaleItem, InventoryOperation, ConsumptionBasis, SaleConsumption, StockMovement, SaleFinancialEntry
+ 
+ 
+-class RBACRegressions(CookieFixture, TestCase):
++@override_settings(**TEST_AUTH)
++class RBACRegressions(CookieFixture, TransactionTestCase):
+     def snapshot(self):
+         return [list(model.objects.order_by('pk').values()) for model in [Sale, SaleItem, InventoryOperation,
+             ConsumptionBasis, SaleConsumption, StockMovement, SaleFinancialEntry, Ingredient, Product, Category,
+@@ -123,6 +127,9 @@
+         self.assertNotIn(settings.SIMPLE_JWT['AUTH_COOKIE'], response.cookies)
+         unused = User.objects.create_user(username='deleted-unused')
+         client = self.cookie_client(unused)
++        self.assertEqual(client.get('/api/sales/', secure=True).status_code, 200)
++        with self.assertRaises(ProtectedError): unused.delete()
++        DeviceSession.objects.filter(user=unused).delete()  # Isolated fixture cleanup only.
+         unused.delete()
+         self.assertEqual(client.get('/api/sales/', secure=True).status_code, 401)
+ 
+@@ -175,7 +182,8 @@
+             def get(self, request): return Response({'secret':'must not leak'})
+         native = RequestFactory().get('/api/unmapped/', secure=True)
+         native.COOKIES = {key:value.value for key,value in self.owner_client.cookies.items()}
+-        response = Unmapped.as_view()(native)
++        from accounts.session_middleware import SessionTransactionMiddleware
++        response = SessionTransactionMiddleware(lambda request: None).process_view(native, Unmapped.as_view(), (), {})
+         self.assertEqual(response.status_code, 403)
+ 
+     def test_staff_options_and_html_do_not_leak_owner_serializer_fields(self):
+@@ -251,7 +259,7 @@
+     def test_api_endpoint_inventory_has_explicit_default_deny_mapping(self):
+         from django.urls import get_resolver, URLPattern, URLResolver
+         from accounts.permissions import BusinessPermission
+-        from accounts.views import CSRFTokenView, LoginView, LogoutView
++        from accounts.views import CSRFTokenView, LoginView, LogoutView, RefreshView
+         views = []
+         def walk(patterns, prefix=''):
+             for pattern in patterns:
+@@ -261,12 +269,12 @@
+                     view = getattr(pattern.callback, 'view_class', None) or getattr(pattern.callback, 'cls', None)
+                     self.assertIsNotNone(view, path)
+                     views.append(view)
+-                    if view not in [CSRFTokenView, LoginView, LogoutView]:
++                    if view not in [CSRFTokenView, LoginView, LogoutView, RefreshView]:
+                         self.assertIn(BusinessPermission, view.permission_classes, path)
+                         for method in ['get','post','put','patch','delete']:
+                             if hasattr(view, method): self.assertIn(method.upper(), view.business_actions, (path, method))
+         walk(get_resolver().url_patterns)
+-        self.assertEqual(len(views), 25)
++        self.assertEqual(len(views), 26)
+ 
+     def test_stored_owner_edit_cannot_be_disclosed_through_staff_create_replay(self):
+         key = str(uuid4())
+@@ -274,6 +282,9 @@
+             format='json', secure=True, HTTP_IDEMPOTENCY_KEY=key, HTTP_IF_MATCH='"1"').status_code, 200)
+         User.objects.filter(pk=self.owner.pk).update(role='staff')
+         before = self.snapshot()
++        self.assertEqual(self.owner_client.get('/api/auth/me/', secure=True).status_code, 401)
++        self.owner.refresh_from_db()
++        self.owner_client = self.cookie_client(self.owner)  # Fresh role-bound session, same actor/UUID.
+         response = self.owner_client.post('/api/sales/', self.sale_payload(), format='json', secure=True, HTTP_IDEMPOTENCY_KEY=key)
+         self.assertEqual(response.status_code, 403)
+         self.assertNotIn('OWNER-PRIVATE-EDIT', str(response.data))
+@@ -296,3 +307,11 @@
+         owner_form = admin.site.login_form(request=RequestFactory().get('/admin/login/'),
+             data={'username':self.owner.username, 'password':self.password})
+         self.assertTrue(owner_form.is_valid(), owner_form.errors)
++
++# The four prior independent-connection RBAC cases retain their exact methods.
++from security_compatibility import version
++import rbac_concurrency as _concurrency
++from unittest import skipUnless
++from django.db import connection
++RBACConcurrencyTests=skipUnless(connection.vendor=='postgresql','Independent PostgreSQL locks required')(version(_concurrency.RBACConcurrencyTests,'RBACConcurrencyTests'))
++RBACConcurrencyTests.__module__=__name__

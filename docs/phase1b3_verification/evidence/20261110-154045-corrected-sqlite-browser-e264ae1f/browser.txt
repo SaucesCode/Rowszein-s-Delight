@@ -1,0 +1,38 @@
+PASS real_owner_cookie_login
+PASS access_lifetime_exactly_900_seconds
+PASS jwt_cookies_httponly
+PASS web_locks_available
+Exception in callback Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:546
+handle: <Handle Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py:546>
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b3_verification\browser_checks.py", line 132, in <module>
+    check('lost_committed_response_recorded',len(result['business_requests'])==1 and result['business_requests'][0].get('response_lost'))
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b3_verification\browser_checks.py", line 30, in check
+    if not value: raise AssertionError(name)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: lost_committed_response_recorded
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 547, in _done_callback
+    exc = future.exception()
+          ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_browser_context.py", line 267, in _on_route
+    handled = await route_handler.handle(route)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 443, in handle
+    return await self._handle_internal(route)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_helper.py", line 479, in _handle_internal
+    await handler_finished_future
+asyncio.exceptions.CancelledError
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b3_verification\browser_checks.py", line 132, in <module>
+    check('lost_committed_response_recorded',len(result['business_requests'])==1 and result['business_requests'][0].get('response_lost'))
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b3_verification\browser_checks.py", line 30, in check
+    if not value: raise AssertionError(name)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: lost_committed_response_recorded

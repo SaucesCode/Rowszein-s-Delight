@@ -3,7 +3,7 @@ from .models import User
 
 
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
+    username = serializers.CharField(max_length=150)
     password = serializers.CharField(write_only=True)
 
 
