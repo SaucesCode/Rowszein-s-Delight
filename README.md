@@ -52,7 +52,7 @@ The project is being built incrementally, focusing on core business functionalit
 
 Project documentation can be found in the `docs/` folder.
 
-Latest checkpoint: [Phase 1B.3 static implementation and exact schema review](docs/PHASE1B3_SESSION_SCHEMA_IMPLEMENTATION_CHECKPOINT.md) on `codex/phase-1b3-static-implementation`. Two additive migrations are generated **but unapplied**. Database-free checks: 76 backend and 42 frontend passes; build/affected lint pass. No database/API/concurrency/browser execution on the new schema is authorized. [Accepted 1B.2 verification](docs/PHASE1B2_RBAC_IMPLEMENTATION_REPORT.md) remains preserved. Session revocation, login throttling, dependency findings and production verification remain open. The application is not production-ready. STOP before migration execution pending owner approval.
+Latest checkpoint: [Phase 1B.3 disposable database verification](docs/PHASE1B3_DATABASE_VERIFICATION_REPORT.md) on `codex/phase-1b3-disposable-verification`. PostgreSQL: 120 business tests, 93 security/operational passes (one SQLite-only skip), 28 concurrency tests and 33 browser checks pass. Frontend: 52 utility checks, build and focused lint pass. **SQLite authentication throttling fails closed with 503 because of a confirmed trigger-formatting defect.** The exact one-line migration correction and revised hash await owner approval; the approved migrations remain unchanged. Prior checkpoints/evidence are preserved, disposable targets are removed, and production/dependency/deployment validation remains unauthorized/outstanding. The package is incomplete and the application is not production-ready.
 
 ## License
 

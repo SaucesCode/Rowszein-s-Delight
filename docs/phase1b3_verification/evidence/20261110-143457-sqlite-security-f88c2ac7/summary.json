@@ -1,0 +1,21 @@
+{
+  "migration-plan": {
+    "missing_result": true,
+    "exit_code": 0
+  },
+  "schema-sql": {
+    "missing_result": true,
+    "exit_code": 0
+  },
+  "guard-sql": {
+    "missing_result": true,
+    "exit_code": 0
+  },
+  "security": {
+    "tests_run": 84,
+    "failures": 17,
+    "errors": 0,
+    "skipped": 0,
+    "exit_code": 1
+  }
+}

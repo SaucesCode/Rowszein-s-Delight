@@ -1,0 +1,67 @@
+{
+  "csrf-transport": {
+    "exit_code": 0,
+    "command": [
+      "node",
+      "--experimental-strip-types",
+      "docs/phase1b1/test_csrf_transport.mjs"
+    ]
+  },
+  "operation-identity": {
+    "exit_code": 0,
+    "command": [
+      "node",
+      "--experimental-strip-types",
+      "docs/phase1b1/test_operation_identity.mjs"
+    ]
+  },
+  "stock-quantities": {
+    "exit_code": 0,
+    "command": [
+      "node",
+      "--experimental-strip-types",
+      "docs/phase1a3/test_stock_preview.mjs"
+    ]
+  },
+  "permissions": {
+    "exit_code": 0,
+    "command": [
+      "node",
+      "--experimental-strip-types",
+      "docs/phase1b2/test_permissions.mjs"
+    ]
+  },
+  "auth-lifecycle": {
+    "exit_code": 0,
+    "command": [
+      "node",
+      "--experimental-strip-types",
+      "docs/phase1b3_static/test_auth_lifecycle.mjs"
+    ]
+  },
+  "build": {
+    "exit_code": 0,
+    "command": [
+      "npm.cmd",
+      "run",
+      "build",
+      "--",
+      "--config",
+      "C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\.verification-runtime\\37cbe221596249e68d38eede916a2312\\vite.verify.mjs"
+    ]
+  },
+  "affected-lint": {
+    "exit_code": 0,
+    "command": [
+      "node",
+      "node_modules/eslint/bin/eslint.js",
+      "src/lib/authLifecycle.ts",
+      "src/services/auth.services.ts",
+      "src/hooks/useAuth.ts",
+      "src/pages/LoginPage.tsx"
+    ]
+  },
+  "cleanup": {
+    "owned_runtime_removed": true
+  }
+}

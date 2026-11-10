@@ -1,0 +1,560 @@
+{
+  "tests_run": 92,
+  "outcomes": [
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_account_transaction_exception_rolls_back_epoch_and_revocations",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.329
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_activity_persistence_failure_rolls_back_all_business_writes",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.094
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_admin_and_api_failures_share_account_limit",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.156
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_admin_login_epoch_change_and_password_change_require_fresh_login",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.922
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_auth_polling_bootstrap_and_denials_never_renew_activity",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.36
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_automatic_hash_upgrade_issues_current_epoch_and_revokes_old",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.188
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_csrf_origin_and_legacy_cookies_cause_zero_business_writes",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.406
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_database_device_guards_reject_identity_generation_and_resurrection",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.141
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_direct_epoch_updates_even_noops_are_rejected",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.093
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_expired_access_locator_logout_recovery",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.187
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_failed_logout_keeps_proof_cookies_and_never_claims_success",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.125
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_financial_and_inventory_reconciliation_survives_sessions",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.515
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_fresh_session_same_actor_exact_replay_does_not_reprice",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.297
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_guard_absence_cannot_enable_partial_schema_login",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.094
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_idle_and_absolute_boundaries_deny_and_do_not_write_business",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.219
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_locator_cannot_authenticate_or_refresh",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.157
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_logout_current_device_only_and_repeat",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.219
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_logout_invalidates_copied_access_cookie",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.172
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_logout_without_identifiable_proof_is_explicit_cleanup_only",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.156
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_missing_and_epoch_mismatched_sessions_cannot_write",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.328
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_nat_ip_limit_across_distinct_accounts",
+      "status": "pass",
+      "detail": null,
+      "seconds": 3.328
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_password_change_invalidates_existing_access_cookie",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.157
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_queryset_and_raw_sql_security_changes_revoke",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.391
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_refresh_csrf_and_source_fail_before_rotation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.094
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_refresh_rotates_once_without_activity_or_absolute_extension",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.359
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_repeated_bad_login_is_rate_limited",
+      "status": "pass",
+      "detail": null,
+      "seconds": 2.015
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_revoked_session_cannot_read_successful_idempotent_response",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.75
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_session_admission_samples_clock_after_user_and_device_locks",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.172
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_session_creation_exception_rolls_back_row_and_does_not_issue_cookies",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.313
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_staff_technical_flags_cannot_login_admin",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.438
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_throttle_outage_and_row_cap_fail_closed",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.156
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_unknown_accounts_success_and_spoofed_headers_share_counter_rules",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.063
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_all_unsafe_methods_without_token_have_no_writes",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.843
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_authentication_rotation_preserves_successful_sale_replay",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.015
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_bearer_header_does_not_bypass_cookie_csrf",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.344
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_bootstrap_ignores_expired_and_malformed_access",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.234
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_bootstrap_is_read_only",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.359
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_bootstrap_masked_httponly_host_cookie_and_no_cache",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.218
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_expired_or_malformed_cookie_login_and_logout",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.0
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_hostile_origin_with_matching_token_has_no_writes",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.594
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_https_missing_bad_or_insecure_referer_rejected",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.594
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_https_trusted_referer_without_origin_works",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.235
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_json_token_body_does_not_replace_required_header",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.328
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_login_and_logout_rejections_issue_no_auth_cookies",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.375
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_login_rotates_csrf_and_keeps_jwts_out_of_json",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.375
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_logout_is_csrf_protected_idempotent_cookie_cleanup",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.36
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_loopback_http_requires_explicit_trusted_origin",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.344
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_malformed_csrf_tokens_rejected",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.579
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_missing_cookie_rejected_despite_well_formed_header",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.344
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_null_and_lookalike_origins_fail_closed",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.469
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_rejected_sale_can_use_same_uuid_after_csrf_recovery",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.547
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_rejected_stock_adjustment_does_not_reserve_uuid_or_revision",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.5
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_rotated_login_rejects_old_csrf_before_business_write",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.547
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_secure_cookie_when_https_setting_enabled",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.188
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_supported_form_token_works_for_trusted_login",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.359
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_unauthenticated_or_invalid_jwt_write_is_401_without_writes",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.485
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_django_superuser_flag_is_not_implicit_business_owner",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.219
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_role_downgrade_applies_to_existing_token",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.234
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_staff_cannot_adjust_stock",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.219
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_staff_cannot_cancel_own_recorded_sale",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.36
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_staff_cannot_change_catalog_price",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.328
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_staff_cannot_change_recipe",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.235
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_staff_cannot_create_expense",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.235
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_staff_cannot_edit_own_recorded_sale",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.328
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_staff_cannot_export_sales",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.187
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_staff_cannot_read_financial_summary",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.25
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_staff_cannot_read_owner_dashboard",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.187
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_staff_cannot_read_profit_margins",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.25
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_unknown_role_fails_closed",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.188
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_cookie_write_with_invalid_csrf_is_denied",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.188
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_cookie_write_without_csrf_is_denied_before_persistence",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.234
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_expired_cookie_does_not_prevent_valid_relogin",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.406
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_expired_cookie_logout_still_clears_browser_auth",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.25
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_hostile_origin_even_with_matching_csrf_is_denied",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.203
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_https_missing_origin_and_referer_is_denied",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.297
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_login_with_hostile_origin_is_denied",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.218
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_login_without_csrf_is_denied",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.188
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_logout_invalidates_copied_access_cookie",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.282
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_logout_with_hostile_origin_is_denied",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.297
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_logout_without_csrf_is_denied",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.281
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_password_change_invalidates_existing_access_cookie",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.266
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_repeated_bad_login_is_rate_limited",
+      "status": "pass",
+      "detail": null,
+      "seconds": 2.141
+    },
+    {
+      "test": "csrf_regressions.SecurityTransportUnitTests.test_consistent_401_403_429_and_retry_after",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "csrf_regressions.SecurityTransportUnitTests.test_origin_configuration_no_wildcards_credentials_paths_or_remote_http",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_database_permission_outage_retains_logout_proofs",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.125
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_default_lr_sixty_malformed_submissions_then_429",
+      "status": "pass",
+      "detail": null,
+      "seconds": 2.75
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_default_rr_thirty_invalid_refreshes_then_429",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.609
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_exact_five_minute_boundary_and_dual_key_no_reset",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.641
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_limiter_database_debit_round_trip",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.219
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_missing_keys_fail_closed_without_creating_session",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.282
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_sqlite_trigger_retains_epoch_format_literal",
+      "status": "skip",
+      "detail": "SQLite DDL formatting regression",
+      "seconds": 0.0
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_unverified_proxy_never_falls_back_to_shared_peer",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.031
+    }
+  ],
+  "failures": 0,
+  "errors": 0,
+  "skipped": 1
+}
