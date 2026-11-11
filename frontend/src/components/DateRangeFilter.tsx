@@ -1,4 +1,5 @@
 import { X, Calendar } from "lucide-react";
+import { useId } from "react";
 
 interface DateRangeFilterProps {
   dateFrom: string;
@@ -7,6 +8,7 @@ interface DateRangeFilterProps {
   onDateToChange: (date: string) => void;
   onClear: () => void;
   hasFilters: boolean;
+  error?: string;
 }
 
 export default function DateRangeFilter({
@@ -16,7 +18,9 @@ export default function DateRangeFilter({
   onDateToChange,
   onClear,
   hasFilters,
+  error,
 }: DateRangeFilterProps) {
+  const id = useId();
   return (
     <div
       className="flex flex-col md:flex-row md:items-center gap-4 p-4 rounded-lg"
@@ -33,11 +37,13 @@ export default function DateRangeFilter({
       <div className="flex flex-col md:flex-row md:items-center gap-3 flex-1">
         {/* From date */}
         <div className="flex items-center gap-2">
-          <label className="font-body text-xs font-semibold" style={{ color: "#64748b" }}>
+          <label htmlFor={`${id}-from`} className="font-body text-xs font-semibold" style={{ color: "#64748b" }}>
             From
           </label>
           <input
             type="date"
+            id={`${id}-from`}
+            aria-describedby={error ? `${id}-error` : undefined}
             value={dateFrom}
             onChange={(e) => onDateFromChange(e.target.value)}
             className="field-input"
@@ -52,11 +58,13 @@ export default function DateRangeFilter({
 
         {/* To date */}
         <div className="flex items-center gap-2">
-          <label className="font-body text-xs font-semibold" style={{ color: "#64748b" }}>
+          <label htmlFor={`${id}-to`} className="font-body text-xs font-semibold" style={{ color: "#64748b" }}>
             To
           </label>
           <input
             type="date"
+            id={`${id}-to`}
+            aria-describedby={error ? `${id}-error` : undefined}
             value={dateTo}
             onChange={(e) => onDateToChange(e.target.value)}
             className="field-input"
@@ -94,6 +102,7 @@ export default function DateRangeFilter({
             Clear
           </button>
         )}
+        {error && <p id={`${id}-error`} className="field-error" role="alert">{error}</p>}
       </div>
     </div>
   );

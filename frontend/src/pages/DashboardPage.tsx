@@ -21,6 +21,7 @@ import {
   Zap,
 } from "lucide-react";
 import StatCard from "@/components/StatCard";
+import { customDateRange, getDateRange, manilaDate, reportRangeError, type DashboardPeriod } from "@/lib/dateRanges";
 
 /* ─────────────────────────────────────────────
    BRAND TOKENS
@@ -40,9 +41,7 @@ const BRAND = {
   chartProfit: "#5B8C3A", // muted success green — same family as StatCard's positive delta
 };
 
-type Period = "this_week" | "this_month" | "this_quarter" | "this_year" | "custom";
-
-const PERIODS: { value: Period; label: string }[] = [
+const PERIODS: { value: DashboardPeriod; label: string }[] = [
   { value: "this_week", label: "Week" },
   { value: "this_month", label: "Month" },
   { value: "this_quarter", label: "Quarter" },
@@ -60,34 +59,13 @@ function formatPeso(value: number) {
   })}`;
 }
 
-function getDateRange(period: Period): { date_from: string; date_to: string } {
-  const today = new Date();
-  const fmt = (d: Date) => d.toISOString().split("T")[0];
-
-  switch (period) {
-    case "this_week": {
-      const day = today.getDay();
-      const monday = new Date(today);
-      monday.setDate(today.getDate() - (day === 0 ? 6 : day - 1));
-      return { date_from: fmt(monday), date_to: fmt(today) };
-    }
-    case "this_month": {
-      const from = new Date(today.getFullYear(), today.getMonth(), 1);
-      return { date_from: fmt(from), date_to: fmt(today) };
-    }
-    case "this_quarter": {
-      const quarter = Math.floor(today.getMonth() / 3);
-      const from = new Date(today.getFullYear(), quarter * 3, 1);
-      return { date_from: fmt(from), date_to: fmt(today) };
-    }
-    case "this_year": {
-      const from = new Date(today.getFullYear(), 0, 1);
-      return { date_from: fmt(from), date_to: fmt(today) };
-    }
-    default:
-      return { date_from: "", date_to: "" };
-  }
-}
+type ChartMonth = { month: string; sales: number; expenses: number; profit: number };
+type DashboardResults = {
+  totals: { total_sales: number; total_expenses: number; net_profit: number };
+  chart_data: ChartMonth[];
+  best_selling: { product_id: number; product_name: string; total_quantity: number; total_revenue: number }[];
+  low_stock: { name: string }[];
+};
 
 /**
  * Derives a "vs last month" delta from the chart's monthly breakdown, which
@@ -99,11 +77,11 @@ function getDateRange(period: Period): { date_from: string; date_to: string } {
  * misleading +infinity% jump.
  */
 function computeMonthDelta(
-  chartData: { month: string; sales: number; expenses: number; profit: number }[],
+  chartData: ChartMonth[],
+  todayIdx: number,
   key: "sales" | "expenses" | "profit",
   polarity: "up-is-good" | "down-is-good" = "up-is-good",
 ) {
-  const todayIdx = new Date().getMonth();
   if (todayIdx === 0) return undefined;
 
   const current = chartData[todayIdx]?.[key] ?? 0;
@@ -123,10 +101,10 @@ function computeMonthDelta(
 }
 
 function trailingSparkline(
-  chartData: { month: string; sales: number; expenses: number; profit: number }[],
+  chartData: ChartMonth[],
+  todayIdx: number,
   key: "sales" | "expenses" | "profit",
 ) {
-  const todayIdx = new Date().getMonth();
   const start = Math.max(0, todayIdx - 5);
   const slice = chartData.slice(start, todayIdx + 1);
   return slice.length >= 2 ? slice.map(m => m[key]) : undefined;
@@ -140,8 +118,8 @@ function PeriodSelector({
   active,
   onChange,
 }: {
-  active: Period;
-  onChange: (p: Period) => void;
+  active: DashboardPeriod;
+  onChange: (p: DashboardPeriod) => void;
 }) {
   return (
     <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Select time period">
@@ -213,35 +191,14 @@ function DashboardSkeleton() {
    PAGE
    ───────────────────────────────────────────── */
 export default function DashboardPage() {
-  const navigate = useNavigate();
-  const [period, setPeriod] = useState<Period>("this_year");
+  const [period, setPeriod] = useState<DashboardPeriod>("this_year");
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
 
-  const filters =
-    period === "custom" ? { date_from: customFrom, date_to: customTo } : getDateRange(period);
-
-  const { data, isLoading, isError } = useDashboard(filters);
-
-  if (isLoading) return <DashboardSkeleton />;
-
-  if (isError) {
-    return (
-      <div
-        className="p-8 text-center"
-        style={{ background: BRAND.white, border: `1px solid ${BRAND.border}`, borderRadius: 16 }}
-      >
-        <p className="font-body text-sm" style={{ color: "#B91C1C" }}>
-          Couldn't load the dashboard. Please try refreshing the page.
-        </p>
-      </div>
-    );
-  }
-
-  const { totals, best_selling, chart_data, low_stock } = data;
-
-  const netProfitTone = totals.net_profit > 0 ? "positive" : totals.net_profit < 0 ? "negative" : "neutral";
-  const hasLowStock = low_stock?.length > 0;
+  const now = new Date();
+  const filters = period === "custom" ? customDateRange(customFrom, customTo) : getDateRange(period, now);
+  const rangeError = reportRangeError(filters, now);
+  const { data, isLoading, isError } = useDashboard(filters, !rangeError);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -270,6 +227,7 @@ export default function DashboardPage() {
         >
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <label
+              htmlFor="dashboard-date-from"
               className="font-body text-sm flex-shrink-0"
               style={{ color: BRAND.textMuted }}
             >
@@ -277,6 +235,8 @@ export default function DashboardPage() {
             </label>
             <input
               type="date"
+              id="dashboard-date-from"
+              aria-describedby={rangeError ? "dashboard-date-error" : undefined}
               value={customFrom}
               onChange={e => setCustomFrom(e.target.value)}
               className="field-input w-full"
@@ -284,6 +244,7 @@ export default function DashboardPage() {
           </div>
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <label
+              htmlFor="dashboard-date-to"
               className="font-body text-sm flex-shrink-0"
               style={{ color: BRAND.textMuted }}
             >
@@ -291,6 +252,8 @@ export default function DashboardPage() {
             </label>
             <input
               type="date"
+              id="dashboard-date-to"
+              aria-describedby={rangeError ? "dashboard-date-error" : undefined}
               value={customTo}
               onChange={e => setCustomTo(e.target.value)}
               className="field-input w-full"
@@ -299,6 +262,30 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {rangeError && <p id="dashboard-date-error" className="field-error" role="alert">{rangeError}</p>}
+      {!rangeError && isLoading && <DashboardSkeleton />}
+      {!rangeError && isError && (
+        <div
+          className="p-8 text-center"
+          style={{ background: BRAND.white, border: `1px solid ${BRAND.border}`, borderRadius: 16 }}
+        >
+          <p className="font-body text-sm" style={{ color: "#B91C1C" }}>
+            Couldn't load the dashboard. Please try refreshing the page.
+          </p>
+        </div>
+      )}
+      {!rangeError && !isError && data && <DashboardContent data={data} monthIndex={Number(manilaDate(now).slice(5, 7)) - 1} />}
+    </div>
+  );
+}
+
+function DashboardContent({ data, monthIndex }: { data: DashboardResults; monthIndex: number }) {
+  const navigate = useNavigate();
+  const { totals, best_selling, chart_data, low_stock } = data;
+  const netProfitTone = totals.net_profit > 0 ? "positive" : totals.net_profit < 0 ? "negative" : "neutral";
+  const hasLowStock = low_stock?.length > 0;
+  return (
+    <>
       {/* Attention banner — the one place "needs attention" is surfaced */}
       {hasLowStock && (
         <button
@@ -318,7 +305,7 @@ export default function DashboardPage() {
               low
             </p>
             <p className="font-body text-xs mt-1">
-              {low_stock.map((i: any) => i.name).join(", ")}
+              {low_stock.map(i => i.name).join(", ")}
             </p>
           </div>
         </button>
@@ -331,24 +318,24 @@ export default function DashboardPage() {
           value={formatPeso(totals.total_sales)}
           icon={ShoppingCart}
           tone="neutral"
-          delta={computeMonthDelta(chart_data, "sales", "up-is-good")}
-          sparkline={trailingSparkline(chart_data, "sales")}
+          delta={computeMonthDelta(chart_data, monthIndex, "sales", "up-is-good")}
+          sparkline={trailingSparkline(chart_data, monthIndex, "sales")}
         />
         <StatCard
           label="Total expenses"
           value={formatPeso(totals.total_expenses)}
           icon={Receipt}
           tone="neutral"
-          delta={computeMonthDelta(chart_data, "expenses", "down-is-good")}
-          sparkline={trailingSparkline(chart_data, "expenses")}
+          delta={computeMonthDelta(chart_data, monthIndex, "expenses", "down-is-good")}
+          sparkline={trailingSparkline(chart_data, monthIndex, "expenses")}
         />
         <StatCard
           label="Net profit"
           value={formatPeso(totals.net_profit)}
           icon={totals.net_profit >= 0 ? TrendingUp : TrendingDown}
           tone={netProfitTone}
-          delta={computeMonthDelta(chart_data, "profit", "up-is-good")}
-          sparkline={trailingSparkline(chart_data, "profit")}
+          delta={computeMonthDelta(chart_data, monthIndex, "profit", "up-is-good")}
+          sparkline={trailingSparkline(chart_data, monthIndex, "profit")}
         />
         <StatCard
           label="Low stock items"
@@ -479,7 +466,7 @@ export default function DashboardPage() {
             </div>
           ) : (
             <div className="space-y-3">
-              {best_selling.map((item: any, index: number) => (
+              {best_selling.map((item, index) => (
                 <div
                   key={item.product_id}
                   className="flex items-center gap-3 pb-3"
@@ -517,6 +504,6 @@ export default function DashboardPage() {
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 }

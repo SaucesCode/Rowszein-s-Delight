@@ -1,0 +1,1592 @@
+{
+  "tests_run": 264,
+  "outcomes": [
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_cancellation_failure_after_status_save_restores_every_record",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.14
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_cancellation_failure_during_restoration_rolls_back_partial_credits",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.079
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_create_failure_after_first_deduction_rolls_back_every_write",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.031
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_create_failure_after_item_insertion_rolls_back_parent_and_items",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.031
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_create_failure_after_last_deduction_rolls_back_every_write",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.047
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_failed_create_can_be_retried_without_residual_sale_or_stock_changes",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.094
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_invalid_create_has_no_persistent_effects",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.015
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_invalid_put_nested_items_leaves_all_records_unchanged",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.11
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_invalid_update_after_recipe_change_does_not_restore_current_recipe",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.062
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_invalid_update_after_recipe_removal_leaves_records_unchanged",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.047
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_repeated_invalid_patch_does_not_inflate_stock_or_change_sale",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.062
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_response_serialization_failure_rolls_back_sale_and_inventory",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.031
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_soft_delete_restores_stock_and_retry_cannot_restore_again",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.157
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_successful_create_preserves_historical_price_and_decimal_totals",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.062
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_successful_update_retains_original_items_and_reconciles_stock",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.141
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_update_failure_after_new_deduction_rolls_back_everything",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.125
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_update_failure_after_projection_write_preserves_original_items_and_prices",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.094
+    },
+    {
+      "test": "sales.test_phase1a1_compat.Phase1A1CompatibilityTests.test_update_failure_during_stock_write_preserves_entire_state",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.094
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_actual_checks_unique_keys_and_foreign_keys",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.093
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_adjustment_result_is_exact_or_rejected_before_storage",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.062
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_deterministic_lifecycle_reconciles_after_every_operation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 20.032
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_frontend_compatibility_read_endpoints_and_validation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.125
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_gross_adjustment_cancellation_dates_and_no_refund",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.109
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_initial_quantity_is_exact_or_rejected_before_storage",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.016
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_postgresql_maximum_precision_roundtrips_without_lost_quanta",
+      "status": "skip",
+      "detail": "SQLite numeric storage cannot establish full PostgreSQL Decimal(20,9) precision",
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedIntegrityTests.test_protected_history_and_immutable_quantities",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.156
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_cancellation_retry_and_new_key_cannot_restore_twice",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.109
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_database_cancel_uniqueness_is_independent_of_uuid",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.078
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_direct_quantity_and_tracked_unit_changes_are_rejected",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.047
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_edits_preserve_original_items_and_total_instead_of_rewriting_history",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.046
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_exception_after_actual_stock_write_rolls_back_everything",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.032
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_failed_create_can_be_retried_with_same_identity",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.062
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_failed_edit_and_cancellation_preserve_every_original_record",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.078
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_failures_at_each_write_boundary_roll_back_the_entire_creation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.11
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_fractional_exact_middle_cancellation_and_monotonic_cursor",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.156
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_insufficient_edit_does_not_leave_restored_inventory",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.094
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_insufficient_stock_rolls_back_all_records",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.078
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_invalid_creation_and_missing_identity_write_nothing",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.047
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_invalid_edits_never_restore_stock",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.109
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_legacy_report_source_is_disjoint_even_if_posting_exists",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.047
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_legacy_safeguards_do_not_create_consumption_or_financial_backfill",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.141
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_original_line_and_counter_write_failures_roll_back_creation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.093
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_posting_date_and_legacy_source_have_no_double_count",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.11
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_price_only_edit_does_not_reallocate_inventory",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.063
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_quantity_edit_uses_new_recipe_but_retains_original_snapshot",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.187
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_recipe_change_and_removal_cannot_change_cancellation_credit",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.078
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_stale_edit_leaves_every_record_unchanged",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.485
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_stock_adjustment_is_revision_checked_idempotent_and_audited",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.062
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_successful_create_snapshots_submitted_historical_price",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.047
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_successful_edit_retry_does_not_repeat_allocation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.11
+    },
+    {
+      "test": "sales.tests.SalesIntegrityTests.test_successful_retry_replays_once_and_conflicting_payload_is_rejected",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.078
+    },
+    {
+      "test": "sales.test_approved_math.ApprovedAllocationTests.test_ambient_context_does_not_change_exact_credit",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_approved_math.ApprovedAllocationTests.test_changed_recipe_does_not_change_recorded_quantity",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_approved_math.ApprovedAllocationTests.test_cursor_never_rewinds_when_middle_sale_is_cancelled",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_approved_math.ApprovedAllocationTests.test_cursor_overflow_rejects_instead_of_wrapping",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_approved_math.ApprovedAllocationTests.test_quantities_are_conserved_across_random_exact_reversals",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.032
+    },
+    {
+      "test": "sales.test_approved_math.ApprovedAllocationTests.test_unrepresentable_applied_quantity_is_rejected",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_approved_math.ApprovedAllocationTests.test_update_reverses_exact_snapshot_then_uses_next_interval",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_approved_math.ApprovedAllocationTests.test_zero_available_stock_cannot_fund_positive_consumption",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_approved_math.ApprovedAllocationTests.test_zero_units_and_floats_are_rejected",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_approved_math.SignedFinancialTests.test_cancellation_is_not_subtracted_twice",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_approved_math.SignedFinancialTests.test_legacy_totals_are_preserved_without_fabricating_postings",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_approved_math.SignedFinancialTests.test_negative_adjustment_is_summed_as_signed_value",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_approved_math.SignedFinancialTests.test_refund_is_not_a_posting_kind",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_approved_math.SignedFinancialTests.test_report_sum_can_exceed_one_posting_field_capacity",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_approved_math.SignedFinancialTests.test_three_dates_keep_gross_adjustment_and_reversal_separate",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_approved_math.SignedFinancialTests.test_wrong_posting_sign_or_fractional_cent_is_rejected",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_inventory_math.IntentFingerprintTests.test_changed_payload_action_target_or_revision_changes_fingerprint",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_inventory_math.IntentFingerprintTests.test_explicit_money_normalization_makes_equivalent_input_equal",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_inventory_math.IntentFingerprintTests.test_float_and_implicit_decimal_inputs_are_rejected",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_inventory_math.IntentFingerprintTests.test_key_order_does_not_change_fingerprint",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_inventory_math.InventoryMathTests.test_aggregate_insufficiency_is_rejected_without_mutating_inputs",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_inventory_math.InventoryMathTests.test_cancellation_order_always_restores_all_stock",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_inventory_math.InventoryMathTests.test_cancelling_round_up_sale_uses_current_cumulative_allocation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_inventory_math.InventoryMathTests.test_cumulative_total_can_exceed_instantaneous_stock_column_limit",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_inventory_math.InventoryMathTests.test_deterministic_random_lifecycle_telescopes_without_drift",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.078
+    },
+    {
+      "test": "sales.test_inventory_math.InventoryMathTests.test_global_decimal_context_cannot_change_allocation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_inventory_math.InventoryMathTests.test_half_quantum_ties_round_up_exactly",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_inventory_math.InventoryMathTests.test_invalid_and_out_of_range_numbers_are_rejected",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_inventory_math.InventoryMathTests.test_money_and_stock_have_separate_precision_policies",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_inventory_math.InventoryMathTests.test_net_reversal_and_replacement_are_validated_together",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_inventory_math.InventoryMathTests.test_overflow_credit_is_rejected",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_inventory_math.InventoryMathTests.test_recipe_change_uses_old_and_new_immutable_bases",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_inventory_math.InventoryMathTests.test_three_separate_sales_consume_exactly_one_batch",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_inventory_math.InventoryMathTests.test_units_are_never_implicitly_converted",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_inventory_math.InventoryMathTests.test_update_and_cancellations_reconcile_to_opening_balance",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_release_blockers.ReleaseBlockerContracts.test_cancellation_after_recipe_change_restores_original_consumption",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.187
+    },
+    {
+      "test": "sales.test_release_blockers.ReleaseBlockerContracts.test_cancellation_preserves_original_sale_and_items",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.391
+    },
+    {
+      "test": "sales.test_release_blockers.ReleaseBlockerContracts.test_competing_sales_only_one_can_consume_last_stock",
+      "status": "skip",
+      "detail": "PostgreSQL concurrency contract",
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_release_blockers.ReleaseBlockerContracts.test_concurrent_duplicate_request_creates_only_one_sale",
+      "status": "skip",
+      "detail": "PostgreSQL concurrency contract",
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_release_blockers.ReleaseBlockerContracts.test_concurrent_stale_sale_edits_reject_second_revision",
+      "status": "skip",
+      "detail": "PostgreSQL concurrency contract",
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_release_blockers.ReleaseBlockerContracts.test_conflicting_payload_same_request_identity_is_rejected",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.188
+    },
+    {
+      "test": "sales.test_release_blockers.ReleaseBlockerContracts.test_fractional_three_separate_sales_consume_one_batch",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.438
+    },
+    {
+      "test": "sales.test_release_blockers.ReleaseBlockerContracts.test_insufficient_stock_rejects_entire_sale",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.141
+    },
+    {
+      "test": "sales.test_release_blockers.ReleaseBlockerContracts.test_same_successful_request_identity_replays_original_sale",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.312
+    },
+    {
+      "test": "sales.test_release_blockers.ReleaseBlockerContracts.test_unverifiable_legacy_sale_is_not_automatically_restored",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.203
+    },
+    {
+      "test": "sales.test_schema_contracts.SchemaContractTests.test_cancellation_uniqueness_does_not_depend_on_request_key",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_schema_contracts.SchemaContractTests.test_existing_sale_items_uniqueness_and_legacy_defaults_are_preserved",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_schema_contracts.SchemaContractTests.test_five_concrete_models_have_protected_foreign_keys",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_schema_contracts.SchemaContractTests.test_identity_and_stock_revision_unique_constraints_exist",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_schema_contracts.SchemaContractTests.test_monotonic_cursor_is_separate_from_active_count",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_schema_contracts.SchemaContractTests.test_new_records_cannot_be_deleted_through_model_method",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_schema_contracts.SchemaContractTests.test_stock_and_money_precision_are_distinct",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_storage_precision.StoragePrecisionTests.test_no_engine_accepts_floats_nonfinite_or_subquantum_values",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.015
+    },
+    {
+      "test": "sales.test_storage_precision.StoragePrecisionTests.test_postgresql_retains_full_approved_quantity_range",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_storage_precision.StoragePrecisionTests.test_sqlite_accepts_safe_values_with_insignificant_zeros",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_storage_precision.StoragePrecisionTests.test_sqlite_rejects_unsafe_signed_quantities_and_balances",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedConcurrencyTests.test_cancellation_competing_with_edit",
+      "status": "skip",
+      "detail": "Requires real independent PostgreSQL transactions",
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedConcurrencyTests.test_multiple_products_and_ingredients_in_opposite_request_orders",
+      "status": "skip",
+      "detail": "Requires real independent PostgreSQL transactions",
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedConcurrencyTests.test_real_ingredient_lock_wait_is_observed_then_commits",
+      "status": "skip",
+      "detail": "Requires real independent PostgreSQL transactions",
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedConcurrencyTests.test_recipe_change_competing_with_sale",
+      "status": "skip",
+      "detail": "Requires real independent PostgreSQL transactions",
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.test_verification_extended.ExtendedConcurrencyTests.test_two_operators_compete_for_last_stock",
+      "status": "skip",
+      "detail": "Requires real independent PostgreSQL transactions",
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.tests.SalesConcurrencyTests.test_cancellation_is_unique_across_different_request_keys",
+      "status": "skip",
+      "detail": "Requires explicitly authorized disposable PostgreSQL migrations",
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.tests.SalesConcurrencyTests.test_competing_last_stock_sales",
+      "status": "skip",
+      "detail": "Requires explicitly authorized disposable PostgreSQL migrations",
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.tests.SalesConcurrencyTests.test_conflicting_payload_same_uuid_rolls_back_losing_request",
+      "status": "skip",
+      "detail": "Requires explicitly authorized disposable PostgreSQL migrations",
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.tests.SalesConcurrencyTests.test_database_uuid_collision_with_disjoint_stock_rolls_back_loser",
+      "status": "skip",
+      "detail": "Requires explicitly authorized disposable PostgreSQL migrations",
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.tests.SalesConcurrencyTests.test_direct_adjustment_and_sale_follow_same_stock_lock",
+      "status": "skip",
+      "detail": "Requires explicitly authorized disposable PostgreSQL migrations",
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.tests.SalesConcurrencyTests.test_duplicate_uuid_creates_one_complete_transaction",
+      "status": "skip",
+      "detail": "Requires explicitly authorized disposable PostgreSQL migrations",
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.tests.SalesConcurrencyTests.test_fractional_competing_sales_and_cancellations_conserve_stock",
+      "status": "skip",
+      "detail": "Requires explicitly authorized disposable PostgreSQL migrations",
+      "seconds": 0.0
+    },
+    {
+      "test": "sales.tests.SalesConcurrencyTests.test_stale_edits_cannot_overwrite_new_revision",
+      "status": "skip",
+      "detail": "Requires explicitly authorized disposable PostgreSQL migrations",
+      "seconds": 0.0
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_account_transaction_exception_rolls_back_epoch_and_revocations",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.141
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_activity_persistence_failure_rolls_back_all_business_writes",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.438
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_admin_and_api_failures_share_account_limit",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.344
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_admin_login_epoch_change_and_password_change_require_fresh_login",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.125
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_auth_polling_bootstrap_and_denials_never_renew_activity",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.359
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_automatic_hash_upgrade_issues_current_epoch_and_revokes_old",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.094
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_csrf_origin_and_legacy_cookies_cause_zero_business_writes",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.266
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_database_device_guards_reject_identity_generation_and_resurrection",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.14
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_direct_epoch_updates_even_noops_are_rejected",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.078
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_expired_access_locator_logout_recovery",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.109
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_failed_logout_keeps_proof_cookies_and_never_claims_success",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.093
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_financial_and_inventory_reconciliation_survives_sessions",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.219
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_fresh_session_same_actor_exact_replay_does_not_reprice",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.329
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_guard_absence_cannot_enable_partial_schema_login",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.047
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_idle_and_absolute_boundaries_deny_and_do_not_write_business",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.109
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_locator_cannot_authenticate_or_refresh",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.109
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_logout_current_device_only_and_repeat",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.109
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_logout_invalidates_copied_access_cookie",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.093
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_logout_without_identifiable_proof_is_explicit_cleanup_only",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.094
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_missing_and_epoch_mismatched_sessions_cannot_write",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.125
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_nat_ip_limit_across_distinct_accounts",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.125
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_password_change_invalidates_existing_access_cookie",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.203
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_queryset_and_raw_sql_security_changes_revoke",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.437
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_refresh_csrf_and_source_fail_before_rotation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.079
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_refresh_rotates_once_without_activity_or_absolute_extension",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.125
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_repeated_bad_login_is_rate_limited",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.25
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_revoked_session_cannot_read_successful_idempotent_response",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.203
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_session_admission_samples_clock_after_user_and_device_locks",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.063
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_session_creation_exception_rolls_back_row_and_does_not_issue_cookies",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.203
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_staff_technical_flags_cannot_login_admin",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.156
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_throttle_outage_and_row_cap_fail_closed",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.094
+    },
+    {
+      "test": "session_api_contracts.SessionAPIContracts.test_unknown_accounts_success_and_spoofed_headers_share_counter_rules",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.453
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_all_unsafe_methods_without_token_have_no_writes",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.328
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_authentication_rotation_preserves_successful_sale_replay",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.516
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_bearer_header_does_not_bypass_cookie_csrf",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.219
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_bootstrap_ignores_expired_and_malformed_access",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.141
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_bootstrap_is_read_only",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.438
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_bootstrap_masked_httponly_host_cookie_and_no_cache",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.532
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_expired_or_malformed_cookie_login_and_logout",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.875
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_hostile_origin_with_matching_token_has_no_writes",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.469
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_https_missing_bad_or_insecure_referer_rejected",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.109
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_https_trusted_referer_without_origin_works",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.313
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_json_token_body_does_not_replace_required_header",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.25
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_login_and_logout_rejections_issue_no_auth_cookies",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.359
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_login_rotates_csrf_and_keeps_jwts_out_of_json",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.297
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_logout_is_csrf_protected_idempotent_cookie_cleanup",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.203
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_loopback_http_requires_explicit_trusted_origin",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.219
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_malformed_csrf_tokens_rejected",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.344
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_missing_cookie_rejected_despite_well_formed_header",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.25
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_null_and_lookalike_origins_fail_closed",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.422
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_rejected_sale_can_use_same_uuid_after_csrf_recovery",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.312
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_rejected_stock_adjustment_does_not_reserve_uuid_or_revision",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.672
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_rotated_login_rejects_old_csrf_before_business_write",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.312
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_secure_cookie_when_https_setting_enabled",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.172
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_supported_form_token_works_for_trusted_login",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.375
+    },
+    {
+      "test": "security_compatibility.CSRFRegression24.test_unauthenticated_or_invalid_jwt_write_is_401_without_writes",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.313
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_django_superuser_flag_is_not_implicit_business_owner",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.204
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_role_downgrade_applies_to_existing_token",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.172
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_staff_cannot_adjust_stock",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.203
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_staff_cannot_cancel_own_recorded_sale",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.203
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_staff_cannot_change_catalog_price",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.453
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_staff_cannot_change_recipe",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.484
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_staff_cannot_create_expense",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.187
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_staff_cannot_edit_own_recorded_sale",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.516
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_staff_cannot_export_sales",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.141
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_staff_cannot_read_financial_summary",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.25
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_staff_cannot_read_owner_dashboard",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.015
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_staff_cannot_read_profit_margins",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.281
+    },
+    {
+      "test": "security_compatibility.OriginalRoles13.test_unknown_role_fails_closed",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.563
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_cookie_write_with_invalid_csrf_is_denied",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.359
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_cookie_write_without_csrf_is_denied_before_persistence",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.907
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_expired_cookie_does_not_prevent_valid_relogin",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.61
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_expired_cookie_logout_still_clears_browser_auth",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.5
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_hostile_origin_even_with_matching_csrf_is_denied",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.438
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_https_missing_origin_and_referer_is_denied",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.406
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_login_with_hostile_origin_is_denied",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.328
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_login_without_csrf_is_denied",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.563
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_logout_invalidates_copied_access_cookie",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.062
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_logout_with_hostile_origin_is_denied",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.484
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_logout_without_csrf_is_denied",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.5
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_password_change_invalidates_existing_access_cookie",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.657
+    },
+    {
+      "test": "security_compatibility.OriginalSecurity13.test_repeated_bad_login_is_rate_limited",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.438
+    },
+    {
+      "test": "csrf_regressions.SecurityTransportUnitTests.test_consistent_401_403_429_and_retry_after",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "csrf_regressions.SecurityTransportUnitTests.test_origin_configuration_no_wildcards_credentials_paths_or_remote_http",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.0
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_database_permission_outage_retains_logout_proofs",
+      "status": "skip",
+      "detail": "Real PostgreSQL permission outage",
+      "seconds": 0.0
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_default_lr_sixty_malformed_submissions_then_429",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.844
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_default_rr_thirty_invalid_refreshes_then_429",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.297
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_disabled_database_guard_fails_closed_then_recovers",
+      "status": "skip",
+      "detail": "Actual PostgreSQL disabled-trigger admission check",
+      "seconds": 0.0
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_exact_five_minute_boundary_and_dual_key_no_reset",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.235
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_fifty_thousand_bucket_cap_and_bounded_cleanup",
+      "status": "skip",
+      "detail": "Production-size PostgreSQL allocation cap/cleanup test",
+      "seconds": 0.0
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_limiter_database_debit_round_trip",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.109
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_missing_keys_fail_closed_without_creating_session",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.172
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_sqlite_trigger_retains_epoch_format_literal",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.016
+    },
+    {
+      "test": "operational_cases.OperationalContracts.test_unverified_proxy_never_falls_back_to_shared_peer",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.016
+    },
+    {
+      "test": "rbac_compatibility.RBACConcurrencyTests.test_duplicate_staff_identity_parallel_commits_one_sale",
+      "status": "skip",
+      "detail": "Independent PostgreSQL locks required",
+      "seconds": 0.0
+    },
+    {
+      "test": "rbac_compatibility.RBACConcurrencyTests.test_pending_role_downgrade_commits_before_command_recheck_then_denies",
+      "status": "skip",
+      "detail": "Independent PostgreSQL locks required",
+      "seconds": 0.0
+    },
+    {
+      "test": "rbac_compatibility.RBACConcurrencyTests.test_shared_actor_lock_allows_command_commit_before_role_change",
+      "status": "skip",
+      "detail": "Independent PostgreSQL locks required",
+      "seconds": 0.0
+    },
+    {
+      "test": "rbac_compatibility.RBACConcurrencyTests.test_two_staff_compete_for_last_stock_with_real_cookies",
+      "status": "skip",
+      "detail": "Independent PostgreSQL locks required",
+      "seconds": 0.0
+    },
+    {
+      "test": "rbac_compatibility.RBACRegressions.test_admin_site_requires_business_owner_and_existing_technical_permissions",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.156
+    },
+    {
+      "test": "rbac_compatibility.RBACRegressions.test_api_endpoint_inventory_has_explicit_default_deny_mapping",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.172
+    },
+    {
+      "test": "rbac_compatibility.RBACRegressions.test_claimed_tracking_without_creation_actor_does_not_grant_ownership",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.312
+    },
+    {
+      "test": "rbac_compatibility.RBACRegressions.test_default_unmapped_private_action_denied_even_for_owner",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.187
+    },
+    {
+      "test": "rbac_compatibility.RBACRegressions.test_direct_command_stale_actor_cannot_bypass_current_database_role",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.265
+    },
+    {
+      "test": "rbac_compatibility.RBACRegressions.test_downgrade_denies_previously_successful_owner_response_replay",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.188
+    },
+    {
+      "test": "rbac_compatibility.RBACRegressions.test_every_owner_only_route_and_method_denies_staff_before_validation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.328
+    },
+    {
+      "test": "rbac_compatibility.RBACRegressions.test_exact_staff_replay_survives_catalog_price_date_recipe_availability_changes",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.328
+    },
+    {
+      "test": "rbac_compatibility.RBACRegressions.test_operational_stock_exact_allowlist_on_all_read_paths",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.188
+    },
+    {
+      "test": "rbac_compatibility.RBACRegressions.test_other_staff_sale_hidden_even_when_id_is_known",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.235
+    },
+    {
+      "test": "rbac_compatibility.RBACRegressions.test_own_sale_list_detail_and_counts_exclude_other_and_legacy",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.359
+    },
+    {
+      "test": "rbac_compatibility.RBACRegressions.test_owner_positive_custom_price_date_management_and_reconciliation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.188
+    },
+    {
+      "test": "rbac_compatibility.RBACRegressions.test_private_read_matrix_for_anonymous_unknown_inactive",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.328
+    },
+    {
+      "test": "rbac_compatibility.RBACRegressions.test_public_catalog_projection_and_invalid_cookie_availability",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.219
+    },
+    {
+      "test": "rbac_compatibility.RBACRegressions.test_staff_allowed_sale_keeps_csrf_and_source_rejection_before_writes",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.515
+    },
+    {
+      "test": "rbac_compatibility.RBACRegressions.test_staff_current_price_rejected_before_any_write",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.203
+    },
+    {
+      "test": "rbac_compatibility.RBACRegressions.test_staff_date_is_explicit_manila_not_server_utc",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.234
+    },
+    {
+      "test": "rbac_compatibility.RBACRegressions.test_staff_options_and_html_do_not_leak_owner_serializer_fields",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.203
+    },
+    {
+      "test": "rbac_compatibility.RBACRegressions.test_staff_technical_superuser_admin_http_write_is_blocked_without_mutation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.329
+    },
+    {
+      "test": "rbac_compatibility.RBACRegressions.test_stored_owner_edit_cannot_be_disclosed_through_staff_create_replay",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.375
+    },
+    {
+      "test": "rbac_compatibility.RBACRegressions.test_unknown_inactive_deleted_and_flag_mismatched_users_fail_closed",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.781
+    },
+    {
+      "test": "session_concurrency.SessionConcurrencyContracts.test_admin_exclusive_guard_contention_is_observed_and_bounded",
+      "status": "skip",
+      "detail": "Requires independent PostgreSQL row locks; SQLite proves no concurrency.",
+      "seconds": 0.0
+    },
+    {
+      "test": "session_concurrency.SessionConcurrencyContracts.test_admitted_sale_completes_before_logout_and_cannot_replay_after",
+      "status": "skip",
+      "detail": "Requires independent PostgreSQL row locks; SQLite proves no concurrency.",
+      "seconds": 0.0
+    },
+    {
+      "test": "session_concurrency.SessionConcurrencyContracts.test_admitted_stock_finishes_before_logout",
+      "status": "skip",
+      "detail": "Requires independent PostgreSQL row locks; SQLite proves no concurrency.",
+      "seconds": 0.0
+    },
+    {
+      "test": "session_concurrency.SessionConcurrencyContracts.test_concurrent_bad_logins_never_overshoot_five",
+      "status": "skip",
+      "detail": "Requires independent PostgreSQL row locks; SQLite proves no concurrency.",
+      "seconds": 0.0
+    },
+    {
+      "test": "session_concurrency.SessionConcurrencyContracts.test_expiry_is_sampled_after_observed_lock_wait",
+      "status": "skip",
+      "detail": "Requires independent PostgreSQL row locks; SQLite proves no concurrency.",
+      "seconds": 0.0
+    },
+    {
+      "test": "session_concurrency.SessionConcurrencyContracts.test_queued_logout_commits_before_refresh",
+      "status": "skip",
+      "detail": "Requires independent PostgreSQL row locks; SQLite proves no concurrency.",
+      "seconds": 0.0
+    },
+    {
+      "test": "session_concurrency.SessionConcurrencyContracts.test_queued_password_change_commits_before_refresh",
+      "status": "skip",
+      "detail": "Requires independent PostgreSQL row locks; SQLite proves no concurrency.",
+      "seconds": 0.0
+    },
+    {
+      "test": "session_concurrency.SessionConcurrencyContracts.test_role_change_commit_wins_against_waiting_sale",
+      "status": "skip",
+      "detail": "Requires independent PostgreSQL row locks; SQLite proves no concurrency.",
+      "seconds": 0.0
+    },
+    {
+      "test": "session_concurrency.SessionConcurrencyContracts.test_role_change_wins_against_waiting_stock",
+      "status": "skip",
+      "detail": "Requires independent PostgreSQL row locks; SQLite proves no concurrency.",
+      "seconds": 0.0
+    },
+    {
+      "test": "session_concurrency.SessionConcurrencyContracts.test_same_actor_request_uuid_across_devices_still_deducts_once",
+      "status": "skip",
+      "detail": "Requires independent PostgreSQL row locks; SQLite proves no concurrency.",
+      "seconds": 0.0
+    },
+    {
+      "test": "session_concurrency.SessionConcurrencyContracts.test_simultaneous_refresh_has_one_rotation_then_terminal_reuse",
+      "status": "skip",
+      "detail": "Requires independent PostgreSQL row locks; SQLite proves no concurrency.",
+      "seconds": 0.0
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_all_four_lists_are_complete_and_deterministic",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.329
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_bad_parameters_empty_defaults_and_page_size",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.406
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_equal_price_sort_has_unique_tie_breaker",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.687
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_featured_on_later_page_and_false_filter",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.234
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_product_boundaries_zero_one_twenty_twentyone_twentyfive",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.875
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_projection_and_private_filter_side_channels",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.578
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_public_restrictions_cannot_be_widened",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.282
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_query_count_is_bounded_by_page_not_row_count",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.282
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_reads_and_denied_queries_do_not_mutate_business_data",
+      "status": "pass",
+      "detail": null,
+      "seconds": 2.312
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_recipe_readonly_ranking_and_category_annotation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.953
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_recipe_unit_ranking_does_not_integer_divide",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.641
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_search_finds_last_record_for_all_lists",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.407
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_selected_id_and_category_filters",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.922
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_stock_status_filter_and_order",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.953
+    }
+  ],
+  "failures": 0,
+  "errors": 0,
+  "skipped": 35
+}

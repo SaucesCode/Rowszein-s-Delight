@@ -5,10 +5,11 @@ import type { ExpenseFilters } from "@/services/expense.service";
 import type { ExpensePayload } from "@/types/expense.types";
 import toast from "react-hot-toast";
 
-export function useExpenses(filters: ExpenseFilters = {}) {
+export function useExpenses(filters: ExpenseFilters = {}, enabled = true) {
   return useQuery({
     queryKey: ["expenses", filters],
     queryFn: () => expenseService.getAll(filters),
+    enabled,
   });
 }
 

@@ -1,0 +1,44 @@
+[
+  {
+    "clock": "2026-11-10T04:00:00Z",
+    "zone": "Asia/Manila",
+    "period": "this_month",
+    "expected": {
+      "date_from": "2026-11-01",
+      "date_to": "2026-11-10"
+    },
+    "actual": {
+      "date_from": "2026-10-31",
+      "date_to": "2026-11-10"
+    },
+    "desired_behavior_passed": false
+  },
+  {
+    "clock": "2026-11-09T23:00:00Z",
+    "zone": "Asia/Manila",
+    "period": "today",
+    "expected": {
+      "date_from": "2026-11-10",
+      "date_to": "2026-11-10"
+    },
+    "actual": {
+      "date_from": "2026-11-09",
+      "date_to": "2026-11-09"
+    },
+    "desired_behavior_passed": false
+  },
+  {
+    "clock": "2026-11-09T23:00:00Z",
+    "zone": "Asia/Manila",
+    "period": "this_week",
+    "expected": {
+      "date_from": "2026-11-09",
+      "date_to": "2026-11-10"
+    },
+    "actual": {
+      "date_from": "2026-11-08",
+      "date_to": "2026-11-09"
+    },
+    "desired_behavior_passed": false
+  }
+]

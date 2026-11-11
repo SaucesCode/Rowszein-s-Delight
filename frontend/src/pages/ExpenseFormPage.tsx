@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { manilaDate } from "@/lib/dateRanges";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -190,7 +191,7 @@ export default function ExpenseFormPage() {
     resolver: zodResolver(expenseSchema),
     defaultValues: {
       category: "other",
-      date: new Date().toISOString().split("T")[0],
+      date: manilaDate(),
     },
   });
 

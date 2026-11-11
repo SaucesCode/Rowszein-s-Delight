@@ -1,4 +1,5 @@
 from accounts.permissions import BusinessPermission
+from backend.date_filters import filter_by_business_date
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -16,27 +17,13 @@ from .models import Expense
 from .serializers import ExpenseSerializer
 
 
-def parse_date(value):
-    try:
-        return datetime.strptime(value, '%Y-%m-%d').date()
-    except (ValueError, TypeError):
-        return None
-
-
 class ExpenseListCreateView(generics.ListCreateAPIView):
     permission_classes = [BusinessPermission]
     business_actions = {'GET': 'expenses.manage', 'POST': 'expenses.manage', 'OPTIONS': 'expenses.manage'}
     serializer_class = ExpenseSerializer
 
     def get_queryset(self):
-        queryset = Expense.objects.all()
-        date_from = parse_date(self.request.query_params.get('date_from'))
-        date_to = parse_date(self.request.query_params.get('date_to'))
-        if date_from:
-            queryset = queryset.filter(date__gte=date_from)
-        if date_to:
-            queryset = queryset.filter(date__lte=date_to)
-        return queryset
+        return filter_by_business_date(Expense.objects.all(), self.request.query_params)
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
@@ -107,13 +94,7 @@ class ExpenseExportCSVView(APIView):
     business_actions = {'GET': 'expenses.manage', 'OPTIONS': 'expenses.manage'}
 
     def get(self, request):
-        queryset = Expense.objects.all()
-        date_from = parse_date(request.query_params.get('date_from'))
-        date_to = parse_date(request.query_params.get('date_to'))
-        if date_from:
-            queryset = queryset.filter(date__gte=date_from)
-        if date_to:
-            queryset = queryset.filter(date__lte=date_to)
+        queryset = filter_by_business_date(Expense.objects.all(), request.query_params)
 
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="expenses.csv"'
@@ -138,13 +119,7 @@ class ExpenseExportPDFView(APIView):
     business_actions = {'GET': 'expenses.manage', 'OPTIONS': 'expenses.manage'}
 
     def get(self, request):
-        queryset = Expense.objects.all()
-        date_from = parse_date(request.query_params.get('date_from'))
-        date_to = parse_date(request.query_params.get('date_to'))
-        if date_from:
-            queryset = queryset.filter(date__gte=date_from)
-        if date_to:
-            queryset = queryset.filter(date__lte=date_to)
+        queryset = filter_by_business_date(Expense.objects.all(), request.query_params)
 
         buffer = io.BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=A4)

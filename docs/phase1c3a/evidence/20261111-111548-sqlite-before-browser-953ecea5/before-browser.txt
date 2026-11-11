@@ -1,0 +1,12 @@
+FAIL Asia/Manila midnight sales request
+FAIL Asia/Manila midnight sales data
+FAIL Asia/Manila midnight expense request
+FAIL Asia/Manila dashboard year request
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1c3a\browser_dates.py", line 127, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1c3a\browser_dates.py", line 104, in main
+    check(f'{zone} dashboard year API scope', response.json()['data']['filters'], {'date_from': '2024-01-01', 'date_to': '2024-03-01'})
+                                              ~~~~~~~~~~~~~~~^^^^^^^^
+KeyError: 'data'

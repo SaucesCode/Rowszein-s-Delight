@@ -1,0 +1,57 @@
+{
+  "checks": {
+    "Asia/Manila midnight sales request": false,
+    "Asia/Manila midnight sales data": false,
+    "Asia/Manila midnight expense request": false,
+    "Asia/Manila dashboard year request": false
+  },
+  "observations": {
+    "Asia/Manila midnight sales request": {
+      "actual": {
+        "date_from": "+056133-02-06",
+        "date_to": "+056133-02-06"
+      },
+      "expected": {
+        "date_from": "2024-03-01",
+        "date_to": "2024-03-01"
+      }
+    },
+    "Asia/Manila midnight sales data": {
+      "actual": [
+        "2024-03-11",
+        "2024-03-10",
+        "2024-03-01",
+        "2024-02-29",
+        "2024-02-28",
+        "2024-01-01",
+        "2023-12-31"
+      ],
+      "expected": [
+        "2024-03-01"
+      ]
+    },
+    "Asia/Manila midnight expense request": {
+      "actual": {
+        "date_from": "+056133-01-31",
+        "date_to": "+056133-02-06"
+      },
+      "expected": {
+        "date_from": "2024-03-01",
+        "date_to": "2024-03-01"
+      }
+    },
+    "Asia/Manila dashboard year request": {
+      "actual": {
+        "date_from": "+056132-12-31",
+        "date_to": "+056133-02-06"
+      },
+      "expected": {
+        "date_from": "2024-01-01",
+        "date_to": "2024-03-01"
+      }
+    }
+  },
+  "page_errors": [],
+  "failure": "'data'",
+  "servers_stopped": true
+}
