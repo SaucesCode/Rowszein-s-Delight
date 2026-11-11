@@ -18,10 +18,10 @@ export default function DashboardChart({ rows }: { rows: ChartMonth[] }) {
             contentStyle={{ background: "var(--ws-paper)", borderColor: "var(--ws-rule)", borderRadius: 8, fontSize: 12, color: "var(--ws-ink)" }}
           />
           <Area name="Net sales" dataKey="sales" type="linear" stroke="var(--ws-primary)" strokeWidth={2.5}
-            fill="var(--ws-blush)" fillOpacity={0.55} isAnimationActive={false} dot={singleMonth} />
+            fill="var(--ws-pink)" fillOpacity={0.45} isAnimationActive={false} dot={singleMonth} />
           <Line name="Expenses" dataKey="expenses" type="linear" stroke="var(--ws-caramel)" strokeWidth={2}
             strokeDasharray="6 4" isAnimationActive={false} dot={singleMonth} />
-          <Line name="Sales less expenses" dataKey="profit" type="linear" stroke="var(--ws-rose)" strokeWidth={2}
+          <Line name="Sales less expenses" dataKey="profit" type="linear" stroke="var(--ws-plum)" strokeWidth={2}
             strokeDasharray="2 4" isAnimationActive={false} dot={singleMonth} />
         </ComposedChart>
       </ResponsiveContainer>

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { Dialog, Tooltip } from "radix-ui";
-import { CakeSlice, ExternalLink, LogOut, Menu, PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
+import { Donut, ExternalLink, LogOut, Menu, PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
 import { useMe, useLogout } from "@/hooks/useAuth";
 import { FLAT_NAV_ITEMS, NAV_GROUPS } from "@/config/navigation";
 import { canVisit } from "@/lib/permissions";
@@ -24,6 +24,15 @@ function LinkTip({ label, collapsed, children }: { label: string; collapsed: boo
   );
 }
 
+function ShopLink({ className }: { className: string }) {
+  return (
+    <a className={className} href="/" target="_blank" rel="noopener noreferrer" aria-label="View live shop (opens in a new tab)">
+      <ExternalLink size={17} aria-hidden="true" />
+      <span>View live shop</span>
+    </a>
+  );
+}
+
 function WorkspaceRail({ user, collapsed = false, onNavigate }: {
   user: User;
   collapsed?: boolean;
@@ -38,7 +47,7 @@ function WorkspaceRail({ user, collapsed = false, onNavigate }: {
   return (
     <div className="workspace-rail-body" data-collapsed={collapsed}>
       <div className="workspace-brand">
-        <span className="workspace-brand-mark"><CakeSlice size={22} aria-hidden="true" /></span>
+        <span className="workspace-brand-mark"><Donut size={23} aria-hidden="true" /></span>
         {!collapsed && <span>Rowszein’s<br />Delight</span>}
       </div>
       <nav className="workspace-nav" aria-label="Main navigation">
@@ -57,12 +66,7 @@ function WorkspaceRail({ user, collapsed = false, onNavigate }: {
         ))}
       </nav>
       <div className="workspace-rail-footer">
-        <LinkTip label="View live shop (opens in a new tab)" collapsed={collapsed}>
-          <a className="workspace-nav-link" href="/" target="_blank" rel="noopener noreferrer" aria-label="View live shop (opens in a new tab)">
-            <ExternalLink size={18} aria-hidden="true" />
-            {!collapsed && <span>View live shop</span>}
-          </a>
-        </LinkTip>
+        {onNavigate && <ShopLink className="workspace-nav-link" />}
         <LinkTip label="Logout" collapsed={collapsed}>
           <button className="workspace-nav-link" type="button" onClick={() => logout.mutate()} disabled={logout.isPending} aria-label="Logout">
             <LogOut size={18} aria-hidden="true" />
@@ -147,6 +151,7 @@ export default function MainLayout() {
                   {detail && <span className="workspace-crumb-detail"> / {detail}</span>}
                 </div>
               </div>
+              <ShopLink className="workspace-shop-link" />
               <Account user={user} />
             </header>
             <main id="main-content" ref={main} tabIndex={-1} className="workspace-main">
