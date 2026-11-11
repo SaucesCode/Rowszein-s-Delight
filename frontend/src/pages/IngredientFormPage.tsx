@@ -13,6 +13,8 @@ import { INGREDIENT_CATEGORIES } from "@/types/ingredient.types";
 import { ImageOff, Upload } from "lucide-react";
 import SkeletonTable from "@/components/SkeletonTable";
 import { stockQuanta } from "@/lib/stockQuantity";
+import { validRecordId } from "@/lib/managementQueryKeys";
+import RecordLoadError from "@/components/RecordLoadError";
 
 /* ─────────────────────────────────────────────
    CONSTANTS
@@ -89,13 +91,19 @@ function Field({
    ───────────────────────────────────────────── */
 export default function IngredientFormPage() {
   const { id } = useParams();
+  // A record switch must also discard the previous form's unsaved fields/file.
+  return <IngredientForm key={id ?? "new"} id={id} />;
+}
+
+function IngredientForm({ id }: { id: string | undefined }) {
   const navigate = useNavigate();
   const isEdit = !!id;
 
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploadedPreview, setUploadedPreview] = useState<string | null>(null);
 
-  const { data: ingredient, isLoading } = useIngredient(Number(id));
+  const { data: ingredient, isPending: detailPending, isError, error, refetch } = useIngredient(Number(id));
+  const imagePreview = uploadedPreview ?? ingredient?.image_url ?? null;
   const createIngredient = useCreateIngredient();
   const updateIngredient = useUpdateIngredient(Number(id));
 
@@ -120,15 +128,18 @@ export default function IngredientFormPage() {
         minimum_stock: ingredient.minimum_stock,
         notes: ingredient.notes,
       });
-      if (ingredient.image_url) setImagePreview(ingredient.image_url);
     }
   }, [ingredient, reset]);
+
+  useEffect(() => () => {
+    if (uploadedPreview) URL.revokeObjectURL(uploadedPreview);
+  }, [uploadedPreview]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
+    setUploadedPreview(URL.createObjectURL(file));
   };
 
   const onSubmit = (data: IngredientForm) => {
@@ -142,8 +153,14 @@ export default function IngredientFormPage() {
 
   const isPending = createIngredient.isPending || updateIngredient.isPending;
 
-  if (isEdit && isLoading) {
+  if (isEdit && !validRecordId(Number(id))) {
+    return <RecordLoadError name="ingredient" invalidId error={undefined} retry={() => {}} back={() => navigate("/ingredients")} />;
+  }
+  if (isEdit && detailPending) {
     return <SkeletonTable rows={4} cols={2} showHeader />;
+  }
+  if (isEdit && (isError || !ingredient)) {
+    return <RecordLoadError name="ingredient" invalidId={false} error={error} retry={() => { void refetch(); }} back={() => navigate("/ingredients")} />;
   }
 
   return (

@@ -1,0 +1,2 @@
+# Preserve the exact raw evidence bytes; accepted earlier folders are unchanged.
+* -text

@@ -1,0 +1,27 @@
+vite v8.0.16 building client environment for production...
+[2K
+transforming...✓ 2578 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                     0.48 kB │ gzip:   0.31 kB
+dist/assets/index-vPa42ZPg.css     35.66 kB │ gzip:   7.65 kB
+dist/assets/index-xnDWqL_W.js   1,040.86 kB │ gzip: 304.40 kB
+
+✓ built in 10.13s
+npm notice run frontend@0.0.0 build
+npm notice run tsc -b && vite build --config C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\.verification-runtime\b472a1cf554c4128a10b752cdf647cb8\vite.verify.mjs
+Found 1 warning while optimizing generated CSS:
+
+[2m│   }[22m
+[2m│ }[22m
+[2m│[22m @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap");
+[2m┆[22m        [33m[2m^--[22m @import rules must precede all rules aside from @charset and @layer statements[39m
+[2m┆[22m
+[2m│ @layer base {[22m
+[2m│   :root {[22m
+
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.

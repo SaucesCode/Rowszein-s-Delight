@@ -1,0 +1,403 @@
+{
+  "observations": {
+    "storefront_initial_bounded_20": {
+      "actual": 20,
+      "expected": 20,
+      "passed": true
+    },
+    "featured_last_product_visible_independently": {
+      "actual": 1,
+      "expected": 1,
+      "passed": true
+    },
+    "boundary_has_next_only_above_20": {
+      "actual": 0,
+      "expected": 0,
+      "passed": true
+    },
+    "all_menu_records_once_after_paging": {
+      "actual": 20,
+      "expected": 20,
+      "passed": true
+    },
+    "storefront_search_resets_accumulated_pages": {
+      "actual": 1,
+      "expected": 1,
+      "passed": true
+    },
+    "storefront_no_match_state": {
+      "actual": 0,
+      "expected": 0,
+      "passed": true
+    },
+    "sales_lookup_initial_page_limit": {
+      "actual": 21,
+      "expected": 21,
+      "passed": true
+    },
+    "sales_lookup_finds_last_id": {
+      "actual": "20",
+      "expected": "20",
+      "passed": true
+    },
+    "new_sale_price_uses_selected_product": {
+      "actual": "50",
+      "expected": "50",
+      "passed": true
+    },
+    "create_moves_count_20_to_21": {
+      "actual": 201,
+      "expected": 201,
+      "passed": true
+    },
+    "edit_refreshes_paged_list": {
+      "actual": 200,
+      "expected": 200,
+      "passed": true
+    },
+    "delete_only_row_on_last_page": {
+      "actual": 200,
+      "expected": 200,
+      "passed": true
+    },
+    "page_recovers_after_delete": {
+      "actual": 1,
+      "expected": 1,
+      "passed": true
+    },
+    "no_page_errors": {
+      "actual": [],
+      "expected": [],
+      "passed": true
+    }
+  },
+  "requests": [
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 401
+    },
+    {
+      "path": "/api/products/?is_available=true&category_active=true&page=1",
+      "method": "GET",
+      "status": 200,
+      "fields": [
+        "category",
+        "description",
+        "id",
+        "image_url",
+        "is_available",
+        "is_featured",
+        "name",
+        "price"
+      ]
+    },
+    {
+      "path": "/api/products/?is_featured=true&is_available=true&category_active=true&page=1",
+      "method": "GET",
+      "status": 200,
+      "fields": [
+        "category",
+        "description",
+        "id",
+        "image_url",
+        "is_available",
+        "is_featured",
+        "name",
+        "price"
+      ]
+    },
+    {
+      "path": "/api/products/categories/?is_active=true&page=1",
+      "method": "GET",
+      "status": 200,
+      "fields": [
+        "description",
+        "id",
+        "is_active",
+        "name",
+        "slug",
+        "sort_order"
+      ]
+    },
+    {
+      "path": "/api/products/?search=Cache+product+20&is_available=true&category_active=true&page=1",
+      "method": "GET",
+      "status": 200,
+      "fields": [
+        "category",
+        "description",
+        "id",
+        "image_url",
+        "is_available",
+        "is_featured",
+        "name",
+        "price"
+      ]
+    },
+    {
+      "path": "/api/products/?search=unmatched-xyz&is_available=true&category_active=true&page=1",
+      "method": "GET",
+      "status": 200,
+      "fields": []
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 401
+    },
+    {
+      "path": "/api/auth/csrf/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/login/",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/products/?page=1",
+      "method": "GET",
+      "status": 200,
+      "fields": [
+        "category",
+        "created_at",
+        "description",
+        "id",
+        "image_url",
+        "is_available",
+        "is_featured",
+        "name",
+        "price",
+        "updated_at"
+      ]
+    },
+    {
+      "path": "/api/products/?search=Cache+product+20&page=1",
+      "method": "GET",
+      "status": 200,
+      "fields": [
+        "category",
+        "created_at",
+        "description",
+        "id",
+        "image_url",
+        "is_available",
+        "is_featured",
+        "name",
+        "price",
+        "updated_at"
+      ]
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/csrf/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "path": "/api/ingredients/low-stock/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/?ordering=name&page=1",
+      "method": "GET",
+      "status": 200,
+      "fields": [
+        "category",
+        "category_display",
+        "cost_per_unit",
+        "created_at",
+        "id",
+        "image_url",
+        "is_low_stock",
+        "minimum_stock",
+        "name",
+        "notes",
+        "quantity",
+        "stock_revision",
+        "supplier",
+        "unit",
+        "updated_at"
+      ]
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/?ordering=name&page=2",
+      "method": "GET",
+      "status": 200,
+      "fields": [
+        "category",
+        "category_display",
+        "cost_per_unit",
+        "created_at",
+        "id",
+        "image_url",
+        "is_low_stock",
+        "minimum_stock",
+        "name",
+        "notes",
+        "quantity",
+        "stock_revision",
+        "supplier",
+        "unit",
+        "updated_at"
+      ]
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/21/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/21/",
+      "method": "PUT",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/21/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/low-stock/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/?ordering=name&page=1",
+      "method": "GET",
+      "status": 200,
+      "fields": [
+        "category",
+        "category_display",
+        "cost_per_unit",
+        "created_at",
+        "id",
+        "image_url",
+        "is_low_stock",
+        "minimum_stock",
+        "name",
+        "notes",
+        "quantity",
+        "stock_revision",
+        "supplier",
+        "unit",
+        "updated_at"
+      ]
+    },
+    {
+      "path": "/api/ingredients/?ordering=name&page=2",
+      "method": "GET",
+      "status": 200,
+      "fields": [
+        "category",
+        "category_display",
+        "cost_per_unit",
+        "created_at",
+        "id",
+        "image_url",
+        "is_low_stock",
+        "minimum_stock",
+        "name",
+        "notes",
+        "quantity",
+        "stock_revision",
+        "supplier",
+        "unit",
+        "updated_at"
+      ]
+    },
+    {
+      "path": "/api/ingredients/21/",
+      "method": "DELETE",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/low-stock/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/?ordering=name&page=2",
+      "method": "GET",
+      "status": 404
+    },
+    {
+      "path": "/api/ingredients/?ordering=name&page=1",
+      "method": "GET",
+      "status": 200,
+      "fields": [
+        "category",
+        "category_display",
+        "cost_per_unit",
+        "created_at",
+        "id",
+        "image_url",
+        "is_low_stock",
+        "minimum_stock",
+        "name",
+        "notes",
+        "quantity",
+        "stock_revision",
+        "supplier",
+        "unit",
+        "updated_at"
+      ]
+    }
+  ],
+  "screenshots": [
+    "boundary-20-storefront.png",
+    "boundary-20-sale-lookup.png",
+    "boundary-20-after-delete.png"
+  ],
+  "page_errors": [],
+  "blocked_external": [],
+  "baseline": false,
+  "servers_stopped": true
+}

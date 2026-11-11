@@ -1,13 +1,14 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecipes, useDeleteRecipe } from "@/hooks/useRecipes";
-import { useProducts, useCategories } from "@/hooks/useProducts";
+import { useProducts } from "@/hooks/useProducts";
 import type { Recipe } from "@/types/recipe.types";
-import type { Category, Product } from "@/types/product.types";
+import type { Product } from "@/types/product.types";
 import { Plus, BookOpen, SearchX, ArrowUpDown, Check } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import SearchInput from "@/components/SearchInput";
-import CategoryFilterBar from "@/components/CategoryFilterBar";
+import PaginatedLookup from "@/components/PaginatedLookup";
+import { useListingPageRecovery } from "@/hooks/useListingPageRecovery";
 import DropdownMenu from "@/components/DropdownMenu";
 import EmptyState from "@/components/EmptyState";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -25,21 +26,6 @@ const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { value: "cost_per_unit_asc", label: "Lowest Cost / Unit" },
   { value: "most_ingredients", label: "Most Ingredients" },
 ];
-
-function sortRecipes(list: Recipe[], sort: SortOption) {
-  const copy = [...list];
-  switch (sort) {
-    case "batch_cost_desc":
-      return copy.sort((a, b) => Number(b.production_cost) - Number(a.production_cost));
-    case "cost_per_unit_asc":
-      return copy.sort((a, b) => Number(a.cost_per_unit) - Number(b.cost_per_unit));
-    case "most_ingredients":
-      return copy.sort((a, b) => b.recipe_ingredients.length - a.recipe_ingredients.length);
-    case "name":
-    default:
-      return copy.sort((a, b) => a.product_name.localeCompare(b.product_name));
-  }
-}
 
 function average(values: number[]) {
   if (values.length === 0) return 0;
@@ -146,9 +132,9 @@ export default function RecipesPage() {
   const [sort, setSort] = useState<SortOption>("name");
   const [deleteTarget, setDeleteTarget] = useState<Recipe | null>(null);
 
-  const { data, isLoading, isError } = useRecipes(page);
+  const { data, isLoading, isError, error, refetch } = useRecipes(page, { search, category: categoryFilter, ordering: sort });
+  useListingPageRecovery(page, error, setPage);
   const { data: productsData } = useProducts(1);
-  const { data: categoriesData } = useCategories();
   const deleteRecipe = useDeleteRecipe();
 
   const recipes: Recipe[] = data?.data?.results ?? [];
@@ -161,49 +147,9 @@ export default function RecipesPage() {
   // enough for a single shop's menu; revisit with a dedicated endpoint if
   // the catalog grows past a page.
   const products: Product[] = productsData?.data?.results ?? [];
-  const categories: Category[] = categoriesData?.data ?? [];
-
-  const productById = useMemo(() => {
-    const map = new Map<number, Product>();
-    products.forEach(p => map.set(p.id, p));
-    return map;
-  }, [products]);
-
-  const categoryOptions = categories
-    .filter(category => category.is_active)
-    .map(category => ({ value: String(category.id), label: category.name }));
-
-  const missingRecipeProducts = useMemo(() => {
-    const costedProductIds = new Set(recipes.map(r => r.product));
-    return products.filter(p => !costedProductIds.has(p.id));
-  }, [products, recipes]);
-
-  const visibleRecipes = useMemo(() => {
-    let list = recipes;
-
-    if (categoryFilter !== "all") {
-      list = list.filter(
-        r => String(productById.get(r.product)?.category.id) === categoryFilter,
-      );
-    }
-    if (search.trim()) {
-      const q = search.trim().toLowerCase();
-      list = list.filter(r => r.product_name.toLowerCase().includes(q));
-    }
-
-    return sortRecipes(list, sort);
-  }, [recipes, categoryFilter, search, sort, productById]);
-
-  const categoryCounts = useMemo(() => {
-    return recipes.reduce<Record<string, number>>((acc, r) => {
-      acc.all = (acc.all ?? 0) + 1;
-      const categoryId = productById.get(r.product)?.category.id;
-      if (categoryId !== undefined) {
-        acc[String(categoryId)] = (acc[String(categoryId)] ?? 0) + 1;
-      }
-      return acc;
-    }, {});
-  }, [recipes, productById]);
+  const costedProductIds = new Set(recipes.map(recipe => recipe.product));
+  const missingRecipeProducts = products.filter(product => !costedProductIds.has(product.id));
+  const visibleRecipes = recipes;
 
   const avgProductionCost = average(recipes.map(r => Number(r.production_cost)));
   const avgCostPerUnit = average(recipes.map(r => Number(r.cost_per_unit)));
@@ -233,7 +179,7 @@ export default function RecipesPage() {
       />
 
       {/* Missing-recipe callout — the reason this page exists as a checklist, not just a list */}
-      {!isLoading && !isError && (
+      {!isLoading && !isError && !hasActiveFilters && page === 1 && sort === "name" && (
         <MissingRecipeBanner
           productNames={missingRecipeProducts.map(p => p.name)}
           onClick={() => navigate("/products")}
@@ -255,7 +201,7 @@ export default function RecipesPage() {
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <SearchInput
             value={search}
-            onChange={setSearch}
+            onChange={value => { setSearch(value); setPage(1); }}
             placeholder="Search recipes by product…"
             ariaLabel="Search recipes"
           />
@@ -276,7 +222,7 @@ export default function RecipesPage() {
             {SORT_OPTIONS.map(opt => (
               <button
                 key={opt.value}
-                onClick={() => setSort(opt.value)}
+                onClick={() => { setSort(opt.value); setPage(1); }}
                 className="flex items-center justify-between gap-2 w-full text-left px-3.5 py-2.5 transition-colors hover:bg-[#FFF8F0]"
                 style={{ fontSize: 13, color: "#6B4226" }}
               >
@@ -289,18 +235,12 @@ export default function RecipesPage() {
           </DropdownMenu>
         </div>
 
-        {categoryOptions.length > 0 && (
-          <CategoryFilterBar
-            options={categoryOptions}
-            active={categoryFilter}
-            onChange={setCategoryFilter}
-            counts={categoryCounts}
-            ariaLabel="Filter recipes by category"
-          />
-        )}
+        <PaginatedLookup kind="categories" label="Filter recipes by category" selectedId={Number(categoryFilter) || 0}
+          params={{ is_active: true }} onChange={event => { setCategoryFilter(event.target.value === "0" ? "all" : event.target.value); setPage(1); }} />
       </div>
 
       {isLoading && <RecipesSkeleton />}
+      {isError && <button type="button" onClick={() => { void refetch(); }}>Retry recipes</button>}
 
       {isError && (
         <div
@@ -313,7 +253,7 @@ export default function RecipesPage() {
         </div>
       )}
 
-      {!isLoading && !isError && totalCount === 0 && (
+      {!isLoading && !isError && totalCount === 0 && !hasActiveFilters && (
         <div style={{ background: "#FFFDFB", border: "1px solid #E8E6E1", borderRadius: 10 }}>
           <EmptyState
             icon={BookOpen}
@@ -329,7 +269,7 @@ export default function RecipesPage() {
         </div>
       )}
 
-      {!isLoading && !isError && totalCount > 0 && visibleRecipes.length === 0 && (
+      {!isLoading && !isError && hasActiveFilters && visibleRecipes.length === 0 && (
         <div style={{ background: "#FFFDFB", border: "1px solid #E8E6E1", borderRadius: 10 }}>
           <EmptyState
             icon={SearchX}
@@ -340,6 +280,7 @@ export default function RecipesPage() {
                 <button
                   onClick={() => {
                     setSearch("");
+                    setPage(1);
                     setCategoryFilter("all");
                   }}
                   className="btn-secondary"
@@ -386,7 +327,7 @@ export default function RecipesPage() {
                   <RecipeRow
                     key={recipe.id}
                     recipe={recipe}
-                    category={productById.get(recipe.product)?.category.name}
+                    category={recipe.category?.name}
                     onEdit={() => navigate(`/recipes/${recipe.id}/edit`)}
                     onDelete={() => setDeleteTarget(recipe)}
                   />
@@ -401,7 +342,7 @@ export default function RecipesPage() {
               <RecipeCard
                 key={recipe.id}
                 recipe={recipe}
-                category={productById.get(recipe.product)?.category.name}
+                category={recipe.category?.name}
                 onEdit={() => navigate(`/recipes/${recipe.id}/edit`)}
                 onDelete={() => setDeleteTarget(recipe)}
               />

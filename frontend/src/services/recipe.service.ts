@@ -1,11 +1,10 @@
 import api from "./api";
-import type { RecipePayload } from "@/types/recipe.types";
+import type { Recipe, RecipePayload } from "@/types/recipe.types";
+import type { ListingParams } from "@/lib/listingParams";
+import { listingService } from "./listing.service";
 
 export const recipeService = {
-  getAll: async (page = 1) => {
-    const response = await api.get("/recipes/", { params: { page } });
-    return response.data;
-  },
+  getAll: (page = 1, params: ListingParams = {}, signal?: AbortSignal) => listingService.get<Recipe>("recipes", { ...params, page }, signal),
 
   getOne: async (id: number) => {
     const response = await api.get(`/recipes/${id}/`);

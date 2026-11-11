@@ -1,0 +1,181 @@
+PASS ingredient_page1_to_id1
+PASS ingredient_detail_to_list
+PASS ingredient_page2_to_id2
+PASS recipe_page1_to_id1
+PASS recipe_detail_yield_matches
+PASS recipe_detail_to_list
+PASS recipe_cached_revisit_keeps_correct_id
+PASS record_switch_loading_hides_previous_form
+PASS record_switch_loading_hides_unsaved_text
+PASS recipe_switch_1_to_3_matches_requested_id
+PASS recipe_cached_switch_discards_previous_unsaved_form
+PASS recipe_reload
+PASS ingredient_direct_edit
+PASS ingredient_stock_remains_readonly
+PASS ingredient_switch_1_to_2
+PASS ingredient_cached_revisit_discards_unsaved_fields
+PASS ingredient_edit_success
+PASS ingredient_update_invalidates_detail
+PASS ingredient_update_revisit_value
+PASS ingredient_reload_after_save
+PASS recipe_edit_success
+PASS recipe_update_invalidates_detail
+PASS recipe_update_revisit_yield
+PASS ingredients_missing_record_no_form
+PASS ingredients_invalid_id_no_fetch
+PASS ingredients_invalid_id_no_form
+PASS ingredients_unsafe_integer_id_no_form
+PASS ingredients_query_error_no_form
+PASS ingredients_retry_recovers_requested_record
+PASS ingredients_wrong_response_id_no_form
+PASS recipes_missing_record_no_form
+PASS recipes_invalid_id_no_fetch
+PASS recipes_invalid_id_no_form
+PASS recipes_unsafe_integer_id_no_form
+PASS recipes_query_error_no_form
+PASS recipes_retry_recovers_requested_record
+PASS recipes_wrong_response_id_no_form
+PASS ingredient_create_success
+PASS ingredient_create_refreshes_list
+PASS ingredient_delete_success
+PASS ingredient_deleted_cached_detail_not_displayed
+PASS recipe_delete_success
+PASS recipe_deleted_cached_detail_not_displayed
+PASS recipe_create_success
+Traceback (most recent call last):
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1c2a\browser_checks.py", line 298, in <module>
+    expect(page.get_by_text('Cache product 03',exact=True).first).to_be_visible()
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 14811, in to_be_visible
+    self._sync(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_assertions.py", line 852, in to_be_visible
+    await self._expect_impl(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_assertions.py", line 128, in _expect_impl
+    _record_soft_or_raise(
+  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\backend\.venv\Lib\site-packages\playwright\_impl\_assertions.py", line 60, in _record_soft_or_raise
+    raise error
+AssertionError: Locator expected to be visible
+Actual value: None
+Error: element(s) not found 
+Call log:
+  - Expect "to_be_visible" get_by_text("Cache product 03", exact=True).first with timeout 5000ms
+  - waiting for get_by_text("Cache product 03", exact=True).first
+
+Aria snapshot:
+- complementary:
+  - link "Rowszein's Delight Owner Panel":
+    - /url: /
+    - paragraph: Rowszein's Delight
+    - paragraph: Owner Panel
+  - navigation "Main navigation":
+    - link "Dashboard":
+      - /url: /dashboard
+    - paragraph: Operations
+    - link "Ingredients":
+      - /url: /ingredients
+    - link "Products":
+      - /url: /products
+    - link "Recipes":
+      - /url: /recipes
+    - paragraph: Money
+    - link "Sales":
+      - /url: /sales
+    - link "Expenses":
+      - /url: /expenses
+    - link "Profit Margins":
+      - /url: /profit-margins
+  - button "Logout"
+  - button "Collapse sidebar" [expanded]
+- banner:
+  - link "View live shop":
+    - /url: /
+  - paragraph: cache-owner
+- main:
+  - heading "Recipes" [level=1]
+  - paragraph: Define ingredients and production cost per product
+  - button "Add Recipe"
+  - button "View products without a recipe":
+    - paragraph: 20 products don't have a recipe yet
+    - paragraph: Cache product 01, Cache product 02, Cache product 03, Cache product 04 +16 more — add a recipe to calculate their production cost.
+  - paragraph: Total Recipes
+  - paragraph: "25"
+  - paragraph: Missing Recipes
+  - paragraph: "20"
+  - paragraph: Avg. Batch Cost
+  - paragraph: ₱0.01
+  - paragraph: Avg. Cost / Unit
+  - paragraph: ₱0.00
+  - text: Search recipes
+  - textbox "Search recipes":
+    - /placeholder: Search recipes by product…
+  - button "Sort"
+  - group "Filter recipes by category":
+    - button "All 5" [pressed]
+    - button "Cache test category"
+    - button "Classic"
+    - button "Fruity"
+    - button "Local Favorites"
+    - button "Premium"
+    - button "Brownies & Bars"
+  - table:
+    - rowgroup:
+      - row "Product Category Ingredients Yield Batch Cost Cost / Unit":
+        - columnheader "Product"
+        - columnheader "Category"
+        - columnheader "Ingredients"
+        - columnheader "Yield"
+        - columnheader "Batch Cost"
+        - columnheader "Cost / Unit"
+        - columnheader
+    - rowgroup:
+      - row "Cache product 21 — 1 ingredient 3 units ₱0.01 ₱0.00 Actions for Cache product 21 recipe":
+        - cell "Cache product 21"
+        - cell "—"
+        - cell "1 ingredient"
+        - cell "3 units"
+        - cell "₱0.01"
+        - cell "₱0.00"
+        - cell "Actions for Cache product 21 recipe":
+          - button "Actions for Cache product 21 recipe"
+      - row "Cache product 22 — 1 ingredient 3 units ₱0.01 ₱0.00 Actions for Cache product 22 recipe":
+        - cell "Cache product 22"
+        - cell "—"
+        - cell "1 ingredient"
+        - cell "3 units"
+        - cell "₱0.01"
+        - cell "₱0.00"
+        - cell "Actions for Cache product 22 recipe":
+          - button "Actions for Cache product 22 recipe"
+      - row "Cache product 23 — 1 ingredient 3 units ₱0.01 ₱0.00 Actions for Cache product 23 recipe":
+        - cell "Cache product 23"
+        - cell "—"
+        - cell "1 ingredient"
+        - cell "3 units"
+        - cell "₱0.01"
+        - cell "₱0.00"
+        - cell "Actions for Cache product 23 recipe":
+          - button "Actions for Cache product 23 recipe"
+      - row "Cache product 24 — 1 ingredient 3 units ₱0.01 ₱0.00 Actions for Cache product 24 recipe":
+        - cell "Cache product 24"
+        - cell "—"
+        - cell "1 ingredient"
+        - cell "3 units"
+        - cell "₱0.01"
+        - cell "₱0.00"
+        - cell "Actions for Cache product 24 recipe":
+          - button "Actions for Cache product 24 recipe"
+      - row "Cache product 25 — 1 ingredient 3 units ₱0.01 ₱0.00 Actions for Cache product 25 recipe":
+        - cell "Cache product 25"
+        - cell "—"
+        - cell "1 ingredient"
+        - cell "3 units"
+        - cell "₱0.01"
+        - cell "₱0.00"
+        - cell "Actions for Cache product 25 recipe":
+          - button "Actions for Cache product 25 recipe"
+  - navigation "Pagination":
+    - paragraph: Page 2 of 2
+    - button "Previous page": Previous
+    - button "Next page" [disabled]: Next

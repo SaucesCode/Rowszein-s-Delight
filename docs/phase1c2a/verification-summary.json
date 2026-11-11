@@ -1,0 +1,582 @@
+{
+  "baseline": "b990398",
+  "branch": "codex/phase-1c2a-cache-identity",
+  "production_access": false,
+  "deployment": false,
+  "preservation": {
+    "20261111-093642-sqlite-preservation-eeb9f05c": {
+      "tests_run": 250,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 35,
+      "passed": 215,
+      "passed_by_group": {
+        "sales": 103,
+        "session_api_contracts": 32,
+        "security_compatibility": 50,
+        "csrf_regressions": 2,
+        "operational_cases": 7,
+        "rbac_compatibility": 21
+      }
+    },
+    "20261111-093647-postgres-preservation-ffc8bb2a": {
+      "tests_run": 250,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "passed": 249,
+      "passed_by_group": {
+        "sales": 120,
+        "session_api_contracts": 32,
+        "security_compatibility": 50,
+        "csrf_regressions": 2,
+        "operational_cases": 9,
+        "rbac_compatibility": 25,
+        "session_concurrency": 11
+      }
+    }
+  },
+  "browser_runs": {
+    "20261111-093233-sqlite-before-33d9f656": {
+      "checks": 4,
+      "passed": 1,
+      "failed": 3,
+      "baseline": true,
+      "incomplete_harness_run": false,
+      "servers_stopped": true,
+      "page_errors": []
+    },
+    "20261111-094116-postgres-browser-2031e65a": {
+      "checks": 11,
+      "passed": 11,
+      "failed": 0,
+      "baseline": false,
+      "incomplete_harness_run": true,
+      "servers_stopped": true,
+      "page_errors": []
+    },
+    "20261111-094327-postgres-browser-a28636bd": {
+      "checks": 44,
+      "passed": 44,
+      "failed": 0,
+      "baseline": false,
+      "incomplete_harness_run": true,
+      "servers_stopped": true,
+      "page_errors": []
+    },
+    "20261111-094541-postgres-browser-25639227": {
+      "checks": 54,
+      "passed": 54,
+      "failed": 0,
+      "baseline": false,
+      "incomplete_harness_run": true,
+      "servers_stopped": true,
+      "page_errors": []
+    },
+    "20261111-094826-postgres-browser-2d5abfc6": {
+      "checks": 58,
+      "passed": 58,
+      "failed": 0,
+      "baseline": false,
+      "incomplete_harness_run": false,
+      "servers_stopped": true,
+      "page_errors": []
+    }
+  },
+  "final_browser": {
+    "evidence": "docs/phase1c2a/evidence/20261111-094826-postgres-browser-2d5abfc6/browser.json",
+    "checks": {
+      "ingredient_page1_to_id1": {
+        "actual": "Cache ingredient 01",
+        "expected": "Cache ingredient 01",
+        "passed": true
+      },
+      "ingredient_detail_to_list": {
+        "actual": 21,
+        "expected": 21,
+        "passed": true
+      },
+      "ingredient_page2_to_id2": {
+        "actual": "Z Cache ingredient 02",
+        "expected": "Z Cache ingredient 02",
+        "passed": true
+      },
+      "recipe_page1_to_id1": {
+        "actual": "1",
+        "expected": "1",
+        "passed": true
+      },
+      "recipe_detail_yield_matches": {
+        "actual": "3",
+        "expected": "3",
+        "passed": true
+      },
+      "recipe_detail_to_list": {
+        "actual": 21,
+        "expected": 21,
+        "passed": true
+      },
+      "recipe_cached_revisit_keeps_correct_id": {
+        "actual": "1",
+        "expected": "1",
+        "passed": true
+      },
+      "record_switch_loading_hides_previous_form": {
+        "actual": 0,
+        "expected": 0,
+        "passed": true
+      },
+      "record_switch_loading_hides_unsaved_text": {
+        "actual": false,
+        "expected": false,
+        "passed": true
+      },
+      "recipe_switch_1_to_3_matches_requested_id": {
+        "actual": "3",
+        "expected": "3",
+        "passed": true
+      },
+      "recipe_cached_switch_discards_previous_unsaved_form": {
+        "actual": "",
+        "expected": "",
+        "passed": true
+      },
+      "reload_waits_for_existing_lookup_options": {
+        "actual": 0,
+        "expected": 0,
+        "passed": true
+      },
+      "recipe_reload": {
+        "actual": "1",
+        "expected": "1",
+        "passed": true
+      },
+      "ingredient_direct_edit": {
+        "actual": "Cache ingredient 01",
+        "expected": "Cache ingredient 01",
+        "passed": true
+      },
+      "ingredient_stock_remains_readonly": {
+        "actual": true,
+        "expected": true,
+        "passed": true
+      },
+      "ingredient_switch_1_to_2": {
+        "actual": "PRIVATE-SUPPLIER-02",
+        "expected": "PRIVATE-SUPPLIER-02",
+        "passed": true
+      },
+      "ingredient_cached_revisit_discards_unsaved_fields": {
+        "actual": "PRIVATE-SUPPLIER-01",
+        "expected": "PRIVATE-SUPPLIER-01",
+        "passed": true
+      },
+      "ingredient_edit_success": {
+        "actual": 200,
+        "expected": 200,
+        "passed": true
+      },
+      "ingredient_update_invalidates_detail": {
+        "actual": true,
+        "expected": true,
+        "passed": true
+      },
+      "ingredient_update_revisit_value": {
+        "actual": "Cache ingredient 01 edited",
+        "expected": "Cache ingredient 01 edited",
+        "passed": true
+      },
+      "ingredient_reload_after_save": {
+        "actual": "Cache ingredient 01 edited",
+        "expected": "Cache ingredient 01 edited",
+        "passed": true
+      },
+      "recipe_edit_success": {
+        "actual": 200,
+        "expected": 200,
+        "passed": true
+      },
+      "recipe_update_invalidates_detail": {
+        "actual": true,
+        "expected": true,
+        "passed": true
+      },
+      "recipe_update_revisit_yield": {
+        "actual": "6",
+        "expected": "6",
+        "passed": true
+      },
+      "ingredients_missing_record_no_form": {
+        "actual": 0,
+        "expected": 0,
+        "passed": true
+      },
+      "ingredients_invalid_id_no_fetch": {
+        "actual": 0,
+        "expected": 0,
+        "passed": true
+      },
+      "ingredients_invalid_id_no_form": {
+        "actual": 0,
+        "expected": 0,
+        "passed": true
+      },
+      "ingredients_unsafe_integer_id_no_form": {
+        "actual": 0,
+        "expected": 0,
+        "passed": true
+      },
+      "ingredients_query_error_no_form": {
+        "actual": 0,
+        "expected": 0,
+        "passed": true
+      },
+      "ingredients_retry_recovers_requested_record": {
+        "actual": "Cache ingredient 03",
+        "expected": "Cache ingredient 03",
+        "passed": true
+      },
+      "ingredients_wrong_response_id_no_form": {
+        "actual": 0,
+        "expected": 0,
+        "passed": true
+      },
+      "recipes_missing_record_no_form": {
+        "actual": 0,
+        "expected": 0,
+        "passed": true
+      },
+      "recipes_invalid_id_no_fetch": {
+        "actual": 0,
+        "expected": 0,
+        "passed": true
+      },
+      "recipes_invalid_id_no_form": {
+        "actual": 0,
+        "expected": 0,
+        "passed": true
+      },
+      "recipes_unsafe_integer_id_no_form": {
+        "actual": 0,
+        "expected": 0,
+        "passed": true
+      },
+      "recipes_query_error_no_form": {
+        "actual": 0,
+        "expected": 0,
+        "passed": true
+      },
+      "recipes_retry_recovers_requested_record": {
+        "actual": "3",
+        "expected": "3",
+        "passed": true
+      },
+      "recipes_wrong_response_id_no_form": {
+        "actual": 0,
+        "expected": 0,
+        "passed": true
+      },
+      "ingredient_create_success": {
+        "actual": 201,
+        "expected": 201,
+        "passed": true
+      },
+      "ingredient_create_refreshes_list": {
+        "actual": true,
+        "expected": true,
+        "passed": true
+      },
+      "ingredient_delete_success": {
+        "actual": 200,
+        "expected": 200,
+        "passed": true
+      },
+      "ingredient_deleted_cached_detail_not_displayed": {
+        "actual": 0,
+        "expected": 0,
+        "passed": true
+      },
+      "recipe_delete_success": {
+        "actual": 200,
+        "expected": 200,
+        "passed": true
+      },
+      "recipe_deleted_cached_detail_not_displayed": {
+        "actual": 0,
+        "expected": 0,
+        "passed": true
+      },
+      "recipe_create_success": {
+        "actual": 201,
+        "expected": 201,
+        "passed": true
+      },
+      "recipe_create_refreshes_list": {
+        "actual": 1,
+        "expected": 1,
+        "passed": true
+      },
+      "logout_hides_private_form_while_owner_response_pending": {
+        "actual": 0,
+        "expected": 0,
+        "passed": true
+      },
+      "staff_fetches_fresh_role_safe_projection": {
+        "actual": true,
+        "expected": true,
+        "passed": true
+      },
+      "staff_has_no_owner_suppliers": {
+        "actual": false,
+        "expected": false,
+        "passed": true
+      },
+      "staff_has_no_owner_edit_buttons": {
+        "actual": 0,
+        "expected": 0,
+        "passed": true
+      },
+      "staff_write_denied_with_real_csrf": {
+        "actual": 403,
+        "expected": 403,
+        "passed": true
+      },
+      "staff_denial_zero_business_mutations": {
+        "actual": true,
+        "expected": true,
+        "passed": true
+      },
+      "staff_cannot_render_cached_recipe_edit": {
+        "actual": 0,
+        "expected": 0,
+        "passed": true
+      },
+      "anonymous_cannot_render_cached_owner_fields": {
+        "actual": 0,
+        "expected": 0,
+        "passed": true
+      },
+      "other_owner_loads_authorized_detail": {
+        "actual": "Cache ingredient 01 edited",
+        "expected": "Cache ingredient 01 edited",
+        "passed": true
+      },
+      "role_demotion_authority_recheck_hides_owner_data": {
+        "actual": false,
+        "expected": false,
+        "passed": true
+      },
+      "same_actor_new_staff_role_no_owner_data": {
+        "actual": false,
+        "expected": false,
+        "passed": true
+      },
+      "no_page_script_errors": {
+        "actual": [],
+        "expected": [],
+        "passed": true
+      }
+    },
+    "fault_injections": [
+      {
+        "path": "/api/recipes/3/",
+        "mode": "hold",
+        "actual_api_status": 200
+      },
+      {
+        "path": "/api/products/?page=1",
+        "mode": "hold",
+        "actual_api_status": 200
+      },
+      {
+        "path": "/api/ingredients/3/",
+        "mode": "error",
+        "actual_api_status": 200
+      },
+      {
+        "path": "/api/ingredients/4/",
+        "mode": "wrong-id",
+        "actual_api_status": 200
+      },
+      {
+        "path": "/api/recipes/3/",
+        "mode": "error",
+        "actual_api_status": 200
+      },
+      {
+        "path": "/api/recipes/4/",
+        "mode": "wrong-id",
+        "actual_api_status": 200
+      },
+      {
+        "path": "/api/ingredients/5/",
+        "mode": "hold",
+        "actual_api_status": 200
+      }
+    ]
+  },
+  "frontend": {
+    "evidence": "docs/phase1c2a/evidence/20261111-094823-frontend-3706197b",
+    "results": {
+      "query-identity": {
+        "exit_code": 0,
+        "command": [
+          "node",
+          "--experimental-strip-types",
+          "docs/phase1c2a/test_query_identity.mjs"
+        ]
+      },
+      "csrf-transport": {
+        "exit_code": 0,
+        "command": [
+          "node",
+          "--experimental-strip-types",
+          "docs/phase1b1/test_csrf_transport.mjs"
+        ]
+      },
+      "operation-identity": {
+        "exit_code": 0,
+        "command": [
+          "node",
+          "--experimental-strip-types",
+          "docs/phase1b1/test_operation_identity.mjs"
+        ]
+      },
+      "stock-preview": {
+        "exit_code": 0,
+        "command": [
+          "node",
+          "--experimental-strip-types",
+          "docs/phase1a3/test_stock_preview.mjs"
+        ]
+      },
+      "permissions": {
+        "exit_code": 0,
+        "command": [
+          "node",
+          "--experimental-strip-types",
+          "docs/phase1b2/test_permissions.mjs"
+        ]
+      },
+      "auth-lifecycle": {
+        "exit_code": 0,
+        "command": [
+          "node",
+          "--experimental-strip-types",
+          "docs/phase1b3_static/test_auth_lifecycle.mjs"
+        ]
+      },
+      "affected-lint": {
+        "exit_code": 0,
+        "command": [
+          "node",
+          "node_modules/eslint/bin/eslint.js",
+          "src/lib/managementQueryKeys.ts",
+          "src/hooks/useIngredients.ts",
+          "src/hooks/useRecipes.ts",
+          "src/components/RecordLoadError.tsx",
+          "src/pages/IngredientFormPage.tsx",
+          "src/pages/RecipeFormPage.tsx"
+        ]
+      },
+      "full-lint": {
+        "exit_code": 1,
+        "command": [
+          "node",
+          "node_modules/eslint/bin/eslint.js",
+          ".",
+          "--format",
+          "json"
+        ]
+      },
+      "build": {
+        "exit_code": 0,
+        "command": [
+          "npm.cmd",
+          "run",
+          "build",
+          "--",
+          "--config",
+          "C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\.verification-runtime\\b1332a0b08c944e2a5b3b42fe7d5f275\\vite.verify.mjs"
+        ]
+      },
+      "cleanup": {
+        "owned_runtime_removed": true
+      }
+    },
+    "new_tests": 9,
+    "accepted_tests": 52,
+    "full_lint": {
+      "errors": 5,
+      "warnings": 16
+    }
+  },
+  "immutable_path_diffs": {
+    "backend": [],
+    "dependencies": [],
+    "auth_and_idempotency": []
+  },
+  "historical_hashes": {
+    "phase0": {
+      "checked": 28,
+      "mismatches": []
+    },
+    "phase1c1": {
+      "checked": 119,
+      "mismatches": []
+    }
+  },
+  "new_python_syntax": {
+    "parsed": 7,
+    "errors": 0
+  },
+  "cleanup": {
+    "remaining_runtime_directories": [],
+    "runs": {
+      "20261111-093218-postgres-before-d6ddc08b": {
+        "runtime_removed": true,
+        "owned_container_removed": false,
+        "production_access": false
+      },
+      "20261111-093233-sqlite-before-33d9f656": {
+        "runtime_removed": true,
+        "owned_container_removed": false,
+        "production_access": false
+      },
+      "20261111-093642-sqlite-preservation-eeb9f05c": {
+        "runtime_removed": true,
+        "owned_container_removed": false,
+        "production_access": false
+      },
+      "20261111-093647-postgres-preservation-ffc8bb2a": {
+        "runtime_removed": true,
+        "owned_container_removed": true,
+        "production_access": false
+      },
+      "20261111-094116-postgres-browser-2031e65a": {
+        "runtime_removed": true,
+        "owned_container_removed": true,
+        "production_access": false
+      },
+      "20261111-094327-postgres-browser-a28636bd": {
+        "runtime_removed": true,
+        "owned_container_removed": true,
+        "production_access": false
+      },
+      "20261111-094541-postgres-browser-25639227": {
+        "runtime_removed": true,
+        "owned_container_removed": true,
+        "production_access": false
+      },
+      "20261111-094826-postgres-browser-2d5abfc6": {
+        "runtime_removed": true,
+        "owned_container_removed": true,
+        "production_access": false
+      }
+    },
+    "ports_available": {
+      "18841": true,
+      "18842": true
+    }
+  }
+}

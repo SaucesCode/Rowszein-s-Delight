@@ -1,5 +1,7 @@
 import api from "./api";
 import type { Ingredient, IngredientPayload } from "@/types/ingredient.types";
+import type { ListingParams } from "@/lib/listingParams";
+import { listingService } from "./listing.service";
 
 const toFormData = (payload: IngredientPayload, includeQuantity = true): FormData => {
   const formData = new FormData();
@@ -18,10 +20,7 @@ const toFormData = (payload: IngredientPayload, includeQuantity = true): FormDat
 };
 
 export const ingredientService = {
-  getAll: async (page = 1) => {
-    const response = await api.get("/ingredients/", { params: { page } });
-    return response.data;
-  },
+  getAll: (page = 1, params: ListingParams = {}, signal?: AbortSignal) => listingService.get<Ingredient>("ingredients", { ...params, page }, signal),
 
   getOne: async (id: number) => {
     const response = await api.get(`/ingredients/${id}/`);

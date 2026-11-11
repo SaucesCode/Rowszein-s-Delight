@@ -1,0 +1,17 @@
+{
+  "page_errors": [],
+  "blocked_external": [],
+  "baseline": false,
+  "fault_injections": [
+    {
+      "path": "/api/ingredients/?search=Cache+ingredient+01&ordering=name&page=1",
+      "mode": "hold",
+      "actual_api_status": 200
+    }
+  ],
+  "servers_stopped": true,
+  "checks": 32,
+  "passed": 32,
+  "failed": 0,
+  "exit_code": 0
+}

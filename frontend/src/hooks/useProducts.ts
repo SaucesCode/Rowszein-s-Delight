@@ -3,26 +3,36 @@ import { useNavigate } from "react-router-dom";
 import { productService } from "@/services/product.service";
 import type { ProductPayload } from "@/types/product.types";
 import toast from "react-hot-toast";
+import { useMe } from "@/hooks/useAuth";
+import { listingParams, type ListingParams } from "@/lib/listingParams";
+import { queryScope, requestedRecord, validRecordId } from "@/lib/managementQueryKeys";
+import { can } from "@/lib/permissions";
 
-export function useProducts(page = 1) {
+export function useProducts(page = 1, params: ListingParams = {}) {
+  const auth = useMe();
   return useQuery({
-    queryKey: ["products", "list", page],
-    queryFn: () => productService.getAll(page),
+    queryKey: ["products", "list", queryScope(auth.data), listingParams({ ...params, page })],
+    queryFn: ({ signal }) => productService.getAll(page, params, signal),
+    enabled: !auth.isPending,
+    retry: false,
   });
 }
 
 export function useCategories() {
+  const auth = useMe();
   return useQuery({
-    queryKey: ["product-categories"],
+    queryKey: ["product-categories", "list", queryScope(auth.data)],
     queryFn: () => productService.getCategories(),
+    enabled: !auth.isPending,
   });
 }
 
 export function useProduct(id: number) {
+  const auth = useMe();
   return useQuery({
-    queryKey: ["products", "detail", id],
-    queryFn: () => productService.getOne(id),
-    enabled: !!id,
+    queryKey: ["products", "detail", queryScope(auth.data), id],
+    queryFn: async () => requestedRecord(id, await productService.getOne(id)),
+    enabled: validRecordId(id) && can(auth.data, "catalog.read"),
   });
 }
 

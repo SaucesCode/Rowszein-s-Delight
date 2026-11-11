@@ -1,5 +1,8 @@
 import api from "./api";
 import type { ProductPayload } from "@/types/product.types";
+import type { Product } from "@/types/product.types";
+import type { ListingParams } from "@/lib/listingParams";
+import { listingService } from "./listing.service";
 
 const toFormData = (payload: ProductPayload): FormData => {
   const formData = new FormData();
@@ -25,10 +28,7 @@ export const productService = {
     };
   },
 
-  getAll: async (page = 1) => {
-    const response = await api.get("/products/", { params: { page } });
-    return response.data;
-  },
+  getAll: (page = 1, params: ListingParams = {}, signal?: AbortSignal) => listingService.get<Product>("products", { ...params, page }, signal),
 
   getFeatured: async () => {
     const response = await api.get("/products/", { params: { is_featured: true, page: 1 } });

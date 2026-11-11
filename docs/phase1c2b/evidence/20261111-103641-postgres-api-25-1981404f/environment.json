@@ -1,0 +1,34 @@
+{
+  "identity": "1884289097944008bbf2e2dcfdb386f2",
+  "backend": "postgres",
+  "authorization": "Phase 1A.3 disposable verification only",
+  "production_connections": false,
+  "name": "rowszein_verify_1884289097944008bbf2e2dcfdb386f2",
+  "user": "verify_1884289097944008bbf2e2dcfdb386f2",
+  "host": "127.0.0.1",
+  "port": 58716,
+  "docker_verified": true,
+  "container_id": "4eb7a4e3ad8f96a5ce887b023a287e5808d8e571f45781dad44e1349c37cd568",
+  "image": "sha256:f02121de6f74d30d8a94cd1d9584125e2178d7e6c377d8130112d4e52d867995",
+  "version": "PostgreSQL 17.11 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit",
+  "isolation": "read committed",
+  "server_timezone": "UTC",
+  "mounts": [],
+  "scrubbed_environment_variable_names": [],
+  "project_dotenv_loading": false,
+  "settings": "backend.disposable_verification_settings",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "migration_sha256": {
+    "backend/ingredients/migrations/0004_inventory_integrity.py": "6b16f329b58d1dd2385c053f8bda98466f77f2483eafa275a6d66f810ef4843c",
+    "backend/sales/migrations/0003_inventory_integrity.py": "56b12876f54896011f31b8c089bf0553e6f5c047481eaddba7eb25d6502cff14"
+  },
+  "package": "Phase 1C.2B",
+  "baseline": "98e29bf",
+  "scope": "api",
+  "new_migrations": false,
+  "accepted_migration_hashes": {
+    "backend/accounts/migrations/0002_auththrottlebucket_devicesession_user_session_epoch_and_more.py": "238e349a75556bc354d059052f79affff693137ec8af06ca01a3db01eebe2cf6",
+    "backend/accounts/migrations/0003_session_security_guards.py": "3b8156d1eee07b1e73affde5898d47888b237e579913c785e99a6652eabe9e2c"
+  },
+  "dotenv_discovery": false
+}

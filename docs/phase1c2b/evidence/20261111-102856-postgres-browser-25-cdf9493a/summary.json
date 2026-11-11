@@ -1,0 +1,15 @@
+{
+  "page_errors": [],
+  "blocked_external": [],
+  "baseline": false,
+  "harness_failure": {
+    "type": "AssertionError",
+    "message": "Locator expected to be visible\nActual value: None\nError: strict mode violation: get_by_text(\"Cache ingredient 25\", exact=True) resolved to 2 elements:\n    1) <span class=\"font-heading font-medium\">Cache ingredient 25</span> aka get_by_role(\"table\").get_by_text(\"Cache ingredient\")\n    2) <p class=\"font-heading font-semibold truncate\">Cache ingredient 25</p> aka locator(\"p\").filter(has_text=\"Cache ingredient\")\n \nCall log:\n  - Expect \"to_be_visible\" get_by_text(\"Cache ingredient 25\", exact=True) with timeout 5000ms\n  - waiting for get_by_text(\"Cache ingredient 25\", exact=True)\n",
+    "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1c2b\\browser_checks.py\", line 144, in <module>\n    verify(page,int(os.environ['ROWSZEIN_FIXTURE_COUNT']),go=go,nav=nav,check=check,shot=shot,login=login,logout=logout,\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1c2b\\browser_scenarios.py\", line 106, in verify\n    expect(page.get_by_text('Cache ingredient 25',exact=True)).to_be_visible()\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\sync_api\\_generated.py\", line 14811, in to_be_visible\n    self._sync(\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_sync_base.py\", line 111, in _sync\n    return task.result()\n           ^^^^^^^^^^^^^\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_assertions.py\", line 852, in to_be_visible\n    await self._expect_impl(\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_assertions.py\", line 128, in _expect_impl\n    _record_soft_or_raise(\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_assertions.py\", line 60, in _record_soft_or_raise\n    raise error\nAssertionError: Locator expected to be visible\nActual value: None\nError: strict mode violation: get_by_text(\"Cache ingredient 25\", exact=True) resolved to 2 elements:\n    1) <span class=\"font-heading font-medium\">Cache ingredient 25</span> aka get_by_role(\"table\").get_by_text(\"Cache ingredient\")\n    2) <p class=\"font-heading font-semibold truncate\">Cache ingredient 25</p> aka locator(\"p\").filter(has_text=\"Cache ingredient\")\n \nCall log:\n  - Expect \"to_be_visible\" get_by_text(\"Cache ingredient 25\", exact=True) with timeout 5000ms\n  - waiting for get_by_text(\"Cache ingredient 25\", exact=True)\n\n"
+  },
+  "servers_stopped": true,
+  "checks": 13,
+  "passed": 13,
+  "failed": 0,
+  "exit_code": 1
+}

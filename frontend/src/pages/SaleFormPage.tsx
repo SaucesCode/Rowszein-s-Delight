@@ -1,3 +1,4 @@
+import PaginatedLookup from "@/components/PaginatedLookup";
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm, useFieldArray, useWatch } from "react-hook-form";
@@ -5,12 +6,10 @@ import type { Control } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSale, useCreateSale, useUpdateSale } from "@/hooks/useSales";
-import { useProducts } from "@/hooks/useProducts";
 import { Plus, Trash2 } from "lucide-react";
 import SkeletonTable from "@/components/SkeletonTable";
 import { useMe } from "@/hooks/useAuth";
 import { manilaDate } from "@/lib/permissions";
-import type { Product } from "@/types/product.types";
 
 /* ─────────────────────────────────────────────
    SCHEMA
@@ -107,11 +106,9 @@ export default function SaleFormPage() {
   const isEdit = !!id;
 
   const { data: sale, isLoading: saleLoading } = useSale(Number(id));
-  const { data: productsData } = useProducts();
   const createSale = useCreateSale();
   const updateSale = useUpdateSale(Number(id), sale?.revision);
 
-  const products: Product[] = productsData?.data?.results ?? [];
 
   const {
     register,
@@ -124,6 +121,7 @@ export default function SaleFormPage() {
     resolver: zodResolver(saleSchema),
   });
 
+  const selectedItems = useWatch({ control, name: "sale_items" });
   const { fields, append, remove } = useFieldArray({ control, name: "sale_items" });
 
   useEffect(() => {
@@ -145,14 +143,6 @@ useEffect(() => {
     });
   }
 }, [sale, reset]);
-
-  /* Auto-fill unit price when product is selected */
-  const handleProductChange = (index: number, productId: number) => {
-    const product = products.find(p => p.id === productId);
-    if (product) {
-      setValue(`sale_items.${index}.unit_price`, Number(product.price));
-    }
-  };
 
   const onSubmit = (data: SaleForm) => {
     if (isEdit) {
@@ -267,23 +257,12 @@ useEffect(() => {
               >
                 {/* Product */}
                 <div>
-                  <select
+                  <PaginatedLookup kind="products" label={`Product for item ${index + 1}`}
+                    selectedId={Number(selectedItems?.[index]?.product) || 0}
+                    params={{ is_available: isStaff ? true : undefined }}
                     {...register(`sale_items.${index}.product`)}
-                    onChange={e => {
-                      register(`sale_items.${index}.product`).onChange(e);
-                      handleProductChange(index, Number(e.target.value));
-                    }}
-                    className="field-input"
-                    aria-label={`Product for item ${index + 1}`}
-                    aria-invalid={!!errors.sale_items?.[index]?.product}
-                  >
-                    <option value={0}>Select product…</option>
-                    {products.filter(p => !isStaff || p.is_available).map(p => (
-                      <option key={p.id} value={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
-                  </select>
+                    onSelect={product => setValue(`sale_items.${index}.unit_price`, Number(product.price))}
+                    aria-invalid={!!errors.sale_items?.[index]?.product} />
                   {errors.sale_items?.[index]?.product && (
                     <p className="field-error mt-1" role="alert">
                       {errors.sale_items[index]?.product?.message}

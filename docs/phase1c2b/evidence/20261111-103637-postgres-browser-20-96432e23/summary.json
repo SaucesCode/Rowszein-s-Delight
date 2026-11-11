@@ -1,0 +1,10 @@
+{
+  "page_errors": [],
+  "blocked_external": [],
+  "baseline": false,
+  "servers_stopped": true,
+  "checks": 14,
+  "passed": 14,
+  "failed": 0,
+  "exit_code": 0
+}

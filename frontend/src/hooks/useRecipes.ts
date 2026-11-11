@@ -3,20 +3,32 @@ import { useNavigate } from "react-router-dom";
 import { recipeService } from "@/services/recipe.service";
 import type { RecipePayload } from "@/types/recipe.types";
 import toast from "react-hot-toast";
+import type { Recipe } from "@/types/recipe.types";
+import { recipeKeys, requestedRecord, validRecordId } from "@/lib/managementQueryKeys";
+import { useMe } from "@/hooks/useAuth";
+import { can } from "@/lib/permissions";
+import type { ListingParams } from "@/lib/listingParams";
 
-export function useRecipes(page = 1) {
+export function useRecipes(page = 1, params: ListingParams = {}) {
+  const { data: actor } = useMe();
   return useQuery({
-    queryKey: ["recipes", page],
-    queryFn: () => recipeService.getAll(page),
+    queryKey: recipeKeys.list(actor, page, params),
+    queryFn: ({ signal }) => recipeService.getAll(page, params, signal),
+    enabled: can(actor, "recipes.manage"),
+    retry: false,
   });
 }
 
 export function useRecipe(id: number) {
-  return useQuery({
-    queryKey: ["recipes", id],
-    queryFn: () => recipeService.getOne(id),
-    enabled: !!id,
+  const { data: actor } = useMe();
+  const enabled = validRecordId(id) && can(actor, "recipes.manage");
+  const query = useQuery<Recipe>({
+    queryKey: recipeKeys.detail(actor, id),
+    queryFn: async () => requestedRecord<Recipe>(id, await recipeService.getOne(id)),
+    enabled,
+    retry: false,
   });
+  return { ...query, data: enabled && !query.isError && query.data?.id === id ? query.data : undefined };
 }
 
 export function useCreateRecipe() {
@@ -26,7 +38,7 @@ export function useCreateRecipe() {
   return useMutation({
     mutationFn: (payload: RecipePayload) => recipeService.create(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["recipes"] });
+      queryClient.invalidateQueries({ queryKey: recipeKeys.all });
       toast.success("Recipe created.");
       navigate("/recipes");
     },
@@ -43,7 +55,7 @@ export function useUpdateRecipe(id: number) {
   return useMutation({
     mutationFn: (payload: RecipePayload) => recipeService.update(id, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["recipes"] });
+      queryClient.invalidateQueries({ queryKey: recipeKeys.all });
       toast.success("Recipe updated.");
       navigate("/recipes");
     },
@@ -59,7 +71,7 @@ export function useDeleteRecipe() {
   return useMutation({
     mutationFn: (id: number) => recipeService.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["recipes"] });
+      queryClient.invalidateQueries({ queryKey: recipeKeys.all });
       toast.success("Recipe deleted.");
     },
     onError: () => {

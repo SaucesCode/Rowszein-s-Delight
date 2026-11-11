@@ -1,0 +1,24 @@
+November 11, 2026 - 10:08:13
+Django version 5.1.4, using settings 'pagination_settings'
+Starting development server at http://127.0.0.1:18842/
+Quit the server with CTRL-BREAK.
+
+[11/Nov/2026 10:08:27] "GET /api/auth/me/ HTTP/1.1" 401 138
+[11/Nov/2026 10:08:28] "GET /api/auth/csrf/ HTTP/1.1" 200 118
+[11/Nov/2026 10:08:28] "POST /api/auth/login/ HTTP/1.1" 200 193
+[11/Nov/2026 10:08:29] "GET /api/auth/me/ HTTP/1.1" 200 96
+[11/Nov/2026 10:08:29] "GET /api/auth/me/ HTTP/1.1" 200 96
+[11/Nov/2026 10:08:29] "GET /api/ingredients/?page=1 HTTP/1.1" 503 153
+[11/Nov/2026 10:08:29] "GET /api/ingredients/low-stock/ HTTP/1.1" 200 39
+[11/Nov/2026 10:08:30] "GET /api/ingredients/?page=1 HTTP/1.1" 200 7485
+[11/Nov/2026 10:08:32] "GET /api/auth/me/ HTTP/1.1" 200 96
+[11/Nov/2026 10:08:32] "GET /api/auth/me/ HTTP/1.1" 200 96
+[11/Nov/2026 10:08:32] "GET /api/ingredients/?page=1 HTTP/1.1" 503 153
+[11/Nov/2026 10:08:32] "GET /api/products/?page=1 HTTP/1.1" 503 153
+[11/Nov/2026 10:08:32] "GET /api/recipes/25/ HTTP/1.1" 200 386
+[11/Nov/2026 10:08:33] "GET /api/products/?page=1 HTTP/1.1" 503 153
+[11/Nov/2026 10:08:33] "GET /api/ingredients/?page=1 HTTP/1.1" 200 7485
+[11/Nov/2026 10:08:35] "GET /api/products/?page=1 HTTP/1.1" 200 8768
+[11/Nov/2026 10:08:37] "GET /api/auth/me/ HTTP/1.1" 200 96
+[11/Nov/2026 10:08:37] "GET /api/auth/me/ HTTP/1.1" 200 96
+[11/Nov/2026 10:08:37] "GET /api/products/?page=1 HTTP/1.1" 200 8768

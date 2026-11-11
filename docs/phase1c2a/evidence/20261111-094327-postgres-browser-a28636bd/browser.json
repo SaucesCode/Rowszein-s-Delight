@@ -1,0 +1,929 @@
+{
+  "observations": {
+    "ingredient_page1_to_id1": {
+      "actual": "Cache ingredient 01",
+      "expected": "Cache ingredient 01",
+      "passed": true
+    },
+    "ingredient_detail_to_list": {
+      "actual": 21,
+      "expected": 21,
+      "passed": true
+    },
+    "ingredient_page2_to_id2": {
+      "actual": "Z Cache ingredient 02",
+      "expected": "Z Cache ingredient 02",
+      "passed": true
+    },
+    "recipe_page1_to_id1": {
+      "actual": "1",
+      "expected": "1",
+      "passed": true
+    },
+    "recipe_detail_yield_matches": {
+      "actual": "3",
+      "expected": "3",
+      "passed": true
+    },
+    "recipe_detail_to_list": {
+      "actual": 21,
+      "expected": 21,
+      "passed": true
+    },
+    "recipe_cached_revisit_keeps_correct_id": {
+      "actual": "1",
+      "expected": "1",
+      "passed": true
+    },
+    "record_switch_loading_hides_previous_form": {
+      "actual": 0,
+      "expected": 0,
+      "passed": true
+    },
+    "record_switch_loading_hides_unsaved_text": {
+      "actual": false,
+      "expected": false,
+      "passed": true
+    },
+    "recipe_switch_1_to_3_matches_requested_id": {
+      "actual": "3",
+      "expected": "3",
+      "passed": true
+    },
+    "recipe_cached_switch_discards_previous_unsaved_form": {
+      "actual": "",
+      "expected": "",
+      "passed": true
+    },
+    "recipe_reload": {
+      "actual": "1",
+      "expected": "1",
+      "passed": true
+    },
+    "ingredient_direct_edit": {
+      "actual": "Cache ingredient 01",
+      "expected": "Cache ingredient 01",
+      "passed": true
+    },
+    "ingredient_stock_remains_readonly": {
+      "actual": true,
+      "expected": true,
+      "passed": true
+    },
+    "ingredient_switch_1_to_2": {
+      "actual": "PRIVATE-SUPPLIER-02",
+      "expected": "PRIVATE-SUPPLIER-02",
+      "passed": true
+    },
+    "ingredient_cached_revisit_discards_unsaved_fields": {
+      "actual": "PRIVATE-SUPPLIER-01",
+      "expected": "PRIVATE-SUPPLIER-01",
+      "passed": true
+    },
+    "ingredient_edit_success": {
+      "actual": 200,
+      "expected": 200,
+      "passed": true
+    },
+    "ingredient_update_invalidates_detail": {
+      "actual": true,
+      "expected": true,
+      "passed": true
+    },
+    "ingredient_update_revisit_value": {
+      "actual": "Cache ingredient 01 edited",
+      "expected": "Cache ingredient 01 edited",
+      "passed": true
+    },
+    "ingredient_reload_after_save": {
+      "actual": "Cache ingredient 01 edited",
+      "expected": "Cache ingredient 01 edited",
+      "passed": true
+    },
+    "recipe_edit_success": {
+      "actual": 200,
+      "expected": 200,
+      "passed": true
+    },
+    "recipe_update_invalidates_detail": {
+      "actual": true,
+      "expected": true,
+      "passed": true
+    },
+    "recipe_update_revisit_yield": {
+      "actual": "6",
+      "expected": "6",
+      "passed": true
+    },
+    "ingredients_missing_record_no_form": {
+      "actual": 0,
+      "expected": 0,
+      "passed": true
+    },
+    "ingredients_invalid_id_no_fetch": {
+      "actual": 0,
+      "expected": 0,
+      "passed": true
+    },
+    "ingredients_invalid_id_no_form": {
+      "actual": 0,
+      "expected": 0,
+      "passed": true
+    },
+    "ingredients_unsafe_integer_id_no_form": {
+      "actual": 0,
+      "expected": 0,
+      "passed": true
+    },
+    "ingredients_query_error_no_form": {
+      "actual": 0,
+      "expected": 0,
+      "passed": true
+    },
+    "ingredients_retry_recovers_requested_record": {
+      "actual": "Cache ingredient 03",
+      "expected": "Cache ingredient 03",
+      "passed": true
+    },
+    "ingredients_wrong_response_id_no_form": {
+      "actual": 0,
+      "expected": 0,
+      "passed": true
+    },
+    "recipes_missing_record_no_form": {
+      "actual": 0,
+      "expected": 0,
+      "passed": true
+    },
+    "recipes_invalid_id_no_fetch": {
+      "actual": 0,
+      "expected": 0,
+      "passed": true
+    },
+    "recipes_invalid_id_no_form": {
+      "actual": 0,
+      "expected": 0,
+      "passed": true
+    },
+    "recipes_unsafe_integer_id_no_form": {
+      "actual": 0,
+      "expected": 0,
+      "passed": true
+    },
+    "recipes_query_error_no_form": {
+      "actual": 0,
+      "expected": 0,
+      "passed": true
+    },
+    "recipes_retry_recovers_requested_record": {
+      "actual": "3",
+      "expected": "3",
+      "passed": true
+    },
+    "recipes_wrong_response_id_no_form": {
+      "actual": 0,
+      "expected": 0,
+      "passed": true
+    },
+    "ingredient_create_success": {
+      "actual": 201,
+      "expected": 201,
+      "passed": true
+    },
+    "ingredient_create_refreshes_list": {
+      "actual": true,
+      "expected": true,
+      "passed": true
+    },
+    "ingredient_delete_success": {
+      "actual": 200,
+      "expected": 200,
+      "passed": true
+    },
+    "ingredient_deleted_cached_detail_not_displayed": {
+      "actual": 0,
+      "expected": 0,
+      "passed": true
+    },
+    "recipe_delete_success": {
+      "actual": 200,
+      "expected": 200,
+      "passed": true
+    },
+    "recipe_deleted_cached_detail_not_displayed": {
+      "actual": 0,
+      "expected": 0,
+      "passed": true
+    },
+    "recipe_create_success": {
+      "actual": 201,
+      "expected": 201,
+      "passed": true
+    }
+  },
+  "requests": [
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 401
+    },
+    {
+      "path": "/api/auth/csrf/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/login/",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/low-stock/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/1/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/?page=2",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/2/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/recipes/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/products/categories/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/products/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/recipes/1/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/recipes/3/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/recipes/1/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/products/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/1/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/2/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/csrf/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/1/",
+      "method": "PUT",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/1/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/low-stock/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/1/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/recipes/1/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/products/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/csrf/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/recipes/1/",
+      "method": "PUT",
+      "status": 200
+    },
+    {
+      "path": "/api/recipes/1/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/products/categories/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/recipes/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/99999/",
+      "method": "GET",
+      "status": 404
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/3/",
+      "method": "GET",
+      "status": 503
+    },
+    {
+      "path": "/api/ingredients/3/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/4/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/recipes/99999/",
+      "method": "GET",
+      "status": 404
+    },
+    {
+      "path": "/api/products/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/products/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/products/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/recipes/3/",
+      "method": "GET",
+      "status": 503
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/products/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/recipes/3/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/recipes/4/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/products/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/csrf/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "path": "/api/ingredients/low-stock/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/26/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/26/",
+      "method": "DELETE",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/low-stock/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/26/",
+      "method": "GET",
+      "status": 404
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/recipes/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/products/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/products/categories/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/recipes/3/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/csrf/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/recipes/3/",
+      "method": "DELETE",
+      "status": 200
+    },
+    {
+      "path": "/api/recipes/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/recipes/3/",
+      "method": "GET",
+      "status": 404
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/products/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/csrf/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/recipes/",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/recipes/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/products/categories/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/recipes/?page=2",
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "screenshots": [
+    "01-ingredient-id1.png",
+    "02-ingredient-id2.png",
+    "03-recipe-id1.png",
+    "missing-ingredients.png",
+    "missing-recipes.png"
+  ],
+  "page_errors": [],
+  "blocked_external": [],
+  "baseline": false,
+  "fault_injections": [
+    {
+      "path": "/api/recipes/3/",
+      "mode": "hold",
+      "actual_api_status": 200
+    },
+    {
+      "path": "/api/ingredients/3/",
+      "mode": "error",
+      "actual_api_status": 200
+    },
+    {
+      "path": "/api/ingredients/4/",
+      "mode": "wrong-id",
+      "actual_api_status": 200
+    },
+    {
+      "path": "/api/recipes/3/",
+      "mode": "error",
+      "actual_api_status": 200
+    },
+    {
+      "path": "/api/recipes/4/",
+      "mode": "wrong-id",
+      "actual_api_status": 200
+    }
+  ],
+  "harness_failure": {
+    "type": "AssertionError",
+    "message": "Locator expected to be visible\nActual value: None\nError: element(s) not found \nCall log:\n  - Expect \"to_be_visible\" get_by_text(\"Cache product 03\", exact=True).first with timeout 5000ms\n  - waiting for get_by_text(\"Cache product 03\", exact=True).first\n\nAria snapshot:\n- complementary:\n  - link \"Rowszein's Delight Owner Panel\":\n    - /url: /\n    - paragraph: Rowszein's Delight\n    - paragraph: Owner Panel\n  - navigation \"Main navigation\":\n    - link \"Dashboard\":\n      - /url: /dashboard\n    - paragraph: Operations\n    - link \"Ingredients\":\n      - /url: /ingredients\n    - link \"Products\":\n      - /url: /products\n    - link \"Recipes\":\n      - /url: /recipes\n    - paragraph: Money\n    - link \"Sales\":\n      - /url: /sales\n    - link \"Expenses\":\n      - /url: /expenses\n    - link \"Profit Margins\":\n      - /url: /profit-margins\n  - button \"Logout\"\n  - button \"Collapse sidebar\" [expanded]\n- banner:\n  - link \"View live shop\":\n    - /url: /\n  - paragraph: cache-owner\n- main:\n  - heading \"Recipes\" [level=1]\n  - paragraph: Define ingredients and production cost per product\n  - button \"Add Recipe\"\n  - button \"View products without a recipe\":\n    - paragraph: 20 products don't have a recipe yet\n    - paragraph: Cache product 01, Cache product 02, Cache product 03, Cache product 04 +16 more \u2014 add a recipe to calculate their production cost.\n  - paragraph: Total Recipes\n  - paragraph: \"25\"\n  - paragraph: Missing Recipes\n  - paragraph: \"20\"\n  - paragraph: Avg. Batch Cost\n  - paragraph: \u20b10.01\n  - paragraph: Avg. Cost / Unit\n  - paragraph: \u20b10.00\n  - text: Search recipes\n  - textbox \"Search recipes\":\n    - /placeholder: Search recipes by product\u2026\n  - button \"Sort\"\n  - group \"Filter recipes by category\":\n    - button \"All 5\" [pressed]\n    - button \"Cache test category\"\n    - button \"Classic\"\n    - button \"Fruity\"\n    - button \"Local Favorites\"\n    - button \"Premium\"\n    - button \"Brownies & Bars\"\n  - table:\n    - rowgroup:\n      - row \"Product Category Ingredients Yield Batch Cost Cost / Unit\":\n        - columnheader \"Product\"\n        - columnheader \"Category\"\n        - columnheader \"Ingredients\"\n        - columnheader \"Yield\"\n        - columnheader \"Batch Cost\"\n        - columnheader \"Cost / Unit\"\n        - columnheader\n    - rowgroup:\n      - row \"Cache product 21 \u2014 1 ingredient 3 units \u20b10.01 \u20b10.00 Actions for Cache product 21 recipe\":\n        - cell \"Cache product 21\"\n        - cell \"\u2014\"\n        - cell \"1 ingredient\"\n        - cell \"3 units\"\n        - cell \"\u20b10.01\"\n        - cell \"\u20b10.00\"\n        - cell \"Actions for Cache product 21 recipe\":\n          - button \"Actions for Cache product 21 recipe\"\n      - row \"Cache product 22 \u2014 1 ingredient 3 units \u20b10.01 \u20b10.00 Actions for Cache product 22 recipe\":\n        - cell \"Cache product 22\"\n        - cell \"\u2014\"\n        - cell \"1 ingredient\"\n        - cell \"3 units\"\n        - cell \"\u20b10.01\"\n        - cell \"\u20b10.00\"\n        - cell \"Actions for Cache product 22 recipe\":\n          - button \"Actions for Cache product 22 recipe\"\n      - row \"Cache product 23 \u2014 1 ingredient 3 units \u20b10.01 \u20b10.00 Actions for Cache product 23 recipe\":\n        - cell \"Cache product 23\"\n        - cell \"\u2014\"\n        - cell \"1 ingredient\"\n        - cell \"3 units\"\n        - cell \"\u20b10.01\"\n        - cell \"\u20b10.00\"\n        - cell \"Actions for Cache product 23 recipe\":\n          - button \"Actions for Cache product 23 recipe\"\n      - row \"Cache product 24 \u2014 1 ingredient 3 units \u20b10.01 \u20b10.00 Actions for Cache product 24 recipe\":\n        - cell \"Cache product 24\"\n        - cell \"\u2014\"\n        - cell \"1 ingredient\"\n        - cell \"3 units\"\n        - cell \"\u20b10.01\"\n        - cell \"\u20b10.00\"\n        - cell \"Actions for Cache product 24 recipe\":\n          - button \"Actions for Cache product 24 recipe\"\n      - row \"Cache product 25 \u2014 1 ingredient 3 units \u20b10.01 \u20b10.00 Actions for Cache product 25 recipe\":\n        - cell \"Cache product 25\"\n        - cell \"\u2014\"\n        - cell \"1 ingredient\"\n        - cell \"3 units\"\n        - cell \"\u20b10.01\"\n        - cell \"\u20b10.00\"\n        - cell \"Actions for Cache product 25 recipe\":\n          - button \"Actions for Cache product 25 recipe\"\n  - navigation \"Pagination\":\n    - paragraph: Page 2 of 2\n    - button \"Previous page\": Previous\n    - button \"Next page\" [disabled]: Next",
+    "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1c2a\\browser_checks.py\", line 298, in <module>\n    expect(page.get_by_text('Cache product 03',exact=True).first).to_be_visible()\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\sync_api\\_generated.py\", line 14811, in to_be_visible\n    self._sync(\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_sync_base.py\", line 111, in _sync\n    return task.result()\n           ^^^^^^^^^^^^^\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_assertions.py\", line 852, in to_be_visible\n    await self._expect_impl(\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_assertions.py\", line 128, in _expect_impl\n    _record_soft_or_raise(\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_assertions.py\", line 60, in _record_soft_or_raise\n    raise error\nAssertionError: Locator expected to be visible\nActual value: None\nError: element(s) not found \nCall log:\n  - Expect \"to_be_visible\" get_by_text(\"Cache product 03\", exact=True).first with timeout 5000ms\n  - waiting for get_by_text(\"Cache product 03\", exact=True).first\n\nAria snapshot:\n- complementary:\n  - link \"Rowszein's Delight Owner Panel\":\n    - /url: /\n    - paragraph: Rowszein's Delight\n    - paragraph: Owner Panel\n  - navigation \"Main navigation\":\n    - link \"Dashboard\":\n      - /url: /dashboard\n    - paragraph: Operations\n    - link \"Ingredients\":\n      - /url: /ingredients\n    - link \"Products\":\n      - /url: /products\n    - link \"Recipes\":\n      - /url: /recipes\n    - paragraph: Money\n    - link \"Sales\":\n      - /url: /sales\n    - link \"Expenses\":\n      - /url: /expenses\n    - link \"Profit Margins\":\n      - /url: /profit-margins\n  - button \"Logout\"\n  - button \"Collapse sidebar\" [expanded]\n- banner:\n  - link \"View live shop\":\n    - /url: /\n  - paragraph: cache-owner\n- main:\n  - heading \"Recipes\" [level=1]\n  - paragraph: Define ingredients and production cost per product\n  - button \"Add Recipe\"\n  - button \"View products without a recipe\":\n    - paragraph: 20 products don't have a recipe yet\n    - paragraph: Cache product 01, Cache product 02, Cache product 03, Cache product 04 +16 more \u2014 add a recipe to calculate their production cost.\n  - paragraph: Total Recipes\n  - paragraph: \"25\"\n  - paragraph: Missing Recipes\n  - paragraph: \"20\"\n  - paragraph: Avg. Batch Cost\n  - paragraph: \u20b10.01\n  - paragraph: Avg. Cost / Unit\n  - paragraph: \u20b10.00\n  - text: Search recipes\n  - textbox \"Search recipes\":\n    - /placeholder: Search recipes by product\u2026\n  - button \"Sort\"\n  - group \"Filter recipes by category\":\n    - button \"All 5\" [pressed]\n    - button \"Cache test category\"\n    - button \"Classic\"\n    - button \"Fruity\"\n    - button \"Local Favorites\"\n    - button \"Premium\"\n    - button \"Brownies & Bars\"\n  - table:\n    - rowgroup:\n      - row \"Product Category Ingredients Yield Batch Cost Cost / Unit\":\n        - columnheader \"Product\"\n        - columnheader \"Category\"\n        - columnheader \"Ingredients\"\n        - columnheader \"Yield\"\n        - columnheader \"Batch Cost\"\n        - columnheader \"Cost / Unit\"\n        - columnheader\n    - rowgroup:\n      - row \"Cache product 21 \u2014 1 ingredient 3 units \u20b10.01 \u20b10.00 Actions for Cache product 21 recipe\":\n        - cell \"Cache product 21\"\n        - cell \"\u2014\"\n        - cell \"1 ingredient\"\n        - cell \"3 units\"\n        - cell \"\u20b10.01\"\n        - cell \"\u20b10.00\"\n        - cell \"Actions for Cache product 21 recipe\":\n          - button \"Actions for Cache product 21 recipe\"\n      - row \"Cache product 22 \u2014 1 ingredient 3 units \u20b10.01 \u20b10.00 Actions for Cache product 22 recipe\":\n        - cell \"Cache product 22\"\n        - cell \"\u2014\"\n        - cell \"1 ingredient\"\n        - cell \"3 units\"\n        - cell \"\u20b10.01\"\n        - cell \"\u20b10.00\"\n        - cell \"Actions for Cache product 22 recipe\":\n          - button \"Actions for Cache product 22 recipe\"\n      - row \"Cache product 23 \u2014 1 ingredient 3 units \u20b10.01 \u20b10.00 Actions for Cache product 23 recipe\":\n        - cell \"Cache product 23\"\n        - cell \"\u2014\"\n        - cell \"1 ingredient\"\n        - cell \"3 units\"\n        - cell \"\u20b10.01\"\n        - cell \"\u20b10.00\"\n        - cell \"Actions for Cache product 23 recipe\":\n          - button \"Actions for Cache product 23 recipe\"\n      - row \"Cache product 24 \u2014 1 ingredient 3 units \u20b10.01 \u20b10.00 Actions for Cache product 24 recipe\":\n        - cell \"Cache product 24\"\n        - cell \"\u2014\"\n        - cell \"1 ingredient\"\n        - cell \"3 units\"\n        - cell \"\u20b10.01\"\n        - cell \"\u20b10.00\"\n        - cell \"Actions for Cache product 24 recipe\":\n          - button \"Actions for Cache product 24 recipe\"\n      - row \"Cache product 25 \u2014 1 ingredient 3 units \u20b10.01 \u20b10.00 Actions for Cache product 25 recipe\":\n        - cell \"Cache product 25\"\n        - cell \"\u2014\"\n        - cell \"1 ingredient\"\n        - cell \"3 units\"\n        - cell \"\u20b10.01\"\n        - cell \"\u20b10.00\"\n        - cell \"Actions for Cache product 25 recipe\":\n          - button \"Actions for Cache product 25 recipe\"\n  - navigation \"Pagination\":\n    - paragraph: Page 2 of 2\n    - button \"Previous page\": Previous\n    - button \"Next page\" [disabled]: Next\n"
+  },
+  "servers_stopped": true
+}

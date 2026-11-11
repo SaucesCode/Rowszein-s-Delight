@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   useIngredients,
@@ -20,7 +20,8 @@ import InventorySummaryBar from "@/components/ingredients/InventorySummaryBar";
 import IngredientRow from "@/components/ingredients/IngredientRow";
 import IngredientCard from "@/components/ingredients/IngredientCard";
 import UpdateStockModal from "@/components/ingredients/UpdateStockModal";
-import { resolveStockStatus } from "@/components/ingredients/StockStatusBadge";
+import { INGREDIENT_CATEGORIES } from "@/types/ingredient.types";
+import { useListingPageRecovery } from "@/hooks/useListingPageRecovery";
 import { exportIngredientsCSV } from "@/lib/exportIngredientsCSV";
 
 type SortOption = "name" | "stock_asc" | "stock_desc" | "value_desc";
@@ -39,25 +40,6 @@ const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
   { value: "low_stock", label: "Low Stock" },
   { value: "out_of_stock", label: "Out of Stock" },
 ];
-
-function sortIngredients(list: Ingredient[], sort: SortOption) {
-  const copy = [...list];
-  switch (sort) {
-    case "stock_asc":
-      return copy.sort((a, b) => Number(a.quantity) - Number(b.quantity));
-    case "stock_desc":
-      return copy.sort((a, b) => Number(b.quantity) - Number(a.quantity));
-    case "value_desc":
-      return copy.sort(
-        (a, b) =>
-          Number(b.quantity) * Number(b.cost_per_unit) -
-          Number(a.quantity) * Number(a.cost_per_unit),
-      );
-    case "name":
-    default:
-      return copy.sort((a, b) => a.name.localeCompare(b.name));
-  }
-}
 
 /* ─────────────────────────────────────────────
    SKELETON — matches the dashboard's shimmer
@@ -165,7 +147,9 @@ export default function IngredientsPage() {
   const [deleteTarget, setDeleteTarget] = useState<Ingredient | null>(null);
   const [stockTarget, setStockTarget] = useState<Ingredient | null>(null);
 
-  const { data, isLoading, isError } = useIngredients(page);
+  const ordering = { name: "name", stock_asc: "quantity", stock_desc: "-quantity", value_desc: "-value" }[sort];
+  const { data, isLoading, isError, error, refetch } = useIngredients(page, { search, category: categoryFilter, status: statusFilter, ordering });
+  useListingPageRecovery(page, error, setPage);
   const { data: lowStockData } = useLowStockIngredients();
   const deleteIngredient = useDeleteIngredient();
   const updateStock = useUpdateStock(stockTarget?.id ?? 0);
@@ -189,43 +173,8 @@ export default function IngredientsPage() {
     0,
   );
 
-  const categoryOptions = useMemo(() => {
-    const seen = new Map<string, string>();
-    pageIngredients.forEach(i => {
-      if (i.category) seen.set(i.category, i.category);
-    });
-    return Array.from(seen.entries()).map(([value, label]) => ({ value, label }));
-  }, [pageIngredients]);
-
-  const categoryCounts = useMemo(() => {
-    return pageIngredients.reduce<Record<string, number>>((acc, i) => {
-      acc.all = (acc.all ?? 0) + 1;
-      if (i.category) acc[i.category] = (acc[i.category] ?? 0) + 1;
-      return acc;
-    }, {});
-  }, [pageIngredients]);
-
-  const visibleIngredients = useMemo(() => {
-    let list = pageIngredients;
-
-    if (categoryFilter !== "all") {
-      list = list.filter(i => i.category === categoryFilter);
-    }
-    if (statusFilter !== "all") {
-      list = list.filter(i => resolveStockStatus(i) === statusFilter);
-    }
-    if (search.trim()) {
-      const q = search.trim().toLowerCase();
-      list = list.filter(
-        i =>
-          i.name.toLowerCase().includes(q) ||
-          i.supplier?.toLowerCase().includes(q) ||
-          i.category?.toLowerCase().includes(q),
-      );
-    }
-
-    return sortIngredients(list, sort);
-  }, [pageIngredients, categoryFilter, statusFilter, search, sort]);
+  const categoryOptions = INGREDIENT_CATEGORIES;
+  const visibleIngredients = pageIngredients;
 
   const hasActiveFilters = !!search || categoryFilter !== "all" || statusFilter !== "all";
 
@@ -289,7 +238,7 @@ export default function IngredientsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <SearchInput
             value={search}
-            onChange={setSearch}
+            onChange={value => { setSearch(value); setPage(1); }}
             placeholder="Search ingredients, suppliers…"
             ariaLabel="Search ingredients"
           />
@@ -297,7 +246,7 @@ export default function IngredientsPage() {
             <PeriodToggle
               options={STATUS_OPTIONS}
               value={statusFilter}
-              onChange={v => setStatusFilter(v as StatusFilter)}
+              onChange={v => { setStatusFilter(v as StatusFilter); setPage(1); }}
               ariaLabel="Filter by stock status"
             />
             <DropdownMenu
@@ -317,7 +266,7 @@ export default function IngredientsPage() {
               {SORT_OPTIONS.map(opt => (
                 <button
                   key={opt.value}
-                  onClick={() => setSort(opt.value)}
+                  onClick={() => { setSort(opt.value); setPage(1); }}
                   className="flex items-center justify-between gap-2 w-full text-left px-3.5 py-2.5 transition-colors hover:bg-[#FFF8F0]"
                   style={{ fontSize: 13, color: "#6B4226" }}
                 >
@@ -335,8 +284,7 @@ export default function IngredientsPage() {
           <CategoryFilterBar
             options={categoryOptions}
             active={categoryFilter}
-            onChange={setCategoryFilter}
-            counts={categoryCounts}
+            onChange={value => { setCategoryFilter(value); setPage(1); }}
             ariaLabel="Filter by category"
           />
         )}
@@ -344,6 +292,7 @@ export default function IngredientsPage() {
 
       {/* Loading */}
       {isLoading && <IngredientsSkeleton />}
+      {isError && <button type="button" onClick={() => { void refetch(); }}>Retry ingredients</button>}
 
       {/* Error */}
       {isError && (
@@ -358,7 +307,7 @@ export default function IngredientsPage() {
       )}
 
       {/* Empty — no ingredients at all */}
-      {!isLoading && !isError && totalCount === 0 && (
+      {!isLoading && !isError && totalCount === 0 && !hasActiveFilters && (
         <div style={{ background: "#FFFDFB", border: "1px solid #E8E6E1", borderRadius: 10 }}>
           <EmptyState
             icon={Package}
@@ -375,7 +324,7 @@ export default function IngredientsPage() {
       )}
 
       {/* Empty — filters hide everything */}
-      {!isLoading && !isError && totalCount > 0 && visibleIngredients.length === 0 && (
+      {!isLoading && !isError && hasActiveFilters && visibleIngredients.length === 0 && (
         <div style={{ background: "#FFFDFB", border: "1px solid #E8E6E1", borderRadius: 10 }}>
           <EmptyState
             icon={SearchX}
@@ -386,6 +335,7 @@ export default function IngredientsPage() {
                 <button
                   onClick={() => {
                     setSearch("");
+                    setPage(1);
                     setCategoryFilter("all");
                     setStatusFilter("all");
                   }}
