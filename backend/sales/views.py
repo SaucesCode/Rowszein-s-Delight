@@ -1,4 +1,5 @@
 from accounts.permissions import BusinessPermission, visible_sales
+from backend.date_filters import MANILA, filter_by_business_date, report_date_bounds
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -36,13 +37,6 @@ def command_response(request, *, action, data=None, pk=None, reason=''):
     return response
 
 
-def parse_date(value):
-    try:
-        return datetime.strptime(value, '%Y-%m-%d').date()
-    except (ValueError, TypeError):
-        return None
-
-
 class SaleListCreateView(generics.ListCreateAPIView):
     permission_classes = [BusinessPermission]
     business_actions = {'GET': 'sales.read', 'POST': 'sales.create', 'OPTIONS': 'sales.read'}
@@ -50,13 +44,7 @@ class SaleListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         queryset = visible_sales(Sale.objects.prefetch_related('sale_items__product'), self.request.user)
-        date_from = parse_date(self.request.query_params.get('date_from'))
-        date_to = parse_date(self.request.query_params.get('date_to'))
-        if date_from:
-            queryset = queryset.filter(date__gte=date_from)
-        if date_to:
-            queryset = queryset.filter(date__lte=date_to)
-        return queryset
+        return filter_by_business_date(queryset, self.request.query_params)
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
@@ -118,14 +106,7 @@ class SaleFinancialSummaryView(APIView):
     business_actions = {'GET': 'finance.read', 'OPTIONS': 'finance.read'}
 
     def get(self, request):
-        today = timezone.localdate()
-        date_from = parse_date(request.query_params.get('date_from'))
-        date_to = parse_date(request.query_params.get('date_to'))
-        if any(request.query_params.get(key) and parsed is None for key, parsed in [('date_from', date_from), ('date_to', date_to)]):
-            return Response({'success': False, 'error': 'Use YYYY-MM-DD dates.'}, status=400)
-        date_from, date_to = date_from or today.replace(month=1, day=1), date_to or today
-        if date_from > date_to:
-            return Response({'success': False, 'error': 'Date range is reversed.'}, status=400)
+        date_from, date_to = report_date_bounds(request.query_params, timezone.localdate(timezone=MANILA))
         return Response({'success': True, 'data': financial_summary(date_from, date_to), 'message': ''})
 
 
@@ -134,13 +115,7 @@ class SaleExportCSVView(APIView):
     business_actions = {'GET': 'sales.export', 'OPTIONS': 'sales.export'}
 
     def get(self, request):
-        queryset = Sale.objects.prefetch_related('sale_items__product')
-        date_from = parse_date(request.query_params.get('date_from'))
-        date_to = parse_date(request.query_params.get('date_to'))
-        if date_from:
-            queryset = queryset.filter(date__gte=date_from)
-        if date_to:
-            queryset = queryset.filter(date__lte=date_to)
+        queryset = filter_by_business_date(Sale.objects.prefetch_related('sale_items__product'), request.query_params)
 
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="sales.csv"'
@@ -168,13 +143,7 @@ class SaleExportPDFView(APIView):
     business_actions = {'GET': 'sales.export', 'OPTIONS': 'sales.export'}
 
     def get(self, request):
-        queryset = Sale.objects.prefetch_related('sale_items__product')
-        date_from = parse_date(request.query_params.get('date_from'))
-        date_to = parse_date(request.query_params.get('date_to'))
-        if date_from:
-            queryset = queryset.filter(date__gte=date_from)
-        if date_to:
-            queryset = queryset.filter(date__lte=date_to)
+        queryset = filter_by_business_date(Sale.objects.prefetch_related('sale_items__product'), request.query_params)
 
         buffer = io.BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=A4)

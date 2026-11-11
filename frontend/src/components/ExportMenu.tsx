@@ -5,10 +5,11 @@ interface ExportMenuProps {
   onExportCSV: () => void;
   onExportPDF: () => void;
   exporting?: boolean;
+  disabled?: boolean;
   label?: string;
 }
 
-export default function ExportMenu({ onExportCSV, onExportPDF, exporting, label = "Export" }: ExportMenuProps) {
+export default function ExportMenu({ onExportCSV, onExportPDF, exporting, disabled, label = "Export" }: ExportMenuProps) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -34,7 +35,7 @@ export default function ExportMenu({ onExportCSV, onExportPDF, exporting, label 
     <div className="relative" ref={containerRef}>
       <button
         onClick={() => setOpen((o) => !o)}
-        disabled={exporting}
+        disabled={exporting || disabled}
         className="btn-secondary"
         style={{ fontSize: 13, padding: "8px 12px" }}
         aria-haspopup="menu"
@@ -45,7 +46,7 @@ export default function ExportMenu({ onExportCSV, onExportPDF, exporting, label 
         <ChevronDown size={13} strokeWidth={2} aria-hidden="true" />
       </button>
 
-      {open && (
+      {open && !disabled && (
         <div
           role="menu"
           className="absolute right-0 top-[calc(100%+6px)] z-30 w-44 overflow-hidden animate-fade-in"

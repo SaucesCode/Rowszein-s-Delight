@@ -11,10 +11,11 @@ export function useSalesSummary(filters: SaleFilters = {}, enabled = true) {
   return useQuery({ queryKey: ["sales", "summary", filters], queryFn: () => saleService.financialSummary(filters), enabled });
 }
 
-export function useSales(filters: SaleFilters = {}) {
+export function useSales(filters: SaleFilters = {}, enabled = true) {
   return useQuery({
     queryKey: ["sales", filters],
     queryFn: () => saleService.getAll(filters),
+    enabled,
   });
 }
 

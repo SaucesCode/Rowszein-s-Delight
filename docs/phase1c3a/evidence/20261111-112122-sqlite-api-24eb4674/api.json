@@ -1,0 +1,38 @@
+{
+  "tests_run": 5,
+  "outcomes": [
+    {
+      "test": "date_filter_tests.DateFilterTests.test_invalid_filters_fail_closed",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.5
+    },
+    {
+      "test": "date_filter_tests.DateFilterTests.test_leap_day_exports_and_signed_posting_scope",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.484
+    },
+    {
+      "test": "date_filter_tests.DateFilterTests.test_open_history_filters_and_default_reporting_bounds",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.5
+    },
+    {
+      "test": "date_filter_tests.DateFilterTests.test_permission_checks_precede_validation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.109
+    },
+    {
+      "test": "date_filter_tests.DateFilterTests.test_reporting_defaults_follow_manila_midnight_even_with_other_active_zone",
+      "status": "pass",
+      "detail": null,
+      "seconds": 0.532
+    }
+  ],
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0
+}

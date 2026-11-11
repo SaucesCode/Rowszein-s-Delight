@@ -1,10 +1,10 @@
 from accounts.permissions import BusinessPermission
+from backend.date_filters import MANILA, report_date_bounds
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Sum, F
 from django.db.models.functions import TruncMonth
 from django.utils import timezone
-from datetime import datetime, date
 
 from sales.models import Sale
 from expenses.models import Expense
@@ -17,34 +17,13 @@ from sales.services import current_items
 from decimal import Decimal, localcontext
 
 
-def parse_date(value):
-    try:
-        return datetime.strptime(value, '%Y-%m-%d').date()
-    except (ValueError, TypeError):
-        return None
-
-
 class DashboardView(APIView):
     permission_classes = [BusinessPermission]
     business_actions = {'GET': 'finance.read', 'OPTIONS': 'finance.read'}
 
     def get(self, request):
-        today = timezone.localdate()
-        current_year = today.year
-
-        # --- Date filters ---
-        date_from = parse_date(request.query_params.get('date_from'))
-        date_to = parse_date(request.query_params.get('date_to'))
-        if any(request.query_params.get(key) and parsed is None for key, parsed in [('date_from', date_from), ('date_to', date_to)]):
-            return Response({'success': False, 'error': 'Use YYYY-MM-DD dates.'}, status=400)
-
-        # Default to current year if no filters
-        if not date_from:
-            date_from = date(current_year, 1, 1)
-        if not date_to:
-            date_to = today
-        if date_from > date_to:
-            return Response({'success': False, 'error': 'Date range is reversed.'}, status=400)
+        today = timezone.localdate(timezone=MANILA)
+        date_from, date_to = report_date_bounds(request.query_params, today)
 
         # --- Filtered Totals ---
         sales_report = financial_summary(date_from, date_to)

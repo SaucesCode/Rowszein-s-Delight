@@ -14,8 +14,8 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 import Pagination from "@/components/Pagination";
 import DateRangeFilter from "@/components/DateRangeFilter";
 import { exportService } from "@/services/export.service";
-import { getDateRange, PERIOD_OPTIONS, type Period } from "@/lib/dateRanges";
-import { groupByDay, formatDayLabel } from "@/lib/groupByDay";
+import { customDateRange, dateRangeError, formatDayLabel, getDateRange, manilaDate, PERIOD_OPTIONS, type Period } from "@/lib/dateRanges";
+import { groupByDay } from "@/lib/groupByDay";
 import toast from "react-hot-toast";
 
 /* ─────────────────────────────────────────────
@@ -87,11 +87,13 @@ export default function ExpensesPage() {
   const [deleteTarget, setDeleteTarget] = useState<Expense | null>(null);
   const [exporting, setExporting] = useState(false);
 
-  const dateRange =
-    period === "custom" ? { date_from: customFrom, date_to: customTo } : getDateRange(period);
+  const now = new Date();
+  const today = manilaDate(now);
+  const dateRange = period === "custom" ? customDateRange(customFrom, customTo) : getDateRange(period, now);
+  const rangeError = dateRangeError(dateRange);
 
   const filters = { page, ...dateRange };
-  const { data, isLoading, isError } = useExpenses(filters);
+  const { data, isLoading, isError } = useExpenses(filters, !rangeError);
   const deleteExpense = useDeleteExpense();
 
   const expenses: Expense[] = data?.data?.results ?? [];
@@ -133,12 +135,11 @@ export default function ExpensesPage() {
   };
 
   const handleExport = async (type: "csv" | "pdf") => {
+    if (rangeError) return;
     setExporting(true);
     try {
-      const exportFilters =
-        period === "custom" ? dateRange : getDateRange(period as Exclude<Period, "custom">);
-      if (type === "csv") await exportService.expensesCSV(exportFilters);
-      else await exportService.expensesPDF(exportFilters);
+      if (type === "csv") await exportService.expensesCSV(dateRange);
+      else await exportService.expensesPDF(dateRange);
       toast.success(`Expenses exported as ${type.toUpperCase()}.`);
     } catch {
       toast.error("Export failed.");
@@ -157,7 +158,7 @@ export default function ExpensesPage() {
       <PageHeader
         title="Expenses"
         description={
-          !isLoading && !isError
+          !rangeError && !isLoading && !isError
             ? `${totalCount} expense${totalCount !== 1 ? "s" : ""} · ₱${pageTotal.toLocaleString("en-PH", { minimumFractionDigits: 2 })} on this page`
             : "Track all business costs"
         }
@@ -167,6 +168,7 @@ export default function ExpensesPage() {
               onExportCSV={() => handleExport("csv")}
               onExportPDF={() => handleExport("pdf")}
               exporting={exporting}
+              disabled={!!rangeError}
             />
             <button onClick={() => navigate("/expenses/new")} className="btn-primary">
               <Plus size={16} strokeWidth={2.5} aria-hidden="true" />
@@ -218,15 +220,17 @@ export default function ExpensesPage() {
             onClear={() => {
               setCustomFrom("");
               setCustomTo("");
+              setPage(1);
             }}
             hasFilters={!!customFrom || !!customTo}
+            error={rangeError}
           />
         </div>
       )}
 
       {isLoading && <ExpensesSkeleton />}
 
-      {isError && (
+      {!rangeError && isError && (
         <div className="card-surface p-6 text-center">
           <p className="font-body" style={{ fontSize: 13, color: "#EF4444" }}>
             Failed to load expenses. Please try refreshing the page.
@@ -234,7 +238,7 @@ export default function ExpensesPage() {
         </div>
       )}
 
-      {!isLoading && !isError && filteredExpenses.length === 0 && (
+      {!rangeError && !isLoading && !isError && filteredExpenses.length === 0 && (
         <div style={{ background: "#FFFDFB", border: "1px solid #E8E6E1", borderRadius: 16 }}>
           <EmptyState
             icon={search || categoryFilter !== "all" ? SearchX : Receipt}
@@ -281,7 +285,7 @@ export default function ExpensesPage() {
         </div>
       )}
 
-      {!isLoading && !isError && filteredExpenses.length > 0 && (
+      {!rangeError && !isLoading && !isError && filteredExpenses.length > 0 && (
         <>
           <div
             style={{ background: "#FFFDFB", border: "1px solid #E8E6E1", borderRadius: 16 }}
@@ -297,7 +301,7 @@ export default function ExpensesPage() {
                     className="font-heading font-semibold"
                     style={{ fontSize: 13, color: "#6B4226" }}
                   >
-                    {formatDayLabel(group.date)}
+                    {formatDayLabel(group.date, today)}
                   </h2>
                   <p className="font-body" style={{ fontSize: 12.5, color: "#9B6644" }}>
                     {group.items.length} expense{group.items.length !== 1 ? "s" : ""} · ₱

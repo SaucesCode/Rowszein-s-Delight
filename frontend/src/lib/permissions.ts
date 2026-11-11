@@ -23,8 +23,5 @@ export function canVisit(user: Identity, path: string): boolean {
   return !!route && can(user, route[1]);
 }
 
-export function manilaDate(now = new Date()): string {
-  const parts = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Manila", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(now);
-  const part = (kind: string) => parts.find(item => item.type === kind)?.value ?? "";
-  return `${part("year")}-${part("month")}-${part("day")}`;
-}
+// Preserve the existing import for permission consumers.
+export { manilaDate } from "./dateRanges.ts";

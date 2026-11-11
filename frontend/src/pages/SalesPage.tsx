@@ -13,7 +13,7 @@ import EmptyState from "@/components/EmptyState";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Pagination from "@/components/Pagination";
 import { exportService } from "@/services/export.service";
-import { getDateRange, PERIOD_OPTIONS, type Period } from "@/lib/dateRanges";
+import { customDateRange, dateRangeError, formatDayLabel, getDateRange, manilaDate, PERIOD_OPTIONS, reportRangeError, type Period } from "@/lib/dateRanges";
 import toast from "react-hot-toast";
 import { useMe } from "@/hooks/useAuth";
 import { can } from "@/lib/permissions";
@@ -41,21 +41,6 @@ function groupByDay(sales: Sale[]) {
   }
 
   return groups;
-}
-
-function formatDayLabel(dateStr: string) {
-  const date = new Date(`${dateStr}T00:00:00`);
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
-
-  const isSameDay = (a: Date, b: Date) =>
-    a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
-
-  if (isSameDay(date, today)) return "Today";
-  if (isSameDay(date, yesterday)) return "Yesterday";
-
-  return date.toLocaleDateString("en-PH", { weekday: "long", month: "short", day: "numeric" });
 }
 
 function matchesSearch(sale: Sale, query: string) {
@@ -113,11 +98,15 @@ export default function SalesPage() {
   const [deleteTarget, setDeleteTarget] = useState<Sale | null>(null);
   const [exporting, setExporting] = useState(false);
 
-  const dateRange = period === "custom" ? { date_from: customFrom, date_to: customTo } : getDateRange(period);
+  const now = new Date();
+  const today = manilaDate(now);
+  const dateRange = period === "custom" ? customDateRange(customFrom, customTo) : getDateRange(period, now);
+  const rangeError = dateRangeError(dateRange);
+  const summaryRangeError = reportRangeError(dateRange, now);
 
   const filters = { page, ...dateRange };
-  const { data, isLoading, isError } = useSales(filters);
-  const { data: financialReport } = useSalesSummary(dateRange, can(user, "finance.read"));
+  const { data, isLoading, isError } = useSales(filters, !rangeError);
+  const { data: financialReport } = useSalesSummary(dateRange, can(user, "finance.read") && !summaryRangeError);
   const deleteSale = useDeleteSale();
 
   const sales: Sale[] = data?.data?.results ?? [];
@@ -136,11 +125,11 @@ export default function SalesPage() {
   };
 
   const handleExport = async (type: "csv" | "pdf") => {
+    if (rangeError) return;
     setExporting(true);
     try {
-      const exportFilters = period === "custom" ? dateRange : getDateRange(period as Exclude<Period, "custom">);
-      if (type === "csv") await exportService.salesCSV(exportFilters);
-      else await exportService.salesPDF(exportFilters);
+      if (type === "csv") await exportService.salesCSV(dateRange);
+      else await exportService.salesPDF(dateRange);
       toast.success(`Sales exported as ${type.toUpperCase()}.`);
     } catch {
       toast.error("Export failed.");
@@ -159,13 +148,13 @@ export default function SalesPage() {
       <PageHeader
         title="Sales"
         description={
-          !isLoading && !isError
+          !rangeError && !isLoading && !isError
             ? `${totalCount} sale${totalCount !== 1 ? "s" : ""} · ₱${pageTotal.toLocaleString("en-PH", { minimumFractionDigits: 2 })} transaction values on this page (includes cancelled records; not net sales)`
             : "Track all revenue transactions"
         }
         action={
           <div className="hidden sm:flex items-center gap-2">
-            {can(user, "sales.export") && <ExportMenu onExportCSV={() => handleExport("csv")} onExportPDF={() => handleExport("pdf")} exporting={exporting} />}
+            {can(user, "sales.export") && <ExportMenu onExportCSV={() => handleExport("csv")} onExportPDF={() => handleExport("pdf")} exporting={exporting} disabled={!!rangeError} />}
             <button onClick={() => navigate("/sales/new")} className="btn-primary">
               <Plus size={16} strokeWidth={2.5} aria-hidden="true" />
               Record Sale
@@ -203,15 +192,17 @@ export default function SalesPage() {
             onClear={() => {
               setCustomFrom("");
               setCustomTo("");
+              setPage(1);
             }}
             hasFilters={!!customFrom || !!customTo}
+            error={rangeError}
           />
         </div>
       )}
 
       {isLoading && <SalesSkeleton />}
 
-      {isError && (
+      {!rangeError && isError && (
         <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm">
           <p className="text-sm" style={{ color: "#ef4444" }}>
             Failed to load sales. Please try refreshing the page.
@@ -219,7 +210,7 @@ export default function SalesPage() {
         </div>
       )}
 
-      {!isLoading && !isError && filteredSales.length === 0 && (
+      {!rangeError && !isLoading && !isError && filteredSales.length === 0 && (
         <div style={{ background: "#FFFDFB", border: "1px solid #E8E6E1", borderRadius: 16 }}>
           <EmptyState
             icon={search ? SearchX : ShoppingCart}
@@ -251,7 +242,7 @@ export default function SalesPage() {
         </div>
       )}
 
-      {!isLoading && !isError && filteredSales.length > 0 && (
+      {!rangeError && !isLoading && !isError && filteredSales.length > 0 && (
         <>
           <div style={{ background: "#FFFDFB", border: "1px solid #E8E6E1", borderRadius: 16 }} className="overflow-hidden">
             {groups.map((group) => (
@@ -261,7 +252,7 @@ export default function SalesPage() {
                   style={{ background: "#FFF8F0", borderBottom: "1px solid #F0E6D8" }}
                 >
                   <h2 className="font-heading font-semibold" style={{ fontSize: 13, color: "#6B4226" }}>
-                    {formatDayLabel(group.date)}
+                    {formatDayLabel(group.date, today)}
                   </h2>
                   <p className="font-body" style={{ fontSize: 12.5, color: "#9B6644" }}>
                     {group.sales.length} sale{group.sales.length !== 1 ? "s" : ""} · ₱
@@ -285,7 +276,12 @@ export default function SalesPage() {
         </>
       )}
 
-      {can(user, "finance.read") && financialReport && (
+      {can(user, "finance.read") && !rangeError && summaryRangeError && (
+        <p className="field-error" role="status">
+          Set both dates to view posting totals for this range. The report defaults omitted dates to January 1 of the current Manila year and today.
+        </p>
+      )}
+      {can(user, "finance.read") && !summaryRangeError && financialReport && (
         <p className="font-body text-sm my-4" aria-label="Posting-date financial totals">
           Gross ₱{financialReport.totals.gross_sales} · Adjustments ₱{financialReport.totals.sales_adjustments} · Cancellations ₱{financialReport.totals.cancellation_amount} · Net ₱{financialReport.totals.net_sales}. Cash refunds are not tracked.
         </p>
