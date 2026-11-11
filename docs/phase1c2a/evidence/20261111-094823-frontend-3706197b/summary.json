@@ -1,0 +1,87 @@
+{
+  "query-identity": {
+    "exit_code": 0,
+    "command": [
+      "node",
+      "--experimental-strip-types",
+      "docs/phase1c2a/test_query_identity.mjs"
+    ]
+  },
+  "csrf-transport": {
+    "exit_code": 0,
+    "command": [
+      "node",
+      "--experimental-strip-types",
+      "docs/phase1b1/test_csrf_transport.mjs"
+    ]
+  },
+  "operation-identity": {
+    "exit_code": 0,
+    "command": [
+      "node",
+      "--experimental-strip-types",
+      "docs/phase1b1/test_operation_identity.mjs"
+    ]
+  },
+  "stock-preview": {
+    "exit_code": 0,
+    "command": [
+      "node",
+      "--experimental-strip-types",
+      "docs/phase1a3/test_stock_preview.mjs"
+    ]
+  },
+  "permissions": {
+    "exit_code": 0,
+    "command": [
+      "node",
+      "--experimental-strip-types",
+      "docs/phase1b2/test_permissions.mjs"
+    ]
+  },
+  "auth-lifecycle": {
+    "exit_code": 0,
+    "command": [
+      "node",
+      "--experimental-strip-types",
+      "docs/phase1b3_static/test_auth_lifecycle.mjs"
+    ]
+  },
+  "affected-lint": {
+    "exit_code": 0,
+    "command": [
+      "node",
+      "node_modules/eslint/bin/eslint.js",
+      "src/lib/managementQueryKeys.ts",
+      "src/hooks/useIngredients.ts",
+      "src/hooks/useRecipes.ts",
+      "src/components/RecordLoadError.tsx",
+      "src/pages/IngredientFormPage.tsx",
+      "src/pages/RecipeFormPage.tsx"
+    ]
+  },
+  "full-lint": {
+    "exit_code": 1,
+    "command": [
+      "node",
+      "node_modules/eslint/bin/eslint.js",
+      ".",
+      "--format",
+      "json"
+    ]
+  },
+  "build": {
+    "exit_code": 0,
+    "command": [
+      "npm.cmd",
+      "run",
+      "build",
+      "--",
+      "--config",
+      "C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\.verification-runtime\\b1332a0b08c944e2a5b3b42fe7d5f275\\vite.verify.mjs"
+    ]
+  },
+  "cleanup": {
+    "owned_runtime_removed": true
+  }
+}

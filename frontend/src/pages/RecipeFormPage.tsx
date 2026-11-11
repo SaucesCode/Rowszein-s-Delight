@@ -9,6 +9,10 @@ import { useProducts } from "@/hooks/useProducts";
 import { Plus, Trash2 } from "lucide-react";
 import SkeletonTable from "@/components/SkeletonTable";
 import RecipeCostPreview from "@/components/recipes/RecipeCostPreview";
+import type { Product } from "@/types/product.types";
+import type { Ingredient } from "@/types/ingredient.types";
+import { validRecordId } from "@/lib/managementQueryKeys";
+import RecordLoadError from "@/components/RecordLoadError";
 
 /* ─────────────────────────────────────────────
    SCHEMA
@@ -72,18 +76,23 @@ function Field({
    ───────────────────────────────────────────── */
 export default function RecipeFormPage() {
   const { id } = useParams();
+  return <RecipeForm key={id ?? "new"} id={id} />;
+}
+
+function RecipeForm({ id }: { id: string | undefined }) {
   const navigate = useNavigate();
   const isEdit = !!id;
 
-  const { data: recipe, isLoading: recipeLoading } = useRecipe(Number(id));
-  const { data: productsData } = useProducts();
-  const { data: ingredientsData } = useIngredients();
+  const { data: recipe, isPending: recipeLoading, isError, error, refetch } = useRecipe(Number(id));
+  const productQuery = useProducts();
+  const ingredientQuery = useIngredients();
+  const lookupsReady = !productQuery.isPending && !ingredientQuery.isPending && !productQuery.isError && !ingredientQuery.isError;
 
   const createRecipe = useCreateRecipe();
   const updateRecipe = useUpdateRecipe(Number(id));
 
-  const products = productsData?.data?.results ?? [];
-  const ingredients = ingredientsData?.data?.results ?? [];
+  const products: Product[] = productQuery.data?.data?.results ?? [];
+  const ingredients: Ingredient[] = ingredientQuery.data?.data?.results ?? [];
 
   const {
     register,
@@ -101,7 +110,7 @@ export default function RecipeFormPage() {
   });
 
   useEffect(() => {
-    if (recipe) {
+    if (recipe && lookupsReady) {
       reset({
         product: recipe.product,
         yield_quantity: recipe.yield_quantity,
@@ -114,7 +123,7 @@ export default function RecipeFormPage() {
         ) ?? [{ ingredient: 0, quantity: 0 }],
       });
     }
-  }, [recipe, reset]);
+  }, [recipe, lookupsReady, reset]);
 
   const onSubmit = (data: RecipeForm) => {
     if (isEdit) {
@@ -126,8 +135,18 @@ export default function RecipeFormPage() {
 
   const isPending = createRecipe.isPending || updateRecipe.isPending;
 
-  if (isEdit && recipeLoading) {
+  if (isEdit && !validRecordId(Number(id))) {
+    return <RecordLoadError name="recipe" invalidId error={undefined} retry={() => {}} back={() => navigate("/recipes")} />;
+  }
+  if ((isEdit && recipeLoading) || productQuery.isPending || ingredientQuery.isPending) {
     return <SkeletonTable rows={4} cols={2} showHeader />;
+  }
+  if (isEdit && (isError || !recipe)) {
+    return <RecordLoadError name="recipe" invalidId={false} error={error} retry={() => { void refetch(); }} back={() => navigate("/recipes")} />;
+  }
+  if (!lookupsReady) {
+    return <RecordLoadError name="recipe options" invalidId={false} error={productQuery.error ?? ingredientQuery.error}
+      retry={() => { void Promise.all([productQuery.refetch(), ingredientQuery.refetch()]); }} back={() => navigate("/recipes")} />;
   }
 
   return (
@@ -148,7 +167,7 @@ export default function RecipeFormPage() {
               aria-invalid={!!errors.product}
             >
               <option value={0}>Select a product…</option>
-              {products.map((p: any) => (
+              {products.map(p => (
                 <option key={p.id} value={p.id}>
                   {p.name}
                 </option>
@@ -271,7 +290,7 @@ export default function RecipeFormPage() {
                     aria-invalid={!!errors.recipe_ingredients?.[index]?.ingredient}
                   >
                     <option value={0}>Select ingredient…</option>
-                    {ingredients.map((ing: any) => (
+                    {ingredients.map(ing => (
                       <option key={ing.id} value={ing.id}>
                         {ing.name} ({ing.unit}) — ₱{Number(ing.cost_per_unit).toFixed(2)}
                       </option>

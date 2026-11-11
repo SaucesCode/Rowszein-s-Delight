@@ -1,0 +1,47 @@
+{
+  "page_errors": [],
+  "blocked_external": [],
+  "baseline": false,
+  "fault_injections": [
+    {
+      "path": "/api/recipes/3/",
+      "mode": "hold",
+      "actual_api_status": 200
+    },
+    {
+      "path": "/api/ingredients/3/",
+      "mode": "error",
+      "actual_api_status": 200
+    },
+    {
+      "path": "/api/ingredients/4/",
+      "mode": "wrong-id",
+      "actual_api_status": 200
+    },
+    {
+      "path": "/api/recipes/3/",
+      "mode": "error",
+      "actual_api_status": 200
+    },
+    {
+      "path": "/api/recipes/4/",
+      "mode": "wrong-id",
+      "actual_api_status": 200
+    },
+    {
+      "path": "/api/ingredients/5/",
+      "mode": "hold",
+      "actual_api_status": 200
+    }
+  ],
+  "harness_failure": {
+    "type": "TimeoutError",
+    "message": "Timeout 30000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation to \"**/login\" until 'load'\n============================================================",
+    "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1c2a\\browser_checks.py\", line 350, in <module>\n    page.wait_for_url('**/login')\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\sync_api\\_generated.py\", line 21446, in wait_for_url\n    self._sync(\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_sync_base.py\", line 111, in _sync\n    return task.result()\n           ^^^^^^^^^^^^^\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_page.py\", line 592, in wait_for_url\n    return await self._main_frame.wait_for_url(**locals_to_params(locals()))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_frame.py\", line 289, in wait_for_url\n    async with self.expect_navigation(\n               ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_event_context_manager.py\", line 33, in __aexit__\n    await self._future\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_frame.py\", line 265, in continuation\n    event = await waiter.result()\n            ^^^^^^^^^^^^^^^^^^^^^\nplaywright._impl._errors.TimeoutError: Timeout 30000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation to \"**/login\" until 'load'\n============================================================\n"
+  },
+  "servers_stopped": true,
+  "checks": 54,
+  "passed": 54,
+  "failed": 0,
+  "exit_code": 1
+}

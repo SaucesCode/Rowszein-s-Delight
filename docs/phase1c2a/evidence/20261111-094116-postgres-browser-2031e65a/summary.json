@@ -1,0 +1,22 @@
+{
+  "page_errors": [],
+  "blocked_external": [],
+  "baseline": false,
+  "fault_injections": [
+    {
+      "path": "/api/recipes/3/",
+      "mode": "hold",
+      "actual_api_status": 200
+    }
+  ],
+  "harness_failure": {
+    "type": "AssertionError",
+    "message": "Locator expected to have Value '1'\nActual value: 0 \nCall log:\n  - Expect \"to_have_value\" locator(\"select[name=\\\"product\\\"]\") with timeout 5000ms\n  - waiting for locator(\"select[name=\\\"product\\\"]\")\n    14 \u00d7 locator resolved to <select disabled name=\"product\" aria-invalid=\"false\" class=\"field-input mt-1\">\u2026</select>\n       - unexpected value \"0\"\n\nAria snapshot:\n- combobox [disabled]:\n  - option \"Select a product\u2026\" [selected]\n  - option \"Cache product 01\"\n  - option \"Cache product 02\"\n  - option \"Cache product 03\"\n  - option \"Cache product 04\"\n  - option \"Cache product 05\"\n  - option \"Cache product 06\"\n  - option \"Cache product 07\"\n  - option \"Cache product 08\"\n  - option \"Cache product 09\"\n  - option \"Cache product 10\"\n  - option \"Cache product 11\"\n  - option \"Cache product 12\"\n  - option \"Cache product 13\"\n  - option \"Cache product 14\"\n  - option \"Cache product 15\"\n  - option \"Cache product 16\"\n  - option \"Cache product 17\"\n  - option \"Cache product 18\"\n  - option \"Cache product 19\"\n  - option \"Cache product 20\"",
+    "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1c2a\\browser_checks.py\", line 179, in <module>\n    expect(page.locator('select[name=\"product\"]')).to_have_value('1')\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\sync_api\\_generated.py\", line 15567, in to_have_value\n    self._sync(\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_sync_base.py\", line 111, in _sync\n    return task.result()\n           ^^^^^^^^^^^^^\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_assertions.py\", line 568, in to_have_value\n    await self._expect_impl(\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_assertions.py\", line 128, in _expect_impl\n    _record_soft_or_raise(\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_assertions.py\", line 60, in _record_soft_or_raise\n    raise error\nAssertionError: Locator expected to have Value '1'\nActual value: 0 \nCall log:\n  - Expect \"to_have_value\" locator(\"select[name=\\\"product\\\"]\") with timeout 5000ms\n  - waiting for locator(\"select[name=\\\"product\\\"]\")\n    14 \u00d7 locator resolved to <select disabled name=\"product\" aria-invalid=\"false\" class=\"field-input mt-1\">\u2026</select>\n       - unexpected value \"0\"\n\nAria snapshot:\n- combobox [disabled]:\n  - option \"Select a product\u2026\" [selected]\n  - option \"Cache product 01\"\n  - option \"Cache product 02\"\n  - option \"Cache product 03\"\n  - option \"Cache product 04\"\n  - option \"Cache product 05\"\n  - option \"Cache product 06\"\n  - option \"Cache product 07\"\n  - option \"Cache product 08\"\n  - option \"Cache product 09\"\n  - option \"Cache product 10\"\n  - option \"Cache product 11\"\n  - option \"Cache product 12\"\n  - option \"Cache product 13\"\n  - option \"Cache product 14\"\n  - option \"Cache product 15\"\n  - option \"Cache product 16\"\n  - option \"Cache product 17\"\n  - option \"Cache product 18\"\n  - option \"Cache product 19\"\n  - option \"Cache product 20\"\n"
+  },
+  "servers_stopped": true,
+  "checks": 11,
+  "passed": 11,
+  "failed": 0,
+  "exit_code": 1
+}

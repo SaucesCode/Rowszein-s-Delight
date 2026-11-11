@@ -5,26 +5,37 @@ import type { IngredientPayload } from "@/types/ingredient.types";
 import toast from "react-hot-toast";
 import { useOperationIdentity } from "@/hooks/useOperationIdentity";
 import { apiErrorMessage } from "@/lib/csrfTransport";
+import { ingredientKeys, requestedRecord, validRecordId } from "@/lib/managementQueryKeys";
+import { useMe } from "@/hooks/useAuth";
+import { can } from "@/lib/permissions";
 
 export function useIngredients(page = 1) {
+  const { data: actor } = useMe();
   return useQuery({
-    queryKey: ["ingredients", page],
+    queryKey: ingredientKeys.list(actor, page),
     queryFn: () => ingredientService.getAll(page),
+    enabled: can(actor, "stock.read"),
   });
 }
 
 export function useIngredient(id: number) {
-  return useQuery({
-    queryKey: ["ingredients", id],
-    queryFn: () => ingredientService.getOne(id),
-    enabled: !!id,
+  const { data: actor } = useMe();
+  const enabled = validRecordId(id) && can(actor, "stock.manage");
+  const query = useQuery({
+    queryKey: ingredientKeys.detail(actor, id),
+    queryFn: async () => requestedRecord(id, await ingredientService.getOne(id)),
+    enabled,
+    retry: false,
   });
+  return { ...query, data: enabled && !query.isError && query.data?.id === id ? query.data : undefined };
 }
 
 export function useLowStockIngredients() {
+  const { data: actor } = useMe();
   return useQuery({
-    queryKey: ["ingredients", "low-stock"],
+    queryKey: ingredientKeys.lowStock(actor),
     queryFn: ingredientService.getLowStock,
+    enabled: can(actor, "stock.read"),
   });
 }
 
@@ -35,7 +46,7 @@ export function useCreateIngredient() {
   return useMutation({
     mutationFn: (payload: IngredientPayload) => ingredientService.create(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ingredients"] });
+      queryClient.invalidateQueries({ queryKey: ingredientKeys.all });
       toast.success("Ingredient created.");
       navigate("/ingredients");
     },
@@ -52,7 +63,7 @@ export function useUpdateIngredient(id: number) {
   return useMutation({
     mutationFn: (payload: IngredientPayload) => ingredientService.update(id, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ingredients"] });
+      queryClient.invalidateQueries({ queryKey: ingredientKeys.all });
       toast.success("Ingredient updated.");
       navigate("/ingredients");
     },
@@ -78,13 +89,13 @@ export function useUpdateStock(id: number) {
     },
     onSuccess: () => {
       identity.clear(`stock:adjust:${id}`);
-      queryClient.invalidateQueries({ queryKey: ["ingredients"] });
+      queryClient.invalidateQueries({ queryKey: ingredientKeys.all });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       toast.success("Stock updated.");
     },
     onError: (error) => {
       identity.reject(`stock:adjust:${id}`, error);
-      queryClient.invalidateQueries({ queryKey: ["ingredients"] });
+      queryClient.invalidateQueries({ queryKey: ingredientKeys.all });
       toast.error(apiErrorMessage(error, "Failed to update stock. Reload before retrying a stale balance."));
     },
   });
@@ -96,7 +107,7 @@ export function useDeleteIngredient() {
   return useMutation({
     mutationFn: (id: number) => ingredientService.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ingredients"] });
+      queryClient.invalidateQueries({ queryKey: ingredientKeys.all });
       toast.success("Ingredient deleted.");
     },
     onError: () => {
