@@ -15,6 +15,12 @@ const labelFormatter = new Intl.DateTimeFormat("en-PH", {
   month: "short",
   day: "numeric",
 });
+const businessDateFormatter = new Intl.DateTimeFormat("en-PH", {
+  timeZone: "UTC",
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+});
 
 export function manilaDate(now = new Date()): string {
   const parts = manilaFormatter.formatToParts(now);
@@ -83,6 +89,10 @@ export function formatDayLabel(value: string, today = manilaDate()): string {
   yesterday.setUTCDate(yesterday.getUTCDate() - 1);
   if (value === calendarString(yesterday)) return "Yesterday";
   return labelFormatter.format(calendarDay(value));
+}
+
+export function formatBusinessDate(value: string): string {
+  return businessDateFormatter.format(calendarDay(value));
 }
 
 export const PERIOD_OPTIONS: { value: Period; label: string }[] = [

@@ -1,0 +1,68 @@
+PASS 320px has no document or main horizontal overflow
+PASS 320px uses the expected navigation
+PASS 320px retains full product name
+PASS 320px trend chart fits its panel
+PASS 390px has no document or main horizontal overflow
+PASS 390px uses the expected navigation
+PASS 390px retains full product name
+PASS 390px trend chart fits its panel
+PASS 768px has no document or main horizontal overflow
+PASS 768px uses the expected navigation
+PASS 768px retains full product name
+PASS 768px trend chart fits its panel
+PASS 1024px has no document or main horizontal overflow
+PASS 1024px uses the expected navigation
+PASS 1024px retains full product name
+PASS 1024px trend chart fits its panel
+PASS 1440px has no document or main horizontal overflow
+PASS 1440px uses the expected navigation
+PASS 1440px retains full product name
+PASS 1440px trend chart fits its panel
+PASS owner sees seven authorized links
+PASS dashboard marks current nav link
+PASS owner account identity and role visible
+PASS net sales text passes contrast sample
+PASS active rail text passes contrast sample
+PASS rail text passes contrast sample
+PASS dashboard muted text passes contrast sample
+PASS primary action passes contrast sample
+PASS secondary control boundary passes contrast sample
+PASS collapsed rail preserves accessible nav names
+PASS collapsed rail shows label on keyboard focus
+PASS expanded sidebar restores text
+PASS keyboard skip link has visible focus
+PASS skip link moves focus to main
+PASS native radio arrow changes to Manila quarter
+PASS Manila week starts Monday
+PASS zero net sales and expenses are explicit
+PASS empty product state offers a sale action
+PASS stock alert retains exact ninth decimal across date changes
+PASS Manila month preset uses the first day
+PASS New York browser at Manila midnight sends new Manila day
+PASS year to date shows the actual signed net sales from API
+PASS difference has a qualified label and description
+PASS monthly values available in semantic table
+PASS chart excludes December outside applied range
+PASS negative filtered balance agrees with API
+PASS period controls remain after custom filter
+PASS reversed range gives actionable feedback and no request
+PASS eight-digit peso values stay readable at 320px
+PASS clearing custom dates restores omitted bounds
+PASS closed mobile menu has no focusable dialog content
+PASS mobile menu traps Tab
+PASS mobile Escape closes menu and restores focus
+PASS mobile navigation focuses destination content
+PASS confirmation traps focus and restores it on Escape
+PASS confirmation submits existing revision and UUID and retains cancelled sale
+PASS toggling mobile menu preserves current form work
+PASS header identifies nested form route
+PASS prefers-reduced-motion is respected
+PASS loading and retry states keep date controls available
+PASS dashboard retries and recovers from API error
+PASS owner logs out through shell
+PASS staff lands in Sales without owner data after account switch
+PASS staff identity and role visible
+PASS staff navigation contains only Sales, Ingredients and Products
+PASS staff stock keeps safe fields and dashboard API denies access
+PASS staff direct dashboard route renders permission state
+PASS access-cookie loss preserves existing staff session renewal path
