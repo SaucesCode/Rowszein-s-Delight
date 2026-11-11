@@ -11,6 +11,7 @@ from .serializers import StockAdjustmentSerializer
 from django.db import transaction
 from rest_framework.exceptions import APIException, PermissionDenied
 from sales.services import adjust_stock, request_identity
+from backend.catalog_listing import CatalogListing
 
 
 class StockProjection:
@@ -18,7 +19,8 @@ class StockProjection:
         return IngredientSerializer if business_role(self.request.user) == 'admin' else OperationalIngredientSerializer
 
 
-class IngredientListCreateView(StockProjection, generics.ListCreateAPIView):
+class IngredientListCreateView(CatalogListing, StockProjection, generics.ListCreateAPIView):
+    listing_kind = 'ingredients'
     permission_classes = [BusinessPermission]
     business_actions = {'GET': 'stock.read', 'POST': 'stock.manage', 'OPTIONS': 'stock.read'}
     serializer_class = IngredientSerializer

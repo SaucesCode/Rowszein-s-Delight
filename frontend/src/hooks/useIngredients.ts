@@ -8,13 +8,15 @@ import { apiErrorMessage } from "@/lib/csrfTransport";
 import { ingredientKeys, requestedRecord, validRecordId } from "@/lib/managementQueryKeys";
 import { useMe } from "@/hooks/useAuth";
 import { can } from "@/lib/permissions";
+import type { ListingParams } from "@/lib/listingParams";
 
-export function useIngredients(page = 1) {
+export function useIngredients(page = 1, params: ListingParams = {}) {
   const { data: actor } = useMe();
   return useQuery({
-    queryKey: ingredientKeys.list(actor, page),
-    queryFn: () => ingredientService.getAll(page),
+    queryKey: ingredientKeys.list(actor, page, params),
+    queryFn: ({ signal }) => ingredientService.getAll(page, params, signal),
     enabled: can(actor, "stock.read"),
+    retry: false,
   });
 }
 

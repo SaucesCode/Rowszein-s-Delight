@@ -6,14 +6,16 @@ from .models import Recipe
 from .serializers import RecipeSerializer
 from django.db import transaction
 from products.models import Product
+from backend.catalog_listing import CatalogListing
 
 
-class RecipeListCreateView(generics.ListCreateAPIView):
+class RecipeListCreateView(CatalogListing, generics.ListCreateAPIView):
+    listing_kind = 'recipes'
     permission_classes = [BusinessPermission]
     business_actions = {'GET': 'recipes.manage', 'POST': 'recipes.manage', 'OPTIONS': 'recipes.manage'}
     serializer_class = RecipeSerializer
     queryset = Recipe.objects.select_related(
-        'product'
+        'product__category'
     ).prefetch_related(
         'recipe_ingredients__ingredient'
     )
@@ -49,7 +51,7 @@ class RecipeDetailView(generics.RetrieveUpdateDestroyAPIView):
     business_actions = {'GET': 'recipes.manage', 'PUT': 'recipes.manage', 'PATCH': 'recipes.manage', 'DELETE': 'recipes.manage', 'OPTIONS': 'recipes.manage'}
     serializer_class = RecipeSerializer
     queryset = Recipe.objects.select_related(
-        'product'
+        'product__category'
     ).prefetch_related(
         'recipe_ingredients__ingredient'
     )

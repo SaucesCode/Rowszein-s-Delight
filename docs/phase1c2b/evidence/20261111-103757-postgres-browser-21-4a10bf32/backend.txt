@@ -1,0 +1,27 @@
+November 11, 2026 - 10:38:12
+Django version 5.1.4, using settings 'pagination_settings'
+Starting development server at http://127.0.0.1:18842/
+Quit the server with CTRL-BREAK.
+
+[11/Nov/2026 10:38:26] "GET /api/auth/me/ HTTP/1.1" 401 138
+[11/Nov/2026 10:38:26] "GET /api/products/?is_available=true&category_active=true&page=1 HTTP/1.1" 200 4967
+[11/Nov/2026 10:38:26] "GET /api/products/?is_featured=true&is_available=true&category_active=true&page=1 HTTP/1.1" 200 328
+[11/Nov/2026 10:38:26] "GET /api/products/categories/?is_active=true&page=1 HTTP/1.1" 200 2223
+[11/Nov/2026 10:38:27] "GET /api/products/?is_available=true&category_active=true&page=2 HTTP/1.1" 200 402
+[11/Nov/2026 10:38:28] "GET /api/products/?search=Cache+product+21&is_available=true&category_active=true&page=1 HTTP/1.1" 200 328
+[11/Nov/2026 10:38:28] "GET /api/products/?search=unmatched-xyz&is_available=true&category_active=true&page=1 HTTP/1.1" 200 89
+[11/Nov/2026 10:38:28] "GET /api/products/categories/?is_active=true&search=Cache+category+21&page=1 HTTP/1.1" 200 192
+[11/Nov/2026 10:38:29] "GET /api/products/?category=26&is_available=true&category_active=true&page=1 HTTP/1.1" 200 328
+[11/Nov/2026 10:38:32] "GET /api/auth/me/ HTTP/1.1" 401 138
+[11/Nov/2026 10:38:34] "GET /api/auth/csrf/ HTTP/1.1" 200 118
+[11/Nov/2026 10:38:35] "POST /api/auth/login/ HTTP/1.1" 200 193
+[11/Nov/2026 10:38:37] "GET /api/products/categories/?is_active=true&page=1 HTTP/1.1" 200 2223
+[11/Nov/2026 10:38:37] "GET /api/products/?is_available=true&category_active=true&page=1 HTTP/1.1" 200 4967
+[11/Nov/2026 10:38:37] "GET /api/products/?is_featured=true&is_available=true&category_active=true&page=1 HTTP/1.1" 200 328
+[11/Nov/2026 10:38:37] "GET /api/auth/me/ HTTP/1.1" 200 96
+[11/Nov/2026 10:38:39] "GET /api/auth/me/ HTTP/1.1" 200 96
+[11/Nov/2026 10:38:39] "GET /api/auth/me/ HTTP/1.1" 200 96
+[11/Nov/2026 10:38:40] "GET /api/auth/me/ HTTP/1.1" 200 96
+[11/Nov/2026 10:38:40] "GET /api/products/?page=1 HTTP/1.1" 200 8768
+[11/Nov/2026 10:38:41] "GET /api/products/?page=2 HTTP/1.1" 200 555
+[11/Nov/2026 10:38:41] "GET /api/products/?search=Cache+product+21&page=1 HTTP/1.1" 200 520

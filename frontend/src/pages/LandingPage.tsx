@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { productService } from "@/services/product.service";
+import { useListingPages } from "@/hooks/useListingPages";
+import { uniqueRecords } from "@/lib/listingParams";
+import PaginatedLookup from "@/components/PaginatedLookup";
 import { useCart } from "@/hooks/useCart";
 import CartPanel from "@/components/CartPanel";
 import {
@@ -20,7 +21,7 @@ import {
   Mail,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import type { Category, Product } from "@/types/product.types";
+import type { Product } from "@/types/product.types";
 
 /* ─────────────────────────────────────────────
    CONFIG — replace with your real contact info
@@ -40,68 +41,6 @@ function formatPeso(value: number) {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
-}
-
-function CategoryFilter({
-  active,
-  onChange,
-  counts,
-  options,
-}: {
-  active: string;
-  onChange: (val: string) => void;
-  counts: Record<string, number>;
-  options: { value: string; label: string }[];
-}) {
-  const allOptions = [{ value: "all", label: "All" }, ...options];
-
-  return (
-    <div
-      className="flex flex-wrap justify-center gap-2 mb-8"
-      role="group"
-      aria-label="Filter menu by category"
-    >
-      {allOptions.map(c => {
-        const count = counts[c.value] ?? 0;
-        if (c.value !== "all" && count === 0) return null;
-        const isActive = active === c.value;
-        return (
-          <button
-            key={c.value}
-            onClick={() => onChange(c.value)}
-            className="inline-flex items-center gap-2 font-heading font-bold transition-all"
-            style={{
-              height: 40,
-              padding: "0 16px",
-              borderRadius: 999,
-              fontSize: 13,
-              background: isActive
-                ? "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)"
-                : "#FFFDFB",
-              color: isActive ? "#FFFFFF" : "#6B4226",
-              border: isActive ? "none" : "1px solid #E8E6E1",
-              boxShadow: isActive ? "0 4px 14px rgba(255,111,174,0.35)" : "none",
-            }}
-            aria-pressed={isActive}
-          >
-            {c.label}
-            <span
-              className="font-body"
-              style={{
-                fontSize: 11,
-                padding: "1px 6px",
-                borderRadius: 999,
-                background: isActive ? "rgba(255,255,255,0.25)" : "#FFF0F7",
-                color: isActive ? "#FFFFFF" : "#9B6644",
-              }}
-            >
-              {count}
-            </span>
-          </button>
-        );
-      })}
-    </div>
-  );
 }
 
 /* ─────────────────────────────────────────────
@@ -921,36 +860,13 @@ export default function LandingPage() {
   const cart = useCart();
   const [categoryFilter, setCategoryFilter] = useState("all");
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["public-products"],
-    queryFn: () => productService.getAll(1),
-  });
-  const { data: categoriesData } = useQuery({
-    queryKey: ["public-product-categories"],
-    queryFn: () => productService.getCategories(),
-  });
-
-  const allProducts: Product[] = data?.data?.results ?? [];
-  const categories: Category[] = categoriesData?.data ?? [];
-  const categoryOptions = categories
-    .filter(category => category.is_active)
-    .map(category => ({ value: String(category.id), label: category.name }));
-  const products = allProducts.filter(p => p.is_available);
-  const featured = products.filter(p => p.is_featured);
-
+  const [search, setSearch] = useState("");
+  const catalog = useListingPages<Product>("products", { search, category: categoryFilter, is_available: true, category_active: true }, "storefront", true, true);
+  const featuredQuery = useListingPages<Product>("products", { is_featured: true, is_available: true, category_active: true }, "featured", true, true);
+  const products = uniqueRecords(catalog.data?.pages.map(page => page.data.results) ?? []);
+  const featured = uniqueRecords(featuredQuery.data?.pages.map(page => page.data.results) ?? []);
   const heroProduct = featured[0] ?? products[0] ?? null;
-
-  const categoryCounts = products.reduce<Record<string, number>>((acc, p) => {
-    acc.all = (acc.all ?? 0) + 1;
-    const categoryId = String(p.category.id);
-    acc[categoryId] = (acc[categoryId] ?? 0) + 1;
-    return acc;
-  }, {});
-
-  const filteredProducts =
-    categoryFilter === "all"
-      ? products
-      : products.filter(p => String(p.category.id) === categoryFilter);
+  const { isLoading, isError } = catalog;
 
   function cardProps(product: Product) {
     const cartItem = cart.items.find(i => i.product_id === product.id);
@@ -970,10 +886,12 @@ export default function LandingPage() {
     >
       <PublicNav cartCount={cart.totalItems} onCartClick={() => setCartOpen(true)} />
 
-      <Hero heroProduct={heroProduct} totalCount={products.length} />
+      <Hero heroProduct={heroProduct} totalCount={catalog.data?.pages[0]?.data.count ?? 0} />
       <WhyUs />
 
       {/* Bestsellers */}
+      {featuredQuery.isLoading && <p role="status">Loading featured products…</p>}
+      {featuredQuery.isError && <p role="alert">Unable to load featured products. <button type="button" onClick={() => { void featuredQuery.refetch(); }}>Retry featured products</button></p>}
       {featured.length > 0 && (
         <section
           id="bestsellers"
@@ -1009,6 +927,9 @@ export default function LandingPage() {
                 <ProductCard key={product.id} product={product} {...cardProps(product)} />
               ))}
             </div>
+            {featuredQuery.hasNextPage ? <button type="button" className="btn-ghost mt-4" disabled={featuredQuery.isFetchingNextPage}
+              onClick={() => { void featuredQuery.fetchNextPage(); }}>Load more featured products</button>
+              : <p className="field-helper">No more featured products.</p>}
           </div>
         </section>
       )}
@@ -1035,52 +956,23 @@ export default function LandingPage() {
             </h2>
           </div>
 
+          <div className="mb-6 space-y-3">
+            <input aria-label="Search menu" type="search" maxLength={100} value={search} onChange={event => setSearch(event.target.value)}
+              placeholder="Search the menu…" className="field-input" />
+            <PaginatedLookup kind="categories" publicOnly label="Filter menu by category" emptyLabel="All categories"
+              selectedId={Number(categoryFilter) || 0} params={{ is_active: true }}
+              onChange={event => setCategoryFilter(event.target.value === "0" ? "all" : event.target.value)} />
+          </div>
           {isLoading && <MenuSkeleton />}
-
-          {isError && (
-            <div className="card-surface p-8 text-center max-w-md mx-auto">
-              <p className="font-body" style={{ fontSize: 13, color: "#EF4444" }}>
-                Couldn't load the menu right now. Please try again shortly.
-              </p>
+          {isError && <p role="alert">Unable to load the menu. <button type="button" onClick={() => { void catalog.refetch(); }}>Retry menu</button></p>}
+          {!isLoading && !isError && (products.length ? <>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+              {products.map(product => <ProductCard key={product.id} product={product} {...cardProps(product)} />)}
             </div>
-          )}
-
-          {!isLoading && !isError && products.length === 0 && (
-            <div className="card-surface p-10 text-center max-w-md mx-auto">
-              <CakeSlice
-                size={28}
-                style={{ color: "#FF6FAE", opacity: 0.5, margin: "0 auto 12px" }}
-              />
-              <p className="font-body" style={{ fontSize: 13, color: "#9B6644" }}>
-                No items available right now — check back soon!
-              </p>
-            </div>
-          )}
-
-          {!isLoading && !isError && products.length > 0 && (
-            <>
-              <CategoryFilter
-                active={categoryFilter}
-                onChange={setCategoryFilter}
-                counts={categoryCounts}
-                options={categoryOptions}
-              />
-
-              {filteredProducts.length === 0 ? (
-                <div className="card-surface p-10 text-center max-w-md mx-auto">
-                  <p className="font-body" style={{ fontSize: 13, color: "#9B6644" }}>
-                    No treats in this category yet — check back soon!
-                  </p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                  {filteredProducts.map(product => (
-                    <ProductCard key={product.id} product={product} {...cardProps(product)} />
-                  ))}
-                </div>
-              )}
-            </>
-          )}
+            {catalog.hasNextPage ? <button type="button" className="btn-ghost mt-4" disabled={catalog.isFetchingNextPage}
+              onClick={() => { void catalog.fetchNextPage(); }}>{catalog.isFetchingNextPage ? "Loading…" : "Load more products"}</button>
+              : <p className="field-helper">No more products.</p>}
+          </> : <p role="status">No matching products.</p>)}
         </div>
       </section>
 

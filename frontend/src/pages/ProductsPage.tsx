@@ -1,11 +1,12 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCategories, useDeleteProduct, useProducts, useUpdateProduct } from "@/hooks/useProducts";
-import type { Category, Product } from "@/types/product.types";
+import { useDeleteProduct, useProducts, useUpdateProduct } from "@/hooks/useProducts";
+import type { Product } from "@/types/product.types";
 import { Plus, CakeSlice, SearchX, ArrowUpDown, Check } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import SearchInput from "@/components/SearchInput";
-import CategoryFilterBar from "@/components/CategoryFilterBar";
+import PaginatedLookup from "@/components/PaginatedLookup";
+import { useListingPageRecovery } from "@/hooks/useListingPageRecovery";
 import DropdownMenu from "@/components/DropdownMenu";
 import ProductCard from "@/components/ProductCard";
 import EmptyState from "@/components/EmptyState";
@@ -20,27 +21,6 @@ const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { value: "price_asc", label: "Price: Low to High" },
   { value: "price_desc", label: "Price: High to Low" },
 ];
-
-function sortProducts(products: Product[], sort: SortOption) {
-  const list = [...products];
-  const timestamp = (value?: string) => {
-    if (!value) return 0;
-    const time = new Date(value).getTime();
-    return Number.isNaN(time) ? 0 : time;
-  };
-
-  switch (sort) {
-    case "name":
-      return list.sort((a, b) => a.name.localeCompare(b.name));
-    case "price_asc":
-      return list.sort((a, b) => Number(a.price) - Number(b.price));
-    case "price_desc":
-      return list.sort((a, b) => Number(b.price) - Number(a.price));
-    case "newest":
-    default:
-      return list.sort((a, b) => timestamp(b.created_at) - timestamp(a.created_at));
-  }
-}
 
 /* ─────────────────────────────────────────────
    CONNECTED CARD — owns its own update mutation
@@ -122,52 +102,14 @@ export default function ProductsPage() {
   const [sort, setSort] = useState<SortOption>("newest");
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
 
-  const { data, isLoading, isError } = useProducts(page);
-  const { data: categoriesData } = useCategories();
+  const ordering = { newest: "-created_at", name: "name", price_asc: "price", price_desc: "-price" }[sort];
+  const { data, isLoading, isError, error, refetch } = useProducts(page, { search, category: categoryFilter, ordering, is_available: showHidden ? undefined : true });
+  useListingPageRecovery(page, error, setPage);
   const deleteProduct = useDeleteProduct();
-
-  const allProducts: Product[] = data?.data?.results ?? [];
-  const categories: Category[] = categoriesData?.data ?? [];
-  const categoryOptions = categories
-    .filter(category => category.is_active)
-    .map(category => ({ value: String(category.id), label: category.name }));
-  const totalCount: number = data?.data?.count ?? 0;
+  const visibleProducts: Product[] = data?.data.results ?? [];
+  const totalCount = data?.data.count ?? 0;
   const totalPages = Math.ceil(totalCount / 20);
-  const hiddenCount = allProducts.filter(p => !p.is_available).length;
-
-  const visibleProducts = useMemo(() => {
-    let list = allProducts;
-    if (!showHidden) list = list.filter(p => p.is_available);
-    if (categoryFilter !== "all") {
-      list = list.filter(p => String(p.category.id) === categoryFilter);
-    }
-    if (search.trim()) {
-      const q = search.trim().toLowerCase();
-      list = list.filter(
-        p => p.name.toLowerCase().includes(q) || p.description?.toLowerCase().includes(q),
-      );
-    }
-    return sortProducts(list, sort);
-  }, [allProducts, showHidden, categoryFilter, search, sort]);
-
-  const categoryCounts = useMemo(() => {
-    const base = showHidden ? allProducts : allProducts.filter(p => p.is_available);
-    return base.reduce<Record<string, number>>((acc, p) => {
-      acc.all = (acc.all ?? 0) + 1;
-      const categoryId = String(p.category.id);
-      acc[categoryId] = (acc[categoryId] ?? 0) + 1;
-      return acc;
-    }, {});
-  }, [allProducts, showHidden]);
-
-  const groupedByCategory = useMemo(() => {
-    if (categoryFilter !== "all") return null;
-    return categories.map(category => ({
-      category: String(category.id),
-      label: category.name,
-      items: visibleProducts.filter(p => p.category.id === category.id),
-    })).filter(g => g.items.length > 0);
-  }, [categories, visibleProducts, categoryFilter]);
+  const hiddenCount = visibleProducts.filter(product => !product.is_available).length;
 
   const hasActiveFilters = !!search || categoryFilter !== "all" || showHidden;
 
@@ -204,7 +146,7 @@ export default function ProductsPage() {
         title="Products"
         description={
           !isLoading && !isError
-            ? `${totalCount} product${totalCount !== 1 ? "s" : ""}${hiddenCount > 0 ? ` · ${hiddenCount} hidden` : ""}`
+            ? `${totalCount} matching product${totalCount !== 1 ? "s" : ""}${hiddenCount > 0 ? ` · ${hiddenCount} hidden on this page` : ""}`
             : "Manage your dessert menu and pricing"
         }
         action={
@@ -226,7 +168,7 @@ export default function ProductsPage() {
               {SORT_OPTIONS.map(opt => (
                 <button
                   key={opt.value}
-                  onClick={() => setSort(opt.value)}
+                  onClick={() => { setSort(opt.value); setPage(1); }}
                   className="flex items-center justify-between gap-2 w-full text-left px-3.5 py-2.5 transition-colors hover:bg-[#FFF8F0]"
                   style={{ fontSize: 13, color: "#6B4226" }}
                 >
@@ -250,7 +192,7 @@ export default function ProductsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <SearchInput
             value={search}
-            onChange={setSearch}
+            onChange={value => { setSearch(value); setPage(1); }}
             placeholder="Search products…"
             ariaLabel="Search products"
           />
@@ -261,22 +203,18 @@ export default function ProductsPage() {
             <input
               type="checkbox"
               checked={showHidden}
-              onChange={e => setShowHidden(e.target.checked)}
+              onChange={e => { setShowHidden(e.target.checked); setPage(1); }}
               style={{ width: 16, height: 16, accentColor: "#FF6FAE" }}
             />
             Show hidden
           </label>
         </div>
-        <CategoryFilterBar
-          options={categoryOptions}
-          active={categoryFilter}
-          onChange={setCategoryFilter}
-          counts={categoryCounts}
-          ariaLabel="Filter by category"
-        />
+        <PaginatedLookup kind="categories" label="Filter by category" selectedId={Number(categoryFilter) || 0}
+          params={{ is_active: true }} onChange={event => { setCategoryFilter(event.target.value === "0" ? "all" : event.target.value); setPage(1); }} />
       </div>
 
       {isLoading && <ProductsSkeleton />}
+      {isError && <button type="button" onClick={() => { void refetch(); }}>Retry products</button>}
 
       {isError && (
         <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm">
@@ -301,6 +239,7 @@ export default function ProductsPage() {
                 <button
                   onClick={() => {
                     setSearch("");
+                    setPage(1);
                     setCategoryFilter("all");
                     setShowHidden(false);
                   }}
@@ -321,33 +260,9 @@ export default function ProductsPage() {
 
       {!isLoading && !isError && visibleProducts.length > 0 && (
         <>
-          {groupedByCategory ? (
-            <div className="space-y-8">
-              {groupedByCategory.map(group => (
-                <div key={group.category}>
-                  <div className="flex items-center gap-2.5 mb-3.5">
-                    <h2
-                      className="font-heading font-semibold"
-                      style={{ fontSize: 14.5, color: "#6B4226" }}
-                    >
-                      {group.label}
-                    </h2>
-                    <span className="font-body" style={{ fontSize: 12.5, color: "#B8A98D" }}>
-                      {group.items.length} product{group.items.length !== 1 ? "s" : ""}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                    {group.items.map(renderCard)}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {visibleProducts.map(renderCard)}
-            </div>
-          )}
-
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {visibleProducts.map(renderCard)}
+          </div>
           <div className="mt-6">
             <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
           </div>

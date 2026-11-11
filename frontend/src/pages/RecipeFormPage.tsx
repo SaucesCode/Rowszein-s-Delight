@@ -1,16 +1,14 @@
-import { useEffect } from "react";
+import PaginatedLookup from "@/components/PaginatedLookup";
+import type { LookupRecord } from "@/services/listing.service";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRecipe, useCreateRecipe, useUpdateRecipe } from "@/hooks/useRecipes";
-import { useIngredients } from "@/hooks/useIngredients";
-import { useProducts } from "@/hooks/useProducts";
 import { Plus, Trash2 } from "lucide-react";
 import SkeletonTable from "@/components/SkeletonTable";
 import RecipeCostPreview from "@/components/recipes/RecipeCostPreview";
-import type { Product } from "@/types/product.types";
-import type { Ingredient } from "@/types/ingredient.types";
 import { validRecordId } from "@/lib/managementQueryKeys";
 import RecordLoadError from "@/components/RecordLoadError";
 
@@ -84,15 +82,13 @@ function RecipeForm({ id }: { id: string | undefined }) {
   const isEdit = !!id;
 
   const { data: recipe, isPending: recipeLoading, isError, error, refetch } = useRecipe(Number(id));
-  const productQuery = useProducts();
-  const ingredientQuery = useIngredients();
-  const lookupsReady = !productQuery.isPending && !ingredientQuery.isPending && !productQuery.isError && !ingredientQuery.isError;
-
   const createRecipe = useCreateRecipe();
   const updateRecipe = useUpdateRecipe(Number(id));
 
-  const products: Product[] = productQuery.data?.data?.results ?? [];
-  const ingredients: Ingredient[] = ingredientQuery.data?.data?.results ?? [];
+  const [selectedIngredients, setSelectedIngredients] = useState<Record<number, LookupRecord>>({});
+  const rememberIngredient = useCallback((record: LookupRecord) => {
+    setSelectedIngredients(previous => previous[record.id] === record ? previous : { ...previous, [record.id]: record });
+  }, []);
 
   const {
     register,
@@ -104,13 +100,15 @@ function RecipeForm({ id }: { id: string | undefined }) {
     resolver: zodResolver(recipeSchema),
   });
 
+  const selectedProduct = useWatch({ control, name: "product" });
+  const selectedRows = useWatch({ control, name: "recipe_ingredients" });
   const { fields, append, remove } = useFieldArray({
     control,
     name: "recipe_ingredients",
   });
 
   useEffect(() => {
-    if (recipe && lookupsReady) {
+    if (recipe) {
       reset({
         product: recipe.product,
         yield_quantity: recipe.yield_quantity,
@@ -123,7 +121,7 @@ function RecipeForm({ id }: { id: string | undefined }) {
         ) ?? [{ ingredient: 0, quantity: 0 }],
       });
     }
-  }, [recipe, lookupsReady, reset]);
+  }, [recipe, reset]);
 
   const onSubmit = (data: RecipeForm) => {
     if (isEdit) {
@@ -138,17 +136,12 @@ function RecipeForm({ id }: { id: string | undefined }) {
   if (isEdit && !validRecordId(Number(id))) {
     return <RecordLoadError name="recipe" invalidId error={undefined} retry={() => {}} back={() => navigate("/recipes")} />;
   }
-  if ((isEdit && recipeLoading) || productQuery.isPending || ingredientQuery.isPending) {
+  if (isEdit && recipeLoading) {
     return <SkeletonTable rows={4} cols={2} showHeader />;
   }
   if (isEdit && (isError || !recipe)) {
     return <RecordLoadError name="recipe" invalidId={false} error={error} retry={() => { void refetch(); }} back={() => navigate("/recipes")} />;
   }
-  if (!lookupsReady) {
-    return <RecordLoadError name="recipe options" invalidId={false} error={productQuery.error ?? ingredientQuery.error}
-      retry={() => { void Promise.all([productQuery.refetch(), ingredientQuery.refetch()]); }} back={() => navigate("/recipes")} />;
-  }
-
   return (
     <div className="max-w-400">
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
@@ -160,19 +153,8 @@ function RecipeForm({ id }: { id: string | undefined }) {
             error={errors.product?.message}
             required
           >
-            <select
-              {...register("product")}
-              disabled={isEdit}
-              className="field-input mt-1"
-              aria-invalid={!!errors.product}
-            >
-              <option value={0}>Select a product…</option>
-              {products.map(p => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-            </select>
+            <PaginatedLookup kind="products" label="Product" selectedId={Number(selectedProduct) || 0}
+              {...register("product")} disabled={isEdit} aria-invalid={!!errors.product} />
             {isEdit && (
               <p className="field-helper">Product cannot be changed after creation.</p>
             )}
@@ -283,19 +265,9 @@ function RecipeForm({ id }: { id: string | undefined }) {
               >
                 {/* Ingredient selector */}
                 <div>
-                  <select
-                    {...register(`recipe_ingredients.${index}.ingredient`)}
-                    className="field-input"
-                    aria-label={`Ingredient ${index + 1}`}
-                    aria-invalid={!!errors.recipe_ingredients?.[index]?.ingredient}
-                  >
-                    <option value={0}>Select ingredient…</option>
-                    {ingredients.map(ing => (
-                      <option key={ing.id} value={ing.id}>
-                        {ing.name} ({ing.unit}) — ₱{Number(ing.cost_per_unit).toFixed(2)}
-                      </option>
-                    ))}
-                  </select>
+                  <PaginatedLookup kind="ingredients" label={`Ingredient ${index + 1}`}
+                    selectedId={Number(selectedRows?.[index]?.ingredient) || 0} onResolved={rememberIngredient}
+                    {...register(`recipe_ingredients.${index}.ingredient`)} aria-invalid={!!errors.recipe_ingredients?.[index]?.ingredient} />
                   {errors.recipe_ingredients?.[index]?.ingredient && (
                     <p className="field-error mt-1" role="alert">
                       {errors.recipe_ingredients[index]?.ingredient?.message}
@@ -369,7 +341,7 @@ function RecipeForm({ id }: { id: string | undefined }) {
           )}
 
           {/* Live cost preview — updates as ingredients/quantities/yield change */}
-          <RecipeCostPreview control={control} ingredients={ingredients} />
+          <RecipeCostPreview control={control} ingredients={Object.values(selectedIngredients).map(row => ({ id: row.id, cost_per_unit: Number(row.cost_per_unit) || 0 }))} />
         </div>
 
         {/* ── Actions ── */}

@@ -1,3 +1,5 @@
+import type { Category } from "./product.types";
+
 export interface RecipeIngredient {
   id?: number;
   ingredient: number;
@@ -7,6 +9,7 @@ export interface RecipeIngredient {
 }
 
 export interface Recipe {
+  category?: Category;
   id: number;
   product: number;
   product_name: string;

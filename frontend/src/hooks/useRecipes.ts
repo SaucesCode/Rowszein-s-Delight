@@ -7,13 +7,15 @@ import type { Recipe } from "@/types/recipe.types";
 import { recipeKeys, requestedRecord, validRecordId } from "@/lib/managementQueryKeys";
 import { useMe } from "@/hooks/useAuth";
 import { can } from "@/lib/permissions";
+import type { ListingParams } from "@/lib/listingParams";
 
-export function useRecipes(page = 1) {
+export function useRecipes(page = 1, params: ListingParams = {}) {
   const { data: actor } = useMe();
   return useQuery({
-    queryKey: recipeKeys.list(actor, page),
-    queryFn: () => recipeService.getAll(page),
+    queryKey: recipeKeys.list(actor, page, params),
+    queryFn: ({ signal }) => recipeService.getAll(page, params, signal),
     enabled: can(actor, "recipes.manage"),
+    retry: false,
   });
 }
 

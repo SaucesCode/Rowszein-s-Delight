@@ -1,0 +1,33 @@
+November 11, 2026 - 10:29:17
+Django version 5.1.4, using settings 'pagination_settings'
+Starting development server at http://127.0.0.1:18842/
+Quit the server with CTRL-BREAK.
+
+[11/Nov/2026 10:29:33] "GET /api/auth/me/ HTTP/1.1" 401 138
+[11/Nov/2026 10:29:33] "GET /api/products/categories/?is_active=true&page=1 HTTP/1.1" 200 2223
+[11/Nov/2026 10:29:33] "GET /api/products/?is_featured=true&is_available=true&category_active=true&page=1 HTTP/1.1" 200 328
+[11/Nov/2026 10:29:33] "GET /api/products/?is_available=true&category_active=true&page=1 HTTP/1.1" 200 4967
+[11/Nov/2026 10:29:34] "GET /api/products/?is_available=true&category_active=true&page=2 HTTP/1.1" 200 1366
+[11/Nov/2026 10:29:35] "GET /api/products/?search=Cache+product+25&is_available=true&category_active=true&page=1 HTTP/1.1" 200 328
+[11/Nov/2026 10:29:35] "GET /api/products/?search=unmatched-xyz&is_available=true&category_active=true&page=1 HTTP/1.1" 200 89
+[11/Nov/2026 10:29:37] "GET /api/auth/me/ HTTP/1.1" 401 138
+[11/Nov/2026 10:29:37] "GET /api/auth/csrf/ HTTP/1.1" 200 118
+[11/Nov/2026 10:29:38] "POST /api/auth/login/ HTTP/1.1" 200 193
+[11/Nov/2026 10:29:39] "GET /api/auth/me/ HTTP/1.1" 200 96
+[11/Nov/2026 10:29:39] "GET /api/auth/me/ HTTP/1.1" 200 96
+[11/Nov/2026 10:29:40] "GET /api/auth/me/ HTTP/1.1" 200 96
+[11/Nov/2026 10:29:40] "GET /api/products/?page=1 HTTP/1.1" 200 8768
+[11/Nov/2026 10:29:40] "GET /api/products/?page=2 HTTP/1.1" 200 2287
+[11/Nov/2026 10:29:41] "GET /api/products/?search=Cache+product+25&page=1 HTTP/1.1" 200 520
+[11/Nov/2026 10:29:42] "GET /api/auth/me/ HTTP/1.1" 200 96
+[11/Nov/2026 10:29:42] "GET /api/auth/me/ HTTP/1.1" 200 96
+[11/Nov/2026 10:29:42] "GET /api/ingredients/low-stock/ HTTP/1.1" 200 39
+[11/Nov/2026 10:29:42] "GET /api/ingredients/?ordering=name&page=1 HTTP/1.1" 200 7499
+[11/Nov/2026 10:29:43] "GET /api/auth/me/ HTTP/1.1" 200 96
+[11/Nov/2026 10:29:43] "GET /api/ingredients/1/ HTTP/1.1" 200 403
+[11/Nov/2026 10:29:44] "GET /api/auth/me/ HTTP/1.1" 200 96
+[11/Nov/2026 10:29:44] "GET /api/ingredients/?ordering=name&page=2 HTTP/1.1" 200 1981
+[11/Nov/2026 10:29:44] "GET /api/ingredients/2/ HTTP/1.1" 200 405
+[11/Nov/2026 10:29:44] "GET /api/auth/me/ HTTP/1.1" 200 96
+[11/Nov/2026 10:29:44] "GET /api/auth/me/ HTTP/1.1" 200 96
+[11/Nov/2026 10:29:45] "GET /api/ingredients/?search=Cache+ingredient+25&ordering=name&page=1 HTTP/1.1" 200 456

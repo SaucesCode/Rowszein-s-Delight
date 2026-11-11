@@ -1,0 +1,3 @@
+FAIL off_page_management_search
+FAIL off_page_selected_product
+FAIL sale_option25_present

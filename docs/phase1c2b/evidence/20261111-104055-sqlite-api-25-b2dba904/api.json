@@ -1,0 +1,92 @@
+{
+  "tests_run": 14,
+  "outcomes": [
+    {
+      "test": "pagination_tests.PaginationContracts.test_all_four_lists_are_complete_and_deterministic",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.89
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_bad_parameters_empty_defaults_and_page_size",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.375
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_equal_price_sort_has_unique_tie_breaker",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.265
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_featured_on_later_page_and_false_filter",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.188
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_product_boundaries_zero_one_twenty_twentyone_twentyfive",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.766
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_projection_and_private_filter_side_channels",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.532
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_public_restrictions_cannot_be_widened",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.922
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_query_count_is_bounded_by_page_not_row_count",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.563
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_reads_and_denied_queries_do_not_mutate_business_data",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.547
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_recipe_readonly_ranking_and_category_annotation",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.781
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_recipe_unit_ranking_does_not_integer_divide",
+      "status": "pass",
+      "detail": null,
+      "seconds": 2.188
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_search_finds_last_record_for_all_lists",
+      "status": "pass",
+      "detail": null,
+      "seconds": 3.828
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_selected_id_and_category_filters",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.141
+    },
+    {
+      "test": "pagination_tests.PaginationContracts.test_stock_status_filter_and_order",
+      "status": "pass",
+      "detail": null,
+      "seconds": 1.64
+    }
+  ],
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0
+}

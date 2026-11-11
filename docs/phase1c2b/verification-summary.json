@@ -1,0 +1,397 @@
+{
+  "baseline": "98e29bf",
+  "branch": "codex/phase-1c2b-pagination-lookups",
+  "production_access": false,
+  "deployment": false,
+  "browser": {
+    "20261111-102856-postgres-browser-25-cdf9493a": {
+      "baseline": false,
+      "checks": 13,
+      "passed": 13,
+      "failed": 0,
+      "harness_failure": true,
+      "servers_stopped": true,
+      "page_errors": []
+    },
+    "20261111-103200-postgres-browser-25-285e5500": {
+      "baseline": false,
+      "checks": 32,
+      "passed": 32,
+      "failed": 0,
+      "harness_failure": false,
+      "servers_stopped": true,
+      "page_errors": []
+    },
+    "20261111-103637-postgres-browser-20-96432e23": {
+      "baseline": false,
+      "checks": 14,
+      "passed": 14,
+      "failed": 0,
+      "harness_failure": false,
+      "servers_stopped": true,
+      "page_errors": []
+    },
+    "20261111-103757-postgres-browser-21-4a10bf32": {
+      "baseline": false,
+      "checks": 14,
+      "passed": 14,
+      "failed": 0,
+      "harness_failure": false,
+      "servers_stopped": true,
+      "page_errors": []
+    },
+    "20261111-100807-sqlite-before-25-5f2e86f2": {
+      "baseline": true,
+      "checks": 3,
+      "passed": 0,
+      "failed": 3,
+      "harness_failure": false,
+      "servers_stopped": true,
+      "page_errors": []
+    }
+  },
+  "api": {
+    "20261111-101159-sqlite-api-25-cbcc3e5f": {
+      "tests_run": 13,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 12
+    },
+    "20261111-102239-sqlite-api-25-f655dfa3": {
+      "tests_run": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 13
+    },
+    "20261111-102244-postgres-api-25-b9df757a": {
+      "tests_run": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 13
+    },
+    "20261111-102853-sqlite-api-25-2d7d3a33": {
+      "tests_run": 14,
+      "failures": 0,
+      "errors": 2,
+      "skipped": 0,
+      "passed": 12
+    },
+    "20261111-102859-postgres-api-25-7ebe89e5": {
+      "tests_run": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 14
+    },
+    "20261111-103155-sqlite-api-25-87477405": {
+      "tests_run": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 14
+    },
+    "20261111-103641-postgres-api-25-1981404f": {
+      "tests_run": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 14
+    },
+    "20261111-104055-sqlite-api-25-b2dba904": {
+      "tests_run": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 14
+    },
+    "20261111-104104-postgres-api-25-60867cb4": {
+      "tests_run": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 14
+    }
+  },
+  "preservation": {
+    "20261111-103155-sqlite-preservation-25-c7a1e2da": {
+      "tests_run": 250,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 35,
+      "passed": 215
+    },
+    "20261111-103223-postgres-preservation-25-2590096b": {
+      "tests_run": 250,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "passed": 249
+    }
+  },
+  "frontend": {
+    "evidence": "docs/phase1c2b/evidence/20261111-104055-frontend-560598d2",
+    "results": {
+      "query-identity": {
+        "exit_code": 0,
+        "command": [
+          "node",
+          "--experimental-strip-types",
+          "docs/phase1c2a/test_query_identity.mjs"
+        ]
+      },
+      "csrf-transport": {
+        "exit_code": 0,
+        "command": [
+          "node",
+          "--experimental-strip-types",
+          "docs/phase1b1/test_csrf_transport.mjs"
+        ]
+      },
+      "operation-identity": {
+        "exit_code": 0,
+        "command": [
+          "node",
+          "--experimental-strip-types",
+          "docs/phase1b1/test_operation_identity.mjs"
+        ]
+      },
+      "stock-preview": {
+        "exit_code": 0,
+        "command": [
+          "node",
+          "--experimental-strip-types",
+          "docs/phase1a3/test_stock_preview.mjs"
+        ]
+      },
+      "permissions": {
+        "exit_code": 0,
+        "command": [
+          "node",
+          "--experimental-strip-types",
+          "docs/phase1b2/test_permissions.mjs"
+        ]
+      },
+      "auth-lifecycle": {
+        "exit_code": 0,
+        "command": [
+          "node",
+          "--experimental-strip-types",
+          "docs/phase1b3_static/test_auth_lifecycle.mjs"
+        ]
+      },
+      "listing-params": {
+        "exit_code": 0,
+        "command": [
+          "node",
+          "--experimental-strip-types",
+          "docs/phase1c2b/test_listing_params.mjs"
+        ]
+      },
+      "affected-lint": {
+        "exit_code": 0,
+        "command": [
+          "node",
+          "node_modules/eslint/bin/eslint.js",
+          "src/components/PaginatedLookup.tsx",
+          "src/components/recipes/RecipeCostPreview.tsx",
+          "src/hooks/useIngredients.ts",
+          "src/hooks/useListingPageRecovery.ts",
+          "src/hooks/useListingPages.ts",
+          "src/hooks/useProducts.ts",
+          "src/hooks/useRecipes.ts",
+          "src/lib/listingParams.ts",
+          "src/lib/managementQueryKeys.ts",
+          "src/pages/IngredientsPage.tsx",
+          "src/pages/LandingPage.tsx",
+          "src/pages/OperationalPages.tsx",
+          "src/pages/ProductFormPage.tsx",
+          "src/pages/ProductsPage.tsx",
+          "src/pages/RecipeFormPage.tsx",
+          "src/pages/RecipesPage.tsx",
+          "src/pages/SaleFormPage.tsx",
+          "src/services/ingredient.service.ts",
+          "src/services/listing.service.ts",
+          "src/services/product.service.ts",
+          "src/services/recipe.service.ts",
+          "src/types/recipe.types.ts"
+        ]
+      },
+      "full-lint": {
+        "exit_code": 1,
+        "command": [
+          "node",
+          "node_modules/eslint/bin/eslint.js",
+          ".",
+          "--format",
+          "json"
+        ]
+      },
+      "build": {
+        "exit_code": 0,
+        "command": [
+          "npm.cmd",
+          "run",
+          "build",
+          "--",
+          "--config",
+          "C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\.verification-runtime\\9d369f3ea5e4492083c8a1d9def5df0a\\vite.verify.mjs"
+        ]
+      },
+      "cleanup": {
+        "owned_runtime_removed": true
+      }
+    },
+    "unit_total": 66,
+    "full_lint": {
+      "errors": 4,
+      "warnings": 5
+    }
+  },
+  "historical_hashes": {
+    "phase0": {
+      "checked": 28,
+      "mismatches": []
+    },
+    "phase1c1": {
+      "checked": 119,
+      "mismatches": []
+    },
+    "phase1c2a": {
+      "checked": 101,
+      "mismatches": []
+    }
+  },
+  "application_files": [
+    "backend/backend/catalog_listing.py",
+    "backend/ingredients/views.py",
+    "backend/products/views.py",
+    "backend/recipes/serializers.py",
+    "backend/recipes/views.py",
+    "frontend/src/components/PaginatedLookup.tsx",
+    "frontend/src/components/recipes/RecipeCostPreview.tsx",
+    "frontend/src/hooks/useIngredients.ts",
+    "frontend/src/hooks/useListingPageRecovery.ts",
+    "frontend/src/hooks/useListingPages.ts",
+    "frontend/src/hooks/useProducts.ts",
+    "frontend/src/hooks/useRecipes.ts",
+    "frontend/src/lib/listingParams.ts",
+    "frontend/src/lib/managementQueryKeys.ts",
+    "frontend/src/pages/IngredientsPage.tsx",
+    "frontend/src/pages/LandingPage.tsx",
+    "frontend/src/pages/OperationalPages.tsx",
+    "frontend/src/pages/ProductFormPage.tsx",
+    "frontend/src/pages/ProductsPage.tsx",
+    "frontend/src/pages/RecipeFormPage.tsx",
+    "frontend/src/pages/RecipesPage.tsx",
+    "frontend/src/pages/SaleFormPage.tsx",
+    "frontend/src/services/ingredient.service.ts",
+    "frontend/src/services/listing.service.ts",
+    "frontend/src/services/product.service.ts",
+    "frontend/src/services/recipe.service.ts",
+    "frontend/src/types/recipe.types.ts"
+  ],
+  "protected_path_diffs": [],
+  "python_syntax_passed": true,
+  "cleanup": {
+    "remaining_runtime_directories": [],
+    "runs": {
+      "20261111-100807-sqlite-before-25-5f2e86f2": {
+        "runtime_removed": true,
+        "owned_container_removed": false,
+        "production_access": false
+      },
+      "20261111-101131-sqlite-api-25-0eecc25c": {
+        "runtime_removed": true,
+        "owned_container_removed": false,
+        "production_access": false
+      },
+      "20261111-101141-postgres-api-25-b5544f40": {
+        "runtime_removed": true,
+        "owned_container_removed": true,
+        "production_access": false
+      },
+      "20261111-101159-sqlite-api-25-cbcc3e5f": {
+        "runtime_removed": true,
+        "owned_container_removed": false,
+        "production_access": false
+      },
+      "20261111-102239-sqlite-api-25-f655dfa3": {
+        "runtime_removed": true,
+        "owned_container_removed": false,
+        "production_access": false
+      },
+      "20261111-102244-postgres-api-25-b9df757a": {
+        "runtime_removed": true,
+        "owned_container_removed": true,
+        "production_access": false
+      },
+      "20261111-102853-sqlite-api-25-2d7d3a33": {
+        "runtime_removed": true,
+        "owned_container_removed": false,
+        "production_access": false
+      },
+      "20261111-102856-postgres-browser-25-cdf9493a": {
+        "runtime_removed": true,
+        "owned_container_removed": true,
+        "production_access": false
+      },
+      "20261111-102859-postgres-api-25-7ebe89e5": {
+        "runtime_removed": true,
+        "owned_container_removed": true,
+        "production_access": false
+      },
+      "20261111-103155-sqlite-api-25-87477405": {
+        "runtime_removed": true,
+        "owned_container_removed": false,
+        "production_access": false
+      },
+      "20261111-103155-sqlite-preservation-25-c7a1e2da": {
+        "runtime_removed": true,
+        "owned_container_removed": false,
+        "production_access": false
+      },
+      "20261111-103200-postgres-browser-25-285e5500": {
+        "runtime_removed": true,
+        "owned_container_removed": true,
+        "production_access": false
+      },
+      "20261111-103223-postgres-preservation-25-2590096b": {
+        "runtime_removed": true,
+        "owned_container_removed": true,
+        "production_access": false
+      },
+      "20261111-103637-postgres-browser-20-96432e23": {
+        "runtime_removed": true,
+        "owned_container_removed": true,
+        "production_access": false
+      },
+      "20261111-103641-postgres-api-25-1981404f": {
+        "runtime_removed": true,
+        "owned_container_removed": true,
+        "production_access": false
+      },
+      "20261111-103757-postgres-browser-21-4a10bf32": {
+        "runtime_removed": true,
+        "owned_container_removed": true,
+        "production_access": false
+      },
+      "20261111-104055-sqlite-api-25-b2dba904": {
+        "runtime_removed": true,
+        "owned_container_removed": false,
+        "production_access": false
+      },
+      "20261111-104104-postgres-api-25-60867cb4": {
+        "runtime_removed": true,
+        "owned_container_removed": true,
+        "production_access": false
+      }
+    },
+    "ports_available": {
+      "18841": true,
+      "18842": true
+    }
+  }
+}

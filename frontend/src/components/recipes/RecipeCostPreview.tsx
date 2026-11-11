@@ -23,7 +23,7 @@ export default function RecipeCostPreview({ control, ingredients }: RecipeCostPr
   const costById = new Map(ingredients.map(i => [i.id, i.cost_per_unit]));
 
   const batchCost =
-    rows?.reduce((sum: number, row: any) => {
+    rows?.reduce((sum, row) => {
       const unitCost = costById.get(Number(row?.ingredient)) ?? 0;
       const qty = Number(row?.quantity) || 0;
       return sum + unitCost * qty;

@@ -1,0 +1,275 @@
+{
+  "observations": {
+    "storefront_initial_bounded_20": {
+      "actual": 20,
+      "expected": 20,
+      "passed": true
+    },
+    "featured_last_product_visible_independently": {
+      "actual": 1,
+      "expected": 1,
+      "passed": true
+    },
+    "boundary_has_next_only_above_20": {
+      "actual": 1,
+      "expected": 1,
+      "passed": true
+    },
+    "last_product_not_in_first_menu_page": {
+      "actual": 0,
+      "expected": 0,
+      "passed": true
+    },
+    "all_menu_records_once_after_paging": {
+      "actual": 25,
+      "expected": 25,
+      "passed": true
+    },
+    "storefront_search_resets_accumulated_pages": {
+      "actual": 1,
+      "expected": 1,
+      "passed": true
+    },
+    "storefront_no_match_state": {
+      "actual": 0,
+      "expected": 0,
+      "passed": true
+    },
+    "sales_lookup_initial_page_limit": {
+      "actual": 21,
+      "expected": 21,
+      "passed": true
+    },
+    "incremental_lookup_no_duplicate_options": {
+      "actual": 26,
+      "expected": 26,
+      "passed": true
+    },
+    "sales_lookup_finds_last_id": {
+      "actual": "25",
+      "expected": "25",
+      "passed": true
+    },
+    "new_sale_price_uses_selected_product": {
+      "actual": "50",
+      "expected": "50",
+      "passed": true
+    },
+    "f04_ingredient_page1_id1": {
+      "actual": "Cache ingredient 01",
+      "expected": "Cache ingredient 01",
+      "passed": true
+    },
+    "f04_ingredient_page2_id2": {
+      "actual": "Z Cache ingredient 02",
+      "expected": "Z Cache ingredient 02",
+      "passed": true
+    }
+  },
+  "requests": [
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 401
+    },
+    {
+      "path": "/api/products/categories/?is_active=true&page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/products/?is_featured=true&is_available=true&category_active=true&page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/products/?is_available=true&category_active=true&page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/products/?is_available=true&category_active=true&page=2",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/products/?search=Cache+product+25&is_available=true&category_active=true&page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/products/?search=unmatched-xyz&is_available=true&category_active=true&page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 401
+    },
+    {
+      "path": "/api/auth/csrf/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/login/",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/products/?page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/products/?page=2",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/products/?search=Cache+product+25&page=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/low-stock/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/?ordering=name&page=1",
+      "method": "GET",
+      "status": 200,
+      "fields": [
+        "category",
+        "category_display",
+        "cost_per_unit",
+        "created_at",
+        "id",
+        "image_url",
+        "is_low_stock",
+        "minimum_stock",
+        "name",
+        "notes",
+        "quantity",
+        "stock_revision",
+        "supplier",
+        "unit",
+        "updated_at"
+      ]
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/1/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/?ordering=name&page=2",
+      "method": "GET",
+      "status": 200,
+      "fields": [
+        "category",
+        "category_display",
+        "cost_per_unit",
+        "created_at",
+        "id",
+        "image_url",
+        "is_low_stock",
+        "minimum_stock",
+        "name",
+        "notes",
+        "quantity",
+        "stock_revision",
+        "supplier",
+        "unit",
+        "updated_at"
+      ]
+    },
+    {
+      "path": "/api/ingredients/2/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/ingredients/?search=Cache+ingredient+25&ordering=name&page=1",
+      "method": "GET",
+      "status": 200,
+      "fields": [
+        "category",
+        "category_display",
+        "cost_per_unit",
+        "created_at",
+        "id",
+        "image_url",
+        "is_low_stock",
+        "minimum_stock",
+        "name",
+        "notes",
+        "quantity",
+        "stock_revision",
+        "supplier",
+        "unit",
+        "updated_at"
+      ]
+    }
+  ],
+  "screenshots": [
+    "boundary-25-storefront.png",
+    "boundary-25-sale-lookup.png"
+  ],
+  "page_errors": [],
+  "blocked_external": [],
+  "baseline": false,
+  "harness_failure": {
+    "type": "AssertionError",
+    "message": "Locator expected to be visible\nActual value: None\nError: strict mode violation: get_by_text(\"Cache ingredient 25\", exact=True) resolved to 2 elements:\n    1) <span class=\"font-heading font-medium\">Cache ingredient 25</span> aka get_by_role(\"table\").get_by_text(\"Cache ingredient\")\n    2) <p class=\"font-heading font-semibold truncate\">Cache ingredient 25</p> aka locator(\"p\").filter(has_text=\"Cache ingredient\")\n \nCall log:\n  - Expect \"to_be_visible\" get_by_text(\"Cache ingredient 25\", exact=True) with timeout 5000ms\n  - waiting for get_by_text(\"Cache ingredient 25\", exact=True)\n",
+    "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1c2b\\browser_checks.py\", line 144, in <module>\n    verify(page,int(os.environ['ROWSZEIN_FIXTURE_COUNT']),go=go,nav=nav,check=check,shot=shot,login=login,logout=logout,\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\docs\\phase1c2b\\browser_scenarios.py\", line 106, in verify\n    expect(page.get_by_text('Cache ingredient 25',exact=True)).to_be_visible()\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\sync_api\\_generated.py\", line 14811, in to_be_visible\n    self._sync(\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_sync_base.py\", line 111, in _sync\n    return task.result()\n           ^^^^^^^^^^^^^\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_assertions.py\", line 852, in to_be_visible\n    await self._expect_impl(\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_assertions.py\", line 128, in _expect_impl\n    _record_soft_or_raise(\n  File \"C:\\Users\\CARE MBA\\Desktop\\Rowszein-s-Delight\\backend\\.venv\\Lib\\site-packages\\playwright\\_impl\\_assertions.py\", line 60, in _record_soft_or_raise\n    raise error\nAssertionError: Locator expected to be visible\nActual value: None\nError: strict mode violation: get_by_text(\"Cache ingredient 25\", exact=True) resolved to 2 elements:\n    1) <span class=\"font-heading font-medium\">Cache ingredient 25</span> aka get_by_role(\"table\").get_by_text(\"Cache ingredient\")\n    2) <p class=\"font-heading font-semibold truncate\">Cache ingredient 25</p> aka locator(\"p\").filter(has_text=\"Cache ingredient\")\n \nCall log:\n  - Expect \"to_be_visible\" get_by_text(\"Cache ingredient 25\", exact=True) with timeout 5000ms\n  - waiting for get_by_text(\"Cache ingredient 25\", exact=True)\n\n"
+  },
+  "servers_stopped": true
+}

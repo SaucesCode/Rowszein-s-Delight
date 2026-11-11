@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Recipe, RecipeIngredient
 from ingredients.models import Ingredient
 from products.serializers import ProductSerializer
+from products.serializers import OperationalCategorySerializer
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
@@ -21,6 +22,7 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     recipe_ingredients = RecipeIngredientSerializer(many=True)
     product_name = serializers.CharField(source='product.name', read_only=True)
+    category = OperationalCategorySerializer(source='product.category', read_only=True)
     production_cost = serializers.DecimalField(
         max_digits=10, decimal_places=2, read_only=True,
     )
@@ -34,6 +36,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             'id',
             'product',
             'product_name',
+            'category',
             'yield_quantity',
             'notes',
             'recipe_ingredients',

@@ -1,0 +1,14 @@
+PASS storefront_initial_bounded_20
+PASS featured_last_product_visible_independently
+PASS boundary_has_next_only_above_20
+PASS all_menu_records_once_after_paging
+PASS storefront_search_resets_accumulated_pages
+PASS storefront_no_match_state
+PASS sales_lookup_initial_page_limit
+PASS sales_lookup_finds_last_id
+PASS new_sale_price_uses_selected_product
+PASS create_moves_count_20_to_21
+PASS edit_refreshes_paged_list
+PASS delete_only_row_on_last_page
+PASS page_recovers_after_delete
+PASS no_page_errors

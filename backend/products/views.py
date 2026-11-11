@@ -10,6 +10,7 @@ from .models import Category, Product
 from .serializers import CategorySerializer, ProductSerializer
 from .serializers import OperationalCategorySerializer, OperationalProductSerializer
 from accounts.authentication import PublicCatalogAuthentication
+from backend.catalog_listing import CatalogListing
 
 
 class CatalogProjection:
@@ -27,13 +28,18 @@ class CatalogProjection:
         return queryset
 
 
-class CategoryListCreateView(CatalogProjection, generics.ListCreateAPIView):
+class CategoryListCreateView(CatalogListing, CatalogProjection, generics.ListCreateAPIView):
+    listing_kind = 'categories'
     authentication_classes = [PublicCatalogAuthentication]
     operational_serializer = OperationalCategorySerializer
     permission_classes = [BusinessPermission]
     business_actions = {'GET': 'catalog.public', 'POST': 'catalog.manage', 'OPTIONS': 'catalog.read'}
     serializer_class = CategorySerializer
-    queryset = Category.objects.annotate(product_count=Count('products')).order_by('sort_order', 'name', 'pk')
+    queryset = Category.objects.all()
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.annotate(product_count=Count('products')) if business_role(self.request.user) == 'admin' else queryset
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
@@ -103,7 +109,8 @@ class CategoryDetailView(CatalogProjection, generics.RetrieveUpdateDestroyAPIVie
         }, status=status.HTTP_200_OK)
 
 
-class ProductListCreateView(CatalogProjection, generics.ListCreateAPIView):
+class ProductListCreateView(CatalogListing, CatalogProjection, generics.ListCreateAPIView):
+    listing_kind = 'products'
     authentication_classes = [PublicCatalogAuthentication]
     operational_serializer = OperationalProductSerializer
     permission_classes = [BusinessPermission]

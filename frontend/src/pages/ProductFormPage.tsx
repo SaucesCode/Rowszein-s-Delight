@@ -1,3 +1,4 @@
+import PaginatedLookup from "@/components/PaginatedLookup";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -143,7 +144,7 @@ export default function ProductFormPage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const { data: product, isLoading } = useProduct(Number(id));
-  const { data: categoriesData, isLoading: categoriesLoading } = useCategories();
+  const { data: categoriesData } = useCategories();
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct(Number(id));
   const categories: Category[] = categoriesData?.data ?? [];
@@ -317,23 +318,9 @@ export default function ProductFormPage() {
           error={errors.category_id?.message}
           required
         >
-          <select
-            {...register("category_id", { valueAsNumber: true })}
-            className="field-input mt-1"
-            aria-invalid={!!errors.category_id}
-            disabled={categoriesLoading || categories.length === 0}
-          >
-            <option value={0}>
-              {categoriesLoading ? "Loading categories..." : "Select a category..."}
-            </option>
-            {categories
-              .filter(category => category.is_active)
-              .map(category => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-          </select>
+          <PaginatedLookup kind="categories" label="Category" selectedId={Number(selectedCategoryId) || 0}
+              params={{ is_active: true }} {...register("category_id", { valueAsNumber: true })}
+              aria-invalid={!!errors.category_id} />
         </Field>
 
         {/* Price */}
