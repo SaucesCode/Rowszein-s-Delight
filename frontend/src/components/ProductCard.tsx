@@ -79,7 +79,6 @@ export default function ProductCard({
       style={{
         border: "1px solid var(--ol-card-border, #F5D5E2)",
         borderRadius: "16px",
-        overflow: "hidden",
         boxShadow: "0 1px 3px rgba(43, 24, 32, 0.04), 0 2px 6px rgba(199, 37, 94, 0.03)",
       }}
       onMouseOver={(e) => {
@@ -96,7 +95,7 @@ export default function ProductCard({
     >
       {/* ─── Visual Header: Image or Signature Glazed Artwork ─── */}
       <div
-        className="relative overflow-hidden flex items-center justify-center"
+        className="relative overflow-hidden flex items-center justify-center rounded-t-[15px]"
         style={{
           height: 160,
           background: theme.bg,
@@ -299,13 +298,15 @@ export default function ProductCard({
           </button>
 
           <DropdownMenu
-            width={180}
+            width={170}
+            placement="top"
+            zIndex={60}
             trigger={({ open }) => (
               <button
                 type="button"
-                className="w-7 h-7 flex items-center justify-center rounded-full transition-colors"
+                className="w-7 h-7 flex items-center justify-center rounded-full transition-colors cursor-pointer border-0"
                 style={{
-                  background: open ? "#FFE6F0" : "transparent",
+                  background: open ? "#FFE6F0" : "#FDF0F5",
                   color: open ? "#C7255E" : "#7E6570",
                 }}
                 aria-label={`More actions for ${product.name}`}
@@ -317,33 +318,22 @@ export default function ProductCard({
             )}
           >
             <button
+              type="button"
               onClick={onDuplicate}
-              className="flex items-center gap-2.5 w-full text-left px-3.5 py-2.5 transition-colors hover:bg-[#FFF0F5]"
+              className="flex items-center gap-2.5 w-full text-left px-3.5 py-2.5 transition-colors hover:bg-[#FFF0F5] cursor-pointer border-0 bg-transparent"
               style={{ fontSize: 13, color: "#2B1820" }}
             >
               <Copy size={14} style={{ color: "#C7255E" }} aria-hidden="true" />
-              Duplicate
+              Duplicate Donut
             </button>
             <button
-              onClick={onToggleAvailability}
-              disabled={togglePending}
-              className="flex items-center gap-2.5 w-full text-left px-3.5 py-2.5 transition-colors hover:bg-[#FFF0F5]"
-              style={{ fontSize: 13, color: "#2B1820", borderTop: "1px solid #F8EBF1" }}
-            >
-              {product.is_available ? (
-                <EyeOff size={14} style={{ color: "#7E6570" }} aria-hidden="true" />
-              ) : (
-                <Eye size={14} style={{ color: "#C7255E" }} aria-hidden="true" />
-              )}
-              {product.is_available ? "Hide from shop" : "Show in shop"}
-            </button>
-            <button
+              type="button"
               onClick={onDelete}
-              className="flex items-center gap-2.5 w-full text-left px-3.5 py-2.5 transition-colors hover:bg-[#FEF2F2]"
+              className="flex items-center gap-2.5 w-full text-left px-3.5 py-2.5 transition-colors hover:bg-[#FEF2F2] cursor-pointer border-0 bg-transparent"
               style={{ fontSize: 13, color: "#DC2626", borderTop: "1px solid #F8EBF1" }}
             >
               <Trash2 size={14} strokeWidth={2} aria-hidden="true" />
-              Delete permanently
+              Delete Donut
             </button>
           </DropdownMenu>
         </div>

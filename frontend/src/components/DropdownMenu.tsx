@@ -5,6 +5,8 @@ interface DropdownMenuProps {
   children: ReactNode;
   align?: "left" | "right";
   width?: number;
+  placement?: "top" | "bottom";
+  zIndex?: number;
 }
 
 export default function DropdownMenu({
@@ -12,6 +14,8 @@ export default function DropdownMenu({
   children,
   align = "right",
   width = 200,
+  placement = "bottom",
+  zIndex = 50,
 }: DropdownMenuProps) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -35,20 +39,24 @@ export default function DropdownMenu({
 
   return (
     <div className="relative inline-block" ref={containerRef}>
-      <div onClick={() => setOpen(o => !o)}>{trigger({ open })}</div>
+      <div onClick={() => setOpen((o) => !o)}>{trigger({ open })}</div>
 
       {open && (
         <div
           role="menu"
           onClick={() => setOpen(false)}
-          className="absolute top-[calc(100%+6px)] z-30 overflow-hidden animate-fade-in"
+          className="absolute overflow-hidden animate-fade-in"
           style={{
             [align]: 0,
+            ...(placement === "top"
+              ? { bottom: "calc(100% + 8px)" }
+              : { top: "calc(100% + 6px)" }),
             width,
-            background: "#FFFDFB",
-            border: "1px solid #E8E6E1",
-            borderRadius: 12,
-            boxShadow: "0 8px 24px rgba(107, 66, 38, 0.14)",
+            zIndex,
+            background: "#FFFFFF",
+            border: "1px solid #F5D5E2",
+            borderRadius: 14,
+            boxShadow: "0 12px 30px rgba(199, 37, 94, 0.14), 0 4px 12px rgba(0, 0, 0, 0.05)",
           }}
         >
           {children}

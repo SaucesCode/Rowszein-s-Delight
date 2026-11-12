@@ -6,11 +6,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   useCategories,
   useCreateProduct,
+  useDeleteProduct,
   useProduct,
   useUpdateProduct,
 } from "@/hooks/useProducts";
-import { Upload } from "lucide-react";
+import { Upload, Trash2 } from "lucide-react";
 import SkeletonTable from "@/components/SkeletonTable";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import type { Category } from "@/types/product.types";
 import { ArrowLeftIcon, StarIcon, CheckIcon } from "@/pages/owner-home/OwnerHomeIcons";
 
@@ -44,11 +46,13 @@ export default function ProductFormPage() {
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
   const { data: product, isLoading } = useProduct(Number(id));
   const { data: categoriesData } = useCategories();
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct(Number(id));
+  const deleteProduct = useDeleteProduct();
   const categories: Category[] = categoriesData?.data ?? [];
 
   const defaultCategoryId =
@@ -117,6 +121,13 @@ export default function ProductFormPage() {
     }
   };
 
+  const handleDelete = () => {
+    if (!id) return;
+    deleteProduct.mutate(Number(id), {
+      onSuccess: () => navigate("/products"),
+    });
+  };
+
   const isPending = createProduct.isPending || updateProduct.isPending;
 
   if (isEdit && isLoading) {
@@ -124,34 +135,29 @@ export default function ProductFormPage() {
   }
 
   return (
-    <div className="subview-shell max-w-4xl mx-auto">
-      {/* ─── Subview Breadcrumb ─── */}
-      <nav className="mb-2">
-        <Link to="/products" className="owner-back-btn" aria-label="Back to Donut Products">
-          <ArrowLeftIcon width={14} height={14} />
-          <span>Back to Products</span>
-        </Link>
-      </nav>
-
-      {/* ─── Page Title Header ─── */}
-      <header className="mb-6">
-        <h1
-          className="text-2xl sm:text-3xl font-extrabold"
-          style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#2B1820", letterSpacing: "-0.025em" }}
-        >
-          {isEdit ? `Edit: ${product?.name ?? "Donut"}` : "Add New Donut"}
-        </h1>
-        <p className="text-sm mt-1" style={{ color: "#7E6570" }}>
-          {isEdit
-            ? "Update your donut pricing, flavor notes, category, and shop visibility."
-            : "Create a delicious new addition to your bakery catalog with custom pricing."}
-        </p>
-      </header>
+    <div className="subview-shell">
+      {/* ─── Subview Header Strip (Breadcrumb + Title) ─── */}
+      <section className="owner-subview-header">
+        <div className="owner-subview-left">
+          <Link to="/products" className="owner-back-btn" aria-label="Back to Donut Products">
+            <ArrowLeftIcon width={14} height={14} />
+            <span>Back to Products</span>
+          </Link>
+          <div className="owner-subview-title-group">
+            <h1 className="owner-subview-title">
+              {isEdit ? `Edit: ${product?.name ?? "Donut"}` : "Add New Donut"}
+            </h1>
+            <span className="owner-count-pill">
+              {isEdit ? "Catalog Modification" : "New Creation"}
+            </span>
+          </div>
+        </div>
+      </section>
 
       {/* Duplicate Notice */}
       {duplicateData && (
         <div
-          className="mb-5 px-4 py-3 rounded-xl flex items-center gap-2"
+          className="px-4 py-3 rounded-2xl flex items-center gap-2"
           style={{ background: "#FFE6F0", border: "1px solid #F5D5E2", color: "#C7255E" }}
         >
           <span className="text-xs font-semibold">
@@ -160,16 +166,16 @@ export default function ProductFormPage() {
         </div>
       )}
 
-      {/* ─── Boutique Form Card ─── */}
+      {/* ─── Boutique Form Card (Full Width with Generous Spacing) ─── */}
       <form
         onSubmit={handleSubmit(onSubmit)}
         noValidate
-        className="bg-white rounded-3xl shadow-md overflow-hidden"
+        className="bg-white rounded-3xl shadow-sm overflow-hidden"
         style={{ border: "1px solid var(--ol-card-border, #F5D5E2)" }}
       >
-        <div className="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-[260px_1fr] gap-8">
+        <div className="p-8 sm:p-10 lg:p-12 grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-10 lg:gap-14">
           {/* ─── Left Column: Donut Photo Uploader ─── */}
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <label
                 className="text-xs font-bold uppercase tracking-wider"
@@ -182,7 +188,7 @@ export default function ProductFormPage() {
 
             {/* Photo Box */}
             <div
-              className="w-full aspect-square rounded-2xl flex flex-col items-center justify-center relative overflow-hidden transition-all"
+              className="w-full max-w-[340px] aspect-square rounded-2xl flex flex-col items-center justify-center relative overflow-hidden transition-all mx-auto lg:mx-0"
               style={{
                 background: "linear-gradient(135deg, #FFF0F5 0%, #FFE6F0 100%)",
                 border: "2px dashed #F5CADB",
@@ -195,8 +201,8 @@ export default function ProductFormPage() {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="flex flex-col items-center justify-center p-4 text-center">
-                  <svg width="68" height="68" viewBox="0 0 48 48" fill="none" className="mb-2" aria-hidden="true">
+                <div className="flex flex-col items-center justify-center p-6 text-center">
+                  <svg width="84" height="84" viewBox="0 0 48 48" fill="none" className="mb-3" aria-hidden="true">
                     <circle cx="24" cy="24" r="19" fill="#F8C08A" />
                     <circle cx="24" cy="24" r="18" fill="#FF8BB5" />
                     <path
@@ -213,19 +219,19 @@ export default function ProductFormPage() {
                     <rect x="15" y="27" width="4" height="1.5" rx="0.75" fill="#70D6FF" transform="rotate(10 15 27)" />
                   </svg>
                   <span
-                    className="font-bold text-xs"
+                    className="font-bold text-sm"
                     style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#C7255E" }}
                   >
                     Upload Donut Photo
                   </span>
-                  <span className="text-[11px] text-gray-500 mt-0.5">Drop image or click below</span>
+                  <span className="text-xs text-gray-500 mt-1">Drop image or click below</span>
                 </div>
               )}
             </div>
 
             {/* Choose File Button */}
             <label
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-xs font-bold cursor-pointer transition-all bg-white shadow-sm"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold cursor-pointer transition-all bg-white shadow-sm w-full max-w-[340px] mx-auto lg:mx-0"
               style={{ border: "1px solid #F5D5E2", color: "#C7255E" }}
               onMouseOver={(e) => {
                 e.currentTarget.style.background = "#FFE6F0";
@@ -234,23 +240,23 @@ export default function ProductFormPage() {
                 e.currentTarget.style.background = "#FFFFFF";
               }}
             >
-              <Upload size={13} strokeWidth={2.5} />
-              <span>{imagePreview ? "Change Photo" : "Choose Photo File"}</span>
+              <Upload size={14} strokeWidth={2.5} />
+              <span>{imagePreview ? "Change Photo File" : "Choose Photo File"}</span>
               <input type="file" accept="image/*" onChange={handleImageChange} className="sr-only" />
             </label>
 
-            <p className="text-[11px] text-center text-gray-400 leading-tight">
-              Square JPG, PNG, or WEBP. If no photo is added, your signature glaze illustration will display automatically.
+            <p className="text-xs text-center lg:text-left text-gray-400 leading-relaxed max-w-[340px]">
+              Square JPG, PNG, or WEBP. If no custom photo is added, your signature glaze illustration will display automatically across the catalog.
             </p>
           </div>
 
-          {/* ─── Right Column: Form Fields ─── */}
-          <div className="flex flex-col gap-4">
+          {/* ─── Right Column: Form Fields with Generous Spacing ─── */}
+          <div className="flex flex-col gap-6">
             {/* Donut Name */}
             <div>
               <label
                 htmlFor="name"
-                className="block text-xs font-bold mb-1"
+                className="block text-xs font-bold uppercase tracking-wider mb-2"
                 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#2B1820" }}
               >
                 Donut Name <span style={{ color: "#C7255E" }}>*</span>
@@ -259,7 +265,7 @@ export default function ProductFormPage() {
                 id="name"
                 {...register("name")}
                 placeholder="e.g. Wild Strawberry Glazed Delight"
-                className="w-full px-3.5 py-2.5 text-sm rounded-xl outline-none transition-all"
+                className="w-full px-4 py-3 text-sm rounded-xl outline-none transition-all font-medium"
                 style={{
                   background: "#FFFDFE",
                   border: errors.name ? "1.5px solid #EF4444" : "1px solid #F1D3E0",
@@ -276,21 +282,21 @@ export default function ProductFormPage() {
                 aria-invalid={!!errors.name}
               />
               {errors.name ? (
-                <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>
+                <p className="text-xs text-red-500 mt-1.5">{errors.name.message}</p>
               ) : (
-                <p className="text-[11px] text-gray-500 mt-1">Give your creation an appetizing, customer-friendly title.</p>
+                <p className="text-xs text-gray-500 mt-1.5">Give your creation an appetizing, customer-friendly title.</p>
               )}
             </div>
 
             {/* Category Chips */}
             <div>
               <label
-                className="block text-xs font-bold mb-1.5"
+                className="block text-xs font-bold uppercase tracking-wider mb-2"
                 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#2B1820" }}
               >
                 Category <span style={{ color: "#C7255E" }}>*</span>
               </label>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2.5">
                 {categories
                   .filter((cat) => cat.is_active)
                   .map((cat) => {
@@ -300,7 +306,7 @@ export default function ProductFormPage() {
                         key={cat.id}
                         type="button"
                         onClick={() => setValue("category_id", cat.id, { shouldValidate: true })}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer"
                         style={{
                           background: isSelected ? "#C7255E" : "#FFFFFF",
                           color: isSelected ? "#FFFFFF" : "#7E6570",
@@ -308,31 +314,31 @@ export default function ProductFormPage() {
                           boxShadow: isSelected ? "0 2px 8px rgba(199, 37, 94, 0.25)" : "none",
                         }}
                       >
-                        {isSelected && <CheckIcon width={11} height={11} />}
+                        {isSelected && <CheckIcon width={12} height={12} />}
                         <span>{cat.name}</span>
                       </button>
                     );
                   })}
               </div>
               {errors.category_id && (
-                <p className="text-xs text-red-500 mt-1">{errors.category_id.message}</p>
+                <p className="text-xs text-red-500 mt-1.5">{errors.category_id.message}</p>
               )}
             </div>
 
             {/* Price & Optional Batch Target */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <label
                   htmlFor="price"
-                  className="block text-xs font-bold mb-1"
+                  className="block text-xs font-bold uppercase tracking-wider mb-2"
                   style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#2B1820" }}
                 >
                   Selling Price (₱) <span style={{ color: "#C7255E" }}>*</span>
                 </label>
                 <div className="relative flex items-center">
                   <span
-                    className="absolute left-3.5 font-bold pointer-events-none"
-                    style={{ color: "#C7255E", fontSize: "0.9375rem" }}
+                    className="absolute left-4 font-extrabold pointer-events-none"
+                    style={{ color: "#C7255E", fontSize: "1rem" }}
                   >
                     ₱
                   </span>
@@ -343,7 +349,7 @@ export default function ProductFormPage() {
                     min="0.01"
                     {...register("price", { valueAsNumber: true })}
                     placeholder="0.00"
-                    className="w-full pl-8 pr-3.5 py-2.5 text-sm rounded-xl outline-none font-bold transition-all"
+                    className="w-full pl-9 pr-4 py-3 text-sm rounded-xl outline-none font-bold transition-all"
                     style={{
                       background: "#FFFDFE",
                       border: errors.price ? "1.5px solid #EF4444" : "1px solid #F1D3E0",
@@ -361,25 +367,25 @@ export default function ProductFormPage() {
                   />
                 </div>
                 {errors.price ? (
-                  <p className="text-xs text-red-500 mt-1">{errors.price.message}</p>
+                  <p className="text-xs text-red-500 mt-1.5">{errors.price.message}</p>
                 ) : (
-                  <p className="text-[11px] text-gray-500 mt-1">Retail selling price per piece.</p>
+                  <p className="text-xs text-gray-500 mt-1.5">Retail customer price per piece.</p>
                 )}
               </div>
 
               <div>
                 <label
                   htmlFor="batch"
-                  className="block text-xs font-bold mb-1"
+                  className="block text-xs font-bold uppercase tracking-wider mb-2"
                   style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#2B1820" }}
                 >
-                  Daily Batch Target <span className="text-gray-400 font-normal">(Optional)</span>
+                  Daily Batch Target <span className="text-gray-400 font-normal lowercase">(optional)</span>
                 </label>
                 <input
                   id="batch"
                   type="text"
                   placeholder="e.g. 48 pcs"
-                  className="w-full px-3.5 py-2.5 text-sm rounded-xl outline-none transition-all"
+                  className="w-full px-4 py-3 text-sm rounded-xl outline-none transition-all"
                   style={{ background: "#FFFDFE", border: "1px solid #F1D3E0", color: "#2B1820" }}
                   onFocus={(e) => {
                     e.currentTarget.style.borderColor = "#C7255E";
@@ -390,15 +396,15 @@ export default function ProductFormPage() {
                     e.currentTarget.style.boxShadow = "none";
                   }}
                 />
-                <p className="text-[11px] text-gray-500 mt-1">Standard morning bake target.</p>
+                <p className="text-xs text-gray-500 mt-1.5">Standard morning bake target for kitchen staff.</p>
               </div>
             </div>
 
-            {/* Description */}
+            {/* Flavor Profile & Description */}
             <div>
               <label
                 htmlFor="description"
-                className="block text-xs font-bold mb-1"
+                className="block text-xs font-bold uppercase tracking-wider mb-2"
                 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#2B1820" }}
               >
                 Flavor Profile &amp; Description
@@ -406,9 +412,9 @@ export default function ProductFormPage() {
               <textarea
                 id="description"
                 {...register("description")}
-                rows={3}
-                placeholder="Describe flavors, glazes, dough texture, and toppings…"
-                className="w-full px-3.5 py-2.5 text-sm rounded-xl outline-none resize-none transition-all"
+                rows={4}
+                placeholder="Describe flavors, signature glazes, brioche dough texture, and toppings…"
+                className="w-full px-4 py-3 text-sm rounded-xl outline-none resize-none transition-all leading-relaxed"
                 style={{ background: "#FFFDFE", border: "1px solid #F1D3E0", color: "#2B1820" }}
                 onFocus={(e) => {
                   e.currentTarget.style.borderColor = "#C7255E";
@@ -419,24 +425,24 @@ export default function ProductFormPage() {
                   e.currentTarget.style.boxShadow = "none";
                 }}
               />
-              <p className="text-[11px] text-gray-500 mt-0.5">Displayed on customer shop card and menu details.</p>
+              <p className="text-xs text-gray-500 mt-1.5">Displayed on customer shop card and product detail dialogs.</p>
             </div>
 
-            {/* ─── Toggles Box: Storefront & Bestseller ─── */}
-            <div
-              className="p-4 rounded-2xl flex flex-col gap-3.5"
-              style={{ background: "#FFF9FB", border: "1px solid #F5D5E2" }}
-            >
-              <div className="flex items-center justify-between gap-3">
+            {/* ─── Storefront & Bestseller Switches (2 Cards Side-by-Side) ─── */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div
+                className="p-5 rounded-2xl flex items-center justify-between gap-4"
+                style={{ background: "#FFF9FB", border: "1px solid #F5D5E2" }}
+              >
                 <div>
                   <span
-                    className="block text-xs font-bold"
+                    className="block text-xs font-bold mb-0.5"
                     style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#2B1820" }}
                   >
-                    Live in Customer Storefront
+                    Live in Storefront
                   </span>
-                  <span className="text-[11px] text-gray-500">
-                    Customers can view and order this donut on the storefront.
+                  <span className="text-xs text-gray-500">
+                    Visible to customers for online ordering.
                   </span>
                 </div>
                 <button
@@ -446,39 +452,40 @@ export default function ProductFormPage() {
                   onClick={() => setValue("is_available", !isAvailable)}
                   className="relative flex-shrink-0 rounded-full transition-colors duration-200 border-none cursor-pointer"
                   style={{
-                    width: 38,
-                    height: 22,
+                    width: 42,
+                    height: 24,
                     background: isAvailable ? "#C7255E" : "#E5E7EB",
                   }}
                 >
                   <span
                     className="absolute rounded-full bg-white shadow-sm transition-transform duration-200"
                     style={{
-                      width: 16,
-                      height: 16,
+                      width: 18,
+                      height: 18,
                       top: 3,
                       left: 3,
-                      transform: isAvailable ? "translateX(16px)" : "translateX(0)",
+                      transform: isAvailable ? "translateX(18px)" : "translateX(0)",
                     }}
                   />
                 </button>
               </div>
 
-              <div style={{ borderTop: "1px solid #F8EBF1" }} />
-
-              <div className="flex items-center justify-between gap-3">
+              <div
+                className="p-5 rounded-2xl flex items-center justify-between gap-4"
+                style={{ background: "#FFF9FB", border: "1px solid #F5D5E2" }}
+              >
                 <div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 mb-0.5">
                     <span
                       className="text-xs font-bold"
                       style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#2B1820" }}
                     >
-                      Feature as Bestseller
+                      Featured Bestseller
                     </span>
                     <StarIcon width={13} height={13} style={{ color: "#C7255E" }} />
                   </div>
-                  <span className="text-[11px] text-gray-500">
-                    Highlight this donut with a star badge at the top of your menu.
+                  <span className="text-xs text-gray-500">
+                    Spotlight with a gold star badge.
                   </span>
                 </div>
                 <button
@@ -488,19 +495,19 @@ export default function ProductFormPage() {
                   onClick={() => setValue("is_featured", !isFeatured)}
                   className="relative flex-shrink-0 rounded-full transition-colors duration-200 border-none cursor-pointer"
                   style={{
-                    width: 38,
-                    height: 22,
+                    width: 42,
+                    height: 24,
                     background: isFeatured ? "#C7255E" : "#E5E7EB",
                   }}
                 >
                   <span
                     className="absolute rounded-full bg-white shadow-sm transition-transform duration-200"
                     style={{
-                      width: 16,
-                      height: 16,
+                      width: 18,
+                      height: 18,
                       top: 3,
                       left: 3,
-                      transform: isFeatured ? "translateX(16px)" : "translateX(0)",
+                      transform: isFeatured ? "translateX(18px)" : "translateX(0)",
                     }}
                   />
                 </button>
@@ -511,37 +518,68 @@ export default function ProductFormPage() {
 
         {/* ─── Form Card Footer Actions ─── */}
         <div
-          className="px-6 sm:px-8 py-4 flex items-center justify-end gap-3"
+          className="px-8 sm:px-10 lg:px-12 py-5 flex items-center justify-between gap-3"
           style={{ background: "#FFFDFE", borderTop: "1px solid #F8EBF1" }}
         >
-          <button
-            type="button"
-            onClick={() => navigate("/products")}
-            className="px-5 py-2.5 rounded-full text-xs font-semibold transition-all bg-transparent"
-            style={{ border: "1px solid #F5D5E2", color: "#7E6570" }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.background = "#F3F4F6";
-              e.currentTarget.style.color = "#2B1820";
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.background = "transparent";
-              e.currentTarget.style.color = "#7E6570";
-            }}
-          >
-            Cancel
-          </button>
+          {isEdit ? (
+            <button
+              type="button"
+              onClick={() => setDeleteConfirmOpen(true)}
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full text-xs font-bold transition-all border-none cursor-pointer"
+              style={{ background: "#FEF2F2", color: "#DC2626" }}
+              onMouseOver={(e) => (e.currentTarget.style.background = "#FEE2E2")}
+              onMouseOut={(e) => (e.currentTarget.style.background = "#FEF2F2")}
+            >
+              <Trash2 size={14} strokeWidth={2.5} />
+              <span>Delete Donut</span>
+            </button>
+          ) : (
+            <div />
+          )}
 
-          <button
-            type="submit"
-            disabled={isPending}
-            className="owner-action-btn-primary"
-            style={{ opacity: isPending ? 0.7 : 1 }}
-          >
-            <CheckIcon width={14} height={14} />
-            <span>{isPending ? "Saving Donut…" : isEdit ? "Update Donut" : "Save & Publish Donut"}</span>
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => navigate("/products")}
+              className="px-5 py-2.5 rounded-full text-xs font-semibold transition-all bg-transparent cursor-pointer"
+              style={{ border: "1px solid #F5D5E2", color: "#7E6570" }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = "#F3F4F6";
+                e.currentTarget.style.color = "#2B1820";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.color = "#7E6570";
+              }}
+            >
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              disabled={isPending}
+              className="owner-action-btn-primary cursor-pointer"
+              style={{ opacity: isPending ? 0.7 : 1 }}
+            >
+              <CheckIcon width={14} height={14} />
+              <span>{isPending ? "Saving Donut…" : isEdit ? "Update Donut" : "Save & Publish Donut"}</span>
+            </button>
+          </div>
         </div>
       </form>
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        title="Delete Donut Product?"
+        description={`Are you sure you want to permanently delete "${product?.name}"? This action cannot be undone.`}
+        confirmLabel="Yes, Delete"
+        cancelLabel="Cancel"
+        variant="danger"
+        isLoading={deleteProduct.isPending}
+        onConfirm={handleDelete}
+        onClose={() => setDeleteConfirmOpen(false)}
+      />
     </div>
   );
 }
