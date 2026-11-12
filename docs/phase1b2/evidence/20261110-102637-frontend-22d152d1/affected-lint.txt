@@ -1,6 +1,0 @@
-
-C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\frontend\src\pages\SalesPage.tsx
-  123:9  warning  The 'sales' logical expression could make the dependencies of useMemo Hook (at line 127) change on every render. Move it inside the useMemo callback. Alternatively, wrap the initialization of 'sales' in its own useMemo() Hook  react-hooks/exhaustive-deps
-
-âœ– 1 problem (0 errors, 1 warning)
-

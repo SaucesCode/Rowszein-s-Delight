@@ -1,7 +1,0 @@
-{
-  "checks": {},
-  "page_errors": [],
-  "captures": [],
-  "failure": "backend did not become ready.",
-  "servers_stopped": true
-}

@@ -1,9 +1,0 @@
-Traceback (most recent call last):
-  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase2a\browser.py", line 103, in <module>
-    sys.exit(main(sys.argv[1]))
-             ^^^^^^^^^^^^^^^^^
-  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase2a\browser.py", line 42, in main
-    start([sys.executable, '-B', str(HERE / 'serve_fixture.py')], ROOT, 18842, 'backend', dict(os.environ), servers)
-  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1c3a\browser_dates.py", line 43, in start
-    raise RuntimeError(f'{label} did not become ready.')
-RuntimeError: backend did not become ready.

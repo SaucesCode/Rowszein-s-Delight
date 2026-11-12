@@ -1,6 +1,0 @@
-PASS canonical request retains false and literal search terms
-PASS equivalent empty filters do not create separate cache entries
-PASS query identity separates search, category, order, page and actor
-PASS older result can populate only its old query, never current search observer
-PASS pages and pinned selected record retain one option per ID
-{"tests":5,"failures":0}

@@ -1,7 +1,0 @@
-FAIL Asia/Manila midnight sales request
-FAIL Asia/Manila midnight sales data
-FAIL Asia/Manila midnight expense request
-FAIL Asia/Manila dashboard year request
-FAIL Asia/Manila dashboard year API scope
-FAIL Asia/Manila expense form default
-PASS no browser script errors

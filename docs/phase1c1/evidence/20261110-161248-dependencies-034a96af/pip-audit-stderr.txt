@@ -1,1 +1,0 @@
-Found 112 known vulnerabilities in 7 packages

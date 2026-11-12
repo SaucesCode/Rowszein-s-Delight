@@ -1,3 +1,0 @@
-npm warn audit request to https://registry.npmjs.org/-/npm/v1/security/advisories/bulk failed, reason: getaddrinfo ENOTFOUND registry.npmjs.org
-npm error audit endpoint returned an error
-npm error A complete log of this run can be found in: C:\Users\CARE MBA\AppData\Local\Packages\openai.codex_2p2nqsd0c76g0\AC\#!sandbox.{***}\npm-cache\_logs\2026-11-10T08_11_57_295Z-debug-0.log
