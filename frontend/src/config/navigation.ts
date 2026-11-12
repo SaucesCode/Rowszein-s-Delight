@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  Store,
   LayoutDashboard,
   Package,
   CakeSlice,
@@ -30,6 +31,7 @@ export interface NavGroup {
 export const NAV_GROUPS: NavGroup[] = [
   {
     items: [
+      { to: "/home", label: "Control Hub", icon: Store },
       { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
       { to: "/sales", label: "Sales", icon: ShoppingCart },
     ],
