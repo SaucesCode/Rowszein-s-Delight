@@ -68,12 +68,13 @@ const router = createBrowserRouter([
     children: [
       // Dedicated Six-Card Owner Home (no permanent sidebar)
       { path: "/home", element: <OwnerHomePage /> },
+      { path: "/dashboard", element: <Navigate to="/home" replace /> },
 
       // Standard Workspace Pages with MainLayout
       {
         element: <MainLayout />,
         children: [
-          { path: "/dashboard", element: <DashboardPage /> },
+          { path: "/analytics", element: <DashboardPage /> },
           { path: "/ingredients", element: <StockRoute /> },
           { path: "/ingredients/new", element: <IngredientFormPage /> },
           { path: "/ingredients/:id/edit", element: <IngredientFormPage /> },

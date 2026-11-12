@@ -17,7 +17,7 @@ export function canVisit(user: Identity, path: string): boolean {
     [/^\/ingredients\/?$/, "stock.read"], [/^\/ingredients\/(new|\d+\/edit)\/?$/, "stock.manage"],
     [/^\/recipes(?:\/(?:new|\d+\/edit))?\/?$/, "recipes.manage"],
     [/^\/expenses(?:\/(?:new|\d+\/edit))?\/?$/, "expenses.manage"],
-    [/^\/(home|dashboard|profit-margins)\/?$/, "finance.read"],
+    [/^\/(home|dashboard|profit-margins|analytics)\/?$/, "finance.read"],
   ];
   const route = routes.find(([pattern]) => pattern.test(path));
   return !!route && can(user, route[1]);

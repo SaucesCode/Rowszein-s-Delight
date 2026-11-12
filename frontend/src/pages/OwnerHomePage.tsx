@@ -138,7 +138,7 @@ export default function OwnerHomePage() {
 
         <div className="oh-header-actions">
           {isOwner && (
-            <Link to="/dashboard" className="oh-btn-subtle-link" aria-label="Open detailed financial analytics dashboard">
+            <Link to="/analytics" className="oh-btn-subtle-link" aria-label="Open detailed financial analytics dashboard">
               <span>Analytics</span>
               <ExternalLinkIcon width={12} height={12} aria-hidden="true" />
             </Link>
