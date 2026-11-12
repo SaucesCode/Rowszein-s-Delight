@@ -1,0 +1,24 @@
+vite v8.0.16 building client environment for production...
+[2K
+transforming...✓ 2690 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                       0.48 kB │ gzip:   0.31 kB
+dist/assets/geist-latin-wght-normal-BgDaEnEv.woff2   29.40 kB
+dist/assets/index-_Y7nOrWH.css                       50.38 kB │ gzip:  11.03 kB
+dist/assets/DashboardChart-DWQKyBXL.js              352.77 kB │ gzip: 102.93 kB
+dist/assets/index-D1_niChT.js                       768.70 kB │ gzip: 228.64 kB
+
+✓ built in 4.90s
+npm notice run frontend@0.0.0 build
+npm notice run tsc -b && vite build --config C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\.verification-runtime\phase2a-pink-build-q6ptppg5\vite.verify.mjs
+Found 1 warning while optimizing generated CSS:
+
+[2m│   }[22m
+[2m│ }[22m
+[2m│[22m @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap");
+[2m┆[22m        [33m[2m^--[22m @import rules must precede all rules aside from @charset and @layer statements[39m
+[2m┆[22m
+[2m│ @layer base {[22m
+[2m│   :root {[22m
+

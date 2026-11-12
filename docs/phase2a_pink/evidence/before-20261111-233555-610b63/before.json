@@ -1,0 +1,19 @@
+{
+  "checks": {
+    "expected location of storefront shortcut": true,
+    "no uncaught page errors": true
+  },
+  "page_errors": [],
+  "captures": [
+    "public-home-1440.png",
+    "owner-dashboard-1440.png",
+    "owner-dashboard-1024.png",
+    "owner-dashboard-768.png",
+    "owner-dashboard-390.png",
+    "owner-dashboard-320.png",
+    "owner-products-1440.png",
+    "staff-navigation-390.png"
+  ],
+  "topbar_shop_links": 0,
+  "servers_stopped": true
+}

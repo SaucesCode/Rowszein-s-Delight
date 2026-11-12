@@ -21,16 +21,16 @@ const tests=[
     for(const path of ['/sales','/sales/','/sales/new','/products','/ingredients']) assert.equal(canVisit(staff,path),true);
   }],
   ['staff management and financial routes are denied',()=>{
-    for(const path of ['/sales/1/edit','/products/new','/products/7/edit','/ingredients/new','/ingredients/8/edit','/recipes','/recipes/new','/recipes/1/edit','/expenses','/expenses/new','/expenses/1/edit','/dashboard','/profit-margins']) assert.equal(canVisit(staff,path),false);
+    for(const path of ['/home','/sales/1/edit','/products/new','/products/7/edit','/ingredients/new','/ingredients/8/edit','/recipes','/recipes/new','/recipes/1/edit','/expenses','/expenses/new','/expenses/1/edit','/dashboard','/analytics','/profit-margins']) assert.equal(canVisit(staff,path),false);
   }],
   ['owner approved routes remain usable',()=>{
-    for(const path of ['/dashboard','/sales','/sales/new','/sales/1/edit','/products','/products/new','/products/7/edit','/ingredients','/ingredients/new','/ingredients/8/edit','/recipes','/recipes/new','/expenses','/expenses/3/edit','/profit-margins']) assert.equal(canVisit(owner,path),true);
+    for(const path of ['/home','/dashboard','/analytics','/sales','/sales/new','/sales/1/edit','/products','/products/new','/products/7/edit','/ingredients','/ingredients/new','/ingredients/8/edit','/recipes','/recipes/new','/expenses','/expenses/3/edit','/profit-margins']) assert.equal(canVisit(owner,path),true);
   }],
   ['unmapped private routes fail closed for both roles',()=>{
     for(const user of [staff,owner]) for(const path of ['/users','/sales/export','/sales/abc/edit','/new-private-module']) assert.equal(canVisit(user,path),false);
   }],
   ['post-login homes follow role',()=>{
-    assert.equal(homeFor(owner),'/dashboard');assert.equal(homeFor(staff),'/sales');assert.equal(homeFor({role:'unknown'}),'/login');
+    assert.equal(homeFor(owner),'/home');assert.equal(homeFor(staff),'/sales');assert.equal(homeFor({role:'unknown'}),'/login');
   }],
   ['business date uses Asia Manila across UTC midnight boundaries',()=>{
     assert.equal(manilaDate(new Date('2026-11-09T15:59:00Z')),'2026-11-09');

@@ -1,0 +1,60 @@
+November 11, 2026 - 12:03:17
+Django version 5.1.4, using settings 'pagination_settings'
+Starting development server at http://127.0.0.1:18842/
+Quit the server with CTRL-BREAK.
+
+[11/Nov/2026 12:03:27] "GET /api/auth/me/ HTTP/1.1" 401 138
+[11/Nov/2026 12:03:28] "GET /api/auth/csrf/ HTTP/1.1" 200 118
+[11/Nov/2026 12:03:28] "POST /api/auth/login/ HTTP/1.1" 200 190
+[11/Nov/2026 12:03:29] "GET /api/auth/me/ HTTP/1.1" 200 93
+[11/Nov/2026 12:03:29] "GET /api/dashboard/?date_from=2026-01-01&date_to=2026-11-11 HTTP/1.1" 200 2580
+[11/Nov/2026 12:03:30] "GET /api/auth/me/ HTTP/1.1" 200 93
+[11/Nov/2026 12:03:31] "GET /api/auth/me/ HTTP/1.1" 200 93
+[11/Nov/2026 12:03:31] "GET /api/dashboard/?date_from=2026-01-01&date_to=2026-11-10 HTTP/1.1" 200 2580
+[11/Nov/2026 12:03:34] "GET /api/auth/me/ HTTP/1.1" 200 93
+[11/Nov/2026 12:03:34] "GET /api/dashboard/?date_from=2026-01-01&date_to=2026-11-10 HTTP/1.1" 200 2580
+[11/Nov/2026 12:03:34] "GET /api/auth/me/ HTTP/1.1" 200 93
+[11/Nov/2026 12:03:35] "GET /api/dashboard/?date_from=2026-10-01&date_to=2026-11-10 HTTP/1.1" 200 2474
+[11/Nov/2026 12:03:35] "GET /api/dashboard/?date_from=2026-11-09&date_to=2026-11-10 HTTP/1.1" 200 1912
+[11/Nov/2026 12:03:36] "GET /api/dashboard/?date_from=2026-11-01&date_to=2026-11-10 HTTP/1.1" 200 2460
+[11/Nov/2026 12:03:37] "GET /api/auth/me/ HTTP/1.1" 200 93
+[11/Nov/2026 12:03:37] "GET /api/dashboard/?date_from=2026-01-01&date_to=2026-11-01 HTTP/1.1" 200 2570
+[11/Nov/2026 12:03:37] "GET /api/auth/me/ HTTP/1.1" 200 93
+[11/Nov/2026 12:03:38] "GET /api/auth/me/ HTTP/1.1" 200 93
+[11/Nov/2026 12:03:38] "GET /api/auth/me/ HTTP/1.1" 200 93
+[11/Nov/2026 12:03:38] "GET /api/dashboard/?date_from=2026-01-01&date_to=2026-11-10 HTTP/1.1" 200 2580
+[11/Nov/2026 12:03:40] "GET /api/dashboard/ HTTP/1.1" 200 2580
+[11/Nov/2026 12:03:40] "GET /api/dashboard/?date_from=2026-02-01 HTTP/1.1" 200 2571
+[11/Nov/2026 12:03:40] "GET /api/dashboard/?date_from=2026-02-01&date_to=2026-02-28 HTTP/1.1" 200 2460
+[11/Nov/2026 12:03:40] "GET /api/dashboard/?date_from=2025-07-01&date_to=2026-02-28 HTTP/1.1" 200 2307
+[11/Nov/2026 12:03:40] "GET /api/dashboard/?date_from=2025-07-01&date_to=2025-07-31 HTTP/1.1" 200 1946
+[11/Nov/2026 12:03:41] "GET /api/auth/me/ HTTP/1.1" 200 93
+[11/Nov/2026 12:03:41] "GET /api/dashboard/?date_from=2026-01-01&date_to=2026-11-10 HTTP/1.1" 200 2580
+[11/Nov/2026 12:03:41] "GET /api/auth/me/ HTTP/1.1" 200 93
+[11/Nov/2026 12:03:42] "GET /api/auth/me/ HTTP/1.1" 200 93
+[11/Nov/2026 12:03:42] "GET /api/sales/?page=1&date_from=2026-11-10&date_to=2026-11-10 HTTP/1.1" 200 89
+[11/Nov/2026 12:03:42] "GET /api/sales/financial-summary/?date_from=2026-11-10&date_to=2026-11-10 HTTP/1.1" 200 369
+[11/Nov/2026 12:03:43] "GET /api/sales/?page=1&date_from=2026-11-01&date_to=2026-11-10 HTTP/1.1" 200 2438
+[11/Nov/2026 12:03:43] "GET /api/sales/financial-summary/?date_from=2026-11-01&date_to=2026-11-10 HTTP/1.1" 200 544
+[11/Nov/2026 12:03:44] "GET /api/auth/me/ HTTP/1.1" 200 93
+[11/Nov/2026 12:03:44] "GET /api/auth/me/ HTTP/1.1" 200 93
+[11/Nov/2026 12:03:45] "GET /api/auth/me/ HTTP/1.1" 200 93
+[11/Nov/2026 12:03:45] "GET /api/auth/me/ HTTP/1.1" 200 93
+[11/Nov/2026 12:03:45] "GET /api/dashboard/?date_from=2026-01-01&date_to=2026-11-10 HTTP/1.1" 200 2580
+[11/Nov/2026 12:03:53] "GET /api/dashboard/?date_from=2026-10-01&date_to=2026-11-10 HTTP/1.1" 200 2474
+[11/Nov/2026 12:03:54] "GET /api/auth/csrf/ HTTP/1.1" 200 118
+[11/Nov/2026 12:03:54] "POST /api/auth/logout/ HTTP/1.1" 200 169
+[11/Nov/2026 12:03:55] "GET /api/auth/me/ HTTP/1.1" 401 138
+[11/Nov/2026 12:03:55] "GET /api/auth/csrf/ HTTP/1.1" 200 118
+[11/Nov/2026 12:03:55] "POST /api/auth/login/ HTTP/1.1" 200 195
+[11/Nov/2026 12:03:56] "GET /api/auth/me/ HTTP/1.1" 200 98
+[11/Nov/2026 12:03:56] "GET /api/sales/?page=1&date_from=2026-11-10&date_to=2026-11-10 HTTP/1.1" 200 89
+[11/Nov/2026 12:03:57] "GET /api/ingredients/ HTTP/1.1" 200 360
+[11/Nov/2026 12:03:57] "GET /api/auth/me/ HTTP/1.1" 200 98
+[11/Nov/2026 12:03:57] "GET /api/ingredients/?page=1 HTTP/1.1" 200 360
+[11/Nov/2026 12:03:57] "GET /api/dashboard/ HTTP/1.1" 403 109
+[11/Nov/2026 12:03:58] "GET /api/auth/me/ HTTP/1.1" 200 98
+[11/Nov/2026 12:04:00] "GET /api/auth/me/ HTTP/1.1" 401 138
+[11/Nov/2026 12:04:00] "GET /api/auth/me/ HTTP/1.1" 401 138
+[11/Nov/2026 12:04:01] "GET /api/auth/csrf/ HTTP/1.1" 200 118
+[11/Nov/2026 12:04:01] "POST /api/auth/refresh/ HTTP/1.1" 200 114

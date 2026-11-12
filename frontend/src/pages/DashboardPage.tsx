@@ -1,45 +1,16 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useDashboard } from "@/hooks/useDashboard";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from "recharts";
-import {
-  AlertTriangle,
-  ShoppingCart,
-  Receipt,
-  TrendingUp,
-  TrendingDown,
-  Package,
-  Zap,
-} from "lucide-react";
+import { lazy, Suspense, useId, useState } from "react";
+import { Link } from "react-router-dom";
+import { AlertCircle, Calculator, CalendarDays, ChartNoAxesCombined, Package, Plus, Receipt, ShoppingBag } from "lucide-react";
+import DateRangeFilter from "@/components/DateRangeFilter";
 import StatCard from "@/components/StatCard";
-import { customDateRange, getDateRange, manilaDate, reportRangeError, type DashboardPeriod } from "@/lib/dateRanges";
+import WorkspaceState from "@/components/WorkspaceState";
+import { useDashboard } from "@/hooks/useDashboard";
+import { customDateRange, formatBusinessDate, getDateRange, manilaDate, reportRangeError, type DashboardPeriod } from "@/lib/dateRanges";
+import type { ChartMonth, DashboardReport } from "@/services/dashboard.service";
+import { formatPeso, formatUnits, monthComparison, stockLabel } from "./dashboard/report-format";
+import "./dashboard/dashboard.css";
 
-/* ─────────────────────────────────────────────
-   BRAND TOKENS
-   Centralized here so the dashboard stops drifting
-   from the palette used on the public site. These
-   belong in a shared theme file long-term — flagging
-   that as a follow-up, not doing it in this pass.
-   ───────────────────────────────────────────── */
-const BRAND = {
-  primaryPink: "#FF6FAE",
-  softPink: "#FFD6E7",
-  cream: "#FFF8F0",
-  chocolate: "#6B4226",
-  white: "#FFFDFB",
-  textMuted: "#9B6644",
-  border: "#E8E6E1",
-  chartProfit: "#5B8C3A", // muted success green — same family as StatCard's positive delta
-};
+const DashboardChart = lazy(() => import("./dashboard/DashboardChart"));
 
 const PERIODS: { value: DashboardPeriod; label: string }[] = [
   { value: "this_week", label: "Week" },
@@ -49,461 +20,223 @@ const PERIODS: { value: DashboardPeriod; label: string }[] = [
   { value: "custom", label: "Custom" },
 ];
 
-/* ─────────────────────────────────────────────
-   HELPERS
-   ───────────────────────────────────────────── */
-function formatPeso(value: number) {
-  return `₱${value.toLocaleString("en-PH", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
+function ChartLoading() {
+  return <div className="workspace-skeleton dashboard-chart" role="status" aria-label="Loading trend chart" />;
 }
 
-type ChartMonth = { month: string; sales: number; expenses: number; profit: number };
-type DashboardResults = {
-  totals: { total_sales: number; total_expenses: number; net_profit: number };
-  chart_data: ChartMonth[];
-  best_selling: { product_id: number; product_name: string; total_quantity: number; total_revenue: number }[];
-  low_stock: { name: string }[];
-};
-
-/**
- * Derives a "vs last month" delta from the chart's monthly breakdown, which
- * the API already returns as a fixed Jan–Dec array. This avoids needing a
- * backend change just to show trend context on the KPI cards.
- *
- * Returns undefined when there's no meaningful previous-month baseline
- * (January, or a previous month with zero activity) rather than showing a
- * misleading +infinity% jump.
- */
-function computeMonthDelta(
-  chartData: ChartMonth[],
-  todayIdx: number,
-  key: "sales" | "expenses" | "profit",
-  polarity: "up-is-good" | "down-is-good" = "up-is-good",
-) {
-  if (todayIdx === 0) return undefined;
-
-  const current = chartData[todayIdx]?.[key] ?? 0;
-  const previous = chartData[todayIdx - 1]?.[key] ?? 0;
-  if (!previous) return undefined;
-
-  const pctChange = ((current - previous) / Math.abs(previous)) * 100;
-  const direction: "up" | "down" | "flat" =
-    Math.abs(pctChange) < 0.05 ? "flat" : pctChange > 0 ? "up" : "down";
-
-  return {
-    value: pctChange,
-    direction,
-    comparisonLabel: "vs last month",
-    polarity,
-  };
-}
-
-function trailingSparkline(
-  chartData: ChartMonth[],
-  todayIdx: number,
-  key: "sales" | "expenses" | "profit",
-) {
-  const start = Math.max(0, todayIdx - 5);
-  const slice = chartData.slice(start, todayIdx + 1);
-  return slice.length >= 2 ? slice.map(m => m[key]) : undefined;
-}
-
-/* ─────────────────────────────────────────────
-   PERIOD SELECTOR — same pill pattern as the
-   landing page's CategoryFilter, not a new control
-   ───────────────────────────────────────────── */
-function PeriodSelector({
-  active,
-  onChange,
-}: {
-  active: DashboardPeriod;
-  onChange: (p: DashboardPeriod) => void;
-}) {
+function DashboardLoading() {
   return (
-    <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Select time period">
-      {PERIODS.map(p => {
-        const isActive = active === p.value;
-        return (
-          <button
-            key={p.value}
-            role="radio"
-            aria-checked={isActive}
-            onClick={() => onChange(p.value)}
-            className="font-body font-semibold transition-all"
-            style={{
-              height: 36,
-              padding: "0 16px",
-              borderRadius: 999,
-              fontSize: 13,
-              background: isActive ? BRAND.primaryPink : BRAND.white,
-              color: isActive ? BRAND.white : BRAND.chocolate,
-              border: isActive ? "none" : `1px solid ${BRAND.border}`,
-            }}
-          >
-            {p.label}
-          </button>
-        );
-      })}
+    <div role="status" aria-label="Loading dashboard" className="dashboard-loading">
+      <div className="dashboard-stats">
+        <div className="workspace-skeleton" /><div className="workspace-skeleton" /><div className="workspace-skeleton" />
+      </div>
+      <div className="dashboard-panels">
+        <div className="workspace-skeleton" /><div className="workspace-skeleton" />
+      </div>
     </div>
   );
 }
 
-/* ─────────────────────────────────────────────
-   SKELETON
-   ───────────────────────────────────────────── */
-function DashboardSkeleton() {
+function TrendPanel({ rows }: { rows: ChartMonth[] }) {
+  const [showTable, setShowTable] = useState(false);
+  const hasActivity = rows.some(row => row.sales !== 0 || row.expenses !== 0 || row.profit !== 0);
   return (
-    <div role="status" aria-label="Loading dashboard…" className="space-y-6">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {[1, 2, 3, 4].map(i => (
-          <div
-            key={i}
-            style={{ background: BRAND.white, border: `1px solid ${BRAND.border}`, borderRadius: 16 }}
-            className="p-5"
-          >
-            <div className="skeleton h-3 w-20 mb-4" />
-            <div className="skeleton h-7 w-28" />
+    <section className="workspace-card dashboard-panel" aria-labelledby="dashboard-trend">
+      <div className="dashboard-panel-head">
+        <h2 id="dashboard-trend">Monthly trends</h2>
+        <p>Net sales by posting date and expenses by expense date.</p>
+      </div>
+      {hasActivity ? (
+        <>
+          <ul className="dashboard-legend" aria-label="Chart legend">
+            <li><span className="dashboard-swatch" /> Net sales</li>
+            <li><span className="dashboard-swatch dashboard-swatch--expenses" /> Expenses</li>
+            <li><span className="dashboard-swatch dashboard-swatch--balance" /> Sales less expenses</li>
+          </ul>
+          <Suspense fallback={<ChartLoading />}><DashboardChart rows={rows} /></Suspense>
+        </>
+      ) : (
+        <WorkspaceState icon={ChartNoAxesCombined} title="No movement to chart" description="Net sales and expenses are both zero for this range. Choose a different date range to see other periods." />
+      )}
+      <details className="dashboard-figures" onToggle={event => setShowTable(event.currentTarget.open)}>
+        <summary>View monthly figures</summary>
+        {showTable && (
+          <div className="workspace-table-scroll" tabIndex={0} role="region" aria-label="Monthly figures table">
+            <table className="workspace-table dashboard-month-table">
+              <thead><tr><th scope="col">Month</th><th scope="col" className="workspace-number">Net sales</th><th scope="col" className="workspace-number">Expenses</th><th scope="col" className="workspace-number">Sales less expenses</th></tr></thead>
+              <tbody>
+                {rows.map(row => (
+                  <tr key={row.month}>
+                    <th scope="row">{row.month}</th>
+                    <td className="workspace-number">{formatPeso(row.sales)}</td>
+                    <td className="workspace-number">{formatPeso(row.expenses)}</td>
+                    <td className="workspace-number">{formatPeso(row.profit)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        ))}
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div
-          className="lg:col-span-2 h-72 p-6"
-          style={{ background: BRAND.white, border: `1px solid ${BRAND.border}`, borderRadius: 16 }}
-        >
-          <div className="skeleton h-full" />
-        </div>
-        <div
-          className="h-72 p-6"
-          style={{ background: BRAND.white, border: `1px solid ${BRAND.border}`, borderRadius: 16 }}
-        >
-          <div className="skeleton h-full" />
-        </div>
-      </div>
-      <span className="sr-only">Loading dashboard, please wait…</span>
-    </div>
+        )}
+      </details>
+    </section>
   );
 }
 
-/* ─────────────────────────────────────────────
-   PAGE
-   ───────────────────────────────────────────── */
+function StockPanel({ items }: { items: DashboardReport["low_stock"] }) {
+  return (
+    <section className="workspace-card dashboard-panel dashboard-stock" aria-labelledby="dashboard-stock">
+      <div className="dashboard-panel-head">
+        <h2 id="dashboard-stock">Stock watch</h2>
+        <p>Current inventory · independent of the date range</p>
+      </div>
+      {items.length ? (
+        <>
+          <p className="badge badge-warning dashboard-stock-count">
+            <AlertCircle size={15} aria-hidden="true" /> {items.length} at or below minimum
+          </p>
+          <ul className="dashboard-stock-list" tabIndex={items.length > 4 ? 0 : undefined} aria-label="Ingredients at or below minimum">
+            {items.map(item => (
+              <li key={item.id}>
+                <span className="dashboard-stock-icon"><Package size={17} aria-hidden="true" /></span>
+                <div>
+                  <p>{item.name}</p>
+                  <small className="workspace-number">{stockLabel(item.quantity, item.unit)} on hand / {stockLabel(item.minimum_stock, item.unit)} minimum</small>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : (
+        <p className="badge badge-success dashboard-stock-count">No low-stock alerts</p>
+      )}
+      <Link to="/ingredients" className="workspace-button workspace-button--secondary dashboard-stock-action">Open inventory</Link>
+    </section>
+  );
+}
+
+function ProductPanel({ products }: { products: DashboardReport["best_selling"] }) {
+  const maximum = Math.max(1, ...products.map(product => product.total_quantity));
+  return (
+    <section className="workspace-card dashboard-panel" aria-labelledby="dashboard-products">
+      <div className="dashboard-panel-head">
+        <h2 id="dashboard-products">Top products</h2>
+        <p>Up to five products by units sold. Recorded sales are grouped by their original date.</p>
+      </div>
+      {products.length ? (
+        <div className="workspace-table-scroll dashboard-product-scroll" role="region" aria-label="Product performance table" tabIndex={0}>
+          <table className="workspace-table dashboard-product-table">
+            <thead><tr><th scope="col">Product</th><th scope="col" className="workspace-number">Units sold</th><th scope="col" className="workspace-number">Item value</th></tr></thead>
+            <tbody>
+              {products.map((product, index) => (
+                <tr key={product.product_id}>
+                  <th scope="row">
+                    <div className="dashboard-product-name">
+                      <span className="dashboard-rank" aria-label={`Rank ${index + 1}`}>{index + 1}</span>
+                      <span>{product.product_name}</span>
+                    </div>
+                  </th>
+                  <td className="workspace-number">
+                    <div className="dashboard-product-quantity">
+                      <span className="dashboard-product-meter" aria-hidden="true"><span style={{ width: `${product.total_quantity / maximum * 100}%` }} /></span>
+                      {formatUnits(product.total_quantity)}
+                    </div>
+                  </td>
+                  <td className="workspace-number">{formatPeso(product.total_revenue)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <WorkspaceState icon={ShoppingBag} title="No product sales for this range" description="Choose another date range or record a sale to start tracking products." action={<Link to="/sales/new" className="btn-secondary">Record sale</Link>} />
+      )}
+    </section>
+  );
+}
+
+function DashboardContent({ report, period, monthIndex }: { report: DashboardReport; period: DashboardPeriod; monthIndex: number }) {
+  const { totals, chart_data, low_stock, best_selling, filters } = report;
+  const sameYear = filters.date_from.slice(0, 4) === filters.date_to.slice(0, 4);
+  const rows = sameYear && chart_data.length === 12
+    ? chart_data.slice(Number(filters.date_from.slice(5, 7)) - 1, Number(filters.date_to.slice(5, 7)))
+    : chart_data;
+  const comparison = (key: "sales" | "expenses" | "profit") =>
+    period === "this_year" ? monthComparison(chart_data, monthIndex, key) : undefined;
+  const balanceComparison = comparison("profit");
+  return (
+    <>
+      <dl className="dashboard-stats" aria-label="Financial totals for selected dates">
+        <StatCard label="Net sales" value={formatPeso(totals.net_sales)} icon={ShoppingBag} emphasis
+          context={comparison("sales") ?? "Sales, adjustments and cancellations"} />
+        <StatCard label="Expenses" value={formatPeso(totals.total_expenses)} icon={Receipt}
+          context={comparison("expenses") ?? "Recorded expense amounts"} />
+        <StatCard label="Sales less expenses" value={formatPeso(totals.net_profit)} icon={Calculator} negative={totals.net_profit < 0}
+          context={<>{balanceComparison && <span>{balanceComparison}<br /></span>}<span>Recorded net sales minus expenses</span></>} />
+      </dl>
+      <div className="dashboard-panels">
+        <TrendPanel rows={rows} />
+        <StockPanel items={low_stock} />
+      </div>
+      <ProductPanel products={best_selling} />
+    </>
+  );
+}
+
 export default function DashboardPage() {
+  const radioName = useId();
   const [period, setPeriod] = useState<DashboardPeriod>("this_year");
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
-
   const now = new Date();
   const filters = period === "custom" ? customDateRange(customFrom, customTo) : getDateRange(period, now);
   const rangeError = reportRangeError(filters, now);
-  const { data, isLoading, isError } = useDashboard(filters, !rangeError);
+  const { data, isLoading, isError, refetch } = useDashboard(filters, !rangeError);
+  const displayed = data?.filters ?? { ...getDateRange("this_year", now), ...filters };
+  const dateLabel = rangeError ? "Check your date range" : displayed.date_from === displayed.date_to
+    ? formatBusinessDate(displayed.date_from)
+    : `${formatBusinessDate(displayed.date_from)} – ${formatBusinessDate(displayed.date_to)}`;
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Header + Period Selector */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="dashboard">
+      <div className="dashboard-heading">
         <div>
-          <h2 className="font-heading font-bold text-2xl" style={{ color: BRAND.chocolate }}>
-            Business Overview
-          </h2>
-          <p className="font-body text-sm mt-1" style={{ color: BRAND.textMuted }}>
-            See how the shop is performing this period
-          </p>
+          <h1 className="workspace-title">Dashboard</h1>
+          <p>Review bakery sales, expenses and stock at a glance.</p>
         </div>
-        <PeriodSelector active={period} onChange={setPeriod} />
+        <Link to="/sales/new" className="workspace-button workspace-button--primary"><Plus size={18} aria-hidden="true" /> Record sale</Link>
       </div>
-
-      {/* Custom date range */}
-      {period === "custom" && (
-        <div
-          className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 animate-slide-up"
-          style={{
-            background: BRAND.white,
-            border: `1px solid ${BRAND.border}`,
-            borderRadius: 16,
-          }}
-        >
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <label
-              htmlFor="dashboard-date-from"
-              className="font-body text-sm flex-shrink-0"
-              style={{ color: BRAND.textMuted }}
-            >
-              From
-            </label>
-            <input
-              type="date"
-              id="dashboard-date-from"
-              aria-describedby={rangeError ? "dashboard-date-error" : undefined}
-              value={customFrom}
-              onChange={e => setCustomFrom(e.target.value)}
-              className="field-input w-full"
-            />
+      <div className="dashboard-filter">
+        <div className="dashboard-filter-bar">
+          <div className="dashboard-filter-date">
+            <span className="dashboard-calendar"><CalendarDays size={19} aria-hidden="true" /></span>
+            <div>
+              <p aria-live="polite" className="workspace-number">{dateLabel}</p>
+              <small>Asia/Manila business dates</small>
+            </div>
           </div>
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <label
-              htmlFor="dashboard-date-to"
-              className="font-body text-sm flex-shrink-0"
-              style={{ color: BRAND.textMuted }}
-            >
-              To
-            </label>
-            <input
-              type="date"
-              id="dashboard-date-to"
-              aria-describedby={rangeError ? "dashboard-date-error" : undefined}
-              value={customTo}
-              onChange={e => setCustomTo(e.target.value)}
-              className="field-input w-full"
-            />
-          </div>
+          <fieldset className="dashboard-period">
+            <legend className="sr-only">Select time period</legend>
+            {PERIODS.map(({ value, label }) => (
+              <label key={value}>
+                <input type="radio" name={radioName} checked={period === value} onChange={() => setPeriod(value)} />
+                <span>{label}</span>
+              </label>
+            ))}
+          </fieldset>
         </div>
-      )}
-
-      {rangeError && <p id="dashboard-date-error" className="field-error" role="alert">{rangeError}</p>}
-      {!rangeError && isLoading && <DashboardSkeleton />}
+        {period === "custom" && (
+          <DateRangeFilter dateFrom={customFrom} dateTo={customTo} onDateFromChange={setCustomFrom} onDateToChange={setCustomTo}
+            hasFilters={!!(customFrom || customTo)} onClear={() => { setCustomFrom(""); setCustomTo(""); }} error={rangeError} />
+        )}
+      </div>
+      {!rangeError && isLoading && <DashboardLoading />}
       {!rangeError && isError && (
-        <div
-          className="p-8 text-center"
-          style={{ background: BRAND.white, border: `1px solid ${BRAND.border}`, borderRadius: 16 }}
-        >
-          <p className="font-body text-sm" style={{ color: "#B91C1C" }}>
-            Couldn't load the dashboard. Please try refreshing the page.
-          </p>
+        <div className="workspace-card">
+          <WorkspaceState alert icon={AlertCircle} title="Dashboard unavailable" description="The report could not load. Try again or choose a different date range."
+            action={<button type="button" className="btn-secondary" onClick={() => void refetch()}>Try again</button>} />
         </div>
       )}
-      {!rangeError && !isError && data && <DashboardContent data={data} monthIndex={Number(manilaDate(now).slice(5, 7)) - 1} />}
+      {!rangeError && !isError && data && <DashboardContent report={data} period={period} monthIndex={Number(manilaDate(now).slice(5, 7)) - 1} />}
     </div>
-  );
-}
-
-function DashboardContent({ data, monthIndex }: { data: DashboardResults; monthIndex: number }) {
-  const navigate = useNavigate();
-  const { totals, best_selling, chart_data, low_stock } = data;
-  const netProfitTone = totals.net_profit > 0 ? "positive" : totals.net_profit < 0 ? "negative" : "neutral";
-  const hasLowStock = low_stock?.length > 0;
-  return (
-    <>
-      {/* Attention banner — the one place "needs attention" is surfaced */}
-      {hasLowStock && (
-        <button
-          type="button"
-          onClick={() => navigate("/ingredients")}
-          className="alert-low-stock w-full text-left animate-slide-up cursor-pointer hover:bg-yellow-100 transition-colors"
-        >
-          <AlertTriangle
-            size={20}
-            className="flex-shrink-0 mt-0.5"
-            strokeWidth={2}
-            aria-hidden="true"
-          />
-          <div>
-            <p className="font-heading font-semibold text-sm">
-              {low_stock.length} ingredient{low_stock.length !== 1 ? "s are" : " is"} running
-              low
-            </p>
-            <p className="font-body text-xs mt-1">
-              {low_stock.map(i => i.name).join(", ")}
-            </p>
-          </div>
-        </button>
-      )}
-
-      {/* KPI row — the 4 questions the dashboard must answer, nothing more */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          label="Net sales"
-          value={formatPeso(totals.total_sales)}
-          icon={ShoppingCart}
-          tone="neutral"
-          delta={computeMonthDelta(chart_data, monthIndex, "sales", "up-is-good")}
-          sparkline={trailingSparkline(chart_data, monthIndex, "sales")}
-        />
-        <StatCard
-          label="Total expenses"
-          value={formatPeso(totals.total_expenses)}
-          icon={Receipt}
-          tone="neutral"
-          delta={computeMonthDelta(chart_data, monthIndex, "expenses", "down-is-good")}
-          sparkline={trailingSparkline(chart_data, monthIndex, "expenses")}
-        />
-        <StatCard
-          label="Net profit"
-          value={formatPeso(totals.net_profit)}
-          icon={totals.net_profit >= 0 ? TrendingUp : TrendingDown}
-          tone={netProfitTone}
-          delta={computeMonthDelta(chart_data, monthIndex, "profit", "up-is-good")}
-          sparkline={trailingSparkline(chart_data, monthIndex, "profit")}
-        />
-        <StatCard
-          label="Low stock items"
-          value={low_stock?.length ?? 0}
-          icon={Package}
-          tone="neutral"
-          badgeText={hasLowStock ? "Needs attention" : "All stocked"}
-        />
-      </div>
-
-      {/* Trend + Top products */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Trend chart */}
-        <div
-          className="lg:col-span-2 p-6"
-          style={{
-            background: BRAND.white,
-            border: `1px solid ${BRAND.border}`,
-            borderRadius: 16,
-          }}
-        >
-          <h3
-            className="font-heading font-bold text-lg mb-1"
-            style={{ color: BRAND.chocolate }}
-          >
-            Monthly trends
-          </h3>
-          <p className="sr-only">
-            Line chart comparing monthly sales, expenses, and profit for the selected period.
-          </p>
-          <ResponsiveContainer width="100%" height={260}>
-            <AreaChart data={chart_data} margin={{ top: 16, right: 8, left: 0, bottom: 0 }}>
-              <defs>
-                <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={BRAND.primaryPink} stopOpacity={0.18} />
-                  <stop offset="95%" stopColor={BRAND.primaryPink} stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="colorExpenses" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={BRAND.chocolate} stopOpacity={0.14} />
-                  <stop offset="95%" stopColor={BRAND.chocolate} stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={BRAND.chartProfit} stopOpacity={0.16} />
-                  <stop offset="95%" stopColor={BRAND.chartProfit} stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke={BRAND.border} vertical={false} />
-              <XAxis
-                dataKey="month"
-                tick={{ fontSize: 12, fill: BRAND.textMuted, fontFamily: "Inter" }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis
-                tick={{ fontSize: 12, fill: BRAND.textMuted, fontFamily: "Inter" }}
-                axisLine={false}
-                tickLine={false}
-                tickFormatter={v => `₱${(v / 1000).toFixed(0)}k`}
-              />
-              <Tooltip
-                formatter={value => formatPeso(Number(value ?? 0))}
-                contentStyle={{
-                  fontSize: 12,
-                  borderRadius: 10,
-                  border: `1px solid ${BRAND.border}`,
-                  background: BRAND.white,
-                  color: BRAND.chocolate,
-                  fontFamily: "Inter",
-                }}
-              />
-              <Legend
-                wrapperStyle={{ fontSize: 12, fontFamily: "Inter", color: BRAND.textMuted }}
-              />
-              <Area
-                type="monotone"
-                dataKey="sales"
-                name="Sales"
-                stroke={BRAND.primaryPink}
-                strokeWidth={2}
-                fill="url(#colorSales)"
-              />
-              <Area
-                type="monotone"
-                dataKey="expenses"
-                name="Expenses"
-                stroke={BRAND.chocolate}
-                strokeWidth={2}
-                fill="url(#colorExpenses)"
-              />
-              <Area
-                type="monotone"
-                dataKey="profit"
-                name="Profit"
-                stroke={BRAND.chartProfit}
-                strokeWidth={2}
-                fill="url(#colorProfit)"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Top products */}
-        <div
-          className="p-6"
-          style={{
-            background: BRAND.white,
-            border: `1px solid ${BRAND.border}`,
-            borderRadius: 16,
-          }}
-        >
-          <h3
-            className="font-heading font-bold text-lg mb-5"
-            style={{ color: BRAND.chocolate }}
-          >
-            Top products
-          </h3>
-
-          {best_selling.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <Zap
-                size={28}
-                style={{ color: BRAND.primaryPink, opacity: 0.4 }}
-                aria-hidden="true"
-              />
-              <p className="font-body text-sm mt-3" style={{ color: BRAND.textMuted }}>
-                No sales data yet
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {best_selling.map((item, index) => (
-                <div
-                  key={item.product_id}
-                  className="flex items-center gap-3 pb-3"
-                  style={{
-                    borderBottom:
-                      index < best_selling.length - 1 ? `1px dashed ${BRAND.border}` : "none",
-                  }}
-                >
-                  <div
-                    className="flex items-center justify-center rounded-lg font-heading font-bold flex-shrink-0"
-                    style={{
-                      width: 32,
-                      height: 32,
-                      background: index === 0 ? BRAND.softPink : BRAND.cream,
-                      color: index === 0 ? "#E5528A" : BRAND.textMuted,
-                      fontSize: 13,
-                    }}
-                  >
-                    {index + 1}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p
-                      className="font-heading font-semibold text-sm truncate"
-                      style={{ color: BRAND.chocolate }}
-                    >
-                      {item.product_name}
-                    </p>
-                    <p className="font-body text-xs mt-0.5" style={{ color: BRAND.textMuted }}>
-                      {item.total_quantity} sold · {formatPeso(item.total_revenue)}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </>
   );
 }

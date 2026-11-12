@@ -1,0 +1,32 @@
+{
+  "results": {
+    "test_query_identity": 0,
+    "test_listing_params": 0,
+    "test_csrf_transport": 0,
+    "test_operation_identity": 0,
+    "test_stock_preview": 0,
+    "test_permissions": 0,
+    "test_auth_lifecycle": 0,
+    "test_date_ranges": 0,
+    "affected-lint": 0,
+    "full-lint": 1,
+    "build": 0
+  },
+  "lint_files": [
+    "src/components/ConfirmDialog.tsx",
+    "src/components/DateRangeFilter.tsx",
+    "src/components/EmptyState.tsx",
+    "src/components/ProtectedRoute.tsx",
+    "src/components/StatCard.tsx",
+    "src/components/WorkspaceState.tsx",
+    "src/config/navigation.ts",
+    "src/layouts/MainLayout.tsx",
+    "src/lib/dateRanges.ts",
+    "src/main.tsx",
+    "src/pages/DashboardPage.tsx",
+    "src/pages/dashboard/DashboardChart.tsx",
+    "src/pages/dashboard/report-format.ts",
+    "src/services/dashboard.service.ts"
+  ],
+  "owned_runtime_removed": true
+}

@@ -1,0 +1,12 @@
+PASS expected location of storefront shortcut
+PASS 1440px dashboard and chart fit
+PASS 1440px has appropriate navigation
+PASS 1024px dashboard and chart fit
+PASS 1024px has appropriate navigation
+PASS 768px dashboard and chart fit
+PASS 768px has appropriate navigation
+FAIL 390px dashboard and chart fit
+PASS 390px has appropriate navigation
+FAIL 320px dashboard and chart fit
+PASS 320px has appropriate navigation
+PASS no uncaught page errors

@@ -1,4 +1,4 @@
-import { X, Calendar } from "lucide-react";
+import { X } from "lucide-react";
 import { useId } from "react";
 
 interface DateRangeFilterProps {
@@ -12,98 +12,44 @@ interface DateRangeFilterProps {
 }
 
 export default function DateRangeFilter({
-  dateFrom,
-  dateTo,
-  onDateFromChange,
-  onDateToChange,
-  onClear,
-  hasFilters,
-  error,
+  dateFrom, dateTo, onDateFromChange, onDateToChange, onClear, hasFilters, error,
 }: DateRangeFilterProps) {
   const id = useId();
+  const description = error ? `${id}-error` : undefined;
   return (
-    <div
-      className="flex flex-col md:flex-row md:items-center gap-4 p-4 rounded-lg"
-      style={{
-        background: "#f5f6f8",
-        border: "1px solid #e2e8f0",
-      }}
-    >
-      <div className="flex items-center gap-2 text-sm" style={{ color: "#64748b" }}>
-        <Calendar size={16} strokeWidth={2} aria-hidden="true" />
-        <span className="font-body font-medium">Filter by date:</span>
-      </div>
-
-      <div className="flex flex-col md:flex-row md:items-center gap-3 flex-1">
-        {/* From date */}
-        <div className="flex items-center gap-2">
-          <label htmlFor={`${id}-from`} className="font-body text-xs font-semibold" style={{ color: "#64748b" }}>
-            From
-          </label>
+    <fieldset className="workspace-date-fields">
+      <legend className="sr-only">Custom date range</legend>
+      <div className="workspace-date-controls">
+        <div>
+          <label htmlFor={`${id}-from`} className="field-label">From</label>
           <input
             type="date"
             id={`${id}-from`}
-            aria-describedby={error ? `${id}-error` : undefined}
+            aria-describedby={description}
             value={dateFrom}
-            onChange={(e) => onDateFromChange(e.target.value)}
+            onChange={event => onDateFromChange(event.target.value)}
             className="field-input"
-            style={{
-              fontSize: 13,
-              padding: "0.5rem 0.75rem",
-              width: "auto",
-              minWidth: 140,
-            }}
           />
         </div>
-
-        {/* To date */}
-        <div className="flex items-center gap-2">
-          <label htmlFor={`${id}-to`} className="font-body text-xs font-semibold" style={{ color: "#64748b" }}>
-            To
-          </label>
+        <div>
+          <label htmlFor={`${id}-to`} className="field-label">To</label>
           <input
             type="date"
             id={`${id}-to`}
-            aria-describedby={error ? `${id}-error` : undefined}
+            aria-describedby={description}
+            aria-invalid={error ? true : undefined}
             value={dateTo}
-            onChange={(e) => onDateToChange(e.target.value)}
+            onChange={event => onDateToChange(event.target.value)}
             className="field-input"
-            style={{
-              fontSize: 13,
-              padding: "0.5rem 0.75rem",
-              width: "auto",
-              minWidth: 140,
-            }}
           />
         </div>
-
-        {/* Clear button */}
         {hasFilters && (
-          <button
-            onClick={onClear}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg font-body text-xs font-semibold transition-all"
-            style={{
-              color: "#64748b",
-              background: "#ffffff",
-              border: "1px solid #e2e8f0",
-            }}
-            onMouseOver={(e) => {
-              (e.currentTarget as HTMLElement).style.background = "#fee2e2";
-              (e.currentTarget as HTMLElement).style.color = "#ef4444";
-              (e.currentTarget as HTMLElement).style.borderColor = "#fecaca";
-            }}
-            onMouseOut={(e) => {
-              (e.currentTarget as HTMLElement).style.background = "#ffffff";
-              (e.currentTarget as HTMLElement).style.color = "#64748b";
-              (e.currentTarget as HTMLElement).style.borderColor = "#e2e8f0";
-            }}
-          >
-            <X size={14} strokeWidth={2.5} aria-hidden="true" />
-            Clear
+          <button type="button" onClick={onClear} className="btn-ghost">
+            <X size={15} aria-hidden="true" /> Clear
           </button>
         )}
-        {error && <p id={`${id}-error`} className="field-error" role="alert">{error}</p>}
       </div>
-    </div>
+      {error && <p id={description} className="field-error mt-3" role="alert">{error}</p>}
+    </fieldset>
   );
 }

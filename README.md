@@ -52,6 +52,8 @@ The project is being built incrementally, focusing on core business functionalit
 
 Project documentation can be found in the `docs/` folder.
 
+For local startup and shutdown commands, see the [Windows development guide](docs/LOCAL_DEVELOPMENT.md).
+
 Latest checkpoint: [Phase 1B.3 disposable database verification](docs/PHASE1B3_DATABASE_VERIFICATION_REPORT.md) is complete for owner review on `codex/phase-1b3-disposable-verification`. The explicitly approved one-line SQLite migration fix is committed at `b9957e0`. PostgreSQL: 120 business passes, 93 security/operational passes (one SQLite-only skip), 28 concurrency passes. SQLite: 103 business passes/17 PostgreSQL-only skips, 91 security/operational passes/3 PostgreSQL-only skips. Both engines pass the original 13 role and 26 CSRF requirements; each has 33 real-browser passes. Frontend: 52 utility checks, build and focused lint pass. All three original session/throttling blockers now have passing integrated evidence on both engines. Failed runs and prior checkpoints remain preserved; disposable targets are removed. STOP for review. Production, dependencies, infrastructure and deployment validation remain separate outstanding gates; the application is not production-ready.
 
 ## License

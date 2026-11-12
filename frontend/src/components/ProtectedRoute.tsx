@@ -3,6 +3,8 @@ import { useMe } from "@/hooks/useAuth";
 import { can, canVisit, homeFor } from "@/lib/permissions";
 import { useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { ShieldAlert } from "lucide-react";
+import WorkspaceState from "./WorkspaceState";
 
 export default function ProtectedRoute() {
   const { data: user, isLoading } = useMe();
@@ -20,9 +22,11 @@ export default function ProtectedRoute() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-slate-500 text-sm">Loading...</p>
-      </div>
+      <main className="workspace workspace-gate">
+        <div className="workspace-card workspace-state" role="status">
+          <p>Loading your workspace…</p>
+        </div>
+      </main>
     );
   }
 
@@ -31,7 +35,20 @@ export default function ProtectedRoute() {
   }
 
   if (!can(user, "self.read") || !canVisit(user, location.pathname)) {
-    return <div className="p-8" role="alert"><h1>Access restricted</h1><p>You do not have permission to open this page.</p><Link to={homeFor(user)}>Return to your workspace</Link></div>;
+    return (
+      <main className="workspace workspace-gate">
+        <div className="workspace-card">
+          <WorkspaceState
+            primary
+            alert
+            icon={ShieldAlert}
+            title="Access restricted"
+            description="Your account does not have permission to open this page."
+            action={<Link className="workspace-button workspace-button--primary" to={homeFor(user)}>Return to your workspace</Link>}
+          />
+        </div>
+      </main>
+    );
   }
 
   return <Outlet />;
