@@ -1,8 +1,0 @@
-{
-  "version": "PostgreSQL 17.11 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit",
-  "image_id": "sha256:f02121de6f74d30d8a94cd1d9584125e2178d7e6c377d8130112d4e52d867995",
-  "existing_migrations_only": true,
-  "new_schema_ddl": false,
-  "production_connections": false,
-  "experiment_adapter": "Existing Ingredient/Category fixture fields; no proposed model implementation"
-}

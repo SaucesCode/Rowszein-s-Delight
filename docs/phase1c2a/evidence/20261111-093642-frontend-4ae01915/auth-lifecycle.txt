@@ -1,6 +1,0 @@
-PASS one refresh per tab even with parallel callers
-PASS multiple tabs and logout share the lifecycle lock
-PASS lost refresh response is not retried
-PASS unsupported cross-tab coordination refuses refresh
-PASS business 401 is never replayed or refreshed
-{"tests":5,"failures":0,"browser_tests":false,"schema_executed":false}

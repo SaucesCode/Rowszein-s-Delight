@@ -1,9 +1,0 @@
-{
-  "owned_containers_still_running": [],
-  "loopback_ports_listening": {
-    "18841": false,
-    "18842": false,
-    "18843": false
-  },
-  "production_access": false
-}

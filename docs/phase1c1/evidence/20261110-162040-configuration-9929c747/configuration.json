@@ -1,8 +1,0 @@
-{
-  "configured_legacy_static_backend": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-  "resolved_static_backend": "django.contrib.staticfiles.storage.StaticFilesStorage",
-  "timezone": "Asia/Manila",
-  "pagination_size": 20,
-  "database_connections_opened": false,
-  "dotenv_discovery": false
-}

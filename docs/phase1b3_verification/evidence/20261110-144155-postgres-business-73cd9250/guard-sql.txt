@@ -1,6 +1,0 @@
-BEGIN;
---
--- Raw Python operation
---
--- THIS OPERATION CANNOT BE WRITTEN AS SQL
-COMMIT;

@@ -1,6 +1,0 @@
-Traceback (most recent call last):
-  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b3_verification\browser_checks.py", line 56, in <module>
-    launch([sys.executable,'-B',str(Path(__file__).with_name('serve_browser_backend.py'))],ROOT,18842,'browser-backend',env)
-  File "C:\Users\CARE MBA\Desktop\Rowszein-s-Delight\docs\phase1b3_verification\browser_checks.py", line 46, in launch
-    raise RuntimeError(name+' startup timeout')
-RuntimeError: browser-backend startup timeout

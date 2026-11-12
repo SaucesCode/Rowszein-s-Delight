@@ -1,2 +1,0 @@
-PASS expected location of storefront shortcut
-PASS no uncaught page errors
