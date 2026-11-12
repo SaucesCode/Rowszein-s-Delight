@@ -6,11 +6,29 @@ export type StockStatus = "healthy" | "low_stock" | "out_of_stock";
 
 const STATUS_CONFIG: Record<
   StockStatus,
-  { label: string; bg: string; fg: string; icon: LucideIcon }
+  { label: string; bg: string; fg: string; border: string; icon: LucideIcon }
 > = {
-  healthy: { label: "Healthy", bg: "#EAF3DE", fg: "#3F6B1F", icon: CheckCircle2 },
-  low_stock: { label: "Low Stock", bg: "#FFF3DC", fg: "#946200", icon: AlertTriangle },
-  out_of_stock: { label: "Out of Stock", bg: "#FEF2F2", fg: "#B91C1C", icon: XCircle },
+  healthy: {
+    label: "In Stock",
+    bg: "#E6F7F2",
+    fg: "#0F766E",
+    border: "#99E2D0",
+    icon: CheckCircle2,
+  },
+  low_stock: {
+    label: "Low Stock",
+    bg: "#FFF0F5",
+    fg: "#C7255E",
+    border: "#F5CADB",
+    icon: AlertTriangle,
+  },
+  out_of_stock: {
+    label: "Out of Stock",
+    bg: "#FEF2F2",
+    fg: "#DC2626",
+    border: "#FECACA",
+    icon: XCircle,
+  },
 };
 
 export function resolveStockStatus(
@@ -27,11 +45,17 @@ export default function StockStatusBadge({ status }: { status: StockStatus }) {
 
   return (
     <span
-      className="inline-flex items-center gap-1 font-body font-semibold rounded-full"
-      style={{ background: config.bg, color: config.fg, fontSize: 11, padding: "3px 9px" }}
+      className="inline-flex items-center gap-1 font-semibold rounded-full text-xs"
+      style={{
+        background: config.bg,
+        color: config.fg,
+        border: `1px solid ${config.border}`,
+        padding: "3px 9px",
+        fontSize: "0.75rem",
+      }}
     >
-      <Icon size={11} strokeWidth={2.5} aria-hidden="true" />
-      {config.label}
+      <Icon size={12} strokeWidth={2.5} aria-hidden="true" />
+      <span>{config.label}</span>
     </span>
   );
 }
