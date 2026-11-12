@@ -12,6 +12,54 @@ interface ProductCardProps {
   togglePending?: boolean;
 }
 
+function getDonutVisualTheme(name: string, categoryName: string) {
+  const n = (name + " " + categoryName).toLowerCase();
+  if (n.includes("choco") || n.includes("cocoa") || n.includes("velvet")) {
+    return {
+      bg: "linear-gradient(135deg, #F5EDEA 0%, #E8DBD6 100%)",
+      dough: "#5A3825",
+      glaze: "#3D2415",
+      accent: "#F4A261",
+      sprinkles: false,
+    };
+  }
+  if (n.includes("matcha") || n.includes("green tea")) {
+    return {
+      bg: "linear-gradient(135deg, #F5FBEF 0%, #E5F3D8 100%)",
+      dough: "#E8B880",
+      glaze: "#7BA05B",
+      accent: "#5D7C42",
+      sprinkles: false,
+    };
+  }
+  if (n.includes("ube") || n.includes("taro") || n.includes("local")) {
+    return {
+      bg: "linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%)",
+      dough: "#E8B880",
+      glaze: "#8B5CF6",
+      accent: "#DDD6FE",
+      sprinkles: true,
+    };
+  }
+  if (n.includes("classic") || n.includes("cinnamon") || n.includes("sugar")) {
+    return {
+      bg: "linear-gradient(135deg, #FFF3E6 0%, #FFE6CC 100%)",
+      dough: "#EDAD6C",
+      glaze: "#FDE4B8",
+      accent: "#D98A3C",
+      sprinkles: false,
+    };
+  }
+  // Default wild strawberry / specialty glaze
+  return {
+    bg: "linear-gradient(135deg, #FFE5EE 0%, #FFD1DF 100%)",
+    dough: "#F8C08A",
+    glaze: "#FF8BB5",
+    accent: "#E07936",
+    sprinkles: true,
+  };
+}
+
 export default function ProductCard({
   product,
   onEdit,
@@ -23,6 +71,7 @@ export default function ProductCard({
   const categoryLabel = product.category?.name ?? "Donut";
   const formattedPrice = Number(product.price).toFixed(2);
   const isAvailable = product.is_available && !product.is_out_of_stock;
+  const theme = getDonutVisualTheme(product.name, categoryLabel);
 
   return (
     <article
@@ -50,7 +99,7 @@ export default function ProductCard({
         className="relative overflow-hidden flex items-center justify-center"
         style={{
           height: 160,
-          background: "linear-gradient(135deg, #FFE5EE 0%, #FFD1DF 100%)",
+          background: theme.bg,
         }}
       >
         {product.image_url ? (
@@ -61,21 +110,26 @@ export default function ProductCard({
           />
         ) : (
           <div className="flex items-center justify-center transition-transform duration-300 group-hover/card:scale-105 group-hover/card:rotate-2">
-            <svg width="84" height="84" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-              <circle cx="24" cy="24" r="19" fill="#F8C08A" />
-              <circle cx="24" cy="24" r="18" fill="#FF8BB5" />
+            <svg width="88" height="88" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+              <circle cx="24" cy="24" r="19" fill={theme.dough} />
+              <circle cx="24" cy="24" r="18" fill={theme.glaze} />
               <path
                 d="M10 21c2 0 3 4 5 4s3-4 5-4 3 4 5 4 3-4 5-4 3 4 5 4"
-                stroke="#FFF0F5"
+                stroke="#FFFFFF"
                 strokeWidth="2.5"
                 strokeLinecap="round"
+                opacity="0.8"
               />
-              <circle cx="24" cy="24" r="7" fill="#FFE5EE" />
-              <circle cx="24" cy="24" r="7" stroke="#E07936" strokeWidth="1.5" />
-              <rect x="17" y="14" width="4" height="1.5" rx="0.75" fill="#FFFFFF" transform="rotate(25 17 14)" />
-              <rect x="27" y="15" width="4" height="1.5" rx="0.75" fill="#FFE600" transform="rotate(-30 27 15)" />
-              <rect x="31" y="25" width="4" height="1.5" rx="0.75" fill="#FFFFFF" transform="rotate(45 31 25)" />
-              <rect x="15" y="27" width="4" height="1.5" rx="0.75" fill="#70D6FF" transform="rotate(10 15 27)" />
+              <circle cx="24" cy="24" r="7" fill={theme.dough} opacity="0.3" />
+              <circle cx="24" cy="24" r="7" stroke={theme.accent} strokeWidth="1.5" />
+              {theme.sprinkles && (
+                <>
+                  <rect x="17" y="14" width="4" height="1.5" rx="0.75" fill="#FFFFFF" transform="rotate(25 17 14)" />
+                  <rect x="27" y="15" width="4" height="1.5" rx="0.75" fill="#FFE600" transform="rotate(-30 27 15)" />
+                  <rect x="31" y="25" width="4" height="1.5" rx="0.75" fill="#FFFFFF" transform="rotate(45 31 25)" />
+                  <rect x="15" y="27" width="4" height="1.5" rx="0.75" fill="#70D6FF" transform="rotate(10 15 27)" />
+                </>
+              )}
             </svg>
           </div>
         )}
