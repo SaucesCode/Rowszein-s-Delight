@@ -1,0 +1,23 @@
+✔ today at 2024-02-29T15:59:00Z (7.9828ms)
+✔ today at 2024-02-29T16:00:00Z (0.4338ms)
+✔ this_month at 2024-02-29T15:59:00Z (0.221ms)
+✔ this_month at 2024-02-29T16:00:00Z (0.1605ms)
+✔ this_week at 2024-03-10T15:59:00Z (0.1964ms)
+✔ this_week at 2024-03-10T16:00:00Z (0.2089ms)
+✔ this_week at 2023-12-31T16:00:00Z (0.1653ms)
+✔ this_quarter at 2024-03-31T15:59:00Z (0.204ms)
+✔ this_quarter at 2024-03-31T16:00:00Z (4.1126ms)
+✔ this_year at 2024-12-31T15:59:00Z (0.3671ms)
+✔ this_year at 2024-12-31T16:00:00Z (0.1952ms)
+✔ custom omission preserves an open boundary and explicit equal dates are valid (0.5113ms)
+✔ custom malformed dates cannot broaden the query (0.8566ms)
+✔ history allows an open end while reports validate their existing defaults (1.8657ms)
+✔ history labels use the same Manila calendar even across year and leap-day boundaries (5.3975ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 53.8405

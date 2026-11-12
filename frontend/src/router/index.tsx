@@ -4,6 +4,8 @@ import MainLayout from "@/layouts/MainLayout";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import LandingPage from "@/pages/LandingPage";
 import LoginPage from "@/pages/LoginPage";
+import OwnerHomePage from "@/pages/OwnerHomePage";
+import OwnerHomePreviewHarness from "@/pages/owner-home/OwnerHomePreviewHarness";
 import DashboardPage from "@/pages/DashboardPage";
 import IngredientsPage from "@/pages/IngredientsPage";
 import IngredientFormPage from "@/pages/IngredientFormPage";
@@ -38,6 +40,12 @@ const router = createBrowserRouter([
     element: <LandingPage />,
   },
 
+  // ── Visual Verification Preview Harness ──
+  {
+    path: "/preview/owner-home",
+    element: <OwnerHomePreviewHarness />,
+  },
+
   // ── Public — owner login (reached via the hidden nav icon) ──
   {
     element: <GuestRoute />,
@@ -58,10 +66,15 @@ const router = createBrowserRouter([
   {
     element: <ProtectedRoute />,
     children: [
+      // Dedicated Six-Card Owner Home (no permanent sidebar)
+      { path: "/home", element: <OwnerHomePage /> },
+      { path: "/dashboard", element: <Navigate to="/home" replace /> },
+
+      // Standard Workspace Pages with MainLayout
       {
         element: <MainLayout />,
         children: [
-          { path: "/dashboard", element: <DashboardPage /> },
+          { path: "/analytics", element: <DashboardPage /> },
           { path: "/ingredients", element: <StockRoute /> },
           { path: "/ingredients/new", element: <IngredientFormPage /> },
           { path: "/ingredients/:id/edit", element: <IngredientFormPage /> },

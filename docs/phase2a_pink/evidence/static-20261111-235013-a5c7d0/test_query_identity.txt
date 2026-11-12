@@ -1,0 +1,10 @@
+PASS ingredient list page and detail ID preserve different response shapes
+PASS recipe list/detail and ingredient/recipe resources cannot collide
+PASS list pages 1 and 2 are distinct from detail ID 2
+PASS actor, role and anonymous scopes cannot read owner cache entries
+PASS ingredient prefix invalidation includes every page/detail/low-stock without invalidating recipes
+PASS recipe prefix invalidation includes all lists and details
+PASS invalid IDs are disabled candidates, positive safe integers are accepted
+PASS wrong-ID and list responses cannot populate a successful detail cache
+PASS switching a live observer never supplies previous record as placeholder
+{"tests":9,"failures":0,"real_query_client":true,"browser_tests":false}

@@ -1,0 +1,7 @@
+{
+  "source": "rowszein_dev",
+  "source_scope": "schema and three framework metadata tables",
+  "application_rows_copied": 0,
+  "migrations_executed": 0,
+  "test_target": "rowszein_verify_ff05c2de4e5445009d46533f916c874e"
+}

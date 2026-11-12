@@ -1,0 +1,6 @@
+{
+  "checks_run": 0,
+  "passed": 0,
+  "failure": "backend did not become ready.",
+  "exit_code": 1
+}

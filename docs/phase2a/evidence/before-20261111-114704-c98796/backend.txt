@@ -1,0 +1,18 @@
+November 11, 2026 - 11:47:12
+Django version 5.1.4, using settings 'pagination_settings'
+Starting development server at http://127.0.0.1:18842/
+Quit the server with CTRL-BREAK.
+
+[11/Nov/2026 11:47:20] "GET /api/auth/me/ HTTP/1.1" 401 138
+[11/Nov/2026 11:47:20] "GET /api/auth/csrf/ HTTP/1.1" 200 118
+[11/Nov/2026 11:47:20] "POST /api/auth/login/ HTTP/1.1" 200 190
+[11/Nov/2026 11:47:20] "GET /api/auth/me/ HTTP/1.1" 200 93
+[11/Nov/2026 11:47:20] "GET /api/dashboard/?date_from=2026-01-01&date_to=2026-11-11 HTTP/1.1" 200 2580
+[11/Nov/2026 11:47:21] "GET /api/auth/me/ HTTP/1.1" 200 93
+[11/Nov/2026 11:47:21] "GET /api/auth/me/ HTTP/1.1" 200 93
+[11/Nov/2026 11:47:21] "GET /api/dashboard/?date_from=2026-01-01&date_to=2026-11-10 HTTP/1.1" 200 2580
+[11/Nov/2026 11:47:23] "GET /api/auth/me/ HTTP/1.1" 401 138
+[11/Nov/2026 11:47:24] "GET /api/auth/csrf/ HTTP/1.1" 200 118
+[11/Nov/2026 11:47:24] "POST /api/auth/login/ HTTP/1.1" 200 195
+[11/Nov/2026 11:47:24] "GET /api/auth/me/ HTTP/1.1" 200 98
+[11/Nov/2026 11:47:24] "GET /api/sales/?page=1&date_from=2026-11-11&date_to=2026-11-11 HTTP/1.1" 200 547
