@@ -575,10 +575,10 @@ export default function ProductFormPage() {
         description={`Are you sure you want to permanently delete "${product?.name}"? This action cannot be undone.`}
         confirmLabel="Yes, Delete"
         cancelLabel="Cancel"
-        variant="danger"
-        isLoading={deleteProduct.isPending}
+        destructive={true}
+        loading={deleteProduct.isPending}
         onConfirm={handleDelete}
-        onClose={() => setDeleteConfirmOpen(false)}
+        onCancel={() => setDeleteConfirmOpen(false)}
       />
     </div>
   );

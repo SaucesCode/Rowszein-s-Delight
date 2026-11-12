@@ -1,4 +1,4 @@
-import { MoreVertical, Copy, Trash2, Eye, EyeOff } from "lucide-react";
+import { MoreVertical, Copy, Trash2, EyeOff } from "lucide-react";
 import type { Product } from "@/types/product.types";
 import DropdownMenu from "@/components/DropdownMenu";
 import { StarIcon, CheckIcon, AlertTriangleIcon } from "@/pages/owner-home/OwnerHomeIcons";
