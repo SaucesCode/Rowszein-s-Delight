@@ -1,0 +1,506 @@
+/* ==========================================================================
+   ROWSZEIN'S DELIGHT — UNIFIED OWNER EXPERIENCE LAYOUT
+   Boutique light-pink aesthetic, zero permanent sidebar, WCAG AA compliant.
+   ========================================================================== */
+
+:root {
+  --ol-canvas: #FFF8FA;
+  --ol-card-bg: #FFFFFF;
+  --ol-card-border: #F5D5E2;
+  --ol-card-border-hover: #EEB3CB;
+  --ol-ink-strong: #2B1820;
+  --ol-ink-muted: #7E6570;
+  --ol-ink-subtle: #A38A96;
+
+  /* Brand Rose Palette (WCAG AA 5.2:1 against #FFFFFF) */
+  --ol-rose-primary: #C7255E;
+  --ol-rose-hover: #AB1C4F;
+  --ol-rose-active: #8F1440;
+  --ol-rose-soft: #FFE6F0;
+  --ol-rose-tint: #FFF0F5;
+  --ol-rose-glow: rgba(199, 37, 94, 0.12);
+
+  /* Status Colors */
+  --ol-emerald-ink: #0F766E;
+  --ol-emerald-bg: #E6F7F2;
+  --ol-emerald-border: #99E2D0;
+  --ol-amber-ink: #C2410C;
+  --ol-amber-bg: #FEF3EB;
+  --ol-amber-border: #FCD0B3;
+  --ol-purple-ink: #6C40C7;
+  --ol-purple-bg: #F4EFFE;
+
+  /* Shadows & Depth */
+  --ol-shadow-sm: 0 1px 3px rgba(43, 24, 32, 0.04), 0 2px 6px rgba(199, 37, 94, 0.03);
+  --ol-shadow-md: 0 4px 16px rgba(199, 37, 94, 0.06), 0 1px 4px rgba(43, 24, 32, 0.04);
+  --ol-shadow-lg: 0 8px 24px rgba(199, 37, 94, 0.08), 0 2px 6px rgba(43, 24, 32, 0.04);
+
+  --ol-radius-sm: 8px;
+  --ol-radius-md: 12px;
+  --ol-radius-lg: 16px;
+  --ol-radius-full: 9999px;
+  --ol-transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --ol-transition-normal: 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.owner-layout-root {
+  min-height: 100vh;
+  background-color: var(--ol-canvas);
+  color: var(--ol-ink-strong);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TOP BRANDING HEADER
+   ───────────────────────────────────────────────────────────── */
+.owner-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--ol-card-border);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.owner-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+  flex-shrink: 0;
+}
+
+.owner-brand-group:focus-visible {
+  outline: 2px solid var(--ol-rose-primary);
+  outline-offset: 3px;
+  border-radius: var(--ol-radius-sm);
+}
+
+.owner-brand-insignia {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--ol-radius-full);
+  background: var(--ol-rose-soft);
+  color: var(--ol-rose-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(199, 37, 94, 0.15);
+  flex-shrink: 0;
+  transition: transform var(--ol-transition-fast);
+}
+
+.owner-brand-group:hover .owner-brand-insignia {
+  transform: rotate(-8deg) scale(1.05);
+}
+
+.owner-brand-titles {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.owner-brand-name {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 800;
+  font-size: 1.0625rem;
+  color: var(--ol-ink-strong);
+  letter-spacing: -0.02em;
+}
+
+.owner-brand-tagline {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--ol-rose-primary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.owner-greeting-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #FFFFFF;
+  border: 1px solid var(--ol-card-border);
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--ol-radius-full);
+  font-size: 0.8125rem;
+  color: var(--ol-ink-muted);
+  font-weight: 500;
+}
+
+.owner-greeting-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #10B981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.owner-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.owner-btn-subtle-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--ol-radius-full);
+  background-color: transparent;
+  color: var(--ol-rose-primary);
+  border: 1px solid transparent;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--ol-transition-fast);
+}
+
+.owner-btn-subtle-link:hover {
+  background-color: var(--ol-rose-soft);
+  border-color: var(--ol-card-border);
+}
+
+.owner-profile-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-left: 0.25rem;
+}
+
+.owner-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--ol-radius-full);
+  background-color: #1A1215;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: -0.02em;
+}
+
+.owner-user-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ol-ink-strong);
+}
+
+.owner-btn-logout {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--ol-ink-muted);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--ol-radius-sm);
+  cursor: pointer;
+  transition: all var(--ol-transition-fast);
+}
+
+.owner-btn-logout:hover {
+  color: var(--ol-rose-primary);
+  background-color: var(--ol-rose-soft);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   PAGE CONTAINER & SUBVIEW SHELL (NO PERMANENT TABS)
+   Navigation is driven by the 6 Cards on the Control Hub home,
+   with "← Back to Hub" breadcrumbs on subviews.
+   ───────────────────────────────────────────────────────────── */
+
+/* ─────────────────────────────────────────────────────────────
+   MAIN CONTAINER & SUBVIEW SHELL
+   ───────────────────────────────────────────────────────────── */
+.owner-main-container {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.75rem 1.5rem 3rem;
+  flex: 1;
+}
+
+.owner-subview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.owner-subview-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.owner-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: #FFFFFF;
+  border: 1px solid var(--ol-card-border);
+  color: var(--ol-rose-primary);
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--ol-radius-full);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: var(--ol-shadow-sm);
+  transition: all var(--ol-transition-fast);
+}
+
+.owner-back-btn:hover {
+  background-color: var(--ol-rose-soft);
+  border-color: var(--ol-card-border-hover);
+  transform: translateX(-2px);
+}
+
+.owner-subview-title-group {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.owner-subview-title {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 1.625rem;
+  font-weight: 800;
+  color: var(--ol-ink-strong);
+  letter-spacing: -0.025em;
+  margin: 0;
+}
+
+.owner-count-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: var(--ol-rose-soft);
+  color: var(--ol-rose-primary);
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--ol-radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.owner-action-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--ol-rose-primary);
+  color: #FFFFFF;
+  padding: 0.55rem 1.15rem;
+  border-radius: var(--ol-radius-full);
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(199, 37, 94, 0.25);
+  transition: all var(--ol-transition-fast);
+}
+
+.owner-action-btn-primary:hover {
+  background-color: var(--ol-rose-hover);
+  box-shadow: 0 4px 12px rgba(199, 37, 94, 0.35);
+  transform: translateY(-1px);
+}
+
+.owner-action-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background-color: #FFFFFF;
+  color: var(--ol-ink-strong);
+  border: 1px solid var(--ol-card-border);
+  padding: 0.5rem 0.95rem;
+  border-radius: var(--ol-radius-full);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: var(--ol-shadow-sm);
+  transition: all var(--ol-transition-fast);
+}
+
+.owner-action-btn-secondary:hover {
+  border-color: var(--ol-rose-primary);
+  color: var(--ol-rose-primary);
+  background-color: var(--ol-rose-tint);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SUBVIEW SHELL & CLEAN TABLES (Matching bakery-control-hub-v2)
+   ───────────────────────────────────────────────────────────── */
+.subview-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.table-container-responsive {
+  background: var(--ol-card-bg);
+  border: 1px solid var(--ol-card-border);
+  border-radius: var(--ol-radius-lg);
+  box-shadow: var(--ol-shadow-sm);
+  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.clean-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  min-width: 640px;
+}
+
+.clean-table th {
+  background: #FFF9FB;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ol-ink-muted);
+  padding: 0.85rem 1.15rem;
+  border-bottom: 1px solid var(--ol-card-border);
+  white-space: nowrap;
+}
+
+.clean-table td {
+  padding: 0.95rem 1.15rem;
+  font-size: 0.8125rem;
+  color: var(--ol-ink-strong);
+  border-bottom: 1px solid #F8EBF1;
+  vertical-align: middle;
+}
+
+.clean-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.clean-table tbody tr:hover td {
+  background: #FFFDFE;
+}
+
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--ol-radius-full);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.badge-status.available {
+  background: var(--ol-emerald-bg);
+  color: var(--ol-emerald-ink);
+  border: 1px solid var(--ol-emerald-border);
+}
+
+.badge-status.soldout,
+.badge-status.hidden {
+  background: #F3F4F6;
+  color: #6B7280;
+  border: 1px solid #E5E7EB;
+}
+
+.badge-status.warning {
+  background: var(--ol-amber-bg);
+  color: var(--ol-amber-ink);
+  border: 1px solid var(--ol-amber-border);
+}
+
+.badge-status.recorded {
+  background: var(--ol-rose-soft);
+  color: var(--ol-rose-primary);
+  border: 1px solid var(--ol-card-border);
+}
+
+.btn-table-action {
+  background: none;
+  border: none;
+  color: var(--ol-rose-primary);
+  font-weight: 700;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--ol-radius-sm);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all var(--ol-transition-fast);
+}
+
+.btn-table-action:hover {
+  background: var(--ol-rose-soft);
+}
+
+.detail-sub-chip {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--ol-radius-full);
+  background: #FDF2F7;
+  color: #9D2253;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  border: 1px solid #F8DCE8;
+  white-space: nowrap;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   RESPONSIVE CONTROLS & MEDIA QUERIES
+   ───────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .owner-header {
+    padding: 0.65rem 1rem;
+  }
+  .owner-greeting-pill {
+    display: none;
+  }
+  .owner-main-container {
+    padding: 1.25rem 1rem 2.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .owner-user-name {
+    display: none;
+  }
+  .owner-subview-title {
+    font-size: 1.375rem;
+  }
+  .owner-subview-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  .owner-subview-left {
+    justify-content: space-between;
+  }
+  .owner-action-btn-primary {
+    justify-content: center;
+    width: 100%;
+  }
+}

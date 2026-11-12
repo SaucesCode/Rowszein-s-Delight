@@ -1,3 +1,5 @@
 .vercel
 .env*
 .verification-runtime/
+*.log
+docs/antigravity_discovery/

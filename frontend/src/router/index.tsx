@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import AuthLayout from "@/layouts/AuthLayout";
-import MainLayout from "@/layouts/MainLayout";
+import OwnerLayout from "@/layouts/OwnerLayout";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import LandingPage from "@/pages/LandingPage";
 import LoginPage from "@/pages/LoginPage";
@@ -62,25 +62,21 @@ const router = createBrowserRouter([
     ],
   },
 
-  // ── Protected — Owner Panel ──
+  // ── Protected — Owner & Management Panel (Boutique Unified Layout) ──
   {
     element: <ProtectedRoute />,
     children: [
-      // Dedicated Six-Card Owner Home (no permanent sidebar)
-      { path: "/home", element: <OwnerHomePage /> },
-      { path: "/dashboard", element: <Navigate to="/home" replace /> },
-
-      // Standard Workspace Pages with MainLayout
       {
-        element: <MainLayout />,
+        element: <OwnerLayout />,
         children: [
-          { path: "/analytics", element: <DashboardPage /> },
-          { path: "/ingredients", element: <StockRoute /> },
-          { path: "/ingredients/new", element: <IngredientFormPage /> },
-          { path: "/ingredients/:id/edit", element: <IngredientFormPage /> },
+          { path: "/home", element: <OwnerHomePage /> },
+          { path: "/dashboard", element: <Navigate to="/home" replace /> },
           { path: "/products", element: <CatalogRoute /> },
           { path: "/products/new", element: <ProductFormPage /> },
           { path: "/products/:id/edit", element: <ProductFormPage /> },
+          { path: "/ingredients", element: <StockRoute /> },
+          { path: "/ingredients/new", element: <IngredientFormPage /> },
+          { path: "/ingredients/:id/edit", element: <IngredientFormPage /> },
           { path: "/recipes", element: <RecipesPage /> },
           { path: "/recipes/new", element: <RecipeFormPage /> },
           { path: "/recipes/:id/edit", element: <RecipeFormPage /> },
@@ -90,6 +86,7 @@ const router = createBrowserRouter([
           { path: "/sales", element: <SalesPage /> },
           { path: "/sales/new", element: <SaleFormPage /> },
           { path: "/sales/:id/edit", element: <SaleFormPage /> },
+          { path: "/analytics", element: <DashboardPage /> },
           { path: "/profit-margins", element: <ProfitMarginsPage /> },
         ],
       },

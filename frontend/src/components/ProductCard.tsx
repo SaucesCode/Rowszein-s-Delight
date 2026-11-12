@@ -1,14 +1,7 @@
-import { ImageOff, Star, MoreVertical, Pencil, Copy, Eye, EyeOff, Trash2 } from "lucide-react";
+import { MoreVertical, Copy, Trash2, Eye, EyeOff } from "lucide-react";
 import type { Product } from "@/types/product.types";
-import StatusBadge, { type ProductStatus } from "@/components/StatusBadge";
 import DropdownMenu from "@/components/DropdownMenu";
-
-function resolveStatus(product: Product): ProductStatus {
-  if (product.is_out_of_stock) return "out_of_stock";
-  if (!product.is_available) return "hidden";
-  if (product.is_seasonal) return "seasonal";
-  return "available";
-}
+import { StarIcon, CheckIcon, AlertTriangleIcon } from "@/pages/owner-home/OwnerHomeIcons";
 
 interface ProductCardProps {
   product: Product;
@@ -27,152 +20,273 @@ export default function ProductCard({
   onDelete,
   togglePending,
 }: ProductCardProps) {
-  const status = resolveStatus(product);
-  const categoryLabel = product.category?.name ?? "Uncategorized";
+  const categoryLabel = product.category?.name ?? "Donut";
   const formattedPrice = Number(product.price).toFixed(2);
+  const isAvailable = product.is_available && !product.is_out_of_stock;
 
   return (
-    <div
-      role="button"
-      tabIndex={0}
-      onClick={onEdit}
-      onKeyDown={e => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onEdit();
-        }
-      }}
-      className="group/card flex flex-col cursor-pointer transition-all duration-200"
+    <article
+      className="group/card flex flex-col bg-white transition-all duration-200"
       style={{
-        background: "#FFFDFB",
-        border: "1px solid #E8E6E1",
-        borderRadius: 16,
+        border: "1px solid var(--ol-card-border, #F5D5E2)",
+        borderRadius: "16px",
         overflow: "hidden",
+        boxShadow: "0 1px 3px rgba(43, 24, 32, 0.04), 0 2px 6px rgba(199, 37, 94, 0.03)",
       }}
-      onMouseOver={e => {
-        (e.currentTarget as HTMLElement).style.borderColor = "#FFD6E7";
-        (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
+      onMouseOver={(e) => {
+        e.currentTarget.style.borderColor = "var(--ol-card-border-hover, #EEB3CB)";
+        e.currentTarget.style.boxShadow = "0 4px 16px rgba(199, 37, 94, 0.08)";
+        e.currentTarget.style.transform = "translateY(-2px)";
       }}
-      onMouseOut={e => {
-        (e.currentTarget as HTMLElement).style.borderColor = "#E8E6E1";
-        (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
+      onMouseOut={(e) => {
+        e.currentTarget.style.borderColor = "var(--ol-card-border, #F5D5E2)";
+        e.currentTarget.style.boxShadow = "0 1px 3px rgba(43, 24, 32, 0.04), 0 2px 6px rgba(199, 37, 94, 0.03)";
+        e.currentTarget.style.transform = "translateY(0)";
       }}
       aria-label={`${product.name}, ${categoryLabel}, ₱${formattedPrice}`}
     >
-      {/* Image */}
-      <div className="relative" style={{ aspectRatio: "4 / 3", background: "#FFF0F7" }}>
+      {/* ─── Visual Header: Image or Signature Glazed Artwork ─── */}
+      <div
+        className="relative overflow-hidden flex items-center justify-center"
+        style={{
+          height: 160,
+          background: "linear-gradient(135deg, #FFE5EE 0%, #FFD1DF 100%)",
+        }}
+      >
         {product.image_url ? (
           <img
             src={product.image_url}
             alt={product.name}
-            className="absolute inset-0 w-full h-full"
-            style={{ objectFit: "cover" }}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover/card:scale-105"
           />
         ) : (
-          <div className="flex items-center justify-center w-full h-full">
-            <ImageOff
-              size={26}
-              style={{ color: "#FF6FAE", opacity: 0.4 }}
-              aria-hidden="true"
-            />
+          <div className="flex items-center justify-center transition-transform duration-300 group-hover/card:scale-105 group-hover/card:rotate-2">
+            <svg width="84" height="84" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+              <circle cx="24" cy="24" r="19" fill="#F8C08A" />
+              <circle cx="24" cy="24" r="18" fill="#FF8BB5" />
+              <path
+                d="M10 21c2 0 3 4 5 4s3-4 5-4 3 4 5 4 3-4 5-4 3 4 5 4"
+                stroke="#FFF0F5"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              />
+              <circle cx="24" cy="24" r="7" fill="#FFE5EE" />
+              <circle cx="24" cy="24" r="7" stroke="#E07936" strokeWidth="1.5" />
+              <rect x="17" y="14" width="4" height="1.5" rx="0.75" fill="#FFFFFF" transform="rotate(25 17 14)" />
+              <rect x="27" y="15" width="4" height="1.5" rx="0.75" fill="#FFE600" transform="rotate(-30 27 15)" />
+              <rect x="31" y="25" width="4" height="1.5" rx="0.75" fill="#FFFFFF" transform="rotate(45 31 25)" />
+              <rect x="15" y="27" width="4" height="1.5" rx="0.75" fill="#70D6FF" transform="rotate(10 15 27)" />
+            </svg>
           </div>
         )}
 
-        <div className="absolute top-2.5 left-2.5">
-          <StatusBadge status={status} />
+        {/* Top-Left: Status Pill */}
+        <div className="absolute top-2.5 left-2.5 z-10">
+          {product.is_out_of_stock ? (
+            <span
+              className="inline-flex items-center gap-1 font-semibold rounded-full text-xs"
+              style={{
+                background: "#FEF2F2",
+                color: "#B91C1C",
+                border: "1px solid #FECACA",
+                padding: "3px 8px",
+              }}
+            >
+              <AlertTriangleIcon width={11} height={11} />
+              <span>Sold Out</span>
+            </span>
+          ) : !product.is_available ? (
+            <span
+              className="inline-flex items-center gap-1 font-semibold rounded-full text-xs"
+              style={{
+                background: "#FEF3EB",
+                color: "#C2410C",
+                border: "1px solid #FCD0B3",
+                padding: "3px 8px",
+              }}
+            >
+              <EyeOff size={11} />
+              <span>Hidden</span>
+            </span>
+          ) : (
+            <span
+              className="inline-flex items-center gap-1 font-semibold rounded-full text-xs"
+              style={{
+                background: "#E6F7F2",
+                color: "#0F766E",
+                border: "1px solid #99E2D0",
+                padding: "3px 8px",
+              }}
+            >
+              <CheckIcon width={10} height={10} />
+              <span>Available</span>
+            </span>
+          )}
         </div>
 
+        {/* Top-Right: Bestseller Star Badge */}
         {product.is_featured && (
           <div
-            className="absolute top-2.5 right-2.5 flex items-center justify-center rounded-full"
-            style={{ width: 26, height: 26, background: "#FFFDFB" }}
-            title="Featured product"
+            className="absolute top-2.5 right-2.5 z-10 flex items-center justify-center rounded-full bg-white shadow-sm"
+            style={{ width: 28, height: 28, color: "#C7255E" }}
+            title="Bestseller Donut"
           >
-            <Star size={13} style={{ color: "#FF6FAE" }} fill="#FF6FAE" aria-hidden="true" />
+            <StarIcon width={14} height={14} aria-hidden="true" />
           </div>
         )}
+      </div>
 
-        {/* Quick actions — hover-reveal on desktop, always visible on touch */}
-        <div
-          className="absolute bottom-2.5 right-2.5 opacity-100 sm:opacity-0 sm:group-hover/card:opacity-100 sm:group-focus-within/card:opacity-100 transition-opacity"
-          onClick={e => e.stopPropagation()}
+      {/* ─── Card Body ─── */}
+      <div className="p-4 flex flex-col flex-1">
+        <span
+          className="text-xs font-bold uppercase tracking-wider mb-1"
+          style={{ color: "#C7255E", letterSpacing: "0.06em", fontSize: "0.6875rem" }}
         >
+          {categoryLabel}
+        </span>
+
+        <h3
+          className="font-bold text-base truncate mb-1"
+          style={{
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            color: "#2B1820",
+            letterSpacing: "-0.015em",
+          }}
+          title={product.name}
+        >
+          {product.name}
+        </h3>
+
+        <p
+          className="text-xs line-clamp-2 mb-3 flex-1"
+          style={{ color: "#7E6570", lineHeight: 1.45, minHeight: "2.8em" }}
+        >
+          {product.description || "Freshly baked artisan donut crafted daily with premium ingredients."}
+        </p>
+
+        <div
+          className="flex items-baseline justify-between pt-3 mt-auto"
+          style={{ borderTop: "1px solid #FDF0F5" }}
+        >
+          <span
+            className="font-extrabold text-lg"
+            style={{
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              color: "#C7255E",
+              letterSpacing: "-0.02em",
+            }}
+          >
+            ₱{formattedPrice}
+          </span>
+          <span className="text-xs text-gray-400 font-medium">Daily Fresh</span>
+        </div>
+      </div>
+
+      {/* ─── Card Footer: Instant Toggle + Actions ─── */}
+      <div
+        className="px-4 py-3 flex items-center justify-between gap-2"
+        style={{ background: "#FFFDFE", borderTop: "1px solid #F8EBF1" }}
+      >
+        <button
+          type="button"
+          onClick={onToggleAvailability}
+          disabled={togglePending}
+          className="inline-flex items-center gap-2 cursor-pointer border-none bg-transparent p-0 text-left"
+          aria-label={product.is_available ? "Hide from customer storefront" : "Make available in customer storefront"}
+        >
+          <div
+            className="relative rounded-full transition-colors duration-200"
+            style={{
+              width: 34,
+              height: 20,
+              backgroundColor: isAvailable ? "#C7255E" : "#E5E7EB",
+              opacity: togglePending ? 0.6 : 1,
+            }}
+          >
+            <span
+              className="absolute rounded-full bg-white shadow-sm transition-transform duration-200"
+              style={{
+                width: 14,
+                height: 14,
+                top: 3,
+                left: 3,
+                transform: isAvailable ? "translateX(14px)" : "translateX(0)",
+              }}
+            />
+          </div>
+          <span
+            className="text-xs font-semibold"
+            style={{ color: isAvailable ? "#2B1820" : "#7E6570", fontSize: "0.75rem" }}
+          >
+            {isAvailable ? "In Shop" : "Hidden"}
+          </span>
+        </button>
+
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={onEdit}
+            className="px-3 py-1 rounded-full text-xs font-bold transition-colors"
+            style={{
+              background: "#FFE6F0",
+              color: "#C7255E",
+              border: "1px solid transparent",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = "#C7255E";
+              e.currentTarget.style.color = "#FFFFFF";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = "#FFE6F0";
+              e.currentTarget.style.color = "#C7255E";
+            }}
+          >
+            Edit
+          </button>
+
           <DropdownMenu
             width={180}
             trigger={({ open }) => (
               <button
-                className="flex items-center justify-center rounded-full transition-colors"
+                type="button"
+                className="w-7 h-7 flex items-center justify-center rounded-full transition-colors"
                 style={{
-                  width: 30,
-                  height: 30,
-                  background: open ? "#6B4226" : "rgba(255,253,251,0.92)",
+                  background: open ? "#FFE6F0" : "transparent",
+                  color: open ? "#C7255E" : "#7E6570",
                 }}
                 aria-label={`More actions for ${product.name}`}
                 aria-haspopup="menu"
                 aria-expanded={open}
               >
-                <MoreVertical
-                  size={15}
-                  strokeWidth={2}
-                  style={{ color: open ? "#FFFDFB" : "#6B4226" }}
-                  aria-hidden="true"
-                />
+                <MoreVertical size={14} aria-hidden="true" />
               </button>
             )}
           >
             <button
-              onClick={onEdit}
-              className="flex items-center gap-2.5 w-full text-left px-3.5 py-2.5 transition-colors hover:bg-[#FFF8F0]"
-              style={{ fontSize: 13, color: "#6B4226" }}
-            >
-              <Pencil
-                size={14}
-                strokeWidth={2}
-                style={{ color: "#9B6644" }}
-                aria-hidden="true"
-              />
-              Edit product
-            </button>
-            <button
               onClick={onDuplicate}
-              className="flex items-center gap-2.5 w-full text-left px-3.5 py-2.5 transition-colors hover:bg-[#FFF8F0]"
-              style={{ fontSize: 13, color: "#6B4226" }}
+              className="flex items-center gap-2.5 w-full text-left px-3.5 py-2.5 transition-colors hover:bg-[#FFF0F5]"
+              style={{ fontSize: 13, color: "#2B1820" }}
             >
-              <Copy
-                size={14}
-                strokeWidth={2}
-                style={{ color: "#9B6644" }}
-                aria-hidden="true"
-              />
+              <Copy size={14} style={{ color: "#C7255E" }} aria-hidden="true" />
               Duplicate
             </button>
             <button
               onClick={onToggleAvailability}
               disabled={togglePending}
-              className="flex items-center gap-2.5 w-full text-left px-3.5 py-2.5 transition-colors hover:bg-[#FFF8F0]"
-              style={{ fontSize: 13, color: "#6B4226", borderTop: "1px solid #F5EDE0" }}
+              className="flex items-center gap-2.5 w-full text-left px-3.5 py-2.5 transition-colors hover:bg-[#FFF0F5]"
+              style={{ fontSize: 13, color: "#2B1820", borderTop: "1px solid #F8EBF1" }}
             >
               {product.is_available ? (
-                <EyeOff
-                  size={14}
-                  strokeWidth={2}
-                  style={{ color: "#9B6644" }}
-                  aria-hidden="true"
-                />
+                <EyeOff size={14} style={{ color: "#7E6570" }} aria-hidden="true" />
               ) : (
-                <Eye
-                  size={14}
-                  strokeWidth={2}
-                  style={{ color: "#9B6644" }}
-                  aria-hidden="true"
-                />
+                <Eye size={14} style={{ color: "#C7255E" }} aria-hidden="true" />
               )}
               {product.is_available ? "Hide from shop" : "Show in shop"}
             </button>
             <button
               onClick={onDelete}
               className="flex items-center gap-2.5 w-full text-left px-3.5 py-2.5 transition-colors hover:bg-[#FEF2F2]"
-              style={{ fontSize: 13, color: "#DC2626", borderTop: "1px solid #F5EDE0" }}
+              style={{ fontSize: 13, color: "#DC2626", borderTop: "1px solid #F8EBF1" }}
             >
               <Trash2 size={14} strokeWidth={2} aria-hidden="true" />
               Delete permanently
@@ -180,35 +294,6 @@ export default function ProductCard({
           </DropdownMenu>
         </div>
       </div>
-
-      {/* Content */}
-      <div className="p-3.5 flex flex-col gap-1">
-        <p
-          className="font-body"
-          style={{
-            fontSize: 11,
-            color: "#B8A98D",
-            textTransform: "uppercase",
-            letterSpacing: "0.04em",
-          }}
-        >
-          {categoryLabel}
-        </p>
-        <div className="flex items-start justify-between gap-2">
-          <h3
-            className="font-heading font-semibold truncate"
-            style={{ fontSize: 14.5, color: "#6B4226" }}
-          >
-            {product.name}
-          </h3>
-          <span
-            className="font-heading font-semibold flex-shrink-0"
-            style={{ fontSize: 14.5, color: "#FF6FAE" }}
-          >
-            ₱{formattedPrice}
-          </span>
-        </div>
-      </div>
-    </div>
+    </article>
   );
 }

@@ -111,7 +111,7 @@ export default function OwnerHomePreviewHarness() {
 
   return (
     <QueryClientProvider client={previewClient}>
-      <OwnerHomePage />
+      <OwnerHomePage standalone={true} />
     </QueryClientProvider>
   );
 }
