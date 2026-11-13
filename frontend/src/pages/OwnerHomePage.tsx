@@ -29,7 +29,7 @@ import {
 } from "./owner-home/OwnerHomeIcons";
 import "./owner-home/owner-home.css";
 
-export default function OwnerHomePage() {
+export default function OwnerHomePage({ standalone = false }: { standalone?: boolean }) {
   const { data: user } = useMe();
   const logout = useLogout();
 
@@ -120,7 +120,8 @@ export default function OwnerHomePage() {
            TOP HORIZONTAL BRANDING HEADER
            No permanent sidebar on owner home
            ───────────────────────────────────────────────────────── */}
-      <header className="oh-header">
+      {standalone && (
+        <header className="oh-header">
         <Link to="/home" className="oh-brand-group" aria-label="Rowszein's Delight Control Hub Home">
           <div className="oh-brand-insignia">
             <BrandDonutIcon />
@@ -173,6 +174,7 @@ export default function OwnerHomePage() {
           </button>
         </div>
       </header>
+      )}
 
       {/* ─────────────────────────────────────────────────────────
            MAIN STAGE: THE SIX-CARD BAKERY CONTROL HUB
