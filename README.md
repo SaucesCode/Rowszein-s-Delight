@@ -1,32 +1,57 @@
 # 🍩 Rowszein's Delight Management System
 
-A business management system built for **Rowszein's Delight** to help manage products, ingredients, sales, expenses, and business performance.
+A business management system and online shop built for **Rowszein's Delight** to help manage products, boxes, ingredients, sales, expenses, and business performance.
 
 ## Overview
 
-Rowszein's Delight Management System is a web application designed to simplify daily business operations for a dessert shop.
+Rowszein's Delight Management System is a web application for a donut shop. It has two sides:
 
-The system provides tools for managing donut flavors, tracking ingredient costs, recording sales and expenses, and monitoring overall profitability through an easy-to-use dashboard.
+* **The online shop** (`/`) where customers browse today's donuts, fill a box of 8, 12 or 24, or pick a ready-made box, then send the order on Messenger. There is no checkout or payment online; the shop confirms each order by message.
+* **The management app** (behind sign-in) where the owner and staff run the counter, the pantry, the donut collection, recipe costing, expenses and reports.
 
 ## Features
 
-### Current MVP
+### Online shop
 
-* User Authentication
-* Ingredient Management
-* Product Management
-* Recipe Management
-* Sales Tracking
-* Expense Tracking
-* Profit Dashboard
+* Shop window hero showing an open box of today's donuts, with the box sizes as tabs
+* "Choose your box": fill a box yourself from the display case, or add a ready-made box in one tap
+* Display case of today's donuts grouped by category, with price cards and premium "+₱ in a box" extras
+* Order with boxes and single donuts, kept through a page refresh
+* Order card picture to save and send, and a pre-written Messenger message
+* Contact form (Messenger or email)
+* No visible sign-in link; staff sign in through a quiet mark at the end of the footer or at `/login`
 
-## Goals
+### Management app
 
-* Track business revenue and expenses
-* Calculate product production costs
-* Monitor profit and performance
-* Organize products and recipes
-* Simplify business record keeping
+* Sign-in for the owner and staff, with role-based access
+* Home: today's sales, what needs attention, and the week at a glance
+* Sales register: tap-to-add catalog and order ticket
+* Pantry: stock levels and stock updates
+* Donut collection: menu, availability, best sellers, and the "extra when in a box" for premium donuts
+* Boxes: box sizes and prices, and a builder for ready-made boxes
+* Recipe costing, shop expenses, and profit & analytics
+* Read-only Pantry and Donut collection views for staff
+
+## How boxes work
+
+* The owner sets each **box size** (for example 8, 12 and 24) with one fixed price, and can switch a size on or off.
+* A donut can carry an **extra when in a box** (₱0 by default). A box costs its fixed price plus that extra for each premium donut inside.
+* **Ready-made boxes** must fill their size exactly. The shop only shows one when its size and every donut in it are on sale.
+* The server calculates every box price, so the shop never shows a total the server would not.
+
+API (under `/api/products/`):
+
+| Endpoint | Who | Purpose |
+| --- | --- | --- |
+| `boxes/` | Anyone | Box sizes and ready-made boxes the shop can sell now |
+| `box-sizes/`, `box-sizes/<id>/` | Owner manages, staff read | Box sizes and prices |
+| `assortments/`, `assortments/<id>/` | Owner manages, staff read | Ready-made boxes and their contents |
+
+Selling boxes at the counter (Sales register, with stock deducted per donut) is not built yet.
+
+## Design
+
+The look is "pâtisserie pink": blush and white, cocoa-plum ink, one raspberry accent, thin gilt trim on the shop, Fraunces for display type and Geist for text. Colours, type, spacing and motion are role-named design tokens in `frontend/src/index.css`, so a palette change only touches values there. Motion respects the visitor's reduce-motion setting.
 
 ## Tech Stack
 
@@ -38,9 +63,10 @@ The system provides tools for managing donut flavors, tracking ingredient costs,
 
 ### Frontend
 
-* React
-* Vite
-* Tailwind CSS
+* React 19 with Vite and TypeScript
+* Tailwind CSS v4 (design tokens in `@theme`)
+* TanStack Query, React Hook Form and Zod
+* Lucide icons
 
 ## Development Status
 
@@ -48,13 +74,25 @@ The system provides tools for managing donut flavors, tracking ingredient costs,
 
 The project is being built incrementally, focusing on core business functionality before advanced features.
 
+Current work (branch `codex/phase-b2-products-ingredients`):
+
+* Full UI redesign of the management app and the online shop.
+* Boxes: models and migration `products/0005_boxes`, owner and public API, management screens, and the box-first online shop.
+* 16 backend tests cover box permissions, validation, pricing and shop visibility.
+
+Known gaps:
+
+* The repository blocks running Django tests directly; the earlier disposable-database runner was removed from `docs/`. The box tests were run against a temporary in-memory SQLite database.
+* In that run, 52 older sales tests fail and 5 error with sign-in (HTTP 401) responses. They fail the same way without the box changes.
+* Box screens and the box shop were checked in a browser against a simulated API, not yet end to end with a signed-in owner on the local server.
+
+Earlier checkpoint: Phase 1B.3 disposable database verification was completed for owner review on `codex/phase-1b3-disposable-verification` (the SQLite migration fix is at `b9957e0`). Its report has since been removed from `docs/`. Production, dependencies, infrastructure and deployment validation remain separate outstanding gates; the application is not production-ready.
+
 ## Documentation
 
 Project documentation can be found in the `docs/` folder.
 
-For local startup and shutdown commands, see the [Windows development guide](docs/LOCAL_DEVELOPMENT.md).
-
-Latest checkpoint: [Phase 1B.3 disposable database verification](docs/PHASE1B3_DATABASE_VERIFICATION_REPORT.md) is complete for owner review on `codex/phase-1b3-disposable-verification`. The explicitly approved one-line SQLite migration fix is committed at `b9957e0`. PostgreSQL: 120 business passes, 93 security/operational passes (one SQLite-only skip), 28 concurrency passes. SQLite: 103 business passes/17 PostgreSQL-only skips, 91 security/operational passes/3 PostgreSQL-only skips. Both engines pass the original 13 role and 26 CSRF requirements; each has 33 real-browser passes. Frontend: 52 utility checks, build and focused lint pass. All three original session/throttling blockers now have passing integrated evidence on both engines. Failed runs and prior checkpoints remain preserved; disposable targets are removed. STOP for review. Production, dependencies, infrastructure and deployment validation remain separate outstanding gates; the application is not production-ready.
+For local startup and shutdown commands, see the [Windows development guide](docs/LOCAL_DEVELOPMENT.md). After pulling the box work, apply the new migration to your local database before starting Django.
 
 ## License
 

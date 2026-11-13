@@ -3,10 +3,12 @@ import { BrandDonutIcon } from "@/pages/owner-home/OwnerHomeIcons";
 import type { CartItem } from "@/hooks/useCart";
 import { formatPeso } from "@/pages/dashboard/report-format";
 import { formatOrderTime } from "./order";
+import { boxPrice, describeBox, type BoxLine } from "./useBoxOrder";
 
 interface OrderCardProps {
   cardRef: Ref<HTMLDivElement>;
-  items: CartItem[];
+  boxes: BoxLine[];
+  singles: CartItem[];
   total: number;
   name: string;
   number: string;
@@ -14,7 +16,7 @@ interface OrderCardProps {
 }
 
 /** The picture the customer saves and sends on Messenger. Rendered off screen only while saving. */
-export default function OrderCard({ cardRef, items, total, name, number, madeAt }: OrderCardProps) {
+export default function OrderCard({ cardRef, boxes, singles, total, name, number, madeAt }: OrderCardProps) {
   return (
     <div className="order-card-stage" aria-hidden="true">
       <div ref={cardRef} className="order-card">
@@ -25,7 +27,16 @@ export default function OrderCard({ cardRef, items, total, name, number, madeAt 
         <p className="order-card-title">Order for {name}</p>
         <p className="order-card-meta">{formatOrderTime(madeAt)} · Card {number}</p>
         <ul className="order-card-lines">
-          {items.map(item => (
+          {boxes.map(box => (
+            <li key={box.key} className="order-card-box">
+              <span>
+                {box.name}
+                <small>{describeBox(box.donuts)}</small>
+              </span>
+              <span className="num">{formatPeso(boxPrice(box))}</span>
+            </li>
+          ))}
+          {singles.map(item => (
             <li key={item.product_id}>
               <span>{item.quantity} × {item.name}</span>
               <span className="num">{formatPeso(item.price * item.quantity)}</span>

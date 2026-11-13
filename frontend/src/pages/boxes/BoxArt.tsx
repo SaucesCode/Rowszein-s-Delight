@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { flavorOf } from "@/lib/flavor";
 import PatisserieDonut from "@/pages/shop/PatisserieDonut";
+import "./box-art.css";
 
 export interface BoxUnit {
   name: string;
@@ -22,7 +23,7 @@ export default function BoxArt({ size, units, compact = false }: { size: number;
       {Array.from({ length: size }, (_, index) => {
         const unit = units[index];
         return (
-          <span key={index} className={`box-art-slot${unit ? " is-filled" : ""}`}>
+          <span key={index} className={`box-art-slot${unit ? " is-filled" : ""}`} style={{ "--slot-i": index } as CSSProperties}>
             {unit &&
               (unit.image_url ? (
                 <img src={unit.image_url} alt="" />

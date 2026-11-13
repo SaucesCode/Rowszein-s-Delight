@@ -1,5 +1,6 @@
 import type { CartItem } from "@/hooks/useCart";
 import { formatPeso } from "@/pages/dashboard/report-format";
+import { boxPrice, describeBox, type BoxLine } from "./useBoxOrder";
 
 export const SHOP_MESSENGER = "https://m.me/rowszeinsdelight";
 export const SHOP_EMAIL = "hello@rowszeinsdelight.com";
@@ -28,12 +29,26 @@ export function cardNumber(date: Date): string {
   return `RD-${month}${day}-${random}`;
 }
 
-export function orderText(items: CartItem[], total: number, name: string): string {
-  const lines = items.map(item => `${item.quantity} × ${item.name} (${formatPeso(item.price * item.quantity)})`);
+const plural = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
+
+/** "1 box, 3 donuts", "2 boxes" or "1 donut". */
+export function orderSummary(boxCount: number, singleCount: number): string {
+  const parts = [];
+  if (boxCount) parts.push(plural(boxCount, "box", "boxes"));
+  if (singleCount || !boxCount) parts.push(plural(singleCount, "donut", "donuts"));
+  return parts.join(", ");
+}
+
+/** The order as a Messenger message: each box with its contents, then single donuts. */
+export function orderText(boxes: BoxLine[], singles: CartItem[], total: number, name: string): string {
+  const boxLines = boxes.map(box => `${box.name} (${formatPeso(boxPrice(box))}): ${describeBox(box.donuts)}`);
+  const singleLines = singles.map(item => `${item.quantity} × ${item.name} (${formatPeso(item.price * item.quantity)})`);
   return [
     "Hi Rowszein's Delight! I'd like to order:",
     "",
-    ...lines,
+    ...boxLines,
+    ...(boxLines.length && singleLines.length ? [""] : []),
+    ...singleLines,
     "",
     `Total: ${formatPeso(total)}`,
     ...(name ? [`Name: ${name}`] : []),

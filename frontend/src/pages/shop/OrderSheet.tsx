@@ -1,22 +1,27 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { Download, Minus, Plus, X } from "lucide-react";
+import { Download, Minus, Plus, Trash2, X } from "lucide-react";
 import PatisserieDonut from "./PatisserieDonut";
 import type { CartItem, useCart } from "@/hooks/useCart";
 import { flavorOf } from "@/lib/flavor";
+import BoxArt from "@/pages/boxes/BoxArt";
 import { formatPeso } from "@/pages/dashboard/report-format";
 import OrderCard from "./OrderCard";
-import { SHOP_MESSENGER, cardNumber, downloadNodeAsPng, orderText } from "./order";
+import { SHOP_MESSENGER, cardNumber, downloadNodeAsPng, orderSummary, orderText } from "./order";
+import { boxPrice, describeBox, type BoxLine, type useBoxOrder } from "./useBoxOrder";
 
 type Cart = ReturnType<typeof useCart>;
+type Boxes = ReturnType<typeof useBoxOrder>;
 
-interface BoxSheetProps {
+interface OrderSheetProps {
   open: boolean;
   onClose: () => void;
   cart: Cart;
+  boxes: Boxes;
+  total: number;
 }
 
-/** The opened box: what's inside, the customer's name, and how to send the order. */
-export default function BoxSheet({ open, onClose, cart }: BoxSheetProps) {
+/** The order: boxes and single donuts, the customer's name, and how to send it. */
+export default function OrderSheet({ open, onClose, cart, boxes, total }: OrderSheetProps) {
   const ids = useId();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
@@ -26,8 +31,8 @@ export default function BoxSheet({ open, onClose, cart }: BoxSheetProps) {
   const [card, setCard] = useState<{ number: string; madeAt: Date } | null>(null);
   const [saving, setSaving] = useState(false);
   const [note, setNote] = useState<string | null>(null);
-  const [emptied, setEmptied] = useState<CartItem[] | null>(null);
-  const empty = cart.items.length === 0;
+  const [cleared, setCleared] = useState<{ singles: CartItem[]; boxes: BoxLine[] } | null>(null);
+  const empty = cart.items.length === 0 && boxes.boxes.length === 0;
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -60,8 +65,7 @@ export default function BoxSheet({ open, onClose, cart }: BoxSheetProps) {
 
   const saveCard = () => {
     setNote(null);
-    const trimmed = name.trim();
-    if (!trimmed) {
+    if (!name.trim()) {
       setNameError("Enter your name so we know whose order it is.");
       nameRef.current?.focus();
       return;
@@ -73,7 +77,7 @@ export default function BoxSheet({ open, onClose, cart }: BoxSheetProps) {
   };
 
   const openMessenger = () => {
-    const text = orderText(cart.items, cart.totalAmount, name.trim());
+    const text = orderText(boxes.boxes, cart.items, total, name.trim());
     window.open(SHOP_MESSENGER, "_blank", "noopener,noreferrer");
     if (!navigator.clipboard) {
       setNote("Type your order in the chat, or attach your saved order card.");
@@ -85,20 +89,24 @@ export default function BoxSheet({ open, onClose, cart }: BoxSheetProps) {
     );
   };
 
-  const emptyBox = () => {
-    setEmptied(cart.items);
+  const clearOrder = () => {
+    setCleared({ singles: cart.items, boxes: boxes.boxes });
     setNote(null);
     cart.clearCart();
-  };
-
-  const close = () => {
-    setEmptied(null);
-    onClose();
+    boxes.clearBoxes();
   };
 
   const putBack = () => {
-    if (emptied) cart.restoreItems(emptied);
-    setEmptied(null);
+    if (cleared) {
+      cart.restoreItems(cleared.singles);
+      boxes.restoreBoxes(cleared.boxes);
+    }
+    setCleared(null);
+  };
+
+  const close = () => {
+    setCleared(null);
+    onClose();
   };
 
   return (
@@ -113,33 +121,57 @@ export default function BoxSheet({ open, onClose, cart }: BoxSheetProps) {
     >
       <div className="box-sheet-inner">
         <header className="box-sheet-head">
-          <h2 id={`${ids}-title`} className="box-sheet-title">Your box</h2>
+          <h2 id={`${ids}-title`} className="box-sheet-title">Your order</h2>
           <button type="button" className="icon-button" onClick={close}>
             <X size={22} aria-hidden="true" />
-            <span className="sr-only">Close your box</span>
+            <span className="sr-only">Close your order</span>
           </button>
         </header>
 
         <div className="box-sheet-scroll">
           {empty ? (
             <div className="box-sheet-empty">
-              <p role="status">{emptied ? "You emptied the box." : "Your box is empty. Tap a donut in the case to add it."}</p>
+              <p role="status">
+                {cleared ? "You cleared your order." : "Your order is empty. Choose a box, or tap a donut in the case."}
+              </p>
               <div className="box-sheet-empty-actions">
-                {emptied && (
-                  <button type="button" className="btn-primary" onClick={putBack}>Put them back</button>
+                {cleared && (
+                  <button type="button" className="btn-primary" onClick={putBack}>Put it back</button>
                 )}
-                <button type="button" className="btn-secondary" onClick={close}>Back to the case</button>
+                <button type="button" className="btn-secondary" onClick={close}>Back to the shop</button>
               </div>
             </div>
           ) : (
             <>
-              <ul className="box-lines" aria-label="Donuts in your box">
-                {cart.items.map(item => {
-                  const flavor = flavorOf(item.name);
-                  return (
+              {boxes.boxes.length > 0 && (
+                <ul className="order-boxes" aria-label="Boxes in your order">
+                  {boxes.boxes.map(box => (
+                    <li key={box.key} className="order-box">
+                      <BoxArt size={box.size} units={box.donuts} compact />
+                      <span className="box-line-text">
+                        <span className="box-line-name">{box.name}</span>
+                        <span className="box-line-each">{describeBox(box.donuts)}</span>
+                      </span>
+                      <span className="box-line-total num">{formatPeso(boxPrice(box))}</span>
+                      <button type="button" className="icon-button" onClick={() => boxes.removeBox(box.key)}>
+                        <Trash2 size={18} aria-hidden="true" />
+                        <span className="sr-only">Remove {box.name}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {cart.items.length > 0 && (
+                <ul className="box-lines" aria-label="Single donuts in your order">
+                  {cart.items.map(item => (
                     <li key={item.product_id} className="box-line">
                       <span className="box-line-art" aria-hidden="true">
-                        {item.image_url ? <img src={item.image_url} alt="" width={48} height={48} /> : <PatisserieDonut flavor={flavor} size={40} />}
+                        {item.image_url ? (
+                          <img src={item.image_url} alt="" width={48} height={48} />
+                        ) : (
+                          <PatisserieDonut flavor={flavorOf(item.name)} size={40} />
+                        )}
                       </span>
                       <span className="box-line-text">
                         <span className="box-line-name">{item.name}</span>
@@ -158,13 +190,13 @@ export default function BoxSheet({ open, onClose, cart }: BoxSheetProps) {
                       </span>
                       <span className="box-line-total num">{formatPeso(item.price * item.quantity)}</span>
                     </li>
-                  );
-                })}
-              </ul>
-              <button type="button" className="link-button box-empty-button" onClick={emptyBox}>
-                Empty the box
-              </button>
+                  ))}
+                </ul>
+              )}
 
+              <button type="button" className="link-button box-empty-button" onClick={clearOrder}>
+                Clear the order
+              </button>
             </>
           )}
         </div>
@@ -190,8 +222,8 @@ export default function BoxSheet({ open, onClose, cart }: BoxSheetProps) {
               {nameError && <p id={`${ids}-name-error`} className="field-error">{nameError}</p>}
             </div>
             <p className="box-sheet-total">
-              <span>{cart.totalItems === 1 ? "1 donut" : `${cart.totalItems} donuts`}</span>
-              <strong className="num">{formatPeso(cart.totalAmount)}</strong>
+              <span>{orderSummary(boxes.boxes.length, cart.totalItems)}</span>
+              <strong className="num">{formatPeso(total)}</strong>
             </p>
             <div className="box-sheet-actions">
               <button type="button" className="btn-primary" onClick={saveCard} disabled={saving} aria-busy={saving}>
@@ -212,8 +244,9 @@ export default function BoxSheet({ open, onClose, cart }: BoxSheetProps) {
       {card && (
         <OrderCard
           cardRef={cardRef}
-          items={cart.items}
-          total={cart.totalAmount}
+          boxes={boxes.boxes}
+          singles={cart.items}
+          total={total}
           name={name.trim()}
           number={card.number}
           madeAt={card.madeAt}

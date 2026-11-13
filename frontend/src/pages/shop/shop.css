@@ -606,9 +606,9 @@
   .box-dock-review { padding-inline: var(--space-4); }
 }
 
-@media (max-width: 359px) {
-  .box-window { display: none; }
-  .box-dock { grid-template-columns: minmax(0, 1fr) auto; }
+@media (max-width: 419px) {
+  .box-dock:not(.filling-dock) .box-window { display: none; }
+  .box-dock:not(.filling-dock) { grid-template-columns: minmax(0, 1fr) auto; }
 }
 
 @keyframes dock-in {
@@ -1272,6 +1272,195 @@ html:has(.box-sheet[open]) { overflow: hidden; }
 @keyframes copy-lift {
   to { opacity: 0; transform: translateY(-96px); }
 }
+
+/* ── Box hero: an open box in the shop window, its lid propped behind ── */
+.hero-arch.is-box { align-content: center; gap: 0; }
+
+.hero-lid {
+  position: relative;
+  z-index: 0;
+  display: grid;
+  place-items: center;
+  width: 78%;
+  height: clamp(64px, 8vw, 104px);
+  margin-bottom: -18px;
+  border: 1px solid var(--color-gilt-soft);
+  border-radius: 12px 12px 4px 4px;
+  background: var(--color-accent);
+  box-shadow: inset 0 0 0 5px var(--color-accent), inset 0 0 0 6px var(--color-gilt-soft), 0 10px 20px -12px rgb(59 31 43 / 0.5);
+  transform: perspective(600px) rotateX(28deg);
+  transform-origin: bottom;
+}
+.hero-lid span {
+  color: var(--color-gilt-soft);
+  font: 400 clamp(1rem, 2.2vw, 1.375rem) / 1 var(--font-display);
+  font-style: italic;
+  font-variation-settings: var(--salon);
+  letter-spacing: 0.02em;
+}
+
+.hero-box { position: relative; z-index: 1; display: grid; place-items: center; width: 100%; padding: 0 6%; }
+.hero-box .box-art {
+  --slot: clamp(40px, 5.4vw, 64px);
+  box-shadow: inset 0 0 0 6px var(--color-tint-strong), inset 0 0 0 7px var(--color-gilt-soft), 0 24px 40px -18px rgb(59 31 43 / 0.45);
+}
+
+.hero-sizes { margin-top: var(--space-4); }
+.hero-sizes button { min-width: 64px; justify-content: center; font-weight: 600; }
+
+/* The box fills one donut at a time when it first appears or changes size. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-box .box-art-slot.is-filled > * {
+    animation: slot-in 260ms var(--ease-out-soft) both;
+    animation-delay: calc(var(--slot-i, 0) * 30ms + 380ms);
+  }
+  .hero-lid { animation: lid-open 520ms var(--ease-out-soft) both; animation-delay: 200ms; }
+}
+@keyframes lid-open {
+  from { transform: perspective(600px) rotateX(80deg); }
+  to { transform: perspective(600px) rotateX(28deg); }
+}
+
+@media (max-width: 479px) {
+  .hero-box .box-art { --slot: 36px; }
+}
+
+/* ── Choose your box ───────────────────────────────────────────────── */
+.boxes { margin-top: var(--space-9); }
+.boxes-head { display: grid; justify-items: center; text-align: center; }
+.boxes-head .shop-lede { margin-inline: auto; }
+
+.box-sizes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-4);
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.box-sizes > li { display: grid; }
+
+.box-size-card {
+  display: grid;
+  grid-template-rows: 1fr auto auto auto;
+  justify-items: center;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  height: 100%;
+  padding: var(--space-5) var(--space-4);
+  border: 1px solid var(--color-gilt-soft);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: transform var(--duration-component) var(--ease-out-soft), box-shadow var(--duration-component) var(--ease-out-soft);
+}
+.box-size-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-raised); }
+.box-size-card:active { transform: scale(0.98); }
+.box-size-card:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+.box-size-card .box-art { margin-bottom: var(--space-2); }
+.box-size-card-name {
+  font-family: var(--font-display);
+  font-size: var(--text-heading);
+  font-variation-settings: var(--salon);
+}
+.box-size-card-price { color: var(--color-gilt-ink); font-weight: 600; letter-spacing: 0.02em; }
+.box-size-card-action { color: var(--color-accent-pressed); font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
+
+.boxes-subtitle {
+  margin: var(--space-7) 0 var(--space-4);
+  font-family: var(--font-display);
+  font-size: var(--text-heading);
+  font-weight: 400;
+  font-variation-settings: var(--salon);
+  text-align: center;
+}
+
+.ready-boxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ready-box {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+.ready-box-art .box-art { --slot: 34px; }
+.ready-box-name { font-family: var(--font-display); font-size: var(--text-title); font-weight: 500; font-variation-settings: var(--salon); }
+.ready-box-contents,
+.ready-box-description { color: var(--color-ink-muted); font-size: var(--text-label); }
+.ready-box-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.ready-box-price { font-family: var(--font-display); font-size: var(--text-heading); font-variation-settings: var(--salon); }
+
+/* ── Box being filled, docked at the bottom ────────────────────────── */
+.shop.has-filling { padding-bottom: 180px; }
+
+.filling-dock {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  width: min(720px, calc(100% - 2 * var(--gutter)));
+  padding: var(--space-3) var(--space-4);
+}
+.filling-dock-box .box-art { --slot: 22px; gap: 3px; padding: 6px; }
+.filling-dock-title { font-family: var(--font-display); font-size: var(--text-title); font-variation-settings: var(--salon); }
+.filling-dock-progress { color: var(--color-ink); font-size: var(--text-label); font-weight: 600; }
+.filling-dock-price { color: var(--color-gilt-ink); font-size: var(--text-label); font-weight: 600; }
+.filling-dock-price span { color: var(--color-ink-muted); font-weight: 400; }
+.filling-dock-actions { display: grid; justify-items: end; gap: var(--space-1); }
+.filling-dock-minor { display: flex; gap: var(--space-4); }
+
+.filling-dock-minor .link-button { white-space: nowrap; }
+
+@media (max-width: 639px) {
+  .filling-dock { grid-template-columns: auto minmax(0, 1fr); }
+  .filling-dock-actions { grid-column: 1 / -1; grid-template-columns: 1fr; justify-items: stretch; }
+  .filling-dock-minor { justify-content: center; }
+  .filling-dock-box .box-art { --slot: 16px; gap: 2px; padding: 4px; }
+}
+
+/* A box in the order dock's window. */
+.box-window-box {
+  display: inline-grid;
+  grid-auto-flow: column;
+  align-items: center;
+  gap: 2px;
+  height: 30px;
+  padding: 0 6px;
+  border-radius: 6px;
+  background: var(--color-accent);
+  color: var(--color-surface);
+  font: 600 var(--text-caption) / 1 var(--font-sans);
+}
+.box-window-box + .box-window-box,
+.box-window-box + .box-window-donut { margin-left: 4px; }
+
+/* ── Boxes in the order sheet and on the order card ────────────────── */
+.order-boxes { margin: 0 0 var(--space-2); padding: 0; list-style: none; }
+.order-box {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-line);
+}
+.order-box .box-art { --slot: 14px; gap: 2px; padding: 4px; }
+
+.order-card-box small { display: block; color: var(--color-ink-muted); font-size: var(--text-caption); }
+
+/* Price card: what a premium donut adds inside a box. */
+.case-extra { color: var(--color-ink-muted); font-size: var(--text-caption); }
 
 @media (prefers-reduced-motion: reduce) {
   .box-dock,
