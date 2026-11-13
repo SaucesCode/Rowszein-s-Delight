@@ -9,16 +9,22 @@ import { useShelfColumns } from "./useShelfColumns";
 
 interface CaseItemProps {
   product: Product;
+  /** True while the customer is filling a box: tapping puts the donut in the box. */
+  filling: boolean;
   inBox: number;
   order: number;
   onAdd: (product: Product, art: HTMLElement) => void;
 }
 
 /** One donut on a plate, with its price tag hanging below the glass. Tapping adds it to the box. */
-const CaseItem = memo(function CaseItem({ product, inBox, order, onAdd }: CaseItemProps) {
+const CaseItem = memo(function CaseItem({ product, filling, inBox, order, onAdd }: CaseItemProps) {
   const descriptionId = useId();
   const flavor = flavorOf(product.name, product.category?.name);
-  const label = `Add ${product.name}${product.is_featured ? ", best seller" : ""}, ${formatPeso(Number(product.price))}${inBox ? `. ${inBox} in your box` : ""}`;
+  const extra = Number(product.box_extra ?? 0);
+  const details = `${product.is_featured ? ", best seller" : ""}, ${formatPeso(Number(product.price))}`;
+  const label = filling
+    ? `Put ${product.name} in your box${extra > 0 ? `, adds ${formatPeso(extra)}` : ""}`
+    : `Add ${product.name}${details}${inBox ? `. ${inBox} in your order` : ""}`;
 
   return (
     <li className="case-item" style={{ "--i": Math.min(order, 8) } as CSSProperties}>
@@ -45,6 +51,7 @@ const CaseItem = memo(function CaseItem({ product, inBox, order, onAdd }: CaseIt
             <DonutName name={product.name} bestSeller={product.is_featured} />
           </span>
           <span className="case-price num">{formatPeso(Number(product.price))}</span>
+          {extra > 0 && <span className="case-extra num">+{formatPeso(extra)} in a box</span>}
         </span>
       </button>
       {product.description && (
@@ -56,11 +63,12 @@ const CaseItem = memo(function CaseItem({ product, inBox, order, onAdd }: CaseIt
 
 interface PastryCaseProps {
   shelves: Shelf[];
+  filling: boolean;
   quantityOf: (productId: number) => number;
   onAdd: (product: Product, art: HTMLElement) => void;
 }
 
-export default function PastryCase({ shelves, quantityOf, onAdd }: PastryCaseProps) {
+export default function PastryCase({ shelves, filling, quantityOf, onAdd }: PastryCaseProps) {
   const ref = useRef<HTMLDivElement>(null);
   const columns = useShelfColumns(ref);
   let order = 0;
@@ -74,6 +82,7 @@ export default function PastryCase({ shelves, quantityOf, onAdd }: PastryCasePro
               <CaseItem
                 key={product.id}
                 product={product}
+                filling={filling}
                 inBox={quantityOf(product.id)}
                 order={order++}
                 onAdd={onAdd}

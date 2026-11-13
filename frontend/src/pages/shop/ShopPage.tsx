@@ -1,36 +1,49 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Search } from "lucide-react";
+import { Search, ShoppingBag } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
+import { useShopBoxes } from "@/hooks/useBoxes";
 import { useListingPages } from "@/hooks/useListingPages";
 import { uniqueRecords } from "@/lib/listingParams";
 import { BrandDonutIcon } from "@/pages/owner-home/OwnerHomeIcons";
+import type { ShopBoxes } from "@/types/box.types";
 import type { Category, Product } from "@/types/product.types";
 import PastryCase, { PastryCaseSkeleton } from "./PastryCase";
-import BoxDock from "./BoxDock";
-import BoxSheet from "./BoxSheet";
+import BoxChooser from "./BoxChooser";
+import BoxHero from "./BoxHero";
+import FillingDock from "./FillingDock";
+import OrderDock from "./OrderDock";
+import OrderSheet from "./OrderSheet";
 import ContactSection from "./ContactSection";
 import HowToOrder from "./HowToOrder";
 import ShopHero from "./ShopHero";
-import { BoxIcon, Ornament } from "./ShopIcons";
-import { SHOP_EMAIL, SHOP_MESSENGER } from "./order";
+import { Ornament } from "./ShopIcons";
+import { SHOP_EMAIL, SHOP_MESSENGER, orderSummary } from "./order";
 import { toShelves } from "./shelves";
+import { useBoxOrder } from "./useBoxOrder";
 import { useFlyToBox } from "./useFlyToBox";
 import { useInView } from "./useInView";
 import { useScrolledPast } from "./useScrolledPast";
 import { useScrollReveal } from "./useScrollReveal";
 import "./shop.css";
 
+type BoxSize = ShopBoxes["sizes"][number];
+type ReadyMade = ShopBoxes["assortments"][number];
+
 export default function ShopPage() {
   const cart = useCart();
+  const boxOrder = useBoxOrder();
+  const shopBoxes = useShopBoxes();
   const [sheetOpen, setSheetOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [announcement, setAnnouncement] = useState("");
   const boxWindowRef = useRef<HTMLSpanElement>(null);
+  const fillingBoxRef = useRef<HTMLDivElement>(null);
   const boxButtonRef = useRef<HTMLButtonElement>(null);
-  const flyToBox = useFlyToBox(boxWindowRef);
+  const flyToOrder = useFlyToBox(boxWindowRef);
+  const flyToFillingBox = useFlyToBox(fillingBoxRef);
   const [caseRef, caseLit] = useInView<HTMLDivElement>();
   const [awningRef, headerStuck] = useScrolledPast<HTMLDivElement>();
   const pageRef = useRef<HTMLDivElement>(null);
@@ -64,21 +77,65 @@ export default function ShopPage() {
   const featured = uniqueRecords(bestSellers.data?.pages.map(page => page.data.results) ?? []);
   const showcase = featured.length > 0 ? featured : filtered ? [] : products;
 
+  const sizes = shopBoxes.data?.sizes ?? [];
+  const readyMade = shopBoxes.data?.assortments ?? [];
   const { addItem, items, totalItems } = cart;
+  const { filling, boxes, addToBox, startBox: openBox } = boxOrder;
+  const total = cart.totalAmount + boxOrder.boxesTotal;
+  const hasOrder = totalItems > 0 || boxes.length > 0;
+
+  // While a box is open, the case counts what's in that box; otherwise single donuts in the order.
   const quantityOf = useCallback(
-    (productId: number) => items.find(item => item.product_id === productId)?.quantity ?? 0,
-    [items],
+    (productId: number) =>
+      filling
+        ? filling.donuts.filter(donut => donut.product_id === productId).length
+        : (items.find(item => item.product_id === productId)?.quantity ?? 0),
+    [filling, items],
   );
 
   const add = useCallback(
     (product: Product, art: HTMLElement) => {
+      if (filling) {
+        const left = filling.size - filling.donuts.length;
+        if (left <= 0) {
+          setAnnouncement(`Your box of ${filling.size} is full. Add it to your order.`);
+          return;
+        }
+        addToBox(product);
+        flyToFillingBox(art);
+        setAnnouncement(left === 1 ? `${product.name} in. Your box is full.` : `${product.name} in. ${left - 1} more to go.`);
+        return;
+      }
       addItem(product);
-      flyToBox(art);
-      const count = totalItems + 1;
-      setAnnouncement(`${product.name} added. ${count === 1 ? "1 donut" : `${count} donuts`} in your box.`);
+      flyToOrder(art);
+      setAnnouncement(`${product.name} added to your order.`);
     },
-    [addItem, flyToBox, totalItems],
+    [filling, addToBox, addItem, flyToFillingBox, flyToOrder],
   );
+
+  const startBox = (size: BoxSize) => {
+    if (filling && filling.donuts.length > 0) {
+      setAnnouncement(`Finish or cancel your box of ${filling.size} first.`);
+    } else {
+      openBox(size.size, Number(size.price));
+      setAnnouncement(`Box of ${size.size} open. Tap donuts in the case to fill it.`);
+    }
+    document.getElementById("menu")?.scrollIntoView({ block: "start" });
+  };
+
+  const addReadyMade = (assortment: ReadyMade, art: HTMLElement) => {
+    const size = sizes.find(option => option.id === assortment.box_size_id);
+    if (!size) return;
+    boxOrder.addReadyMade(assortment, Number(size.price));
+    flyToOrder(art);
+    setAnnouncement(`${assortment.name} added to your order.`);
+  };
+
+  const finishBox = () => {
+    if (!filling) return;
+    boxOrder.finishBox();
+    setAnnouncement(`Box of ${filling.size} added to your order.`);
+  };
 
   // The dock's button disappears if the box was emptied while open; keep focus somewhere sensible.
   const closeSheet = () => {
@@ -95,7 +152,7 @@ export default function ShopPage() {
   };
 
   return (
-    <div ref={pageRef} className={`shop${totalItems > 0 ? " has-box" : ""}`}>
+    <div ref={pageRef} className={`shop${filling ? " has-filling" : hasOrder ? " has-box" : ""}`}>
       <a className="shop-skip" href="#case">Skip to the donuts</a>
       <div ref={awningRef} className="shop-awning" aria-hidden="true" />
 
@@ -109,11 +166,11 @@ export default function ShopPage() {
           <div className="shop-header-actions">
             <a className="shop-header-link" href="#contact">Ask us</a>
             <button ref={boxButtonRef} type="button" className="shop-box-button" onClick={() => setSheetOpen(true)}>
-              <BoxIcon />
-              <span className="shop-box-label">Your box</span>
+              <ShoppingBag size={20} aria-hidden="true" />
+              <span className="shop-box-label">Your order</span>
               <span className="shop-box-count num">
-                {totalItems}
-                <span className="sr-only">{totalItems === 1 ? " donut" : " donuts"}</span>
+                {boxes.length + totalItems}
+                <span className="sr-only">: {orderSummary(boxes.length, totalItems)}</span>
               </span>
             </button>
           </div>
@@ -121,12 +178,26 @@ export default function ShopPage() {
       </header>
 
       <main id="top" className="shop-main">
-        <ShopHero products={showcase} onAdd={add} />
+        {sizes.length > 0 ? (
+          <BoxHero sizes={sizes} products={showcase} hasReadyMade={readyMade.length > 0} onStart={startBox} />
+        ) : (
+          <ShopHero products={showcase} onAdd={add} />
+        )}
+
+        {sizes.length > 0 && (
+          <BoxChooser sizes={sizes} assortments={readyMade} onStart={startBox} onAddReadyMade={addReadyMade} />
+        )}
 
         <div id="menu" className="shop-intro" data-reveal="">
           <Ornament className="shop-ornament" />
           <h2 className="shop-title">Today's donuts</h2>
-          <p className="shop-lede">Tap the ones you'd like. When your box looks right, send it to us on Messenger.</p>
+          <p className="shop-lede">
+            {filling
+              ? `Tap donuts to fill your box of ${filling.size}. Premium flavours show their extra on the price card.`
+              : sizes.length > 0
+                ? "Tap a donut to add it on its own, or choose a box above and fill it from here."
+                : "Tap the ones you'd like. When your order looks right, send it to us on Messenger."}
+          </p>
         </div>
 
         <div className="case-tools">
@@ -197,7 +268,7 @@ export default function ShopPage() {
               </div>
             )}
 
-            {products.length > 0 && <PastryCase shelves={shelves} quantityOf={quantityOf} onAdd={add} />}
+            {products.length > 0 && <PastryCase shelves={shelves} filling={!!filling} quantityOf={quantityOf} onAdd={add} />}
 
             {catalog.hasNextPage && (
               <div className="case-more">
@@ -234,17 +305,28 @@ export default function ShopPage() {
         </div>
       </footer>
 
-      {totalItems > 0 && (
-        <BoxDock
-          items={items}
-          totalItems={totalItems}
-          totalAmount={cart.totalAmount}
-          windowRef={boxWindowRef}
-          onReview={() => setSheetOpen(true)}
+      {filling ? (
+        <FillingDock
+          box={filling}
+          boxRef={fillingBoxRef}
+          onUndo={() => boxOrder.removeFromBox(filling.donuts.length - 1)}
+          onCancel={boxOrder.cancelBox}
+          onFinish={finishBox}
         />
+      ) : (
+        hasOrder && (
+          <OrderDock
+            boxes={boxes}
+            singles={items}
+            singleCount={totalItems}
+            total={total}
+            windowRef={boxWindowRef}
+            onReview={() => setSheetOpen(true)}
+          />
+        )
       )}
 
-      <BoxSheet open={sheetOpen} onClose={closeSheet} cart={cart} />
+      <OrderSheet open={sheetOpen} onClose={closeSheet} cart={cart} boxes={boxOrder} total={total} />
 
       <div className="sr-only" role="status">{announcement}</div>
     </div>
