@@ -88,6 +88,13 @@ Known gaps:
 
 Earlier checkpoint: Phase 1B.3 disposable database verification was completed for owner review on `codex/phase-1b3-disposable-verification` (the SQLite migration fix is at `b9957e0`). Its report has since been removed from `docs/`. Production, dependencies, infrastructure and deployment validation remain separate outstanding gates; the application is not production-ready.
 
+## Deployment
+
+* **Frontend:** Vercel, with `frontend` as the root directory. `frontend/vercel.json` sends `/api` to the backend.
+* **Backend:** Render. Every deploy must run `python manage.py migrate` (for example in the build command) so new database changes, such as `products/0005_boxes`, are applied.
+* **Photos:** stored on Cloudinary in production. Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` on Render; without them, photos are saved to the server's disk, which Render wipes on redeploy. Photos must be JPG, PNG or WEBP and under 5 MB.
+* **Settings:** every environment setting the backend reads is listed, without values, in [`backend/.env.example`](backend/.env.example).
+
 ## Documentation
 
 Project documentation can be found in the `docs/` folder.

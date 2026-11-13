@@ -159,13 +159,34 @@ STATIC_URL = "/static/"
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_STORAGE = (
-    "whitenoise.storage.CompressedManifestStaticFilesStorage"
-)
-
 MEDIA_URL = "/media/"
 
 MEDIA_ROOT = BASE_DIR / "media"
+
+# Uploaded photos go to Cloudinary when its keys are set (production); otherwise
+# to MEDIA_ROOT on local disk, which Django serves only in DEBUG.
+CLOUDINARY_CLOUD_NAME = config("CLOUDINARY_CLOUD_NAME", default="")
+CLOUDINARY_API_KEY = config("CLOUDINARY_API_KEY", default="")
+CLOUDINARY_API_SECRET = config("CLOUDINARY_API_SECRET", default="")
+CLOUDINARY_FOLDER = config("CLOUDINARY_FOLDER", default="rowszein")
+USE_CLOUDINARY = all([CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET])
+
+# STORAGES replaced STATICFILES_STORAGE, which Django 5.1 removed. Compression
+# without a manifest, so pages never fail if collectstatic was skipped.
+STORAGES = {
+    "default": {
+        "BACKEND": (
+            "backend.media_storage.CloudinaryMediaStorage"
+            if USE_CLOUDINARY
+            else "django.core.files.storage.FileSystemStorage"
+        ),
+    },
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
+}
+
+# Server-side photo limits; the app also checks these before uploading.
+PHOTO_MAX_BYTES = 5 * 1024 * 1024
+PHOTO_FORMATS = {"JPEG", "PNG", "WEBP"}
 
 # ------------------------------------------------------------------------------
 # DEFAULT PRIMARY KEY

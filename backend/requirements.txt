@@ -11,4 +11,5 @@ whitenoise==6.11.0
 python-decouple==3.8
 
 Pillow==13.0.0
+cloudinary==1.47.0
 reportlab==4.5.1
