@@ -19,6 +19,8 @@ export interface Product {
   category: Category;
   is_available: boolean;
   is_featured: boolean;
+  /** Added to a box's price for each of this donut inside it (premium flavours). */
+  box_extra?: string;
   /**
    * Optional, forward-compatible fields. Not yet returned by the API —
    * see the Products page notes for what each needs on the backend.
@@ -37,5 +39,6 @@ export interface ProductPayload {
   category_id: number;
   is_available: boolean;
   is_featured: boolean;
+  box_extra?: number;
   image?: File | null;
 }

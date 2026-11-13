@@ -1,5 +1,10 @@
+from collections import Counter
+
+from django.db import transaction
 from rest_framework import serializers
-from .models import Category, Product
+
+from .boxes import assortment_price, is_complete
+from .models import Assortment, AssortmentItem, BoxSize, Category, Product
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -43,6 +48,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'category_id',
             'is_available',
             'is_featured',
+            'box_extra',
             'created_at',
             'updated_at',
         ]
@@ -70,6 +76,11 @@ class ProductSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Price must be greater than zero.')
         return value
 
+    def validate_box_extra(self, value):
+        if value < 0:
+            raise serializers.ValidationError('The extra in a box cannot be negative.')
+        return value
+
 
 class OperationalCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -84,9 +95,147 @@ class OperationalProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'price', 'image_url', 'category', 'is_available', 'is_featured']
+        fields = ['id', 'name', 'description', 'price', 'image_url', 'category', 'is_available', 'is_featured', 'box_extra']
         read_only_fields = fields
 
     def get_image_url(self, obj):
         request = self.context.get('request')
         return request.build_absolute_uri(obj.image.url) if obj.image and request else None
+
+
+class BoxSizeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BoxSize
+        fields = ['id', 'size', 'price', 'is_available', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+    def validate_price(self, value):
+        if value <= 0:
+            raise serializers.ValidationError('Price must be greater than zero.')
+        return value
+
+    def validate_size(self, value):
+        if self.instance and value != self.instance.size and self.instance.assortments.exists():
+            raise serializers.ValidationError('Ready-made boxes use this size. Move them to another size first.')
+        return value
+
+
+class AssortmentItemSerializer(serializers.ModelSerializer):
+    product_id = serializers.IntegerField(source='product.id', read_only=True)
+    name = serializers.CharField(source='product.name', read_only=True)
+    category = serializers.CharField(source='product.category.name', read_only=True)
+    box_extra = serializers.DecimalField(source='product.box_extra', max_digits=10, decimal_places=2, read_only=True)
+    is_available = serializers.BooleanField(source='product.is_available', read_only=True)
+    image_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = AssortmentItem
+        fields = ['product_id', 'name', 'category', 'quantity', 'box_extra', 'is_available', 'image_url']
+
+    def get_image_url(self, obj):
+        request = self.context.get('request')
+        return request.build_absolute_uri(obj.product.image.url) if obj.product.image and request else None
+
+
+class AssortmentItemInputSerializer(serializers.Serializer):
+    product_id = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), source='product')
+    quantity = serializers.IntegerField(min_value=1, max_value=48)
+
+
+class AssortmentSerializer(serializers.ModelSerializer):
+    box_size = BoxSizeSerializer(read_only=True)
+    box_size_id = serializers.PrimaryKeyRelatedField(queryset=BoxSize.objects.all(), source='box_size', write_only=True)
+    items = AssortmentItemSerializer(many=True, read_only=True)
+    contents = AssortmentItemInputSerializer(many=True, write_only=True, required=False)
+    price = serializers.SerializerMethodField()
+    is_complete = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Assortment
+        fields = [
+            'id', 'name', 'description', 'box_size', 'box_size_id', 'items', 'contents',
+            'price', 'is_complete', 'is_available', 'sort_order', 'created_at', 'updated_at',
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+    def get_price(self, obj):
+        return str(assortment_price(obj))
+
+    def get_is_complete(self, obj):
+        return is_complete(obj)
+
+    def validate_name(self, value):
+        existing = Assortment.objects.filter(name__iexact=value)
+        if self.instance:
+            existing = existing.exclude(pk=self.instance.pk)
+        if existing.exists():
+            raise serializers.ValidationError('A ready-made box with this name already exists.')
+        return value
+
+    def validate(self, attrs):
+        box_size = attrs.get('box_size') or getattr(self.instance, 'box_size', None)
+        contents = attrs.get('contents')
+        if contents is None and self.instance is not None:
+            # An update without contents keeps the current donuts; they must still fit a new size.
+            contents = [{'product': item.product, 'quantity': item.quantity} for item in self.instance.items.all()]
+        if contents is None:
+            raise serializers.ValidationError({'contents': 'Choose the donuts that go in this box.'})
+        repeated = [product.name for product, count in Counter(entry['product'] for entry in contents).items() if count > 1]
+        if repeated:
+            raise serializers.ValidationError({'contents': f'{repeated[0]} is listed twice. Combine it into one line.'})
+        total = sum(entry['quantity'] for entry in contents)
+        if box_size and total != box_size.size:
+            missing = box_size.size - total
+            if missing > 0:
+                message = f'Add {missing} more to fill the box of {box_size.size}.'
+            else:
+                message = f'Take out {-missing} to fit the box of {box_size.size}.'
+            raise serializers.ValidationError({'contents': message})
+        return attrs
+
+    @transaction.atomic
+    def create(self, validated_data):
+        contents = validated_data.pop('contents')
+        assortment = Assortment.objects.create(**validated_data)
+        self._replace_contents(assortment, contents)
+        return assortment
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        contents = validated_data.pop('contents', None)
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        instance.save()
+        if contents is not None:
+            self._replace_contents(instance, contents)
+        return instance
+
+    @staticmethod
+    def _replace_contents(assortment, contents):
+        assortment.items.all().delete()
+        AssortmentItem.objects.bulk_create(
+            AssortmentItem(assortment=assortment, product=entry['product'], quantity=entry['quantity'])
+            for entry in contents
+        )
+
+
+class PublicBoxSizeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BoxSize
+        fields = ['id', 'size', 'price']
+        read_only_fields = fields
+
+
+class PublicAssortmentSerializer(serializers.ModelSerializer):
+    size = serializers.IntegerField(source='box_size.size', read_only=True)
+    box_size_id = serializers.IntegerField(source='box_size.id', read_only=True)
+    items = AssortmentItemSerializer(many=True, read_only=True)
+    price = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Assortment
+        fields = ['id', 'name', 'description', 'box_size_id', 'size', 'items', 'price']
+        read_only_fields = fields
+
+    def get_price(self, obj):
+        return str(assortment_price(obj))

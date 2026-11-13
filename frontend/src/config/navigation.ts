@@ -89,6 +89,14 @@ export function ownerTrail(pathname: string): Crumb[] {
 
   const trail: Crumb[] = [{ to: section.to, label: section.title }];
   const rest = pathname.slice(section.to.length).replace(/\/$/, "");
+  // Boxes live under the Donut collection: /products/boxes, /products/boxes/new, /products/boxes/:id/edit.
+  if (section.to === "/products" && /^\/boxes(\/|$)/.test(rest)) {
+    trail.push({ to: "/products/boxes", label: "Boxes" });
+    const boxRest = rest.slice("/boxes".length);
+    if (boxRest === "/new") trail.push({ to: pathname, label: "New ready-made box" });
+    if (/^\/\d+\/edit$/.test(boxRest)) trail.push({ to: pathname, label: "Edit ready-made box" });
+    return trail;
+  }
   if (rest === "/new" && section.newLabel) trail.push({ to: pathname, label: section.newLabel });
   if (/^\/\d+\/edit$/.test(rest) && section.editLabel) trail.push({ to: pathname, label: section.editLabel });
   return trail;

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, Search, Star } from "lucide-react";
+import { Package, Plus, Search, Star } from "lucide-react";
 import { useCategories, useProducts, useUpdateProduct } from "@/hooks/useProducts";
 import { useListingPageRecovery } from "@/hooks/useListingPageRecovery";
 import type { Category, Product, ProductPayload } from "@/types/product.types";
@@ -23,6 +23,7 @@ function availabilityPayload(product: Product): ProductPayload {
     category_id: product.category.id,
     is_available: !product.is_available,
     is_featured: product.is_featured,
+    box_extra: Number(product.box_extra ?? 0),
     image: null,
   };
 }
@@ -123,10 +124,16 @@ export default function ProductsPage() {
           <h1 className="type-page">Donut collection</h1>
           <p className="page-lede">{lede}</p>
         </div>
-        <button type="button" className="btn-primary" onClick={() => navigate("/products/new")}>
-          <Plus size={20} aria-hidden="true" />
-          Add a donut
-        </button>
+        <div className="donuts-head-actions">
+          <Link to="/products/boxes" className="btn-secondary">
+            <Package size={18} aria-hidden="true" />
+            Boxes
+          </Link>
+          <button type="button" className="btn-primary" onClick={() => navigate("/products/new")}>
+            <Plus size={20} aria-hidden="true" />
+            Add a donut
+          </button>
+        </div>
       </header>
 
       <div className="menu-toolbar">

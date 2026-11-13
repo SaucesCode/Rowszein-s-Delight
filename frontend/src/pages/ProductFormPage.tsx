@@ -23,6 +23,7 @@ const productSchema = z.object({
   category_id: z.number().min(1, "Choose a category"),
   is_available: z.boolean(),
   is_featured: z.boolean(),
+  box_extra: z.number({ error: "Enter an amount, like 10, or 0" }).min(0, "The extra can't be below ₱0"),
 });
 
 type ProductForm = z.infer<typeof productSchema>;
@@ -70,6 +71,7 @@ function DonutForm({ product, duplicate }: { product?: Product; duplicate?: Dupl
           category_id: product.category.id,
           is_available: product.is_available,
           is_featured: product.is_featured,
+          box_extra: Number(product.box_extra ?? 0),
         }
       : {
           name: duplicate?.name ?? "",
@@ -78,6 +80,7 @@ function DonutForm({ product, duplicate }: { product?: Product; duplicate?: Dupl
           category_id: duplicate?.category_id ?? 0,
           is_available: true,
           is_featured: false,
+          box_extra: 0,
         },
   });
 
@@ -249,6 +252,27 @@ function DonutForm({ product, duplicate }: { product?: Product; duplicate?: Dupl
                   aria-invalid={!!errors.price}
                   aria-describedby={errors.price ? `${field("price")}-msg` : undefined}
                   {...register("price", { valueAsNumber: true })}
+                />
+              </div>
+            </Row>
+            <Row
+              label="Extra when in a box"
+              htmlFor={field("box-extra")}
+              error={errors.box_extra?.message}
+              hint="Added to a box's price for each one inside. Leave at ₱0 for regular flavours."
+            >
+              <div className="settings-unit-input is-prefix settings-price">
+                <span aria-hidden="true">₱</span>
+                <input
+                  id={field("box-extra")}
+                  type="number"
+                  inputMode="decimal"
+                  step="0.01"
+                  min="0"
+                  className="field-input num"
+                  aria-invalid={!!errors.box_extra}
+                  aria-describedby={`${field("box-extra")}-msg`}
+                  {...register("box_extra", { valueAsNumber: true })}
                 />
               </div>
             </Row>
