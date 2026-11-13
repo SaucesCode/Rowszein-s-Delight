@@ -115,3 +115,7 @@ Against the interaction principles of ISO 9241-110:
 12. Usability test with Rose, a staff member and two or three customers (ISO 9241-210 and -11), and record task success, time and satisfaction.
 13. Test with a screen reader and at 200–400 % zoom.
 14. Measure Core Web Vitals on the live site.
+
+## Progress
+
+* **Fix 1 done (13 November 2026):** Django 5.1.4 → 5.2.19 (LTS, supported to April 2028), djangorestframework 3.15.2 → 3.18.3, djangorestframework-simplejwt 5.3.1 → 5.5.1, Pillow 10.4.0 → 13.0.0. Removed unused django-allauth, django-filter, requests and python-dotenv. `pip-audit` now reports no known vulnerabilities; `manage.py check` is clean; no new migrations are needed; the full test suite gives the same result as before the upgrade (box tests pass; the 52 older sales failures and 5 errors are unchanged).
