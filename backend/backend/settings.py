@@ -274,3 +274,16 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
 
     CSRF_COOKIE_SECURE = True
+
+    # Send plain-HTTP requests to HTTPS. Can be switched off from the
+    # environment if a host health check only speaks HTTP.
+    SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=True, cast=bool)
+
+    # Tell browsers to use HTTPS for a year (HSTS). Not on the preload list,
+    # so it can be undone by lowering the value.
+    SECURE_HSTS_SECONDS = config("SECURE_HSTS_SECONDS", default=31536000, cast=int)
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
+# Joining the browser HSTS preload list is effectively permanent, so it is
+# deliberately not requested (security.W021).
+SILENCED_SYSTEM_CHECKS = ["security.W021"]

@@ -21,6 +21,7 @@ os.environ.update(
     CORS_ALLOWED_ORIGINS="http://localhost:5173",
     AUTH_COOKIE_SECURE="False",
     AUTH_COOKIE_SAMESITE="Lax",
+    SECURE_SSL_REDIRECT="False",
 )
 from .settings import *  # noqa: E402,F403
 

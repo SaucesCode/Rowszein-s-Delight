@@ -1286,8 +1286,9 @@ html:has(.box-sheet[open]) { overflow: hidden; }
   margin-bottom: -18px;
   border: 1px solid var(--color-gilt-soft);
   border-radius: 12px 12px 4px 4px;
-  background: var(--color-accent);
-  box-shadow: inset 0 0 0 5px var(--color-accent), inset 0 0 0 6px var(--color-gilt-soft), 0 10px 20px -12px rgb(59 31 43 / 0.5);
+  /* Deep raspberry so the gilt lettering reaches 5:1 contrast (WCAG AA). */
+  background: var(--color-accent-pressed);
+  box-shadow: inset 0 0 0 5px var(--color-accent-pressed), inset 0 0 0 6px var(--color-gilt-soft), 0 10px 20px -12px rgb(59 31 43 / 0.5);
   transform: perspective(600px) rotateX(28deg);
   transform-origin: bottom;
 }
