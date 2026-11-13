@@ -22,13 +22,25 @@ export interface DashboardReport {
   low_stock: { id: number; name: string; quantity: string; minimum_stock: string; unit: string }[];
 }
 
+/** One donut's price split, from /dashboard/profit-margins/ (every product, recipe or not). */
+export interface ProductMargin {
+  product_id: number;
+  product_name: string;
+  selling_price: number;
+  production_cost: number;
+  profit_per_unit: number;
+  margin_percent: number;
+  has_recipe: boolean;
+  is_available: boolean;
+}
+
 export const dashboardService = {
   get: async (filters?: DashboardFilters) => {
     const response = await api.get<{ data: DashboardReport }>("/dashboard/", { params: filters });
     return response.data.data;
   },
 
-  getProfitMargins: async () => {
+  getProfitMargins: async (): Promise<ProductMargin[]> => {
     const response = await api.get("/dashboard/profit-margins/");
     return response.data.data;
   },

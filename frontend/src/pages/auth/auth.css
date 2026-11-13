@@ -1,0 +1,149 @@
+/* ==========================================================================
+   SIGN IN — a blush "shop window" of donuts beside a quiet form.
+   ========================================================================== */
+
+.auth {
+  display: grid;
+  min-height: 100dvh;
+  background: var(--color-canvas);
+}
+
+@media (min-width: 960px) {
+  .auth { grid-template-columns: minmax(0, 1.1fr) minmax(420px, 1fr); }
+}
+
+/* ── Shop window ───────────────────────────────────────────────────── */
+.auth-window {
+  position: relative;
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--space-7);
+  overflow: hidden;
+  background: var(--color-tint);
+}
+
+@media (min-width: 960px) {
+  .auth-window { display: flex; }
+}
+
+/* Scalloped edge where the window meets the form, echoing the sidebar. */
+.auth-window::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10px;
+  height: 100%;
+  background: radial-gradient(circle at 100% 50%, var(--color-canvas) 9.5px, transparent 10px) 0 0 / 10px 20px repeat-y;
+}
+
+.auth-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: var(--text-title);
+  font-weight: 600;
+  font-variation-settings: var(--heading-soft);
+}
+.auth-brand svg { color: var(--color-accent); }
+
+.auth-tray {
+  position: relative;
+  align-self: center;
+  width: min(100%, 420px);
+  aspect-ratio: 1;
+}
+
+.auth-donut {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+}
+.auth-donut svg { display: block; }
+.auth-donut.is-a { top: 8%; left: 10%; padding: 18px; transform: rotate(-8deg); }
+.auth-donut.is-b { top: 14%; right: 6%; padding: 14px; transform: rotate(12deg); }
+.auth-donut.is-c { bottom: 8%; left: 26%; padding: 16px; transform: rotate(6deg); }
+.auth-donut.is-d { bottom: 22%; right: 12%; padding: 12px; transform: rotate(-14deg); }
+
+.auth-line {
+  max-width: 18ch;
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.4vw, var(--text-page));
+  line-height: 1.1;
+  font-variation-settings: var(--display-soft);
+}
+
+/* ── Form side ─────────────────────────────────────────────────────── */
+.auth-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);
+  padding: var(--space-7) var(--gutter);
+}
+
+.auth-brand-compact { font-size: var(--text-heading); }
+
+@media (min-width: 960px) {
+  .auth-brand-compact { display: none; }
+}
+
+.auth-card {
+  width: min(100%, 400px);
+  animation: var(--animate-rise-in);
+}
+
+.auth-title { margin-bottom: var(--space-1); }
+
+.auth-form {
+  display: grid;
+  gap: var(--space-5);
+  margin-top: var(--space-6);
+}
+
+.auth-password { position: relative; }
+.auth-password .field-input { padding-right: 56px; }
+.auth-reveal {
+  position: absolute;
+  top: 50%;
+  right: 2px;
+  transform: translateY(-50%);
+}
+
+.auth-caps {
+  margin-top: var(--space-2);
+  color: var(--color-warn);
+  font-size: var(--text-label);
+  font-weight: 600;
+}
+
+.auth-error {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--color-danger-tint);
+  color: var(--color-danger);
+  font-size: var(--text-label);
+}
+
+.auth-submit { width: 100%; min-height: 56px; font-size: var(--text-title); }
+
+.auth-renew {
+  margin-top: var(--space-5);
+  color: var(--color-ink-muted);
+  font-size: var(--text-label);
+  text-align: center;
+}
+
+.auth-footer { color: var(--color-ink-muted); font-size: var(--text-caption); }
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-card { animation: none; }
+}

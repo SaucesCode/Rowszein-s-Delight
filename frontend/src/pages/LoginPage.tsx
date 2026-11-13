@@ -1,139 +1,108 @@
+import { useEffect, useId, useState, type KeyboardEvent } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff } from "lucide-react";
 import { useLogin, useRenewSession } from "@/hooks/useAuth";
 import { apiErrorMessage } from "@/lib/csrfTransport";
 
-/* ─────────────────────────────────────────────
-   SCHEMA
-   ───────────────────────────────────────────── */
 const loginSchema = z.object({
-  username: z.string().min(1, "Username is required"),
-  password: z.string().min(1, "Password is required"),
+  username: z.string().trim().min(1, "Enter your username"),
+  password: z.string().min(1, "Enter your password"),
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
 
-/* ─────────────────────────────────────────────
-   FIELD — labeled input block
-   ───────────────────────────────────────────── */
-function Field({
-  label,
-  error,
-  children,
-}: {
-  label: string;
-  error?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      <label className="field-label">{label}</label>
-      {children}
-      {error && (
-        <p className="field-error mt-1" role="alert">
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────
-   PAGE
-   ───────────────────────────────────────────── */
 export default function LoginPage() {
+  useEffect(() => {
+    const robots = document.createElement("meta");
+    robots.name = "robots";
+    robots.content = "noindex, nofollow";
+    document.head.appendChild(robots);
+    return () => robots.remove();
+  }, []);
+  const ids = useId();
   const login = useLogin();
   const renew = useRenewSession();
+  const [showPassword, setShowPassword] = useState(false);
+  const [capsLock, setCapsLock] = useState(false);
+  const busy = login.isPending || renew.isPending;
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginForm>({
-    resolver: zodResolver(loginSchema),
-  });
+  } = useForm<LoginForm>({ resolver: zodResolver(loginSchema) });
 
-  const onSubmit = (data: LoginForm) => {
-    login.mutate(data);
-  };
+  const watchCaps = (event: KeyboardEvent<HTMLInputElement>) => setCapsLock(event.getModifierState("CapsLock"));
 
   return (
-    <div
-      className="card-surface p-8 w-full"
-      style={{ boxShadow: "0 8px 32px rgba(107, 66, 38, 0.12)" }}
-    >
-      {/* Header */}
-      <div className="mb-6">
-        <h1
-          className="font-heading font-semibold"
-          style={{ fontSize: 18, color: "#6B4226", lineHeight: 1.3 }}
-        >
-          Welcome back
-        </h1>
-        <p className="font-body mt-1" style={{ fontSize: 13, color: "#9B6644" }}>
-          Sign in to manage your shop
-        </p>
-      </div>
+    <div className="auth-card">
+      <h1 className="type-page auth-title">Welcome back</h1>
+      <p className="page-lede">Sign in to run the shop.</p>
 
-      <button type="button" className="mb-4 text-sm underline" disabled={renew.isPending || login.isPending}
-        onClick={() => renew.mutate()}>
-        {renew.isPending ? "Renewing session…" : "Renew an existing session"}
-      </button>
-
-      {/* Form */}
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
-        <Field label="Username" error={errors.username?.message}>
+      <form className="auth-form" onSubmit={handleSubmit(data => login.mutate({ ...data, username: data.username.trim() }))} noValidate>
+        <div>
+          <label htmlFor={`${ids}-username`} className="field-label">Username</label>
           <input
-            {...register("username")}
-            type="text"
-            className="field-input mt-1"
-            placeholder="Enter your username"
+            id={`${ids}-username`}
+            className="field-input"
             autoComplete="username"
+            autoCapitalize="none"
+            spellCheck={false}
             autoFocus
             aria-invalid={!!errors.username}
+            aria-describedby={errors.username ? `${ids}-username-error` : undefined}
+            {...register("username")}
           />
-        </Field>
-
-        <Field label="Password" error={errors.password?.message}>
-          <input
-            {...register("password")}
-            type="password"
-            className="field-input mt-1"
-            placeholder="Enter your password"
-            autoComplete="current-password"
-            aria-invalid={!!errors.password}
-          />
-        </Field>
-
-        <div className="pt-1">
-          <button
-            type="submit"
-            disabled={login.isPending}
-            className="btn-primary w-full justify-center"
-            style={{ padding: "10px 20px", fontSize: 14 }}
-          >
-            {login.isPending ? "Signing in…" : "Sign in"}
-          </button>
+          {errors.username && <p id={`${ids}-username-error`} className="field-error">{errors.username.message}</p>}
         </div>
+
+        <div>
+          <label htmlFor={`${ids}-password`} className="field-label">Password</label>
+          <div className="auth-password">
+            <input
+              id={`${ids}-password`}
+              type={showPassword ? "text" : "password"}
+              className="field-input"
+              autoComplete="current-password"
+              aria-invalid={!!errors.password}
+              aria-describedby={[errors.password && `${ids}-password-error`, capsLock && `${ids}-caps`].filter(Boolean).join(" ") || undefined}
+              onKeyUp={watchCaps}
+              onKeyDown={watchCaps}
+              {...register("password")}
+            />
+            <button
+              type="button"
+              className="icon-button auth-reveal"
+              onClick={() => setShowPassword(shown => !shown)}
+              aria-pressed={showPassword}
+            >
+              {showPassword ? <EyeOff size={20} aria-hidden="true" /> : <Eye size={20} aria-hidden="true" />}
+              <span className="sr-only">Show password</span>
+            </button>
+          </div>
+          {capsLock && <p id={`${ids}-caps`} className="auth-caps">Caps Lock is on.</p>}
+          {errors.password && <p id={`${ids}-password-error`} className="field-error">{errors.password.message}</p>}
+        </div>
+
+        {login.isError && (
+          <p className="auth-error" role="alert">
+            {apiErrorMessage(login.error, "That username and password don't match. Check them and try again.")}
+          </p>
+        )}
+
+        <button type="submit" className="btn-primary auth-submit" disabled={busy} aria-busy={login.isPending}>
+          {login.isPending ? "Signing in…" : "Sign in"}
+        </button>
       </form>
 
-      {/* Error state — wrong credentials */}
-      {login.isError && (
-        <div
-          className="mt-4 px-4 py-3 animate-slide-up"
-          style={{
-            background: "#FEF2F2",
-            border: "1px solid #FECACA",
-            borderRadius: 8,
-          }}
-          role="alert"
-        >
-          <p className="font-body" style={{ fontSize: 13, color: "#B91C1C" }}>
-            {apiErrorMessage(login.error, "Sign-in failed. Please try again.")}
-          </p>
-        </div>
-      )}
+      <p className="auth-renew">
+        Still signed in from earlier on this device?{" "}
+        <button type="button" className="link-button" disabled={busy} onClick={() => renew.mutate()}>
+          {renew.isPending ? "Checking…" : "Continue"}
+        </button>
+      </p>
     </div>
   );
 }

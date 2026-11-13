@@ -1,0 +1,26 @@
+/* Small stock level bar with a notch at the restock level (pantry list, home). */
+.level-bar {
+  position: relative;
+  flex-shrink: 0;
+  width: 64px;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--color-tint);
+}
+.level-bar-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  transform-origin: left center;
+  transition: transform var(--duration-page) var(--ease-out-soft);
+}
+.level-bar.is-stocked .level-bar-fill { background: var(--color-good); }
+.level-bar.is-low .level-bar-fill { background: var(--color-warn); }
+.level-bar-mark {
+  position: absolute;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  margin-left: -1.5px;
+  background: var(--color-surface);
+}

@@ -1,360 +1,290 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useExpenses, useDeleteExpense } from "@/hooks/useExpenses";
-import type { Expense, ExpenseCategory } from "@/types/expense.types";
-import { Plus, Receipt, SearchX } from "lucide-react";
-import PageHeader from "@/components/PageHeader";
-import PeriodToggle from "@/components/PeriodToggle";
-import SearchInput from "@/components/SearchInput";
-import CategoryFilterBar from "@/components/CategoryFilterBar";
-import ExportMenu from "@/components/ExportMenu";
-import ExpenseRow from "@/components/ExpenseRow";
-import EmptyState from "@/components/EmptyState";
-import ConfirmDialog from "@/components/ConfirmDialog";
-import Pagination from "@/components/Pagination";
-import DateRangeFilter from "@/components/DateRangeFilter";
-import { exportService } from "@/services/export.service";
-import { customDateRange, dateRangeError, formatDayLabel, getDateRange, manilaDate, PERIOD_OPTIONS, type Period } from "@/lib/dateRanges";
-import { groupByDay } from "@/lib/groupByDay";
+import { useId, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { ChevronRight, Download, FileSpreadsheet, FileText, Plus, Search } from "lucide-react";
+import { useExpensesInRange } from "@/hooks/useExpenses";
+import { groupByDay } from "@/lib/groupByDay";
+import { customDateRange, dateRangeError, formatDayLabel, getDateRange, manilaDate, PERIOD_OPTIONS, type Period } from "@/lib/dateRanges";
+import { EXPENSE_CATEGORIES, categoryInfo } from "@/lib/expenseCategories";
+import { exportService } from "@/services/export.service";
+import type { Expense } from "@/types/expense.types";
+import DropdownMenu from "@/components/DropdownMenu";
+import { formatPeso } from "@/pages/dashboard/report-format";
+import "./expenses/expenses.css";
 
-/* ─────────────────────────────────────────────
-   CATEGORY FILTER OPTIONS — static, matches the
-   fixed enum on the backend (Expense.Category)
-   ───────────────────────────────────────────── */
-const CATEGORY_OPTIONS: { value: ExpenseCategory; label: string }[] = [
-  { value: "ingredient", label: "Ingredient Purchase" },
-  { value: "packaging", label: "Packaging" },
-  { value: "utilities", label: "Utilities" },
-  { value: "transportation", label: "Transportation" },
-  { value: "other", label: "Other" },
-];
+const PERIOD_PHRASE: Record<Period, string> = {
+  today: "today",
+  this_week: "this week",
+  this_month: "this month",
+  custom: "in this range",
+};
+
+const centavos = (value: number | string) => Math.round(Number(value) * 100);
 
 function matchesSearch(expense: Expense, query: string) {
   const q = query.trim().toLowerCase();
-  if (!q) return true;
-  return (
-    expense.description?.toLowerCase().includes(q) ||
-    expense.category_display.toLowerCase().includes(q)
-  );
+  return !q || !!expense.description?.toLowerCase().includes(q) || categoryInfo(expense.category).label.toLowerCase().includes(q);
 }
 
-/* ─────────────────────────────────────────────
-   SKELETON — matches the grouped-row layout,
-   same shape as SalesSkeleton.
-   ───────────────────────────────────────────── */
-function ExpensesSkeleton() {
+function LedgerSkeleton() {
   return (
-    <div
-      role="status"
-      aria-label="Loading expenses…"
-      style={{ background: "#FFFDFB", border: "1px solid #E8E6E1", borderRadius: 16 }}
-      className="overflow-hidden"
-    >
-      <div className="px-5 py-3" style={{ background: "#FFF8F0" }}>
-        <div className="skeleton" style={{ height: 12, width: 140, borderRadius: 6 }} />
-      </div>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <div
-          key={i}
-          className="flex items-center gap-4 px-5 py-3.5"
-          style={{ borderTop: i > 0 ? "1px solid #F5EDE0" : undefined }}
-        >
-          <div className="skeleton" style={{ height: 20, width: 88, borderRadius: 999 }} />
-          <div className="skeleton flex-1" style={{ height: 12, borderRadius: 6 }} />
-          <div className="skeleton" style={{ height: 14, width: 64, borderRadius: 6 }} />
+    <div className="ledger" aria-hidden="true">
+      {Array.from({ length: 5 }, (_, index) => (
+        <div key={index} className="ledger-row">
+          <span className="ledger-icon skeleton" />
+          <span className="grid flex-1 gap-2">
+            <span className="skeleton block h-4 w-1/2" />
+            <span className="skeleton block h-3 w-1/4" />
+          </span>
+          <span className="skeleton block h-5 w-20" />
         </div>
       ))}
-      <span className="sr-only">Loading, please wait…</span>
     </div>
   );
 }
 
-/* ─────────────────────────────────────────────
-   PAGE
-   ───────────────────────────────────────────── */
 export default function ExpensesPage() {
   const navigate = useNavigate();
-  const [page, setPage] = useState(1);
-  // Defaults to "this month" rather than Sales' "today" — expenses are
-  // logged far less often than sales, so a same-day default would greet
-  // the owner with an empty list most of the time.
+  const ids = useId();
+  // Expenses are logged far less often than sales, so the month is the useful default.
   const [period, setPeriod] = useState<Period>("this_month");
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
   const [search, setSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("all");
-  const [deleteTarget, setDeleteTarget] = useState<Expense | null>(null);
+  const [category, setCategory] = useState<string>("all");
   const [exporting, setExporting] = useState(false);
 
   const now = new Date();
   const today = manilaDate(now);
-  const dateRange = period === "custom" ? customDateRange(customFrom, customTo) : getDateRange(period, now);
-  const rangeError = dateRangeError(dateRange);
+  const range = period === "custom" ? customDateRange(customFrom, customTo) : getDateRange(period, now);
+  const rangeError = dateRangeError(range);
+  const { data, isPending, isError, refetch } = useExpensesInRange(range, !rangeError);
+  const loading = !rangeError && isPending;
 
-  const filters = { page, ...dateRange };
-  const { data, isLoading, isError } = useExpenses(filters, !rangeError);
-  const deleteExpense = useDeleteExpense();
+  const all = useMemo(() => data?.expenses ?? [], [data]);
+  const totals = useMemo(() => {
+    const byCategory = new Map<string, number>();
+    for (const expense of all) byCategory.set(expense.category, (byCategory.get(expense.category) ?? 0) + centavos(expense.amount));
+    const sum = [...byCategory.values()].reduce((total, value) => total + value, 0);
+    return { byCategory, sum };
+  }, [all]);
 
-  const expenses: Expense[] = data?.data?.results ?? [];
-  const totalCount: number = data?.data?.count ?? 0;
-  const totalPages = Math.ceil(totalCount / 20);
-
-  const filteredExpenses = useMemo(() => {
-    let list = expenses.filter(e => matchesSearch(e, search));
-    if (categoryFilter !== "all") {
-      list = list.filter(e => e.category === categoryFilter);
-    }
-    return list;
-  }, [expenses, search, categoryFilter]);
-
-  const groups = useMemo(
-    () => groupByDay(filteredExpenses, e => Number(e.amount)),
-    [filteredExpenses],
+  const visible = useMemo(
+    () => all.filter(expense => (category === "all" || expense.category === category) && matchesSearch(expense, search)),
+    [all, category, search],
   );
-  const pageTotal = useMemo(
-    () => filteredExpenses.reduce((sum, e) => sum + Number(e.amount), 0),
-    [filteredExpenses],
-  );
+  const days = useMemo(() => groupByDay(visible, expense => Number(expense.amount)), [visible]);
+  const spentCategories = EXPENSE_CATEGORIES.filter(info => (totals.byCategory.get(info.value) ?? 0) > 0);
 
-  const categoryCounts = useMemo(() => {
-    return expenses.reduce<Record<string, number>>((acc, e) => {
-      acc.all = (acc.all ?? 0) + 1;
-      acc[e.category] = (acc[e.category] ?? 0) + 1;
-      return acc;
-    }, {});
-  }, [expenses]);
-
-  const hasActiveFilters = period !== "this_month" || !!search || categoryFilter !== "all";
-
-  const handleDeleteConfirm = () => {
-    if (!deleteTarget) return;
-    deleteExpense.mutate(deleteTarget.id, {
-      onSettled: () => setDeleteTarget(null),
-    });
-  };
-
-  const handleExport = async (type: "csv" | "pdf") => {
+  const exportAs = async (type: "csv" | "pdf") => {
     if (rangeError) return;
     setExporting(true);
     try {
-      if (type === "csv") await exportService.expensesCSV(dateRange);
-      else await exportService.expensesPDF(dateRange);
-      toast.success(`Expenses exported as ${type.toUpperCase()}.`);
+      if (type === "csv") await exportService.expensesCSV(range);
+      else await exportService.expensesPDF(range);
+      toast.success(type === "csv" ? "Spreadsheet downloaded." : "PDF downloaded.");
     } catch {
-      toast.error("Export failed.");
+      toast.error("Couldn't download the file. Check the connection and try again.");
     } finally {
       setExporting(false);
     }
   };
 
-  const handlePeriodChange = (value: string) => {
-    setPeriod(value as Period);
-    setPage(1);
-  };
-
   return (
-    <div className="pb-20 sm:pb-0">
-      <PageHeader
-        title="Expenses"
-        description={
-          !rangeError && !isLoading && !isError
-            ? `${totalCount} expense${totalCount !== 1 ? "s" : ""} · ₱${pageTotal.toLocaleString("en-PH", { minimumFractionDigits: 2 })} on this page`
-            : "Track all business costs"
-        }
-        action={
-          <div className="hidden sm:flex items-center gap-2">
-            <ExportMenu
-              onExportCSV={() => handleExport("csv")}
-              onExportPDF={() => handleExport("pdf")}
-              exporting={exporting}
-              disabled={!!rangeError}
-            />
-            <button onClick={() => navigate("/expenses/new")} className="btn-primary">
-              <Plus size={16} strokeWidth={2.5} aria-hidden="true" />
-              Add Expense
+    <div className="expenses">
+      <header className="page-head">
+        <div>
+          <h1 className="type-page">Shop expenses</h1>
+          <p className="page-lede">What the shop paid for, and where the money went.</p>
+        </div>
+        <div className="expenses-head-actions">
+          <DropdownMenu
+            width={240}
+            trigger={({ open }) => (
+              <button type="button" className="btn-ghost" aria-expanded={open} disabled={exporting || !!rangeError}>
+                <Download size={18} aria-hidden="true" />
+                {exporting ? "Preparing…" : "Download"}
+              </button>
+            )}
+          >
+            <button type="button" className="menu-item" onClick={() => void exportAs("csv")}>
+              <FileSpreadsheet size={16} aria-hidden="true" />
+              Spreadsheet (CSV)
             </button>
-          </div>
-        }
-      />
+            <button type="button" className="menu-item" onClick={() => void exportAs("pdf")}>
+              <FileText size={16} aria-hidden="true" />
+              Printable PDF
+            </button>
+          </DropdownMenu>
+          <button type="button" className="btn-primary" onClick={() => navigate("/expenses/new")}>
+            <Plus size={20} aria-hidden="true" />
+            Log an expense
+          </button>
+        </div>
+      </header>
 
-      {/* Filter bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
-        <SearchInput
-          value={search}
-          onChange={setSearch}
-          placeholder="Search by description or category…"
-          ariaLabel="Search expenses"
-        />
-        <PeriodToggle
-          options={PERIOD_OPTIONS}
-          value={period}
-          onChange={handlePeriodChange}
-          ariaLabel="Filter expenses by period"
-        />
-      </div>
+      <section className="quick-log" aria-labelledby={`${ids}-quick`}>
+        <h2 id={`${ids}-quick`} className="quick-log-title">What did you pay for?</h2>
+        <ul>
+          {EXPENSE_CATEGORIES.map(info => {
+            const Icon = info.icon;
+            return (
+              <li key={info.value}>
+                <Link to={`/expenses/new?category=${info.value}`} className="quick-log-tile">
+                  <span className="quick-log-icon" style={{ background: info.color }} aria-hidden="true">
+                    <Icon size={20} strokeWidth={1.75} />
+                  </span>
+                  <span>{info.label}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
 
-      <div className="mb-5">
-        <CategoryFilterBar
-          options={CATEGORY_OPTIONS.map(c => ({ value: c.value, label: c.label }))}
-          active={categoryFilter}
-          onChange={setCategoryFilter}
-          counts={categoryCounts}
-          ariaLabel="Filter by category"
-        />
+      <div className="expenses-toolbar">
+        <div className="segmented" role="group" aria-label="Which days">
+          {PERIOD_OPTIONS.map(option => (
+            <button key={option.value} type="button" aria-pressed={period === option.value} onClick={() => setPeriod(option.value)}>
+              {option.label}
+            </button>
+          ))}
+        </div>
+        <label className="search-field">
+          <span className="sr-only">Find an expense</span>
+          <Search size={18} aria-hidden="true" />
+          <input type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder="Find an expense" />
+        </label>
       </div>
 
       {period === "custom" && (
-        <div className="mb-5 animate-fade-in">
-          <DateRangeFilter
-            dateFrom={customFrom}
-            dateTo={customTo}
-            onDateFromChange={v => {
-              setCustomFrom(v);
-              setPage(1);
-            }}
-            onDateToChange={v => {
-              setCustomTo(v);
-              setPage(1);
-            }}
-            onClear={() => {
-              setCustomFrom("");
-              setCustomTo("");
-              setPage(1);
-            }}
-            hasFilters={!!customFrom || !!customTo}
-            error={rangeError}
-          />
+        <div className="date-range">
+          <div>
+            <label htmlFor={`${ids}-from`} className="field-label">From</label>
+            <input id={`${ids}-from`} type="date" className="field-input" value={customFrom} max={today} onChange={event => setCustomFrom(event.target.value)} />
+          </div>
+          <div>
+            <label htmlFor={`${ids}-to`} className="field-label">To</label>
+            <input id={`${ids}-to`} type="date" className="field-input" value={customTo} max={today} onChange={event => setCustomTo(event.target.value)} />
+          </div>
+          {rangeError && <p className="field-error date-range-error" role="alert">{rangeError}</p>}
         </div>
       )}
 
-      {isLoading && <ExpensesSkeleton />}
-
-      {!rangeError && isError && (
-        <div className="card-surface p-6 text-center">
-          <p className="font-body" style={{ fontSize: 13, color: "#EF4444" }}>
-            Failed to load expenses. Please try refreshing the page.
+      {!rangeError && !isError && (
+        <section className="spend" aria-labelledby={`${ids}-spend`}>
+          <h2 id={`${ids}-spend`} className="spend-label">Spent {PERIOD_PHRASE[period]}</h2>
+          <p className="spend-total num">
+            {loading ? <span className="skeleton inline-block h-[0.9em] w-[6ch] align-middle" aria-hidden="true" /> : formatPeso(totals.sum / 100)}
           </p>
-        </div>
-      )}
-
-      {!rangeError && !isLoading && !isError && filteredExpenses.length === 0 && (
-        <div style={{ background: "#FFFDFB", border: "1px solid #E8E6E1", borderRadius: 16 }}>
-          <EmptyState
-            icon={search || categoryFilter !== "all" ? SearchX : Receipt}
-            title={
-              search || categoryFilter !== "all"
-                ? "No expenses match your filters"
-                : hasActiveFilters
-                  ? "No expenses for this period"
-                  : "No expenses recorded yet"
-            }
-            description={
-              search || categoryFilter !== "all"
-                ? "Try a different search, category, or clear filters."
-                : hasActiveFilters
-                  ? "Try a different date range."
-                  : "Record your first expense to start tracking business costs."
-            }
-            action={
-              search || categoryFilter !== "all" ? (
-                <button
-                  onClick={() => {
-                    setSearch("");
-                    setCategoryFilter("all");
-                  }}
-                  className="btn-secondary"
-                >
-                  Clear filters
-                </button>
-              ) : !hasActiveFilters ? (
-                <button onClick={() => navigate("/expenses/new")} className="btn-primary">
-                  <Plus size={16} strokeWidth={2.5} aria-hidden="true" />
-                  Add Expense
-                </button>
-              ) : (
-                <button
-                  onClick={() => handlePeriodChange("this_month")}
-                  className="btn-secondary"
-                >
-                  Back to this month
-                </button>
-              )
-            }
-          />
-        </div>
-      )}
-
-      {!rangeError && !isLoading && !isError && filteredExpenses.length > 0 && (
-        <>
-          <div
-            style={{ background: "#FFFDFB", border: "1px solid #E8E6E1", borderRadius: 16 }}
-            className="overflow-hidden"
-          >
-            {groups.map(group => (
-              <div key={group.date}>
-                <div
-                  className="flex items-center justify-between px-5 py-2.5 sticky top-0 z-10"
-                  style={{ background: "#FFF8F0", borderBottom: "1px solid #F0E6D8" }}
-                >
-                  <h2
-                    className="font-heading font-semibold"
-                    style={{ fontSize: 13, color: "#6B4226" }}
-                  >
-                    {formatDayLabel(group.date, today)}
-                  </h2>
-                  <p className="font-body" style={{ fontSize: 12.5, color: "#9B6644" }}>
-                    {group.items.length} expense{group.items.length !== 1 ? "s" : ""} · ₱
-                    {group.subtotal.toLocaleString("en-PH", { minimumFractionDigits: 2 })}
-                  </p>
-                </div>
-                {group.items.map(expense => (
-                  <ExpenseRow
-                    key={expense.id}
-                    expense={expense}
-                    onEdit={() => navigate(`/expenses/${expense.id}/edit`)}
-                    onDelete={() => setDeleteTarget(expense)}
+          {!loading && totals.sum > 0 && (
+            <>
+              <div className="spend-bar" aria-hidden="true">
+                {spentCategories.map(info => (
+                  <span
+                    key={info.value}
+                    style={{ flexGrow: totals.byCategory.get(info.value), background: info.color }}
+                    data-dim={(category !== "all" && category !== info.value) || undefined}
                   />
                 ))}
               </div>
-            ))}
-          </div>
+              <div className="spend-legend" role="group" aria-label="Show one kind of expense">
+                <button type="button" className="spend-key" aria-pressed={category === "all"} onClick={() => setCategory("all")}>
+                  Everything
+                </button>
+                {spentCategories.map(info => (
+                  <button
+                    key={info.value}
+                    type="button"
+                    className="spend-key"
+                    aria-pressed={category === info.value}
+                    onClick={() => setCategory(category === info.value ? "all" : info.value)}
+                  >
+                    <span className="spend-swatch" style={{ background: info.color }} aria-hidden="true" />
+                    {info.label}{" "}
+                    <span className="num spend-key-amount">{formatPeso((totals.byCategory.get(info.value) ?? 0) / 100)}</span>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+          {data && !data.complete && (
+            <p className="field-hint">Showing the first 200 expenses. Choose a shorter range to see the rest.</p>
+          )}
+        </section>
+      )}
 
-          <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+      {loading && (
+        <>
+          <LedgerSkeleton />
+          <span className="sr-only" role="status">Loading expenses</span>
         </>
       )}
 
-      {/* Mobile floating action button */}
-      <button
-        onClick={() => navigate("/expenses/new")}
-        className="sm:hidden fixed z-30 flex items-center justify-center rounded-full transition-transform active:scale-95"
-        style={{
-          bottom: 24,
-          right: 20,
-          width: 56,
-          height: 56,
-          background: "#FF6FAE",
-          boxShadow: "0 8px 24px rgba(255, 111, 174, 0.45)",
-        }}
-        aria-label="Record a new expense"
-      >
-        <Plus size={24} color="#FFFFFF" strokeWidth={2.5} aria-hidden="true" />
-      </button>
+      {!rangeError && isError && (
+        <div className="expenses-empty" role="alert">
+          <h2 className="type-heading">Couldn't load the expenses</h2>
+          <p>Check the internet connection, then try again.</p>
+          <button type="button" className="btn-primary" onClick={() => void refetch()}>Try again</button>
+        </div>
+      )}
 
-      <ConfirmDialog
-        open={!!deleteTarget}
-        title="Delete expense?"
-        description={
-          deleteTarget
-            ? `This ${deleteTarget.category_display.toLowerCase()} expense of ₱${Number(deleteTarget.amount).toFixed(2)} will be permanently deleted. This cannot be undone.`
-            : ""
-        }
-        confirmLabel="Delete"
-        destructive
-        loading={deleteExpense.isPending}
-        onConfirm={handleDeleteConfirm}
-        onCancel={() => setDeleteTarget(null)}
-      />
+      {!rangeError && !loading && !isError && visible.length === 0 && (
+        <div className="expenses-empty">
+          {search || category !== "all" ? (
+            <>
+              <h2 className="type-heading">Nothing matches</h2>
+              <p>Try another word, or show every kind of expense.</p>
+              <button type="button" className="btn-secondary" onClick={() => { setSearch(""); setCategory("all"); }}>
+                Show everything
+              </button>
+            </>
+          ) : (
+            <>
+              <h2 className="type-heading">Nothing spent {PERIOD_PHRASE[period]}</h2>
+              <p>When the shop pays for something, log it here so your profit stays honest.</p>
+              <button type="button" className="btn-primary" onClick={() => navigate("/expenses/new")}>
+                <Plus size={20} aria-hidden="true" />
+                Log an expense
+              </button>
+            </>
+          )}
+        </div>
+      )}
+
+      {!rangeError && !loading && !isError && visible.length > 0 && (
+        <div className="ledger">
+          {days.map(day => (
+            <section key={day.date} className="ledger-day" aria-labelledby={`${ids}-${day.date}`}>
+              <header className="ledger-day-head">
+                <h2 id={`${ids}-${day.date}`}>{formatDayLabel(day.date, today)}</h2>
+                <p className="num">{formatPeso(day.subtotal)}</p>
+              </header>
+              <ul>
+                {day.items.map(expense => {
+                  const info = categoryInfo(expense.category);
+                  const Icon = info.icon;
+                  return (
+                    <li key={expense.id}>
+                      <Link to={`/expenses/${expense.id}/edit`} className="ledger-row">
+                        <span className="ledger-icon" style={{ background: info.color }} aria-hidden="true">
+                          <Icon size={18} strokeWidth={1.75} />
+                        </span>
+                        <span className="ledger-text">
+                          <span className="ledger-what">{expense.description || info.label}</span>
+                          {expense.description && <span className="ledger-kind">{info.label}</span>}
+                        </span>
+                        <span className="ledger-amount num">{formatPeso(Number(expense.amount))}</span>
+                        <ChevronRight className="ledger-chevron" size={18} aria-hidden="true" />
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

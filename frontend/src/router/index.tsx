@@ -1,27 +1,32 @@
+import { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import AuthLayout from "@/layouts/AuthLayout";
 import OwnerLayout from "@/layouts/OwnerLayout";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import LandingPage from "@/pages/LandingPage";
-import LoginPage from "@/pages/LoginPage";
-import OwnerHomePage from "@/pages/OwnerHomePage";
-import OwnerHomePreviewHarness from "@/pages/owner-home/OwnerHomePreviewHarness";
-import DashboardPage from "@/pages/DashboardPage";
-import IngredientsPage from "@/pages/IngredientsPage";
-import IngredientFormPage from "@/pages/IngredientFormPage";
-import ProductsPage from "@/pages/ProductsPage";
-import ProductFormPage from "@/pages/ProductFormPage";
-import RecipesPage from "@/pages/RecipesPage";
-import RecipeFormPage from "@/pages/RecipeFormPage";
-import ExpensesPage from "@/pages/ExpensesPage";
-import ExpenseFormPage from "@/pages/ExpenseFormPage";
-import SalesPage from "@/pages/SalesPage";
-import SaleFormPage from "@/pages/SaleFormPage";
-import ProfitMarginsPage from "@/pages/ProfitMarginsPage";
 import GuestRoute from "@/components/GuestRoute";
+import LoginPage from "@/pages/LoginPage";
 import { useMe } from "@/hooks/useAuth";
 import { can } from "@/lib/permissions";
-import { OperationalCatalogPage, OperationalStockPage } from "@/pages/OperationalPages";
+
+// Each page downloads on first visit; OwnerLayout shows a skeleton meanwhile.
+const ShopPage = lazy(() => import("@/pages/shop/ShopPage"));
+const OwnerHomePreviewHarness = lazy(() => import("@/pages/owner-home/OwnerHomePreviewHarness"));
+const OwnerHomePage = lazy(() => import("@/pages/OwnerHomePage"));
+const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
+const IngredientsPage = lazy(() => import("@/pages/IngredientsPage"));
+const IngredientFormPage = lazy(() => import("@/pages/IngredientFormPage"));
+const ProductsPage = lazy(() => import("@/pages/ProductsPage"));
+const ProductFormPage = lazy(() => import("@/pages/ProductFormPage"));
+const BoxesPage = lazy(() => import("@/pages/BoxesPage"));
+const AssortmentFormPage = lazy(() => import("@/pages/AssortmentFormPage"));
+const RecipesPage = lazy(() => import("@/pages/RecipesPage"));
+const RecipeFormPage = lazy(() => import("@/pages/RecipeFormPage"));
+const ExpensesPage = lazy(() => import("@/pages/ExpensesPage"));
+const ExpenseFormPage = lazy(() => import("@/pages/ExpenseFormPage"));
+const SalesPage = lazy(() => import("@/pages/SalesPage"));
+const SaleFormPage = lazy(() => import("@/pages/SaleFormPage"));
+const OperationalCatalogPage = lazy(() => import("@/pages/OperationalPages").then(module => ({ default: module.OperationalCatalogPage })));
+const OperationalStockPage = lazy(() => import("@/pages/OperationalPages").then(module => ({ default: module.OperationalStockPage })));
 
 function CatalogRoute() {
   const { data: user } = useMe();
@@ -37,16 +42,16 @@ const router = createBrowserRouter([
   // ── Public — shop landing page, no auth required ──
   {
     path: "/",
-    element: <LandingPage />,
+    element: <Suspense fallback={null}><ShopPage /></Suspense>,
   },
 
   // ── Visual Verification Preview Harness ──
   {
     path: "/preview/owner-home",
-    element: <OwnerHomePreviewHarness />,
+    element: <Suspense fallback={null}><OwnerHomePreviewHarness /></Suspense>,
   },
 
-  // ── Public — owner login (reached via the hidden nav icon) ──
+  // ── Public — sign-in for the owner and staff; not linked from the shop ──
   {
     element: <GuestRoute />,
     children: [
@@ -74,6 +79,9 @@ const router = createBrowserRouter([
           { path: "/products", element: <CatalogRoute /> },
           { path: "/products/new", element: <ProductFormPage /> },
           { path: "/products/:id/edit", element: <ProductFormPage /> },
+          { path: "/products/boxes", element: <BoxesPage /> },
+          { path: "/products/boxes/new", element: <AssortmentFormPage /> },
+          { path: "/products/boxes/:id/edit", element: <AssortmentFormPage /> },
           { path: "/ingredients", element: <StockRoute /> },
           { path: "/ingredients/new", element: <IngredientFormPage /> },
           { path: "/ingredients/:id/edit", element: <IngredientFormPage /> },
@@ -87,7 +95,8 @@ const router = createBrowserRouter([
           { path: "/sales/new", element: <SaleFormPage /> },
           { path: "/sales/:id/edit", element: <SaleFormPage /> },
           { path: "/analytics", element: <DashboardPage /> },
-          { path: "/profit-margins", element: <ProfitMarginsPage /> },
+          // Donut margins now live on the Recipe costing sheet.
+          { path: "/profit-margins", element: <Navigate to="/recipes" replace /> },
         ],
       },
     ],

@@ -1,359 +1,362 @@
-import PaginatedLookup from "@/components/PaginatedLookup";
-import type { LookupRecord } from "@/services/listing.service";
-import { useCallback, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useForm, useFieldArray, useWatch } from "react-hook-form";
+import { useId, useState } from "react";
+import { useBlocker, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRecipe, useCreateRecipe, useUpdateRecipe } from "@/hooks/useRecipes";
-import { Plus, Trash2 } from "lucide-react";
-import SkeletonTable from "@/components/SkeletonTable";
-import RecipeCostPreview from "@/components/recipes/RecipeCostPreview";
+import { Plus, Trash2, X } from "lucide-react";
+import { useCreateRecipe, useDeleteRecipe, useRecipe, useUpdateRecipe } from "@/hooks/useRecipes";
+import { useAllIngredients } from "@/hooks/useIngredients";
+import { useProductMargins } from "@/hooks/useDashboard";
 import { validRecordId } from "@/lib/managementQueryKeys";
+import { unitLabel } from "@/lib/stockStatus";
+import { flavorOf, flavorTint } from "@/lib/flavor";
+import type { Recipe } from "@/types/recipe.types";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import RecordLoadError from "@/components/RecordLoadError";
+import DonutArt from "@/components/DonutArt";
+import Row from "@/components/ui/SettingsRow";
+import { formatPeso } from "@/pages/dashboard/report-format";
+import "./recipes/recipes.css";
 
-/* ─────────────────────────────────────────────
-   SCHEMA
-   ───────────────────────────────────────────── */
 const recipeSchema = z.object({
-  product: z.coerce.number().min(1, "Product is required"),
-  yield_quantity: z.coerce.number().min(1, "Batch must yield at least 1 unit"),
+  product: z.coerce.number().min(1, "Choose which donut this recipe makes"),
+  yield_quantity: z.coerce.number().int("Use a whole number of donuts").min(1, "A batch has to make at least 1 donut"),
   notes: z.string().optional(),
   recipe_ingredients: z
     .array(
       z.object({
-        ingredient: z.coerce.number().min(1, "Ingredient is required"),
-        quantity: z.coerce.number().min(0.01, "Quantity must be greater than 0"),
+        ingredient: z.coerce.number().min(1, "Choose an ingredient"),
+        quantity: z.coerce.number().min(0.01, "Enter how much goes in, more than 0"),
       }),
     )
-    .min(1, "At least one ingredient is required"),
+    .min(1, "Add at least one ingredient"),
 });
 
-export type RecipeFormInput = z.input<typeof recipeSchema>;
-export type RecipeForm = z.output<typeof recipeSchema>;
+type FormInput = z.input<typeof recipeSchema>;
+type FormOutput = z.output<typeof recipeSchema>;
 
-/* ─────────────────────────────────────────────
-   FIELD — reusable labeled block
-   ───────────────────────────────────────────── */
-function Field({
-  label,
-  helper,
-  error,
-  required,
-  children,
-}: {
-  label: string;
-  helper?: string;
-  error?: string;
-  required?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      <label className="field-label">
-        {label}
-        {required && (
-          <span style={{ color: "#FF6FAE", marginLeft: 3 }} aria-hidden="true">
-            *
-          </span>
-        )}
-      </label>
-      {children}
-      {helper && !error && <p className="field-helper">{helper}</p>}
-      {error && (
-        <p className="field-error" role="alert">
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
+const centavos = (pesos: number) => Math.round(pesos * 100);
 
-/* ─────────────────────────────────────────────
-   PAGE
-   ───────────────────────────────────────────── */
-export default function RecipeFormPage() {
-  const { id } = useParams();
-  return <RecipeForm key={id ?? "new"} id={id} />;
-}
-
-function RecipeForm({ id }: { id: string | undefined }) {
+function RecipeForm({ recipe, presetProduct }: { recipe?: Recipe; presetProduct?: number }) {
   const navigate = useNavigate();
-  const isEdit = !!id;
+  const id = useId();
+  const field = (name: string) => `${id}-${name}`;
+  const isEdit = !!recipe;
 
-  const { data: recipe, isPending: recipeLoading, isError, error, refetch } = useRecipe(Number(id));
+  const margins = useProductMargins();
+  const ingredients = useAllIngredients();
   const createRecipe = useCreateRecipe();
-  const updateRecipe = useUpdateRecipe(Number(id));
-
-  const [selectedIngredients, setSelectedIngredients] = useState<Record<number, LookupRecord>>({});
-  const rememberIngredient = useCallback((record: LookupRecord) => {
-    setSelectedIngredients(previous => previous[record.id] === record ? previous : { ...previous, [record.id]: record });
-  }, []);
+  const updateRecipe = useUpdateRecipe(recipe?.id ?? 0);
+  const deleteRecipe = useDeleteRecipe();
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const {
     register,
     handleSubmit,
     control,
-    reset,
-    formState: { errors },
-  } = useForm<RecipeFormInput, unknown, RecipeForm>({
+    formState: { errors, isDirty },
+  } = useForm<FormInput, unknown, FormOutput>({
     resolver: zodResolver(recipeSchema),
+    defaultValues: recipe
+      ? {
+          product: recipe.product,
+          yield_quantity: recipe.yield_quantity,
+          notes: recipe.notes ?? "",
+          recipe_ingredients: recipe.recipe_ingredients.map(row => ({ ingredient: row.ingredient, quantity: Number(row.quantity) })),
+        }
+      : {
+          product: presetProduct ?? 0,
+          yield_quantity: 12,
+          notes: "",
+          recipe_ingredients: [{ ingredient: 0, quantity: "" }],
+        },
   });
+  const { fields, append, remove } = useFieldArray({ control, name: "recipe_ingredients" });
+  const [product, yieldQuantity, rows] = useWatch({ control, name: ["product", "yield_quantity", "recipe_ingredients"] });
 
-  const selectedProduct = useWatch({ control, name: "product" });
-  const selectedRows = useWatch({ control, name: "recipe_ingredients" });
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "recipe_ingredients",
-  });
+  const pantry = ingredients.data ?? [];
+  const pantryById = new Map(pantry.map(item => [item.id, item]));
+  const donuts = (margins.data ?? []).filter(row => isEdit || !row.has_recipe || row.product_id === Number(product));
+  const donut = (margins.data ?? []).find(row => row.product_id === Number(product));
 
-  useEffect(() => {
-    if (recipe) {
-      reset({
-        product: recipe.product,
-        yield_quantity: recipe.yield_quantity,
-        notes: recipe.notes ?? "",
-        recipe_ingredients: recipe.recipe_ingredients?.map(
-          (ri: { ingredient: number; quantity: number | string }) => ({
-            ingredient: ri.ingredient,
-            quantity: Number(ri.quantity),
-          }),
-        ) ?? [{ ingredient: 0, quantity: 0 }],
-      });
-    }
-  }, [recipe, reset]);
+  const lineCost = (row?: { ingredient?: unknown; quantity?: unknown }) => {
+    const item = pantryById.get(Number(row?.ingredient));
+    const quantity = Number(row?.quantity);
+    return item && quantity > 0 ? centavos(Number(item.cost_per_unit) * quantity) : 0;
+  };
+  const batchCents = (rows ?? []).reduce((sum: number, row) => sum + lineCost(row), 0);
+  const perDonut = Number(yieldQuantity) > 0 ? batchCents / 100 / Number(yieldQuantity) : null;
+  const price = donut ? Number(donut.selling_price) : null;
+  const keep = perDonut !== null && price !== null ? price - perDonut : null;
+  const keepPercent = keep !== null && price ? Math.round((keep / price) * 100) : null;
 
-  const onSubmit = (data: RecipeForm) => {
-    if (isEdit) {
-      updateRecipe.mutate(data);
-    } else {
-      createRecipe.mutate(data);
-    }
+  const isSaving = createRecipe.isPending || updateRecipe.isPending;
+  const isDone = createRecipe.isSuccess || updateRecipe.isSuccess || deleteRecipe.isPending || deleteRecipe.isSuccess;
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) => isDirty && !isSaving && !isDone && currentLocation.pathname !== nextLocation.pathname,
+  );
+
+  const onSubmit = (data: FormOutput) => {
+    if (recipe) updateRecipe.mutate(data);
+    else createRecipe.mutate(data);
   };
 
-  const isPending = createRecipe.isPending || updateRecipe.isPending;
-
-  if (isEdit && !validRecordId(Number(id))) {
-    return <RecordLoadError name="recipe" invalidId error={undefined} retry={() => {}} back={() => navigate("/recipes")} />;
-  }
-  if (isEdit && recipeLoading) {
-    return <SkeletonTable rows={4} cols={2} showHeader />;
-  }
-  if (isEdit && (isError || !recipe)) {
-    return <RecordLoadError name="recipe" invalidId={false} error={error} retry={() => { void refetch(); }} back={() => navigate("/recipes")} />;
-  }
   return (
-    <div className="max-w-400">
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
-        {/* ── Product + Notes ── */}
-        <div className="card-surface p-6 space-y-5">
-          <Field
-            label="Product"
-            helper="Select the product this recipe belongs to"
-            error={errors.product?.message}
-            required
+    <>
+      <form className="settings-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+        <header className="page-head">
+          <div>
+            <h1 className="type-page">{recipe ? `${recipe.product_name} recipe` : "Add a recipe"}</h1>
+            <p className="page-lede">
+              List what goes into one batch. The cost of each donut works itself out from your pantry prices.
+            </p>
+          </div>
+        </header>
+
+        <div className="recipe-preview" aria-live="polite">
+          <span
+            className="cost-art recipe-preview-art"
+            style={{ background: flavorTint(flavorOf(donut?.product_name)) }}
+            aria-hidden="true"
           >
-            <PaginatedLookup kind="products" label="Product" selectedId={Number(selectedProduct) || 0}
-              {...register("product")} disabled={isEdit} aria-invalid={!!errors.product} />
-            {isEdit && (
-              <p className="field-helper">Product cannot be changed after creation.</p>
+            <DonutArt flavor={flavorOf(donut?.product_name)} size={64} />
+          </span>
+          <div className="recipe-preview-text">
+            <p className="recipe-preview-name">{donut?.product_name ?? "Choose a donut"}</p>
+            <p className="recipe-preview-figures">
+              {perDonut === null || batchCents === 0 ? (
+                "Add ingredients to see what each donut costs."
+              ) : (
+                <>
+                  Costs <strong className="num">{formatPeso(perDonut)}</strong> per donut
+                  {price !== null && keep !== null && (
+                    <>
+                      {". "}Sells for <strong className="num">{formatPeso(price)}</strong>
+                      {keep >= 0 ? (
+                        <>, you keep <strong className="num is-good">{formatPeso(keep)}</strong> ({keepPercent}%).</>
+                      ) : (
+                        <>, so each one <strong className="num is-warn">loses {formatPeso(Math.abs(keep))}</strong>.</>
+                      )}
+                    </>
+                  )}
+                </>
+              )}
+            </p>
+            {batchCents > 0 && (
+              <p className="recipe-preview-batch num">Whole batch: {formatPeso(batchCents / 100)}</p>
             )}
-          </Field>
-
-          <Field
-            label="Batch Yield"
-            helper="How many units does this recipe produce? e.g. flour/sugar/chocolate above makes 24 donuts → enter 24"
-            error={errors.yield_quantity?.message}
-            required
-          >
-            <input
-              {...register("yield_quantity")}
-              type="number"
-              min="1"
-              step="1"
-              className="field-input mt-1"
-              placeholder="1"
-              aria-invalid={!!errors.yield_quantity}
-            />
-          </Field>
-
-          <Field
-            label="Notes"
-            helper="Optional — preparation tips, batch size notes, special instructions"
-          >
-            <textarea
-              {...register("notes")}
-              rows={3}
-              className="field-input mt-1"
-              style={{ resize: "none" }}
-              placeholder="e.g. Makes 12 pieces per batch, proof for 45 minutes…"
-            />
-          </Field>
+          </div>
         </div>
 
-        {/* ── Ingredients ── */}
-        <div className="card-surface p-6">
-          {/* Section header */}
-          <div className="flex items-center justify-between mb-5">
-            <div>
-              <p
-                className="font-heading font-semibold"
-                style={{ fontSize: 14, color: "#6B4226" }}
-              >
-                Ingredients
-              </p>
-              <p className="field-helper" style={{ marginTop: 2 }}>
-                List every ingredient and the exact quantity used per batch
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => append({ ingredient: 0, quantity: 0 })}
-              className="btn-ghost"
-              style={{ fontSize: 12, padding: "5px 12px" }}
+        <section className="settings-group" aria-labelledby={field("donut")}>
+          <h2 id={field("donut")} className="settings-group-title">The donut</h2>
+          <div className="settings-card">
+            <Row label="Donut" htmlFor={field("product")} error={errors.product?.message} hint={isEdit ? "A recipe always stays with its donut." : undefined}>
+              {isEdit ? (
+                <p className="settings-readout">{recipe?.product_name}</p>
+              ) : (
+                <select
+                  id={field("product")}
+                  className="field-input"
+                  disabled={margins.isPending}
+                  aria-invalid={!!errors.product}
+                  {...register("product")}
+                  value={String(product ?? 0)}
+                >
+                  <option value={0}>{margins.isPending ? "Loading donuts…" : "Choose a donut"}</option>
+                  {donuts.map(row => (
+                    <option key={row.product_id} value={row.product_id}>{row.product_name}</option>
+                  ))}
+                </select>
+              )}
+            </Row>
+            <Row
+              label="Donuts per batch"
+              htmlFor={field("yield")}
+              error={errors.yield_quantity?.message}
+              hint="How many donuts one batch of the ingredients below makes."
             >
-              <Plus size={13} aria-hidden="true" />
-              Add Row
+              <div className="settings-unit-input">
+                <input
+                  id={field("yield")}
+                  type="number"
+                  inputMode="numeric"
+                  min="1"
+                  step="1"
+                  className="field-input num"
+                  aria-invalid={!!errors.yield_quantity}
+                  {...register("yield_quantity")}
+                />
+                <span aria-hidden="true">donuts</span>
+              </div>
+            </Row>
+          </div>
+        </section>
+
+        <section className="settings-group" aria-labelledby={field("ingredients")}>
+          <h2 id={field("ingredients")} className="settings-group-title">What goes into one batch</h2>
+          <div className="settings-card recipe-lines">
+            {ingredients.isError && (
+              <p className="field-error recipe-lines-note" role="alert">
+                Couldn't load the pantry.{" "}
+                <button type="button" className="link-button" onClick={() => void ingredients.refetch()}>Try again</button>
+              </p>
+            )}
+            {!ingredients.isPending && pantry.length === 0 && !ingredients.isError && (
+              <p className="field-hint recipe-lines-note">Your pantry is empty. Add ingredients in the Pantry first.</p>
+            )}
+            <ol>
+              {fields.map((line, index) => {
+                const row = rows?.[index];
+                const item = pantryById.get(Number(row?.ingredient));
+                const cost = lineCost(row);
+                const rowErrors = errors.recipe_ingredients?.[index];
+                return (
+                  <li key={line.id} className="recipe-line">
+                    <div className="recipe-line-ingredient">
+                      <label htmlFor={field(`ing-${index}`)} className="sr-only">Ingredient {index + 1}</label>
+                      <select
+                        id={field(`ing-${index}`)}
+                        className="field-input"
+                        disabled={ingredients.isPending}
+                        aria-invalid={!!rowErrors?.ingredient}
+                        {...register(`recipe_ingredients.${index}.ingredient`)}
+                        value={String(row?.ingredient ?? 0)}
+                      >
+                        <option value={0}>{ingredients.isPending ? "Loading the pantry…" : "Choose an ingredient"}</option>
+                        {pantry.map(option => (
+                          <option key={option.id} value={option.id}>{option.name}</option>
+                        ))}
+                      </select>
+                      {rowErrors?.ingredient && <p className="field-error">{rowErrors.ingredient.message}</p>}
+                    </div>
+                    <div className="recipe-line-amount">
+                      <label htmlFor={field(`qty-${index}`)} className="sr-only">How much of ingredient {index + 1}</label>
+                      <div className="settings-unit-input">
+                        <input
+                          id={field(`qty-${index}`)}
+                          type="number"
+                          inputMode="decimal"
+                          min="0"
+                          step="0.01"
+                          placeholder="0"
+                          className="field-input num"
+                          aria-invalid={!!rowErrors?.quantity}
+                          {...register(`recipe_ingredients.${index}.quantity`)}
+                        />
+                        <span aria-hidden="true">{item ? unitLabel(item.unit) : ""}</span>
+                      </div>
+                      {rowErrors?.quantity && <p className="field-error">{rowErrors.quantity.message}</p>}
+                    </div>
+                    <span className="recipe-line-cost num">{cost ? formatPeso(cost / 100) : "₱—"}</span>
+                    <button
+                      type="button"
+                      className="icon-button"
+                      onClick={() => remove(index)}
+                      disabled={fields.length === 1}
+                      aria-label={`Remove ingredient ${index + 1}`}
+                    >
+                      <X size={18} aria-hidden="true" />
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
+            {errors.recipe_ingredients?.root && (
+              <p className="field-error recipe-lines-note" role="alert">{errors.recipe_ingredients.root.message}</p>
+            )}
+            <button type="button" className="settings-action" onClick={() => append({ ingredient: 0, quantity: "" })}>
+              <Plus size={18} aria-hidden="true" />
+              Add an ingredient
             </button>
           </div>
+        </section>
 
-          {/* List-level error */}
-          {errors.recipe_ingredients?.root && (
-            <p className="field-error mb-3" role="alert">
-              {errors.recipe_ingredients.root.message}
-            </p>
-          )}
-
-          {/* Column labels */}
-          <div
-            className="grid gap-3 mb-2 px-1"
-            style={{ gridTemplateColumns: "1fr 140px 32px" }}
-          >
-            <p
-              className="font-heading"
-              style={{
-                fontSize: 11,
-                color: "#9B6644",
-                fontWeight: 600,
-                textTransform: "uppercase",
-                letterSpacing: "0.04em",
-              }}
-            >
-              Ingredient
-            </p>
-            <p
-              className="font-heading"
-              style={{
-                fontSize: 11,
-                color: "#9B6644",
-                fontWeight: 600,
-                textTransform: "uppercase",
-                letterSpacing: "0.04em",
-              }}
-            >
-              Quantity
-            </p>
+        <section className="settings-group" aria-labelledby={field("notes")}>
+          <h2 id={field("notes")} className="settings-group-title">Notes</h2>
+          <div className="settings-card">
+            <label htmlFor={field("notes-input")} className="sr-only">Notes</label>
+            <textarea
+              id={field("notes-input")}
+              className="field-input settings-notes"
+              rows={3}
+              placeholder="Proofing time, frying temperature, anything the kitchen should know."
+              {...register("notes")}
+            />
           </div>
+        </section>
 
-          {/* Rows */}
-          <div className="space-y-2.5">
-            {fields.map((field, index) => (
-              <div
-                key={field.id}
-                className="grid items-start gap-3"
-                style={{ gridTemplateColumns: "1fr 140px 32px" }}
-              >
-                {/* Ingredient selector */}
-                <div>
-                  <PaginatedLookup kind="ingredients" label={`Ingredient ${index + 1}`}
-                    selectedId={Number(selectedRows?.[index]?.ingredient) || 0} onResolved={rememberIngredient}
-                    {...register(`recipe_ingredients.${index}.ingredient`)} aria-invalid={!!errors.recipe_ingredients?.[index]?.ingredient} />
-                  {errors.recipe_ingredients?.[index]?.ingredient && (
-                    <p className="field-error mt-1" role="alert">
-                      {errors.recipe_ingredients[index]?.ingredient?.message}
-                    </p>
-                  )}
-                </div>
-
-                {/* Quantity */}
-                <div>
-                  <input
-                    {...register(`recipe_ingredients.${index}.quantity`)}
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    placeholder="0.00"
-                    className="field-input"
-                    aria-label={`Quantity for ingredient ${index + 1}`}
-                    aria-invalid={!!errors.recipe_ingredients?.[index]?.quantity}
-                  />
-                  {errors.recipe_ingredients?.[index]?.quantity && (
-                    <p className="field-error mt-1" role="alert">
-                      {errors.recipe_ingredients[index]?.quantity?.message}
-                    </p>
-                  )}
-                </div>
-
-                {/* Remove row */}
-                <button
-                  type="button"
-                  onClick={() => remove(index)}
-                  disabled={fields.length === 1}
-                  className="flex items-center justify-center rounded-lg transition-colors"
-                  style={{
-                    width: 32,
-                    height: 38,
-                    color: fields.length === 1 ? "#D1CEC7" : "#A8A49B",
-                    cursor: fields.length === 1 ? "not-allowed" : "pointer",
-                  }}
-                  onMouseOver={e => {
-                    if (fields.length > 1) {
-                      (e.currentTarget as HTMLElement).style.background = "#FEF2F2";
-                      (e.currentTarget as HTMLElement).style.color = "#EF4444";
-                    }
-                  }}
-                  onMouseOut={e => {
-                    (e.currentTarget as HTMLElement).style.background = "transparent";
-                    (e.currentTarget as HTMLElement).style.color =
-                      fields.length === 1 ? "#D1CEC7" : "#A8A49B";
-                  }}
-                  aria-label={`Remove ingredient row ${index + 1}`}
-                >
-                  <Trash2 size={14} aria-hidden="true" />
-                </button>
-              </div>
-            ))}
-          </div>
-
-          {/* Add row — also available at bottom for long lists */}
-          {fields.length >= 4 && (
-            <div className="mt-4 pt-4" style={{ borderTop: "1px dashed #F5EDE0" }}>
-              <button
-                type="button"
-                onClick={() => append({ ingredient: 0, quantity: 0 })}
-                className="btn-ghost w-full justify-center"
-                style={{ fontSize: 13 }}
-              >
-                <Plus size={14} aria-hidden="true" />
-                Add another ingredient
+        {recipe && (
+          <section className="settings-group" aria-label="Delete">
+            <div className="settings-card">
+              <button type="button" className="settings-danger" onClick={() => setDeleteOpen(true)}>
+                <Trash2 size={18} aria-hidden="true" />
+                Delete recipe
               </button>
             </div>
-          )}
+          </section>
+        )}
 
-          {/* Live cost preview — updates as ingredients/quantities/yield change */}
-          <RecipeCostPreview control={control} ingredients={Object.values(selectedIngredients).map(row => ({ id: row.id, cost_per_unit: Number(row.cost_per_unit) || 0 }))} />
-        </div>
-
-        {/* ── Actions ── */}
-        <div className="flex items-center gap-3 pt-1">
-          <button type="submit" disabled={isPending} className="btn-primary">
-            {isPending ? "Saving…" : isEdit ? "Update Recipe" : "Add Recipe"}
+        <footer className="settings-actions">
+          <button type="button" className="btn-ghost" onClick={() => navigate("/recipes")}>Cancel</button>
+          <button type="submit" className="btn-primary" disabled={isSaving} aria-busy={isSaving}>
+            {isSaving ? "Saving…" : isEdit ? "Save changes" : "Save recipe"}
           </button>
-          <button type="button" onClick={() => navigate("/recipes")} className="btn-ghost">
-            Cancel
-          </button>
-        </div>
+        </footer>
       </form>
-    </div>
+
+      <ConfirmDialog
+        open={deleteOpen}
+        title={`Delete the ${recipe?.product_name ?? ""} recipe?`}
+        description="The donut stays in your collection, but you won't see what it costs to make until you add a recipe again."
+        confirmLabel="Delete recipe"
+        cancelLabel="Keep it"
+        destructive
+        loading={deleteRecipe.isPending}
+        onConfirm={() => recipe && deleteRecipe.mutate(recipe.id, { onSuccess: () => navigate("/recipes") })}
+        onCancel={() => setDeleteOpen(false)}
+      />
+
+      <ConfirmDialog
+        open={blocker.state === "blocked"}
+        title="Leave without saving?"
+        description="Your changes to this recipe haven't been saved yet."
+        confirmLabel="Leave without saving"
+        cancelLabel="Keep editing"
+        destructive
+        onConfirm={() => blocker.proceed?.()}
+        onCancel={() => blocker.reset?.()}
+      />
+    </>
   );
+}
+
+export default function RecipeFormPage() {
+  const { id } = useParams();
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
+  const isEdit = id !== undefined;
+  const recordId = Number(id);
+  const query = useRecipe(isEdit ? recordId : 0);
+  const back = () => navigate("/recipes");
+
+  if (!isEdit) {
+    const preset = Number(params.get("product")) || undefined;
+    return <RecipeForm key={preset ?? "new"} presetProduct={preset} />;
+  }
+  if (!validRecordId(recordId)) return <RecordLoadError name="recipe" invalidId error={undefined} retry={() => {}} back={back} />;
+  if (query.isPending) {
+    return (
+      <div className="settings-form" aria-busy="true">
+        <span className="skeleton block h-10 w-72" />
+        <span className="skeleton mt-8 block h-28 w-full" aria-hidden="true" />
+        <span className="skeleton mt-8 block h-64 w-full" aria-hidden="true" />
+        <span className="sr-only" role="status">Loading the recipe</span>
+      </div>
+    );
+  }
+  if (query.isError || !query.data) {
+    return <RecordLoadError name="recipe" invalidId={false} error={query.error} retry={() => void query.refetch()} back={back} />;
+  }
+  return <RecipeForm key={query.data.id} recipe={query.data} />;
 }

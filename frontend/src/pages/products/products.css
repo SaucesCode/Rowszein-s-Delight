@@ -1,0 +1,233 @@
+/* ==========================================================================
+   DONUT COLLECTION — a printed menu card: category headings, one line per
+   donut with a dotted leader to its price, and the "In the shop" switch.
+   ========================================================================== */
+
+.donuts { max-width: 920px; }
+
+.donuts-head-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+.menu-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.menu-toolbar .search-field { flex: 0 1 320px; }
+
+.menu-count {
+  margin-left: var(--space-1);
+  color: var(--color-ink-muted);
+  font-weight: 500;
+}
+
+@media (max-width: 639px) {
+  .menu-toolbar .segmented { width: 100%; }
+  .menu-toolbar .segmented button { flex: 1 1 auto; justify-content: center; padding-inline: var(--space-2); white-space: nowrap; }
+  .menu-count { margin-left: 2px; }
+  .menu-toolbar .search-field { flex: 1 1 100%; }
+}
+
+/* ── The card ──────────────────────────────────────────────────────── */
+.menu-card {
+  position: relative;
+  padding: var(--space-6) var(--space-5);
+  background: var(--color-surface);
+  border-radius: var(--radius-dialog);
+  box-shadow: var(--shadow-card);
+}
+
+@media (min-width: 768px) {
+  .menu-card { padding: var(--space-7) var(--space-8); }
+}
+
+.menu-section + .menu-section { margin-top: var(--space-7); }
+
+.menu-section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-2);
+  font-size: var(--text-heading);
+  font-variation-settings: var(--heading-soft);
+}
+
+/* A hairline runs from each heading to the edge, like a printed menu. */
+.menu-section-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--color-line);
+}
+
+.menu-lines { margin: 0; padding: 0; list-style: none; }
+
+.menu-line {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+}
+
+.menu-line + .menu-line { border-top: 1px solid var(--color-line); }
+
+.menu-line[data-resting] :is(.menu-line-art, .menu-line-name, .menu-line-price) { opacity: 0.5; }
+
+.menu-line-art {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  overflow: hidden;
+  border-radius: 50%;
+}
+.menu-line-art img { width: 100%; height: 100%; object-fit: cover; }
+
+.menu-line-main {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  margin: calc(var(--space-2) * -1) calc(var(--space-3) * -1);
+  border-radius: var(--radius-control);
+  color: var(--color-ink);
+  text-decoration: none;
+  transition: background-color var(--duration-micro) var(--ease-out-soft);
+}
+a.menu-line-main:hover { background: var(--color-canvas); }
+a.menu-line-main:hover .menu-line-name { color: var(--color-accent-pressed); }
+
+.menu-line-top {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.menu-line-name {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-title);
+  font-weight: 500;
+  font-variation-settings: var(--heading-soft);
+  transition: color var(--duration-micro) var(--ease-out-soft);
+}
+
+.menu-line-star { display: inline-flex; color: var(--color-accent); }
+
+/* Café-menu leader from name to price. */
+.menu-line-leader {
+  flex: 1;
+  min-width: var(--space-5);
+  border-bottom: 2px dotted var(--color-ink-faint);
+  transform: translateY(-0.3em);
+}
+
+.menu-line-price {
+  font-family: var(--font-display);
+  font-size: var(--text-title);
+  font-weight: 500;
+  font-variation-settings: var(--heading-soft);
+  white-space: nowrap;
+}
+
+.menu-line-desc {
+  overflow: hidden;
+  color: var(--color-ink-muted);
+  font-size: var(--text-label);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu-line-switch { padding-left: var(--space-3); }
+.menu-line-switch-label { color: var(--color-ink-muted); }
+
+/* Staff menu: availability as a word instead of a switch. */
+.menu-line-state { color: var(--color-ink-muted); font-size: var(--text-label); font-weight: 600; }
+
+@media (max-width: 639px) {
+  .menu-line { grid-template-columns: 48px minmax(0, 1fr) auto; gap: var(--space-3); }
+  .menu-line-art { width: 48px; height: 48px; }
+  .menu-line-art svg { width: 38px; height: 38px; }
+  .menu-line-top { flex-wrap: wrap; row-gap: 0; }
+  .menu-line-leader { display: none; }
+  .menu-line-price { flex-basis: 100%; font-family: var(--font-sans); font-size: var(--text-label); font-weight: 600; }
+  .menu-line-desc { display: none; }
+  .menu-line-switch { padding-left: 0; }
+  .menu-line-switch-label { display: none; }
+}
+
+/* ── Empty / error ─────────────────────────────────────────────────── */
+.menu-empty {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+.menu-empty p { max-width: 44ch; margin-bottom: var(--space-2); color: var(--color-ink-muted); }
+
+/* ==========================================================================
+   ADD / EDIT A DONUT — settings rows (styles/forms.css) under a live preview
+   of the donut's line on the menu card.
+   ========================================================================== */
+.donut-preview {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-5);
+  margin-bottom: var(--space-6);
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.donut-preview-art {
+  display: grid;
+  place-items: center;
+  width: 112px;
+  height: 112px;
+  overflow: hidden;
+  border-radius: 50%;
+}
+.donut-preview-art img { width: 100%; height: 100%; object-fit: cover; }
+
+.donut-preview-label { color: var(--color-ink-muted); font-size: var(--text-caption); }
+.donut-preview-body { min-width: 0; }
+
+.donut-preview .menu-line-top { margin-top: var(--space-1); }
+.donut-preview .menu-line-name { font-size: var(--text-heading); }
+.donut-preview .menu-line-price { font-size: var(--text-heading); }
+.donut-preview .menu-line-desc { white-space: normal; }
+
+.donut-preview-status { margin-top: var(--space-2); color: var(--color-good); font-size: var(--text-label); font-weight: 600; }
+.donut-preview[data-resting] .donut-preview-status { color: var(--color-ink-muted); }
+
+@media (max-width: 639px) {
+  .donut-preview { gap: var(--space-4); padding: var(--space-4); }
+  .donut-preview-art { width: 64px; height: 64px; }
+  .donut-preview-art svg { width: 52px; height: 52px; }
+  .donut-preview .menu-line-top { flex-wrap: wrap; }
+  .donut-preview .menu-line-name { font-size: var(--text-title); }
+  .donut-preview .menu-line-leader { display: none; }
+  .donut-preview .menu-line-price { flex-basis: 100%; font-size: var(--text-body); }
+  .donut-preview .menu-line-desc { display: none; }
+}
+
+.settings-price { max-width: 200px; }
+.settings-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+.settings-switch-row { display: grid; gap: var(--space-1); }
+.settings-switch-row .field-hint { margin-top: 0; padding-left: 56px; }
+.settings-switch-row + .settings-switch-row { margin-top: var(--space-3); }
+
+@media (max-width: 359px) {
+  .menu-count { display: none; }
+}

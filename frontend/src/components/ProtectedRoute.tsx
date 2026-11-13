@@ -24,7 +24,7 @@ export default function ProtectedRoute() {
     return (
       <main className="workspace workspace-gate">
         <div className="workspace-card workspace-state" role="status">
-          <p>Loading your workspace…</p>
+          <p>Opening the shop…</p>
         </div>
       </main>
     );
@@ -42,9 +42,9 @@ export default function ProtectedRoute() {
             primary
             alert
             icon={ShieldAlert}
-            title="Access restricted"
-            description="Your account does not have permission to open this page."
-            action={<Link className="workspace-button workspace-button--primary" to={homeFor(user)}>Return to your workspace</Link>}
+            title="This page is for the owner"
+            description="Your account can't open it. If you need something changed here, ask the owner."
+            action={<Link className="btn-primary" to={homeFor(user)}>Back to your pages</Link>}
           />
         </div>
       </main>

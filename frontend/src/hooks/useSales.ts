@@ -27,9 +27,9 @@ export function useSale(id: number) {
   });
 }
 
+/** Records a sale and stays put: the register clears for the next customer. */
 export function useCreateSale() {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   const identity = useOperationIdentity();
 
   return useMutation({
@@ -39,12 +39,10 @@ export function useCreateSale() {
       queryClient.invalidateQueries({ queryKey: ["sales"] });
       queryClient.invalidateQueries({ queryKey: ["ingredients"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-      toast.success("Sale recorded.");
-      navigate("/sales");
     },
     onError: (error) => {
       identity.reject("sale:create", error);
-      toast.error(apiErrorMessage(error, "Failed to record sale."));
+      toast.error(apiErrorMessage(error, "Couldn't record the sale. Check the connection and try again; it won't be counted twice."));
     },
   });
 }
@@ -71,7 +69,7 @@ export function useUpdateSale(id: number, revision?: string) {
     onError: (error) => {
       identity.reject(`sale:update:${id}`, error);
       queryClient.invalidateQueries({ queryKey: ["sales", id] });
-      toast.error(apiErrorMessage(error, "Failed to update sale."));
+      toast.error(apiErrorMessage(error, "Couldn't save the changes. Someone may have changed this sale; reload it and try again."));
     },
   });
 }
@@ -90,12 +88,12 @@ export function useDeleteSale() {
       queryClient.invalidateQueries({ queryKey: ["sales"] });
       queryClient.invalidateQueries({ queryKey: ["ingredients"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-      toast.success("Sale cancelled. No cash refund was recorded.");
+      toast.success("Sale cancelled. Its donuts are back in stock; no cash refund was recorded.");
     },
     onError: (error, variables) => {
       identity.reject(`sale:cancel:${variables.id}`, error);
       queryClient.invalidateQueries({ queryKey: ["sales"] });
-      toast.error(apiErrorMessage(error, "Failed to cancel sale. Reload before retrying stale data."));
+      toast.error(apiErrorMessage(error, "Couldn't cancel the sale. It may have just changed; reload and try again."));
     },
   });
 }

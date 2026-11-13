@@ -1,0 +1,253 @@
+/* ==========================================================================
+   RECIPE COSTING — a costing sheet: one bar per donut showing how its price
+   splits between ingredients and what Rose keeps. Plus the recipe form.
+   ========================================================================== */
+
+.recipes { max-width: 980px; }
+
+.recipes-section-title {
+  font-size: var(--text-heading);
+  font-variation-settings: var(--heading-soft);
+}
+
+.recipes-hint { margin-top: var(--space-1); color: var(--color-ink-muted); }
+
+/* ── Still needs a recipe ──────────────────────────────────────────── */
+.recipes-missing {
+  margin-bottom: var(--space-6);
+  padding: var(--space-5) var(--space-6);
+  border-radius: var(--radius-card);
+  background: var(--color-warn-tint);
+}
+
+.recipes-missing ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: var(--space-3);
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.recipes-missing li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+}
+
+.recipes-missing-name { flex: 1 1 120px; min-width: 0; font-weight: 600; overflow-wrap: break-word; }
+.recipes-missing .btn-secondary { flex-shrink: 0; margin-left: auto; padding-inline: var(--space-4); }
+.recipes-missing .cost-art { width: 44px; height: 44px; }
+
+/* ── The sheet ─────────────────────────────────────────────────────── */
+.recipes-panel {
+  padding: var(--space-6) var(--space-5);
+  background: var(--color-surface);
+  border-radius: var(--radius-dialog);
+  box-shadow: var(--shadow-card);
+}
+
+@media (min-width: 768px) {
+  .recipes-panel { padding: var(--space-6) var(--space-7); }
+}
+
+.recipes-panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.recipes-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  color: var(--color-ink-muted);
+  font-size: var(--text-label);
+}
+
+.legend-swatch {
+  width: 14px;
+  height: 10px;
+  margin-left: var(--space-2);
+  border-radius: var(--radius-pill);
+}
+.legend-swatch:first-child { margin-left: 0; }
+.legend-swatch.is-cost { background: var(--color-warn-soft); }
+.legend-swatch.is-keep { background: var(--color-good-soft); }
+
+@media (max-width: 639px) {
+  .recipes-panel-head .segmented { width: 100%; }
+  .recipes-panel-head .segmented button { flex: 1; justify-content: center; padding-inline: var(--space-2); white-space: nowrap; }
+}
+
+.cost-lines { margin: 0; padding: 0; list-style: none; }
+.cost-lines > li + li { border-top: 1px solid var(--color-line); }
+
+.cost-line {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) 96px;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-3);
+  margin-inline: calc(var(--space-3) * -1);
+  border-radius: var(--radius-control);
+  color: var(--color-ink);
+  text-decoration: none;
+  transition: background-color var(--duration-micro) var(--ease-out-soft);
+}
+a.cost-line:hover { background: var(--color-canvas); }
+a.cost-line:hover .cost-name { color: var(--color-accent-pressed); }
+
+.cost-art {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.cost-main { display: grid; gap: var(--space-2); min-width: 0; }
+
+.cost-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-1) var(--space-3); }
+
+.cost-name {
+  font-family: var(--font-display);
+  font-size: var(--text-title);
+  font-weight: 500;
+  font-variation-settings: var(--heading-soft);
+  transition: color var(--duration-micro) var(--ease-out-soft);
+}
+
+.cost-tag {
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-tint);
+  color: var(--color-ink-muted);
+  font: 600 var(--text-caption) / 1.4 var(--font-sans);
+}
+
+.cost-price { margin-left: auto; color: var(--color-ink-muted); font-size: var(--text-label); }
+
+/* The split bar: ingredient cost, then what's kept, proportional to price. */
+.cost-bar {
+  display: flex;
+  gap: 3px;
+  height: 12px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+}
+.cost-bar > span { flex-basis: 0; min-width: 4px; border-radius: var(--radius-pill); }
+.cost-bar-cost { background: var(--color-warn-soft); }
+.cost-bar-keep { background: var(--color-good-soft); }
+
+.cost-sentence { color: var(--color-ink-muted); font-size: var(--text-label); }
+
+.cost-margin { display: grid; justify-items: end; text-align: right; line-height: 1.2; }
+.cost-margin strong {
+  font-family: var(--font-display);
+  font-size: var(--text-heading);
+  font-weight: 500;
+  font-variation-settings: var(--heading-soft);
+}
+.cost-margin span { color: var(--color-ink-muted); font-size: var(--text-caption); }
+.cost-margin.is-good strong { color: var(--color-good); }
+.cost-margin.is-warn strong { color: var(--color-warn); }
+
+@media (max-width: 639px) {
+  .cost-line { grid-template-columns: 44px minmax(0, 1fr) auto; gap: var(--space-3); }
+  .cost-line .cost-art { width: 44px; height: 44px; }
+  .cost-line .cost-art svg { width: 34px; height: 34px; }
+  .cost-price { flex-basis: 100%; margin-left: 0; }
+  .cost-margin strong { font-size: var(--text-title); }
+}
+
+.recipes-message {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) 0;
+  text-align: center;
+}
+.recipes-message p { max-width: 46ch; color: var(--color-ink-muted); }
+
+/* ── Recipe form ───────────────────────────────────────────────────── */
+.recipe-preview {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  margin-bottom: var(--space-6);
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.recipe-preview-art { width: 80px; height: 80px; }
+.recipe-preview-text { display: grid; gap: var(--space-1); min-width: 0; }
+.recipe-preview-name {
+  font-family: var(--font-display);
+  font-size: var(--text-heading);
+  font-variation-settings: var(--heading-soft);
+}
+.recipe-preview-figures { color: var(--color-ink-muted); }
+.recipe-preview-figures strong { color: var(--color-ink); font-weight: 600; }
+.recipe-preview-figures strong.is-good { color: var(--color-good); }
+.recipe-preview-figures strong.is-warn { color: var(--color-warn); }
+.recipe-preview-batch { color: var(--color-ink-muted); font-size: var(--text-label); }
+
+@media (max-width: 479px) {
+  .recipe-preview { align-items: flex-start; gap: var(--space-4); padding: var(--space-4); }
+  .recipe-preview-art { width: 56px; height: 56px; }
+  .recipe-preview-art svg { width: 44px; height: 44px; }
+}
+
+.recipe-lines ol { margin: 0; padding: 0; list-style: none; }
+
+.recipe-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 180px 88px 44px;
+  align-items: start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.recipe-line-cost {
+  padding-top: 14px;
+  color: var(--color-ink-muted);
+  font-weight: 600;
+  text-align: right;
+}
+
+.recipe-line .icon-button { margin-top: 2px; }
+.recipe-line .icon-button:disabled { opacity: 0.35; cursor: not-allowed; }
+.recipe-line .settings-unit-input { max-width: none; }
+
+@media (max-width: 639px) {
+  .recipe-line {
+    grid-template-columns: minmax(0, 1fr) auto 44px;
+    grid-template-areas: "ingredient ingredient remove" "amount cost cost";
+    padding-left: var(--space-4);
+  }
+  .recipe-line-ingredient { grid-area: ingredient; }
+  .recipe-line-amount { grid-area: amount; }
+  .recipe-line-cost { grid-area: cost; }
+  .recipe-line .icon-button { grid-area: remove; }
+}
+
+.recipe-lines-note { padding: var(--space-4) var(--space-5) 0; }
+
+@media (max-width: 399px) {
+  .recipes-panel-head .segmented button { white-space: normal; line-height: 1.2; text-align: center; }
+}

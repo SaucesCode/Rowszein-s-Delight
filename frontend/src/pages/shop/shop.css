@@ -1,0 +1,1284 @@
+/* ==========================================================================
+   PUBLIC SHOP — a pastry case. Donuts sit on plates along glass shelves with
+   price tags below; tapping one sends it into a pink box docked at the bottom.
+   ========================================================================== */
+
+.shop {
+  --shop-max: 1440px;
+  --header-height: 76px;
+  --salon: "SOFT" 0, "WONK" 0;
+  --plate: 116px;
+  --plate-art: 96px;
+  --stagger: 45ms;
+  --dock-space: 112px;
+
+  min-height: 100dvh;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+.shop.has-box { padding-bottom: var(--dock-space); }
+
+.shop-skip {
+  position: absolute;
+  top: -100px;
+  left: var(--gutter);
+  z-index: 100;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--color-ink);
+  color: var(--color-surface);
+  font-weight: 600;
+}
+.shop-skip:focus { top: var(--space-3); }
+
+/* ── Header ────────────────────────────────────────────────────────── */
+/* Sticks to the top once the awning scrolls away; a soft shadow shows it is floating. */
+.shop-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--color-canvas);
+  transition: box-shadow var(--duration-component) var(--ease-out-soft);
+}
+.shop-header.is-stuck { box-shadow: 0 1px 0 var(--color-gilt-soft), 0 10px 30px rgb(59 31 43 / 0.06); }
+
+.shop-header-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-3);
+  max-width: var(--shop-max);
+  min-height: var(--header-height);
+  margin: 0 auto;
+  padding: var(--space-3) var(--gutter);
+}
+
+/* Section links land below the sticky header. */
+.shop :is(#menu, #case, #how, #contact) { scroll-margin-top: calc(var(--header-height) + var(--space-4)); }
+
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.shop) { scroll-behavior: smooth; }
+}
+
+.shop-header-nav { display: flex; gap: var(--space-1); }
+
+/* The shop's sign: its name between two gilt rules. */
+.shop-brand {
+  display: inline-flex;
+  align-items: center;
+  justify-self: center;
+  gap: var(--space-3);
+  min-height: 44px;
+  color: var(--color-ink);
+  font: 400 1.625rem / 1 var(--font-display);
+  font-variation-settings: var(--salon);
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.shop-brand::before,
+.shop-brand::after {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: var(--color-gilt);
+}
+
+@media (max-width: 899px) {
+  .shop-header-inner { grid-template-columns: minmax(0, 1fr) auto; }
+  .shop-header-nav { display: none; }
+  .shop-brand { justify-self: start; font-size: 1.375rem; }
+  .shop-brand::before,
+  .shop-brand::after { display: none; }
+}
+
+.shop-header-actions { display: flex; align-items: center; justify-self: end; gap: var(--space-2); }
+
+.shop-header-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-pill);
+  color: var(--color-ink-muted);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color var(--duration-micro) var(--ease-out-soft), background-color var(--duration-micro) var(--ease-out-soft);
+}
+.shop-header-link:hover { background: var(--color-tint); color: var(--color-ink); }
+
+.shop-box-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: 0 var(--space-2) 0 var(--space-4);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font: 600 var(--text-label) / 1 var(--font-sans);
+  cursor: pointer;
+  transition: border-color var(--duration-micro) var(--ease-out-soft), transform var(--duration-micro) var(--ease-out-soft);
+}
+.shop-box-button:hover { border-color: var(--color-accent); }
+.shop-box-button:active { transform: scale(0.97); }
+
+.shop-box-count {
+  display: grid;
+  place-items: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-surface);
+}
+
+@media (max-width: 479px) {
+  .shop-header-link { display: none; }
+  .shop-brand { font-size: 1.1875rem; }
+  .shop-box-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .shop-box-button { padding-left: var(--space-3); }
+}
+
+/* ── Intro ─────────────────────────────────────────────────────────── */
+.shop-main {
+  max-width: var(--shop-max);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.shop-intro {
+  display: grid;
+  justify-items: center;
+  padding: var(--space-9) 0 var(--space-6);
+  text-align: center;
+}
+
+.shop-ornament { display: block; margin-bottom: var(--space-4); color: var(--color-gilt); }
+
+.shop-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variation-settings: var(--salon);
+}
+
+.shop-lede {
+  max-width: 44ch;
+  margin-top: var(--space-4);
+  color: var(--color-ink-muted);
+  font-size: 1.0625rem;
+}
+
+@media (max-width: 359px) {
+  .shop-intro { padding: var(--space-8) 0 var(--space-4); }
+  .shop-title { font-size: 2.25rem; }
+  .shop-lede { margin-top: var(--space-2); font-size: var(--text-body); }
+}
+
+@media (min-width: 1024px) {
+  .shop-title { font-size: clamp(3rem, 4.6vw, 4.5rem); }
+}
+
+/* ── Filters: the menu board above the cabinet ─────────────────────── */
+.case-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+.case-tools .chip-row { flex: 1 1 320px; min-width: 0; }
+.case-search { flex: 0 1 300px; }
+.case-search input { min-height: 44px; }
+
+@media (max-width: 639px) {
+  .case-search { flex: 1 1 100%; }
+}
+
+/* ── The display cabinet ───────────────────────────────────────────
+   White lacquer frame with a gilt edge, a plum crown with a strip light
+   under it, glass shelves on brass brackets, and a panelled base. */
+.case {
+  position: relative;
+  overflow: hidden;
+  border: 8px solid var(--color-surface);
+  border-radius: var(--radius-card) var(--radius-card) var(--radius-control) var(--radius-control);
+  background: var(--color-surface);
+  box-shadow: 0 0 0 1px var(--color-gilt-soft), var(--shadow-raised);
+  outline: none;
+}
+
+.case-crown {
+  position: relative;
+  z-index: 2;
+  height: 22px;
+  border-bottom: 2px solid var(--color-gilt);
+  background: var(--color-ink);
+}
+
+/* The strip light under the crown. */
+.case-crown::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 6%;
+  left: 6%;
+  height: 5px;
+  margin-top: 2px;
+  border-radius: 0 0 6px 6px;
+  background: #fff6e8;
+  box-shadow: 0 0 22px 8px rgb(255 236 204 / 0.8);
+}
+
+.case-interior {
+  position: relative;
+  padding: var(--space-7) var(--space-5) var(--space-6);
+  background:
+    radial-gradient(120% 50% at 50% 0, rgb(255 246 232 / 0.85), transparent 65%),
+    repeating-linear-gradient(90deg, transparent 0 calc(25% - 1px), rgb(59 31 43 / 0.04) calc(25% - 1px) 25%),
+    var(--color-tint);
+  /* Side glass panels catching the light. */
+  box-shadow: inset 16px 0 20px -18px rgb(255 255 255 / 0.95), inset -16px 0 20px -18px rgb(255 255 255 / 0.95);
+}
+
+@media (min-width: 768px) {
+  .case-interior { padding: var(--space-8) var(--space-7) var(--space-7); }
+}
+
+.case-base {
+  position: relative;
+  height: 64px;
+  border-top: 2px solid var(--color-gilt);
+  background: var(--color-tint-strong);
+}
+.case-base::before {
+  content: "";
+  position: absolute;
+  inset: 12px 16px;
+  border: 1px solid var(--color-gilt-soft);
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 5px var(--color-tint-strong), inset 0 0 0 6px var(--color-gilt-soft);
+}
+
+/* ── Shelves ────────────────────────────────────────────────────── */
+.case-shelf { position: relative; }
+.case-shelf + .case-shelf { margin-top: var(--space-7); }
+
+/* A warm downlight over each shelf. */
+.case-shelf::before {
+  content: "";
+  position: absolute;
+  top: calc(var(--space-6) * -1);
+  right: 8%;
+  left: 8%;
+  height: 240px;
+  background: radial-gradient(50% 60% at 50% 0, rgb(255 248 236 / 0.75), transparent 75%);
+  pointer-events: none;
+}
+
+.case-shelf-title {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 500;
+  font-variation-settings: var(--salon);
+}
+.case-shelf-title::after { content: ""; flex: 1; height: 1px; background: var(--color-gilt-soft); }
+
+.case-row {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
+  column-gap: 0;
+  row-gap: var(--space-7);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Brass brackets holding the first glass shelf at each end. */
+.case-row::before,
+.case-row::after {
+  content: "";
+  position: absolute;
+  top: calc(var(--plate) - 8px);
+  width: 10px;
+  height: 30px;
+  border-radius: 2px 2px 6px 6px;
+  background: linear-gradient(to bottom, var(--color-gilt-soft), var(--color-gilt));
+}
+.case-row::before { left: -10px; }
+.case-row::after { right: -10px; }
+
+@media (max-width: 519px) {
+  .shop { --plate: 100px; --plate-art: 82px; }
+}
+
+.case-item { display: grid; align-content: start; min-width: 0; }
+
+/* Empty glass that finishes a short last row. */
+.case-item.is-empty { padding-top: calc(var(--plate) - 14px); }
+
+.case-item-button {
+  display: grid;
+  justify-items: center;
+  width: 100%;
+  padding: 0 0 var(--space-2);
+  border: 0;
+  border-radius: var(--radius-card);
+  background: none;
+  color: var(--color-ink);
+  text-align: center;
+  cursor: pointer;
+}
+.case-item-button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+/* Each donut sits on a paper doily resting on the glass. */
+.case-plate {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: var(--plate);
+  height: var(--plate);
+  margin-bottom: -14px;
+}
+
+.case-doily {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 6px 6px rgb(59 31 43 / 0.12));
+}
+
+.case-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--plate-art);
+  height: var(--plate-art);
+  overflow: hidden;
+  border-radius: 50%;
+  transition: transform var(--duration-component) var(--ease-out-soft);
+}
+.case-art svg { width: 92%; height: 92%; }
+.case-art img { width: 100%; height: 100%; object-fit: cover; }
+
+@media (hover: hover) {
+  .case-item-button:hover .case-art { transform: translateY(-6px) rotate(-8deg); }
+}
+.case-item-button:active .case-art { transform: scale(0.94); transition-duration: var(--duration-micro); }
+
+.case-count {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-tint);
+  color: var(--color-surface);
+  font: 600 var(--text-label) / 1 var(--font-sans);
+}
+
+/* Glass shelf: a pale top surface, a faintly green front edge, and a brass lip.
+   Items touch side by side, so the segments read as one shelf. */
+.case-glass {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 18px;
+  border-bottom: 3px solid var(--color-gilt-soft);
+  background: linear-gradient(to bottom, rgb(255 255 255 / 0.7) 0, rgb(255 255 255 / 0.35) 40%, rgb(214 236 230 / 0.6) 42%, rgb(255 255 255 / 0.95) 100%);
+  box-shadow: 0 14px 18px -12px rgb(59 31 43 / 0.35);
+}
+.case-glass::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  height: 22px;
+  background: linear-gradient(to bottom, transparent, rgb(255 255 255 / 0.4));
+}
+
+/* Price card clipped to the shelf edge with a small brass clip. */
+.case-tag {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  min-width: 64%;
+  max-width: calc(100% - var(--space-4));
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-gilt-soft);
+  border-radius: 6px;
+  background: var(--color-surface);
+  box-shadow: 0 8px 14px -10px rgb(59 31 43 / 0.3);
+}
+.case-tag::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: 14px;
+  height: calc(var(--space-3) + 4px);
+  margin-bottom: -4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--color-gilt), var(--color-gilt-soft), var(--color-gilt));
+  transform: translateX(-50%);
+}
+
+.case-name {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 500;
+  line-height: 1.2;
+  font-variation-settings: var(--salon);
+  overflow-wrap: anywhere;
+}
+.donut-name-tail { white-space: nowrap; }
+.donut-star { display: inline-block; margin-left: var(--space-1); color: var(--color-accent); vertical-align: 0.05em; }
+.donut-star svg { display: block; fill: currentColor; }
+
+.case-price { color: var(--color-gilt-ink); font-weight: 600; letter-spacing: 0.02em; }
+
+.case-description {
+  display: -webkit-box;
+  max-width: 26ch;
+  margin: var(--space-2) auto 0;
+  padding: 0 var(--space-2);
+  overflow: hidden;
+  color: var(--color-ink-muted);
+  font-size: var(--text-caption);
+  line-height: 1.4;
+  text-align: center;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* Phones: the cards take the full width of each spot so names fit in two lines. */
+@media (max-width: 519px) {
+  .case-name { font-size: 0.9375rem; }
+  .case-tag { width: calc(100% - var(--space-2)); max-width: none; padding-inline: var(--space-2); }
+}
+
+.case-message {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+  max-width: 44ch;
+  padding: var(--space-4) 0;
+}
+.case-message p { color: var(--color-ink-muted); }
+.case-message-title {
+  font-family: var(--font-display);
+  font-size: var(--text-heading);
+  font-weight: 500;
+  font-variation-settings: var(--salon);
+}
+
+.case-more { display: flex; justify-content: center; margin-top: var(--space-7); }
+
+/* When the cabinet scrolls into view its lights come on with a small
+   flicker, then each donut settles onto its doily and the cards appear.
+   Content is only held back when motion is allowed. */
+@media (prefers-reduced-motion: no-preference) {
+  .case:not(.is-lit) :is(.case-plate, .case-tag, .case-description) { opacity: 0; }
+  .case:not(.is-lit) .case-crown::after,
+  .case:not(.is-lit) .case-shelf::before { opacity: 0.1; }
+
+  .case.is-lit .case-crown::after { animation: light-on 520ms ease-out both; }
+  .case.is-lit .case-shelf::before { animation: light-on 700ms var(--ease-out-soft) both; animation-delay: 120ms; }
+  .case.is-lit .case-plate {
+    animation: case-settle 420ms var(--ease-out-soft) both;
+    animation-delay: calc(var(--i, 0) * var(--stagger) + 320ms);
+  }
+  .case.is-lit :is(.case-tag, .case-description) {
+    animation: case-tag 300ms var(--ease-out-soft) both;
+    animation-delay: calc(var(--i, 0) * var(--stagger) + 460ms);
+  }
+}
+
+@keyframes light-on {
+  0% { opacity: 0.1; }
+  30% { opacity: 0.9; }
+  45% { opacity: 0.45; }
+  100% { opacity: 1; }
+}
+@keyframes case-settle {
+  from { opacity: 0; transform: translateY(-16px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes case-tag {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* A copy of the tapped donut, flying into the box (see useFlyToBox). */
+.shop-flyer {
+  position: fixed;
+  z-index: 60;
+  margin: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* ── The box ───────────────────────────────────────────────────────── */
+.box-dock {
+  position: fixed;
+  bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+  left: 50%;
+  z-index: 40;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  width: min(560px, calc(100% - 2 * var(--gutter)));
+  padding: var(--space-3);
+  border-radius: var(--radius-xl);
+  background: var(--color-tint-strong);
+  box-shadow: inset 0 0 0 1px var(--color-gilt-soft), var(--shadow-dialog);
+  transform: translateX(-50%);
+  animation: dock-in 300ms var(--ease-out-soft) both;
+}
+
+/* Scalloped lid edge, the same doily edge as the sidebar and receipts. */
+.box-dock::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  right: var(--space-6);
+  left: var(--space-6);
+  height: 8px;
+  background: radial-gradient(circle at 50% 100%, var(--color-tint-strong) 6.5px, transparent 7px) 0 0 / 16px 8px repeat-x;
+}
+
+.box-window {
+  display: flex;
+  align-items: center;
+  min-width: 56px;
+  min-height: 44px;
+  padding: 4px var(--space-3) 4px 6px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  box-shadow: inset 0 1px 4px rgb(59 31 43 / 0.14);
+}
+
+.box-window-donut { display: grid; animation: box-pop 220ms var(--ease-out-soft) both; }
+.box-window-donut + .box-window-donut { margin-left: -10px; }
+.box-window-more { margin-left: var(--space-1); color: var(--color-ink-muted); font: 600 var(--text-label) / 1 var(--font-sans); }
+
+.box-dock-summary { display: grid; min-width: 0; line-height: 1.2; }
+.box-dock-summary span { color: var(--color-ink-muted); font-size: var(--text-caption); }
+.box-dock-summary strong {
+  font-family: var(--font-display);
+  font-size: var(--text-title);
+  font-weight: 600;
+  font-variation-settings: var(--salon);
+}
+
+.box-dock-review { min-height: 48px; }
+
+@media (max-width: 419px) {
+  .box-window-donut + .box-window-donut { margin-left: -18px; }
+  .box-window-donut:nth-child(n + 4),
+  .box-window-more { display: none; }
+  .box-dock-review { padding-inline: var(--space-4); }
+}
+
+@media (max-width: 359px) {
+  .box-window { display: none; }
+  .box-dock { grid-template-columns: minmax(0, 1fr) auto; }
+}
+
+@keyframes dock-in {
+  from { opacity: 0; transform: translate(-50%, 24px); }
+  to { opacity: 1; transform: translateX(-50%); }
+}
+@keyframes box-pop {
+  from { transform: scale(0.4); }
+  to { transform: none; }
+}
+
+/* ── The opened box ────────────────────────────────────────────────── */
+html:has(.box-sheet[open]) { overflow: hidden; }
+
+.box-sheet {
+  width: min(600px, 100%);
+  max-width: 100%;
+  max-height: min(92dvh, 860px);
+  margin: auto auto 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-dialog) var(--radius-dialog) 0 0;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-dialog);
+}
+.box-sheet[open] { animation: sheet-up 300ms var(--ease-out-soft); }
+.box-sheet::backdrop { background: rgb(59 31 43 / 0.45); animation: var(--animate-fade-in); }
+
+@media (min-width: 768px) {
+  .box-sheet { margin: auto; border-radius: var(--radius-dialog); }
+}
+
+.box-sheet-inner {
+  display: flex;
+  flex-direction: column;
+  max-height: inherit;
+}
+
+/* The lid: a pink band with a scalloped edge. */
+.box-sheet-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-4) var(--space-4) var(--space-5);
+  background: var(--color-tint-strong);
+}
+.box-sheet-head::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -7px;
+  left: 0;
+  height: 8px;
+  background: radial-gradient(circle at 50% 0, var(--color-tint-strong) 6.5px, transparent 7px) 0 0 / 16px 8px repeat-x;
+}
+
+.box-sheet-title {
+  font-family: var(--font-display);
+  font-size: var(--text-heading);
+  font-weight: 500;
+  font-variation-settings: var(--salon);
+}
+
+.box-sheet-scroll {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-5);
+}
+
+.box-sheet-empty { display: grid; justify-items: start; gap: var(--space-4); }
+.box-sheet-empty p { color: var(--color-ink-muted); }
+
+.box-lines { margin: 0; padding: 0; list-style: none; }
+
+.box-line {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.box-line-art {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+  border-radius: 50%;
+}
+.box-line-art img { width: 100%; height: 100%; object-fit: cover; }
+
+.box-line-text { display: grid; min-width: 0; }
+.box-line-name { font-weight: 600; overflow-wrap: anywhere; }
+.box-line-each { color: var(--color-ink-muted); font-size: var(--text-caption); }
+.box-line-total { min-width: 72px; font-weight: 600; text-align: right; }
+
+
+@media (max-width: 479px) {
+  .box-line { grid-template-columns: 48px minmax(0, 1fr) auto; }
+  .box-line-total { display: none; }
+}
+
+.box-empty-button { margin-top: var(--space-3); }
+.box-name { margin-bottom: var(--space-4); }
+
+.box-sheet-foot {
+  padding: var(--space-4) var(--space-5) calc(var(--space-4) + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--color-line);
+}
+
+.box-sheet-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+  color: var(--color-ink-muted);
+}
+.box-sheet-total strong {
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: var(--text-heading);
+  font-weight: 600;
+  font-variation-settings: var(--salon);
+}
+
+.box-sheet-actions { display: grid; gap: var(--space-2); }
+.box-sheet-actions > * { width: 100%; }
+
+@media (min-width: 480px) {
+  .box-sheet-actions { grid-template-columns: 1fr 1fr; }
+}
+
+.box-sheet-help { margin-top: var(--space-3); color: var(--color-ink-muted); font-size: var(--text-caption); }
+
+.box-sheet-empty-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+@keyframes sheet-up {
+  from { opacity: 0; transform: translateY(32px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Order card: laid out off screen only while it is being saved as a picture. */
+.order-card-stage { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+.order-card {
+  width: 360px;
+  padding: 28px;
+  border-radius: var(--radius-xl);
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+.order-card-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font: 600 var(--text-title) / 1 var(--font-display);
+  font-variation-settings: var(--salon);
+}
+.order-card-brand svg { color: var(--color-accent); }
+.order-card-title {
+  margin-top: var(--space-5);
+  font: 500 var(--text-heading) / 1.2 var(--font-display);
+  font-variation-settings: var(--salon);
+}
+.order-card-meta { margin-top: var(--space-1); color: var(--color-ink-muted); font-size: var(--text-caption); }
+.order-card-lines { margin: var(--space-4) 0 0; padding: 0; list-style: none; }
+/* Text gets flex room so the picture renderer's slightly wider text never wraps into the rules. */
+.order-card-brand span,
+.order-card-lines li > span:first-child,
+.order-card-total span { flex: 1; min-width: 0; }
+
+.order-card-lines li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px dashed var(--color-edge);
+}
+.order-card-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: var(--space-3);
+}
+.order-card-total strong { font: 600 var(--text-heading) / 1 var(--font-display); }
+.order-card-note {
+  margin-top: var(--space-4);
+  padding: var(--space-3);
+  border-radius: var(--radius-control);
+  background: var(--color-tint);
+  font-size: var(--text-caption);
+}
+
+/* ── Contact ───────────────────────────────────────────────────────── */
+.shop-contact {
+  display: grid;
+  gap: var(--space-6);
+  margin-top: var(--space-9);
+}
+
+@media (min-width: 960px) {
+  .shop-contact { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: var(--space-8); }
+}
+
+.shop-contact-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 400;
+  line-height: 1.1;
+  font-variation-settings: var(--salon);
+}
+.shop-contact-intro > p { max-width: 44ch; margin-top: var(--space-3); color: var(--color-ink-muted); }
+
+.shop-contact-ways { display: grid; gap: var(--space-1); margin: var(--space-5) 0 0; padding: 0; list-style: none; }
+.shop-contact-ways a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 44px;
+  color: var(--color-accent-pressed);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  overflow-wrap: anywhere;
+  transition: text-decoration-color var(--duration-micro) var(--ease-out-soft);
+}
+.shop-contact-ways a:hover { text-decoration-color: currentColor; }
+
+.shop-contact-form {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+@media (min-width: 768px) {
+  .shop-contact-form { padding: var(--space-6); }
+}
+
+.shop-contact-pair { display: grid; gap: var(--space-4); }
+@media (min-width: 560px) {
+  .shop-contact-pair { grid-template-columns: 1fr 1fr; }
+}
+
+.shop-contact-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.shop-contact-note { min-height: 1.4em; color: var(--color-ink-muted); font-size: var(--text-caption); }
+
+/* ── Footer ────────────────────────────────────────────────────────── */
+.shop-footer {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  max-width: var(--shop-max);
+  margin: var(--space-9) auto 0;
+  padding: var(--space-6) var(--gutter) var(--space-7);
+  color: var(--color-ink-muted);
+  font-size: var(--text-label);
+  text-align: center;
+}
+.shop-footer-links { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0 var(--space-5); }
+.shop-footer a { display: inline-flex; align-items: center; min-height: 44px; color: inherit; overflow-wrap: anywhere; }
+.shop-footer a:hover { color: var(--color-ink); }
+.shop-footer-brand {
+  color: var(--color-ink);
+  font: 400 clamp(1.75rem, 3vw, 2.25rem) / 1.1 var(--font-display);
+  font-variation-settings: var(--salon);
+}
+
+/* ── Awning: the storefront's striped canopy, scalloped along its edge ─ */
+.shop-awning {
+  --stripe: 28px;
+  --scallop-depth: 12px;
+  height: clamp(36px, 5vw, 56px);
+  background: repeating-linear-gradient(90deg, var(--color-tint-strong) 0 var(--stripe), var(--color-surface) var(--stripe) calc(var(--stripe) * 2));
+  -webkit-mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--scallop-depth)) no-repeat,
+    radial-gradient(circle at 50% 0, #000 calc(var(--stripe) / 2), transparent calc(var(--stripe) / 2 + 0.5px)) bottom / var(--stripe) var(--scallop-depth) repeat-x;
+  mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--scallop-depth)) no-repeat,
+    radial-gradient(circle at 50% 0, #000 calc(var(--stripe) / 2), transparent calc(var(--stripe) / 2 + 0.5px)) bottom / var(--stripe) var(--scallop-depth) repeat-x;
+  transform-origin: top;
+}
+
+/* ── Hero: the shop window ─────────────────────────────────────────── */
+.hero {
+  display: grid;
+  gap: var(--space-7);
+  align-items: center;
+  padding: var(--space-5) 0 0;
+}
+
+@media (min-width: 960px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 460px);
+    gap: var(--space-8);
+    min-height: min(calc(100dvh - 140px), 760px);
+    padding-top: var(--space-4);
+  }
+}
+
+.hero-title {
+  max-width: 11ch;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8.4vw, 6.5rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+  font-variation-settings: var(--salon);
+}
+
+.hero-lede {
+  max-width: 40ch;
+  margin-top: var(--space-5);
+  color: var(--color-ink-muted);
+  font-size: 1.125rem;
+  line-height: 1.55;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
+  margin-top: var(--space-6);
+}
+
+.hero-start { min-height: 56px; padding-inline: var(--space-6); font-size: var(--text-title); }
+.hero-start svg { transition: transform var(--duration-component) var(--ease-out-soft); }
+.hero-start:hover svg { transform: translateY(3px); }
+
+.hero-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--color-accent-pressed);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--color-tint-strong);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+  transition: text-decoration-color var(--duration-micro) var(--ease-out-soft);
+}
+.hero-link:hover { text-decoration-color: currentColor; }
+
+.hero-window { display: grid; justify-items: center; }
+
+/* An arched window with a white frame; the donut sits inside on a doily. */
+.hero-arch {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(100%, 420px);
+  aspect-ratio: 5 / 6;
+  overflow: hidden;
+  border: 10px solid var(--color-surface);
+  border-radius: 999px 999px var(--radius-dialog) var(--radius-dialog);
+  background: repeating-linear-gradient(90deg, var(--color-tint-strong) 0 16px, color-mix(in oklab, var(--color-tint-strong) 55%, var(--color-surface)) 16px 32px);
+  box-shadow: var(--shadow-raised);
+  outline: 1px solid var(--color-gilt);
+  outline-offset: 6px;
+}
+
+/* Inner gilt bead, so the window reads as a framed salon window. */
+.hero-arch::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid var(--color-gilt-soft);
+  border-radius: 999px 999px calc(var(--radius-dialog) - 12px) calc(var(--radius-dialog) - 12px);
+  pointer-events: none;
+}
+
+.hero-doily {
+  position: absolute;
+  width: 84%;
+  filter: drop-shadow(0 14px 18px rgb(59 31 43 / 0.16));
+}
+.doily-paper { fill: var(--color-surface); }
+.doily-perforation { fill: none; stroke: var(--color-line); stroke-width: 2; stroke-dasharray: 1 5; stroke-linecap: round; }
+.doily-ring { fill: none; stroke: var(--color-tint-strong); stroke-width: 1.5; }
+
+.hero-donut {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 58%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 50%;
+}
+.hero-donut-turn { display: grid; place-items: center; width: 100%; height: 100%; }
+.hero-donut-turn svg { width: 92%; height: 92%; }
+.hero-donut-turn img { width: 100%; height: 100%; object-fit: cover; }
+
+.hero-caption {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  width: min(92%, 380px);
+  margin-top: calc(var(--space-7) * -1);
+  padding: var(--space-4) var(--space-4) var(--space-4) var(--space-5);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+}
+
+.hero-caption-text { min-width: 0; }
+.hero-name {
+  font-family: var(--font-display);
+  font-size: var(--text-title);
+  font-weight: 500;
+  line-height: 1.2;
+  font-variation-settings: var(--salon);
+  overflow-wrap: anywhere;
+}
+.hero-price { margin-top: 2px; color: var(--color-gilt-ink); font-weight: 600; letter-spacing: 0.02em; }
+.hero-add { flex: none; }
+
+.hero-picks { display: flex; gap: var(--space-2); margin-top: var(--space-4); }
+.hero-pick {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: border-color var(--duration-micro) var(--ease-out-soft), transform var(--duration-micro) var(--ease-out-soft);
+}
+.hero-pick:hover { transform: translateY(-2px); }
+.hero-pick[aria-pressed="true"] { border-color: var(--color-gilt); }
+.hero-pick:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+.hero-pick-art { display: grid; place-items: center; width: 40px; height: 40px; overflow: hidden; border-radius: 50%; }
+.hero-pick-art img { width: 100%; height: 100%; object-fit: cover; }
+
+@media (min-width: 1280px) {
+  .hero { grid-template-columns: minmax(0, 1fr) minmax(0, 540px); }
+  .hero-arch { width: min(100%, 480px); }
+}
+
+@media (max-width: 959px) {
+  .hero { gap: var(--space-6); padding-top: var(--space-3); }
+  .hero-arch { width: min(100%, 340px); }
+}
+
+@media (max-width: 599px) {
+  .hero-title { font-size: clamp(2.5rem, 11vw, 3rem); }
+  .hero-lede { margin-top: var(--space-3); font-size: var(--text-body); }
+  .hero-actions { margin-top: var(--space-5); gap: var(--space-2) var(--space-4); }
+  .hero-start { min-height: 52px; padding-inline: var(--space-5); font-size: var(--text-body); }
+}
+
+@media (max-width: 359px) {
+  .hero-title { font-size: 2.75rem; }
+  .hero-lede { font-size: var(--text-body); }
+  .hero-caption { flex-wrap: wrap; }
+  .hero-add { width: 100%; }
+}
+
+/* Opening: the awning unrolls, the words arrive, the donut is set down on its doily. */
+@media (prefers-reduced-motion: no-preference) {
+  .shop-awning { animation: awning-unroll 420ms var(--ease-out-soft) both; }
+  .hero-copy > * { animation: rise-in 400ms var(--ease-out-soft) both; }
+  .hero-copy > :nth-child(1) { animation-delay: 120ms; }
+  .hero-copy > :nth-child(2) { animation-delay: 180ms; }
+  .hero-copy > :nth-child(3) { animation-delay: 240ms; }
+  .hero-arch { animation: case-tag 360ms var(--ease-out-soft) both; animation-delay: 100ms; }
+  .hero-doily { animation: doily-in 420ms var(--ease-out-soft) both; animation-delay: 200ms; }
+  .hero-donut { animation: donut-set 450ms var(--ease-out-soft) both; animation-delay: 300ms; }
+  .hero-donut-turn { animation: turntable 48s linear infinite; }
+  .hero-caption { animation: rise-in 360ms var(--ease-out-soft) both; animation-delay: 420ms; }
+}
+
+@keyframes awning-unroll {
+  from { transform: scaleY(0); }
+  to { transform: none; }
+}
+@keyframes doily-in {
+  from { opacity: 0; transform: scale(0.9) rotate(-20deg); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes donut-set {
+  0% { opacity: 0; transform: translateY(-36px) scale(1.04); }
+  70% { opacity: 1; transform: translateY(3px) scale(0.99); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes turntable {
+  to { transform: rotate(360deg); }
+}
+
+/* ── How ordering works ────────────────────────────────────────────── */
+.how { margin-top: var(--space-9); }
+.how-head { display: grid; justify-items: center; text-align: center; }
+
+.how-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 400;
+  line-height: 1.1;
+  font-variation-settings: var(--salon);
+}
+
+.how-steps {
+  display: grid;
+  gap: var(--space-6);
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.how-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  column-gap: var(--space-4);
+  counter-increment: step;
+}
+.how-step > :not(.how-icon) { grid-column: 2; }
+
+.how-icon {
+  position: relative;
+  z-index: 1;
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  color: var(--color-accent);
+}
+
+.how-step-title {
+  font-family: var(--font-display);
+  font-size: var(--text-title);
+  font-weight: 500;
+  font-variation-settings: var(--salon);
+}
+.how-step-title::before { content: counter(step) ". "; color: var(--color-gilt-ink); }
+.how-step p { max-width: 34ch; margin-top: var(--space-1); color: var(--color-ink-muted); }
+
+/* Dotted leader joining the steps, like the menu card. */
+.how-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 60px;
+  bottom: calc(var(--space-6) * -1 + 4px);
+  left: 27px;
+  border-left: 2px dotted var(--color-edge);
+}
+
+@media (min-width: 840px) {
+  .how-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .how-step { grid-template-columns: 1fr; row-gap: var(--space-3); }
+  .how-step > :not(.how-icon) { grid-column: 1; }
+  .how-icon { grid-row: auto; }
+  .how-step:not(:last-child)::after {
+    top: 27px;
+    right: calc(var(--space-4) * -1);
+    bottom: auto;
+    left: 68px;
+    border-top: 2px dotted var(--color-edge);
+    border-left: 0;
+  }
+}
+
+/* Staff sign-in, dressed as a quiet brand mark at the end of the footer. */
+.shop-footer-mark {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: var(--color-ink-faint);
+}
+.shop-footer-mark:hover { color: var(--color-ink-muted); }
+
+/* ── Scroll reveals (see useScrollReveal) ─────────────────────────────
+   Each section rises in once. The steps arrive in order and the dotted
+   line between them draws after, so the sequence reads left to right. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal="waiting"] { opacity: 0; transform: translateY(28px); }
+  [data-reveal="in"] {
+    animation: reveal-rise 450ms var(--ease-out-soft) both;
+    animation-delay: calc(var(--reveal-i, 0) * 110ms);
+  }
+
+  .how-step[data-reveal="waiting"]::after { transform: scaleY(0); }
+  .how-step[data-reveal="in"]::after {
+    transform-origin: top;
+    animation: draw-down 420ms var(--ease-out-soft) both;
+    animation-delay: calc(var(--reveal-i, 0) * 110ms + 300ms);
+  }
+  .how-step[data-reveal="in"] .how-icon {
+    animation: icon-pop 360ms var(--ease-out-soft) both;
+    animation-delay: calc(var(--reveal-i, 0) * 110ms + 120ms);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) and (min-width: 840px) {
+  .how-step[data-reveal="waiting"]::after { transform: scaleX(0); }
+  .how-step[data-reveal="in"]::after { transform-origin: left; animation-name: draw-across; }
+}
+
+@keyframes reveal-rise {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes draw-down {
+  from { transform: scaleY(0); }
+  to { transform: none; }
+}
+@keyframes draw-across {
+  from { transform: scaleX(0); }
+  to { transform: none; }
+}
+@keyframes icon-pop {
+  from { transform: scale(0.6); }
+  60% { transform: scale(1.08); }
+  to { transform: none; }
+}
+
+/* As the hero scrolls away, the window drifts back and the words lift
+   slightly faster, a small depth cue. Browsers without scroll timelines
+   simply skip it. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-window {
+      animation: window-recede linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+    .hero-copy {
+      animation: copy-lift linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+  }
+}
+
+@keyframes window-recede {
+  to { opacity: 0.35; transform: translateY(-56px) scale(0.94); }
+}
+@keyframes copy-lift {
+  to { opacity: 0; transform: translateY(-96px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .box-dock,
+  .box-window-donut,
+  .box-sheet[open] { animation: none; }
+  .case-item-button:hover .case-art,
+  .case-item-button:active .case-art,
+  .hero-start:hover svg,
+  .hero-pick:hover { transform: none; }
+}
