@@ -12,7 +12,7 @@ import uuid
 
 from django.db import connection, connections
 from django.test import TransactionTestCase
-from rest_framework.test import APIClient
+from accounts.session_fixtures import SessionClient
 
 from accounts.models import User
 from ingredients.models import Ingredient
@@ -24,7 +24,7 @@ from sales.models import Sale, SaleItem
 class ReleaseBlockerContracts(TransactionTestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="pending-contract", role='admin')
-        self.client = APIClient()
+        self.client = SessionClient()
         self.client.force_authenticate(self.user)
         category = Category.objects.create(slug="pending-contract", name="Pending contract")
         self.product = Product.objects.create(name="Pending donut", price="50", category=category)
@@ -109,7 +109,7 @@ class ReleaseBlockerContracts(TransactionTestCase):
                     cursor.execute("SET lock_timeout = '8000ms'")
                     cursor.execute("SELECT pg_backend_pid()")
                     pids.append(cursor.fetchone()[0])
-                client = APIClient()
+                client = SessionClient()
                 client.force_authenticate(self.user)
                 barrier.wait()
                 return request(client, index).status_code

@@ -74,17 +74,21 @@ The look is "pâtisserie pink": blush and white, cocoa-plum ink, one raspberry a
 
 The project is being built incrementally, focusing on core business functionality before advanced features.
 
-Current work (branch `codex/phase-b2-products-ingredients`):
+Current work (branch `pre-launch-hardening`): fixes from the [ISO standards review](docs/ISO_REVIEW.md), covering package upgrades, photo storage, HTTPS, accessibility and tests.
 
-* Full UI redesign of the management app and the online shop.
-* Boxes: models and migration `products/0005_boxes`, owner and public API, management screens, and the box-first online shop.
-* 16 backend tests cover box permissions, validation, pricing and shop visibility.
+### Running the tests
+
+```cmd
+cd backend
+.venv\Scripts\python.exe manage.py test --settings=backend.test_settings
+```
+
+This uses a temporary in-memory database and test-only keys, so it never touches a real database or `.env` secrets. All 144 tests pass; 17 PostgreSQL-only tests are skipped. Frontend checks: `npm run build`, `npm run lint`, and `node tests/regression/<file>.mjs` from the repository root.
 
 Known gaps:
 
-* The repository blocks running Django tests directly; the earlier disposable-database runner was removed from `docs/`. The box tests were run against a temporary in-memory SQLite database.
-* In that run, 52 older sales tests fail and 5 error with sign-in (HTTP 401) responses. They fail the same way without the box changes.
 * Box screens and the box shop were checked in a browser against a simulated API, not yet end to end with a signed-in owner on the local server.
+* The 17 PostgreSQL-only tests (concurrency, precision, migrations) need the disposable PostgreSQL runner, which is no longer in the repository.
 
 Earlier checkpoint: Phase 1B.3 disposable database verification was completed for owner review on `codex/phase-1b3-disposable-verification` (the SQLite migration fix is at `b9957e0`). Its report has since been removed from `docs/`. Production, dependencies, infrastructure and deployment validation remain separate outstanding gates; the application is not production-ready.
 
