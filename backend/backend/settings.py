@@ -61,6 +61,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # ------------------------------------------------------------------------------
 
 MIDDLEWARE = [
+    "backend.request_context.RequestIdMiddleware",
     "accounts.middleware.APIResponsePrivacy",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -287,3 +288,35 @@ if not DEBUG:
 # Joining the browser HSTS preload list is effectively permanent, so it is
 # deliberately not requested (security.W021).
 SILENCED_SYSTEM_CHECKS = ["security.W021"]
+
+# LOGGING
+# ------------------------------------------------------------------------------
+# One JSON line per event on stdout, where the host (Render) collects it. Sign-in
+# events are kept at INFO so there is a record of who signed in and of failed
+# attempts; every line carries the request ID sent back in X-Request-ID.
+
+LOG_LEVEL = config("LOG_LEVEL", default="WARNING")
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "request_id": {"()": "backend.request_context.RequestIdFilter"},
+    },
+    "formatters": {
+        "json": {"()": "backend.log_format.JsonFormatter"},
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+            "formatter": "json",
+        },
+    },
+    "loggers": {
+        "accounts.security": {"level": "INFO", "filters": ["request_id"]},
+        "django.request": {"level": "WARNING", "filters": ["request_id"]},
+        "django.security": {"level": "WARNING", "filters": ["request_id"]},
+    },
+    "root": {"level": LOG_LEVEL, "handlers": ["console"]},
+}

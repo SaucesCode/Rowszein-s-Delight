@@ -46,6 +46,8 @@ from .settings import *  # noqa: E402,F403
 
 DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"}}
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
+# Keep test output readable; logging is still checked through assertLogs.
+LOGGING["handlers"]["console"]["level"] = "CRITICAL"  # noqa: F405
 
 if POSTGRES_OPT_IN:
     test_name = os.environ["ROWSZEIN_TEST_DB_NAME"]

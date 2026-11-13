@@ -83,7 +83,7 @@ cd backend
 .venv\Scripts\python.exe manage.py test --settings=backend.test_settings
 ```
 
-This uses a temporary in-memory database and test-only keys, so it never touches a real database or `.env` secrets. All 144 tests pass; 17 PostgreSQL-only tests are skipped. Frontend checks: `npm run build`, `npm run lint`, and `node tests/regression/<file>.mjs` from the repository root.
+This uses a temporary in-memory database and test-only keys, so it never touches a real database or `.env` secrets. All 153 tests pass; 17 PostgreSQL-only tests are skipped. Frontend checks: `npm run build`, `npm run lint`, and `node tests/regression/<file>.mjs` from the repository root.
 
 Known gaps:
 
@@ -97,6 +97,7 @@ Earlier checkpoint: Phase 1B.3 disposable database verification was completed fo
 * **Frontend:** Vercel, with `frontend` as the root directory. `frontend/vercel.json` sends `/api` to the backend.
 * **Backend:** Render. Every deploy must run `python manage.py migrate` (for example in the build command) so new database changes, such as `products/0005_boxes`, are applied.
 * **Photos:** stored on Cloudinary in production. Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` on Render; without them, photos are saved to the server's disk, which Render wipes on redeploy. Photos must be JPG, PNG or WEBP and under 5 MB.
+* **Logs:** the backend writes one JSON line per event to stdout (Render's Logs tab), including every sign-in. Each response has an `X-Request-ID` header that matches its log lines.
 * **Settings:** every environment setting the backend reads is listed, without values, in [`backend/.env.example`](backend/.env.example).
 
 ## Documentation
