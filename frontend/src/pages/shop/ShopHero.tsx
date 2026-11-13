@@ -30,7 +30,7 @@ export default function ShopHero({ products, onAdd }: ShopHeroProps) {
           Choose from today's case, fill a box, and send your order to us on Messenger. No account needed.
         </p>
         <div className="hero-actions">
-          <a href="#case" className="btn-primary hero-start">
+          <a href="#menu" className="btn-primary hero-start">
             Start your box
             <ArrowDown size={18} aria-hidden="true" />
           </a>

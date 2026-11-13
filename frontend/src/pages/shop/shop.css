@@ -4,7 +4,8 @@
    ========================================================================== */
 
 .shop {
-  --shop-max: 1200px;
+  --shop-max: 1440px;
+  --header-height: 72px;
   --plate: 116px;
   --plate-art: 96px;
   --stagger: 45ms;
@@ -31,14 +32,32 @@
 .shop-skip:focus { top: var(--space-3); }
 
 /* ── Header ────────────────────────────────────────────────────────── */
+/* Sticks to the top once the awning scrolls away; a soft shadow shows it is floating. */
 .shop-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--color-canvas);
+  transition: box-shadow var(--duration-component) var(--ease-out-soft);
+}
+.shop-header.is-stuck { box-shadow: 0 1px 0 var(--color-line), 0 10px 30px rgb(59 31 43 / 0.06); }
+
+.shop-header-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
   max-width: var(--shop-max);
+  min-height: var(--header-height);
   margin: 0 auto;
-  padding: var(--space-4) var(--gutter);
+  padding: var(--space-3) var(--gutter);
+}
+
+/* Section links land below the sticky header. */
+.shop :is(#menu, #case, #how, #contact) { scroll-margin-top: calc(var(--header-height) + var(--space-4)); }
+
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.shop) { scroll-behavior: smooth; }
 }
 
 .shop-brand {
@@ -110,7 +129,7 @@
   padding: 0 var(--gutter);
 }
 
-.shop-intro { padding: var(--space-9) 0 var(--space-6); scroll-margin-top: var(--space-4); }
+.shop-intro { padding: var(--space-9) 0 var(--space-6); }
 
 .shop-title {
   font-family: var(--font-display);
@@ -659,7 +678,6 @@ html:has(.box-sheet[open]) { overflow: hidden; }
   display: grid;
   gap: var(--space-6);
   margin-top: var(--space-9);
-  scroll-margin-top: var(--space-5);
 }
 
 @media (min-width: 960px) {
@@ -895,6 +913,11 @@ html:has(.box-sheet[open]) { overflow: hidden; }
 .hero-pick-art { display: grid; place-items: center; width: 40px; height: 40px; overflow: hidden; border-radius: 50%; }
 .hero-pick-art img { width: 100%; height: 100%; object-fit: cover; }
 
+@media (min-width: 1280px) {
+  .hero { grid-template-columns: minmax(0, 1fr) minmax(0, 540px); }
+  .hero-arch { width: min(100%, 480px); }
+}
+
 @media (max-width: 959px) {
   .hero { gap: var(--space-6); padding-top: var(--space-3); }
   .hero-arch { width: min(100%, 340px); }
@@ -946,7 +969,7 @@ html:has(.box-sheet[open]) { overflow: hidden; }
 }
 
 /* ── How ordering works ────────────────────────────────────────────── */
-.how { margin-top: var(--space-9); scroll-margin-top: var(--space-4); }
+.how { margin-top: var(--space-9); }
 
 .how-title {
   font-family: var(--font-display);
@@ -1032,6 +1055,76 @@ html:has(.box-sheet[open]) { overflow: hidden; }
   color: var(--color-ink-faint);
 }
 .shop-footer-mark:hover { color: var(--color-ink-muted); }
+
+/* ── Scroll reveals (see useScrollReveal) ─────────────────────────────
+   Each section rises in once. The steps arrive in order and the dotted
+   line between them draws after, so the sequence reads left to right. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal="waiting"] { opacity: 0; transform: translateY(28px); }
+  [data-reveal="in"] {
+    animation: reveal-rise 450ms var(--ease-out-soft) both;
+    animation-delay: calc(var(--reveal-i, 0) * 110ms);
+  }
+
+  .how-step[data-reveal="waiting"]::after { transform: scaleY(0); }
+  .how-step[data-reveal="in"]::after {
+    transform-origin: top;
+    animation: draw-down 420ms var(--ease-out-soft) both;
+    animation-delay: calc(var(--reveal-i, 0) * 110ms + 300ms);
+  }
+  .how-step[data-reveal="in"] .how-icon {
+    animation: icon-pop 360ms var(--ease-out-soft) both;
+    animation-delay: calc(var(--reveal-i, 0) * 110ms + 120ms);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) and (min-width: 840px) {
+  .how-step[data-reveal="waiting"]::after { transform: scaleX(0); }
+  .how-step[data-reveal="in"]::after { transform-origin: left; animation-name: draw-across; }
+}
+
+@keyframes reveal-rise {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes draw-down {
+  from { transform: scaleY(0); }
+  to { transform: none; }
+}
+@keyframes draw-across {
+  from { transform: scaleX(0); }
+  to { transform: none; }
+}
+@keyframes icon-pop {
+  from { transform: scale(0.6); }
+  60% { transform: scale(1.08); }
+  to { transform: none; }
+}
+
+/* As the hero scrolls away, the window drifts back and the words lift
+   slightly faster, a small depth cue. Browsers without scroll timelines
+   simply skip it. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-window {
+      animation: window-recede linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+    .hero-copy {
+      animation: copy-lift linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+  }
+}
+
+@keyframes window-recede {
+  to { opacity: 0.35; transform: translateY(-56px) scale(0.94); }
+}
+@keyframes copy-lift {
+  to { opacity: 0; transform: translateY(-96px); }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .box-dock,

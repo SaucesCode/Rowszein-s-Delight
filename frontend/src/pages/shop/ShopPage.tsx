@@ -17,6 +17,8 @@ import { SHOP_EMAIL, SHOP_MESSENGER } from "./order";
 import { toShelves } from "./shelves";
 import { useFlyToBox } from "./useFlyToBox";
 import { useInView } from "./useInView";
+import { useScrolledPast } from "./useScrolledPast";
+import { useScrollReveal } from "./useScrollReveal";
 import "./shop.css";
 
 export default function ShopPage() {
@@ -30,6 +32,9 @@ export default function ShopPage() {
   const boxButtonRef = useRef<HTMLButtonElement>(null);
   const flyToBox = useFlyToBox(boxWindowRef);
   const [caseRef, caseLit] = useInView<HTMLDivElement>();
+  const [awningRef, headerStuck] = useScrolledPast<HTMLDivElement>();
+  const pageRef = useRef<HTMLDivElement>(null);
+  useScrollReveal(pageRef);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setSearch(query.trim()), 250);
@@ -90,32 +95,34 @@ export default function ShopPage() {
   };
 
   return (
-    <div className={`shop${totalItems > 0 ? " has-box" : ""}`}>
+    <div ref={pageRef} className={`shop${totalItems > 0 ? " has-box" : ""}`}>
       <a className="shop-skip" href="#case">Skip to the donuts</a>
-      <div className="shop-awning" aria-hidden="true" />
+      <div ref={awningRef} className="shop-awning" aria-hidden="true" />
 
-      <header className="shop-header">
-        <a className="shop-brand" href="#top">
-          <BrandDonutIcon width={28} height={28} aria-hidden="true" />
-          <span>Rowszein's Delight</span>
-        </a>
-        <nav className="shop-header-actions" aria-label="Shop">
-          <a className="shop-header-link" href="#contact">Ask us</a>
-          <button ref={boxButtonRef} type="button" className="shop-box-button" onClick={() => setSheetOpen(true)}>
-            <BoxIcon />
-            <span className="shop-box-label">Your box</span>
-            <span className="shop-box-count num">
-              {totalItems}
-              <span className="sr-only">{totalItems === 1 ? " donut" : " donuts"}</span>
-            </span>
-          </button>
-        </nav>
+      <header className={`shop-header${headerStuck ? " is-stuck" : ""}`}>
+        <div className="shop-header-inner">
+          <a className="shop-brand" href="#top">
+            <BrandDonutIcon width={28} height={28} aria-hidden="true" />
+            <span>Rowszein's Delight</span>
+          </a>
+          <nav className="shop-header-actions" aria-label="Shop">
+            <a className="shop-header-link" href="#contact">Ask us</a>
+            <button ref={boxButtonRef} type="button" className="shop-box-button" onClick={() => setSheetOpen(true)}>
+              <BoxIcon />
+              <span className="shop-box-label">Your box</span>
+              <span className="shop-box-count num">
+                {totalItems}
+                <span className="sr-only">{totalItems === 1 ? " donut" : " donuts"}</span>
+              </span>
+            </button>
+          </nav>
+        </div>
       </header>
 
       <main id="top" className="shop-main">
         <ShopHero products={showcase} onAdd={add} />
 
-        <div className="shop-intro">
+        <div id="menu" className="shop-intro" data-reveal="">
           <h2 className="shop-title">Today's donuts</h2>
           <p className="shop-lede">Tap the ones you'd like. When your box looks right, send it to us on Messenger.</p>
         </div>
@@ -207,7 +214,7 @@ export default function ShopPage() {
         <ContactSection />
       </main>
 
-      <footer className="shop-footer">
+      <footer className="shop-footer" data-reveal="">
         <span className="shop-footer-brand">Rowszein's Delight</span>
         <a href={SHOP_MESSENGER} target="_blank" rel="noopener noreferrer">Messenger</a>
         <a href={`mailto:${SHOP_EMAIL}`}>{SHOP_EMAIL}</a>

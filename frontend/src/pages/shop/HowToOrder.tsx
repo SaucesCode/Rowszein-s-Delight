@@ -1,5 +1,5 @@
 import { FileImage, MessageCircle } from "lucide-react";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { BoxIcon } from "./ShopIcons";
 
 const STEPS: { title: string; text: string; icon: ReactNode }[] = [
@@ -12,10 +12,10 @@ const STEPS: { title: string; text: string; icon: ReactNode }[] = [
 export default function HowToOrder() {
   return (
     <section id="how" className="how" aria-labelledby="how-title">
-      <h2 id="how-title" className="how-title">How ordering works</h2>
+      <h2 id="how-title" className="how-title" data-reveal="">How ordering works</h2>
       <ol className="how-steps">
-        {STEPS.map(step => (
-          <li key={step.title} className="how-step">
+        {STEPS.map((step, index) => (
+          <li key={step.title} className="how-step" data-reveal="" style={{ "--reveal-i": index } as CSSProperties}>
             <span className="how-icon">{step.icon}</span>
             <h3 className="how-step-title">{step.title}</h3>
             <p>{step.text}</p>

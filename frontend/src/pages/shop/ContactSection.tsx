@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useId, useState, type CSSProperties } from "react";
 import { Mail, MessageCircle } from "lucide-react";
 import { SHOP_EMAIL, SHOP_MESSENGER } from "./order";
 
@@ -63,7 +63,7 @@ export default function ContactSection() {
 
   return (
     <section id="contact" className="shop-contact" aria-labelledby={`${ids}-title`}>
-      <div className="shop-contact-intro">
+      <div className="shop-contact-intro" data-reveal="">
         <h2 id={`${ids}-title`} className="shop-contact-title">Questions, or ordering for a party?</h2>
         <p>Send us a message and tell us what you need. We reply on Messenger or by email.</p>
         <ul className="shop-contact-ways">
@@ -84,6 +84,8 @@ export default function ContactSection() {
 
       <form
         className="shop-contact-form"
+        data-reveal=""
+        style={{ "--reveal-i": 1 } as CSSProperties}
         noValidate
         onSubmit={event => {
           event.preventDefault();
