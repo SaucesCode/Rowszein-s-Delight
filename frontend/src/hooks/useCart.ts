@@ -108,6 +108,11 @@ export function useCart() {
     setItems([]);
   }, []);
 
+  /** Puts back a previous box, e.g. when the customer undoes "Empty the box". */
+  const restoreItems = useCallback((previous: CartItem[]) => {
+    setItems(previous);
+  }, []);
+
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
   const totalAmount = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
@@ -119,6 +124,7 @@ export function useCart() {
     incrementItem,
     decrementItem,
     clearCart,
+    restoreItems,
     totalItems,
     totalAmount,
   };
