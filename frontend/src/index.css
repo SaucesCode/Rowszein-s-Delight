@@ -153,26 +153,6 @@
   /* Fraunces at its friendliest: fully soft corners, wonky leaning n/m/h. */
   --display-soft: "SOFT" 100, "WONK" 1;
   --heading-soft: "SOFT" 100, "WONK" 1;
-
-  /* shadcn-style aliases used by a few legacy components. */
-  --background: var(--color-canvas);
-  --foreground: var(--color-ink);
-  --card: var(--color-surface);
-  --card-foreground: var(--color-ink);
-  --primary: var(--color-accent);
-  --primary-foreground: var(--color-surface);
-  --secondary: var(--color-tint);
-  --secondary-foreground: var(--color-ink);
-  --muted: var(--color-tint);
-  --muted-foreground: var(--color-ink-muted);
-  --accent: var(--color-accent);
-  --accent-foreground: var(--color-surface);
-  --destructive: var(--color-danger);
-  --destructive-foreground: var(--color-surface);
-  --border: var(--color-line);
-  --input: var(--color-surface);
-  --ring: var(--color-accent);
-  --radius: var(--radius-control);
 }
 
 @media (min-width: 768px) {

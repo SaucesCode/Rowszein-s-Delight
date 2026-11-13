@@ -27,24 +27,24 @@ createRoot(document.getElementById("root")!).render(
         position="top-center"
         toastOptions={{
           style: {
-            background: "var(--ws-paper)",
-            color: "var(--ws-ink)",
-            border: "1px solid var(--ws-rule)",
-            borderRadius: "var(--ws-radius-control)",
+            background: "var(--color-surface)",
+            color: "var(--color-ink)",
+            border: "1px solid var(--color-line)",
+            borderRadius: "var(--radius-control)",
             fontSize: 13,
-            fontFamily: "var(--ws-sans)",
-            boxShadow: "var(--ws-shadow)",
+            fontFamily: "var(--font-sans)",
+            boxShadow: "var(--shadow-card)",
           },
           success: {
             iconTheme: {
-              primary: "var(--ws-success)",
-              secondary: "var(--ws-paper)",
+              primary: "var(--color-good)",
+              secondary: "var(--color-surface)",
             },
           },
           error: {
             iconTheme: {
-              primary: "var(--ws-danger)",
-              secondary: "var(--ws-paper)",
+              primary: "var(--color-danger)",
+              secondary: "var(--color-surface)",
             },
           },
         }}
