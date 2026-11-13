@@ -11,8 +11,6 @@ const toFormData = (payload: IngredientPayload, includeQuantity = true): FormDat
   formData.append("cost_per_unit", String(payload.cost_per_unit));
   formData.append("supplier", payload.supplier ?? "");
   formData.append("minimum_stock", String(payload.minimum_stock ?? 0));
-  // Forward-compatible — ignored by the current serializer until the
-  // backend adds columns for these, same pattern as Product's image field.
   if (payload.category) formData.append("category", payload.category);
   if (payload.notes) formData.append("notes", payload.notes);
   if (payload.image) formData.append("image", payload.image);

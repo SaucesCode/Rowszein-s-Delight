@@ -43,9 +43,8 @@ export default function DropdownMenu({
 
       {open && (
         <div
-          role="menu"
           onClick={() => setOpen(false)}
-          className="absolute overflow-hidden animate-fade-in"
+          className="menu-surface absolute animate-fade-in"
           style={{
             [align]: 0,
             ...(placement === "top"
@@ -53,10 +52,6 @@ export default function DropdownMenu({
               : { top: "calc(100% + 6px)" }),
             width,
             zIndex,
-            background: "#FFFFFF",
-            border: "1px solid #F5D5E2",
-            borderRadius: 14,
-            boxShadow: "0 12px 30px rgba(199, 37, 94, 0.14), 0 4px 12px rgba(0, 0, 0, 0.05)",
           }}
         >
           {children}

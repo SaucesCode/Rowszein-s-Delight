@@ -1,307 +1,224 @@
-import { useEffect } from "react";
-import { manilaDate } from "@/lib/dateRanges";
-import { useNavigate, useParams } from "react-router-dom";
+import { useId, useState } from "react";
+import { useBlocker, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useExpense, useCreateExpense, useUpdateExpense } from "@/hooks/useExpenses";
-import type { ExpenseCategory } from "@/types/expense.types";
-import SkeletonTable from "@/components/SkeletonTable";
+import { Trash2 } from "lucide-react";
+import { useCreateExpense, useDeleteExpense, useExpense, useUpdateExpense } from "@/hooks/useExpenses";
+import { manilaDate } from "@/lib/dateRanges";
+import { validRecordId } from "@/lib/managementQueryKeys";
+import { EXPENSE_CATEGORIES } from "@/lib/expenseCategories";
+import type { Expense, ExpenseCategory } from "@/types/expense.types";
+import ConfirmDialog from "@/components/ConfirmDialog";
+import RecordLoadError from "@/components/RecordLoadError";
+import Row from "@/components/ui/SettingsRow";
+import { formatPeso } from "@/pages/dashboard/report-format";
+import "./expenses/expenses.css";
 
-/* ─────────────────────────────────────────────
-   CONSTANTS
-   ───────────────────────────────────────────── */
-const CATEGORIES: { value: ExpenseCategory; label: string; helper: string }[] = [
-  {
-    value: "ingredient",
-    label: "Ingredient Purchase",
-    helper: "Raw materials bought for production",
-  },
-  {
-    value: "packaging",
-    label: "Packaging",
-    helper: "Boxes, bags, labels, wrapping materials",
-  },
-  {
-    value: "utilities",
-    label: "Utilities",
-    helper: "Electricity, water, gas, internet",
-  },
-  {
-    value: "transportation",
-    label: "Transportation",
-    helper: "Delivery, fuel, commute for business purposes",
-  },
-  {
-    value: "other",
-    label: "Other",
-    helper: "Any other business-related expense",
-  },
-];
+const CATEGORY_VALUES = ["ingredient", "packaging", "utilities", "transportation", "other"] as const;
 
-/* ─────────────────────────────────────────────
-   SCHEMA
-   ───────────────────────────────────────────── */
 const expenseSchema = z.object({
-  category: z.enum(["ingredient", "packaging", "utilities", "transportation", "other"]),
-  amount: z.coerce.number().min(0.01, "Amount must be greater than ₱0"),
+  category: z.enum(CATEGORY_VALUES, { error: "Choose what it was for" }),
+  amount: z.coerce.number({ error: "Enter how much you paid" }).min(0.01, "Enter how much you paid, more than ₱0"),
   description: z.string().optional(),
-  date: z.string().min(1, "Date is required"),
+  date: z.string().min(1, "Choose the date you paid"),
 });
 
-type ExpenseFormInput = z.input<typeof expenseSchema>;
-type ExpenseForm = z.output<typeof expenseSchema>;
+type FormInput = z.input<typeof expenseSchema>;
+type FormOutput = z.output<typeof expenseSchema>;
 
-/* ─────────────────────────────────────────────
-   FIELD — reusable labeled block
-   ───────────────────────────────────────────── */
-function Field({
-  label,
-  helper,
-  error,
-  required,
-  children,
-}: {
-  label: string;
-  helper?: string;
-  error?: string;
-  required?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      <label className="field-label">
-        {label}
-        {required && (
-          <span style={{ color: "#FF6FAE", marginLeft: 3 }} aria-hidden="true">
-            *
-          </span>
-        )}
-      </label>
-      {children}
-      {helper && !error && <p className="field-helper">{helper}</p>}
-      {error && (
-        <p className="field-error" role="alert">
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
+const isCategory = (value: string | null): value is ExpenseCategory =>
+  !!value && (CATEGORY_VALUES as readonly string[]).includes(value);
 
-/* ─────────────────────────────────────────────
-   CATEGORY SELECTOR — visual card grid
-   ───────────────────────────────────────────── */
-function CategorySelector({
-  value,
-  onChange,
-  error,
-}: {
-  value: ExpenseCategory;
-  onChange: (val: ExpenseCategory) => void;
-  error?: string;
-}) {
-  return (
-    <div>
-      <label className="field-label">
-        Category
-        <span style={{ color: "#FF6FAE", marginLeft: 3 }} aria-hidden="true">
-          *
-        </span>
-      </label>
-
-      <div
-        className="grid gap-2 mt-1"
-        style={{ gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))" }}
-        role="group"
-        aria-label="Expense category"
-      >
-        {CATEGORIES.map(cat => {
-          const isSelected = value === cat.value;
-          return (
-            <button
-              key={cat.value}
-              type="button"
-              onClick={() => onChange(cat.value)}
-              className="text-left transition-all"
-              style={{
-                padding: "10px 12px",
-                borderRadius: 10,
-                border: isSelected ? "2px solid #FF6FAE" : "1.5px solid #E8E6E1",
-                background: isSelected ? "#FFF0F7" : "#FFFDFB",
-                cursor: "pointer",
-                outline: "none",
-              }}
-              aria-pressed={isSelected}
-            >
-              <p
-                className="font-heading font-semibold"
-                style={{
-                  fontSize: 12,
-                  color: isSelected ? "#E5528A" : "#6B4226",
-                  lineHeight: 1.3,
-                }}
-              >
-                {cat.label}
-              </p>
-              <p
-                className="font-body mt-0.5"
-                style={{
-                  fontSize: 11,
-                  color: isSelected ? "#9B6644" : "#A8A49B",
-                  lineHeight: 1.4,
-                }}
-              >
-                {cat.helper}
-              </p>
-            </button>
-          );
-        })}
-      </div>
-
-      {error && (
-        <p className="field-error mt-1" role="alert">
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────
-   PAGE
-   ───────────────────────────────────────────── */
-export default function ExpenseFormPage() {
-  const { id } = useParams();
+function ExpenseForm({ expense, presetCategory }: { expense?: Expense; presetCategory?: ExpenseCategory }) {
   const navigate = useNavigate();
-  const isEdit = !!id;
+  const id = useId();
+  const field = (name: string) => `${id}-${name}`;
+  const today = manilaDate();
+  const isEdit = !!expense;
 
-  const { data: expense, isLoading } = useExpense(Number(id));
   const createExpense = useCreateExpense();
-  const updateExpense = useUpdateExpense(Number(id));
-  
+  const updateExpense = useUpdateExpense(expense?.id ?? 0);
+  const deleteExpense = useDeleteExpense();
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
   const {
     register,
     handleSubmit,
-    reset,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm<ExpenseFormInput, unknown, ExpenseForm>({
+    formState: { errors, isDirty },
+  } = useForm<FormInput, unknown, FormOutput>({
     resolver: zodResolver(expenseSchema),
-    defaultValues: {
-      category: "other",
-      date: manilaDate(),
-    },
+    defaultValues: expense
+      ? { category: expense.category, amount: expense.amount, description: expense.description, date: expense.date }
+      : { category: presetCategory, amount: "", description: "", date: today },
   });
 
-  const selectedCategory = watch("category");
+  const isSaving = createExpense.isPending || updateExpense.isPending;
+  const isDone = createExpense.isSuccess || updateExpense.isSuccess || deleteExpense.isPending || deleteExpense.isSuccess;
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) => isDirty && !isSaving && !isDone && currentLocation.pathname !== nextLocation.pathname,
+  );
 
-  useEffect(() => {
-    if (expense) {
-      reset({
-        category: expense.category,
-        amount: expense.amount,
-        description: expense.description,
-        date: expense.date,
-      });
-    }
-  }, [expense, reset]);
-
-  const onSubmit = (data: ExpenseForm) => {
-    if (isEdit) {
-      updateExpense.mutate(data);
-    } else {
-      createExpense.mutate(data);
-    }
+  const onSubmit = (data: FormOutput) => {
+    const payload = { ...data, description: data.description?.trim() };
+    if (expense) updateExpense.mutate(payload);
+    else createExpense.mutate(payload);
   };
 
-  const isPending = createExpense.isPending || updateExpense.isPending;
-
-  if (isEdit && isLoading) {
-    return <SkeletonTable rows={4} cols={2} showHeader />;
-  }
-
   return (
-    <div className="max-w-400">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        noValidate
-        className="card-surface p-6 space-y-5"
-      >
-        {/* Category */}
-        <CategorySelector
-          value={selectedCategory}
-          onChange={val => setValue("category", val)}
-          error={errors.category?.message}
-        />
+    <>
+      <form className="settings-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+        <header className="page-head">
+          <div>
+            <h1 className="type-page">{isEdit ? "Edit expense" : "Log an expense"}</h1>
+            <p className="page-lede">
+              {isEdit
+                ? `Logged as ${formatPeso(Number(expense.amount))}. Changes update your profit straight away.`
+                : "Anything the shop paid for. It comes off your profit for that day."}
+            </p>
+          </div>
+        </header>
 
-        {/* Divider */}
-        <div style={{ borderTop: "1px solid #F5EDE0" }} />
+        <section className="settings-group" aria-labelledby={field("what")}>
+          <h2 id={field("what")} className="settings-group-title">What was it for?</h2>
+          <div className="settings-card settings-card-padded">
+            <fieldset className="category-tiles" aria-describedby={errors.category ? field("category-msg") : undefined}>
+              <legend className="sr-only">Kind of expense</legend>
+              {EXPENSE_CATEGORIES.map(info => {
+                const Icon = info.icon;
+                return (
+                  <label key={info.value} className="category-tile">
+                    <input type="radio" value={info.value} className="sr-only" {...register("category")} />
+                    <span className="quick-log-icon" style={{ background: info.color }} aria-hidden="true">
+                      <Icon size={18} strokeWidth={1.75} />
+                    </span>
+                    <span className="category-tile-text">
+                      <strong>{info.label}</strong>
+                      <span>{info.hint}</span>
+                    </span>
+                  </label>
+                );
+              })}
+            </fieldset>
+            {errors.category && <p id={field("category-msg")} className="field-error">{errors.category.message}</p>}
+          </div>
+        </section>
 
-        {/* Amount + Date */}
-        <div className="grid grid-cols-2 gap-4">
-          <Field
-            label="Amount (₱)"
-            helper="Total cost of this expense"
-            error={errors.amount?.message}
-            required
-          >
-            <input
-              {...register("amount")}
-              type="number"
-              step="0.01"
-              min="0"
-              className="field-input mt-1"
-              placeholder="0.00"
-              autoFocus={!isEdit}
-              aria-invalid={!!errors.amount}
-            />
-          </Field>
+        <section className="settings-group" aria-labelledby={field("details")}>
+          <h2 id={field("details")} className="settings-group-title">Details</h2>
+          <div className="settings-card">
+            <Row label="Amount paid" htmlFor={field("amount")} error={errors.amount?.message}>
+              <div className="settings-unit-input is-prefix expense-amount">
+                <span aria-hidden="true">₱</span>
+                <input
+                  id={field("amount")}
+                  type="number"
+                  inputMode="decimal"
+                  min="0.01"
+                  step="0.01"
+                  placeholder="0.00"
+                  className="field-input num"
+                  autoFocus={!isEdit && !!presetCategory}
+                  aria-invalid={!!errors.amount}
+                  aria-describedby={errors.amount ? `${field("amount")}-msg` : undefined}
+                  {...register("amount")}
+                />
+              </div>
+            </Row>
+            <Row label="Date paid" htmlFor={field("date")} error={errors.date?.message}>
+              <input
+                id={field("date")}
+                type="date"
+                className="field-input settings-date"
+                max={today}
+                aria-invalid={!!errors.date}
+                aria-describedby={errors.date ? `${field("date")}-msg` : undefined}
+                {...register("date")}
+              />
+            </Row>
+            <Row label="What exactly" htmlFor={field("description")} hint="Optional, but it helps later. For example, “10 kg flour from SM”.">
+              <textarea
+                id={field("description")}
+                className="field-input"
+                rows={2}
+                maxLength={500}
+                aria-describedby={`${field("description")}-msg`}
+                {...register("description")}
+              />
+            </Row>
+          </div>
+        </section>
 
-          <Field
-            label="Date"
-            helper="When did this expense occur?"
-            error={errors.date?.message}
-            required
-          >
-            <input
-              {...register("date")}
-              type="date"
-              className="field-input mt-1"
-              aria-invalid={!!errors.date}
-            />
-          </Field>
-        </div>
+        {expense && (
+          <section className="settings-group" aria-label="Delete">
+            <div className="settings-card">
+              <button type="button" className="settings-danger" onClick={() => setDeleteOpen(true)}>
+                <Trash2 size={18} aria-hidden="true" />
+                Delete expense
+              </button>
+            </div>
+          </section>
+        )}
 
-        {/* Description */}
-        <Field
-          label="Description"
-          helper="Optional — briefly describe what this expense was for"
-          error={errors.description?.message}
-        >
-          <textarea
-            {...register("description")}
-            rows={3}
-            className="field-input mt-1"
-            style={{ resize: "none" }}
-            placeholder="e.g. Bought 10kg all-purpose flour from SM, paid electric bill for June…"
-          />
-        </Field>
-
-        {/* Divider */}
-        <div style={{ borderTop: "1px solid #F5EDE0" }} />
-
-        {/* Actions */}
-        <div className="flex items-center gap-3 pt-1">
-          <button type="submit" disabled={isPending} className="btn-primary">
-            {isPending ? "Saving…" : isEdit ? "Update Expense" : "Record Expense"}
+        <footer className="settings-actions">
+          <button type="button" className="btn-ghost" onClick={() => navigate("/expenses")}>Cancel</button>
+          <button type="submit" className="btn-primary" disabled={isSaving} aria-busy={isSaving}>
+            {isSaving ? "Saving…" : isEdit ? "Save changes" : "Log expense"}
           </button>
-          <button type="button" onClick={() => navigate("/expenses")} className="btn-ghost">
-            Cancel
-          </button>
-        </div>
+        </footer>
       </form>
-    </div>
+
+      <ConfirmDialog
+        open={deleteOpen}
+        title={expense ? `Delete this ${formatPeso(Number(expense.amount))} expense?` : "Delete this expense?"}
+        description="It will be removed from your expenses and your profit will go back up by the same amount. This can't be undone."
+        confirmLabel="Delete expense"
+        cancelLabel="Keep it"
+        destructive
+        loading={deleteExpense.isPending}
+        onConfirm={() => expense && deleteExpense.mutate(expense.id, { onSuccess: () => navigate("/expenses") })}
+        onCancel={() => setDeleteOpen(false)}
+      />
+
+      <ConfirmDialog
+        open={blocker.state === "blocked"}
+        title="Leave without saving?"
+        description="This expense hasn't been saved yet."
+        confirmLabel="Leave without saving"
+        cancelLabel="Keep editing"
+        destructive
+        onConfirm={() => blocker.proceed?.()}
+        onCancel={() => blocker.reset?.()}
+      />
+    </>
   );
+}
+
+export default function ExpenseFormPage() {
+  const { id } = useParams();
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
+  const isEdit = id !== undefined;
+  const recordId = Number(id);
+  const query = useExpense(isEdit && validRecordId(recordId) ? recordId : 0);
+  const back = () => navigate("/expenses");
+
+  if (!isEdit) {
+    const preset = params.get("category");
+    return <ExpenseForm key={preset ?? "new"} presetCategory={isCategory(preset) ? preset : undefined} />;
+  }
+  if (!validRecordId(recordId)) return <RecordLoadError name="expense" invalidId error={undefined} retry={() => {}} back={back} />;
+  if (query.isPending) {
+    return (
+      <div className="settings-form" aria-busy="true">
+        <span className="skeleton block h-10 w-64" />
+        <span className="skeleton mt-8 block h-48 w-full" aria-hidden="true" />
+        <span className="sr-only" role="status">Loading the expense</span>
+      </div>
+    );
+  }
+  if (query.isError || !query.data) {
+    return <RecordLoadError name="expense" invalidId={false} error={query.error} retry={() => void query.refetch()} back={back} />;
+  }
+  return <ExpenseForm key={query.data.id} expense={query.data} />;
 }

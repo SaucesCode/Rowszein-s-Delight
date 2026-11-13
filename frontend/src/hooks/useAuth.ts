@@ -32,9 +32,7 @@ export function useLogin() {
       toast.success("Welcome back!");
       navigate(homeFor(response.data));
     },
-    onError: (error) => {
-      toast.error(apiErrorMessage(error, "Invalid username or password."));
-    },
+    // The sign-in form shows the error next to the fields; no toast as well.
   });
 }
 
@@ -46,11 +44,11 @@ export function useLogout() {
     mutationFn: authService.logout,
     onSuccess: () => {
       queryClient.clear();
-      toast.success("Logged out.");
+      toast.success("Signed out.");
       navigate("/login");
     },
     onError: (error) => {
-      toast.error("Logout not confirmed. Retry before leaving this terminal. " + apiErrorMessage(error, ""));
+      toast.error(apiErrorMessage(error, "Couldn't confirm you're signed out. Try again before leaving this device."));
     },
   });
 }
@@ -66,6 +64,6 @@ export function useRenewSession() {
       queryClient.setQueryData(["auth", "me"], response.data);
       navigate(homeFor(response.data));
     },
-    onError: () => toast.error("Session renewal was not confirmed. Sign in again. Pending sales have not been retried."),
+    onError: () => toast.error("Couldn't continue your earlier session. Please sign in."),
   });
 }

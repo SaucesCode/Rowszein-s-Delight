@@ -7,9 +7,11 @@ export default function GuestRoute() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-slate-500 text-sm">Loading...</p>
-      </div>
+      <main className="workspace workspace-gate">
+        <div className="workspace-card workspace-state" role="status">
+          <p>Opening the shop…</p>
+        </div>
+      </main>
     );
   }
 

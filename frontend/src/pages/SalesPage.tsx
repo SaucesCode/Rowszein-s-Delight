@@ -1,324 +1,361 @@
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSales, useDeleteSale, useSalesSummary } from "@/hooks/useSales";
-import type { Sale } from "@/types/sale.types";
-import { Plus, ShoppingCart, SearchX } from "lucide-react";
-import PageHeader from "@/components/PageHeader";
-import PeriodToggle from "@/components/PeriodToggle";
-import SearchInput from "@/components/SearchInput";
-import ExportMenu from "@/components/ExportMenu";
-import SaleRow from "@/components/SaleRow";
-import DateRangeFilter from "@/components/DateRangeFilter";
-import EmptyState from "@/components/EmptyState";
-import ConfirmDialog from "@/components/ConfirmDialog";
-import Pagination from "@/components/Pagination";
-import { exportService } from "@/services/export.service";
-import { customDateRange, dateRangeError, formatDayLabel, getDateRange, manilaDate, PERIOD_OPTIONS, reportRangeError, type Period } from "@/lib/dateRanges";
 import toast from "react-hot-toast";
+import { Download, FileSpreadsheet, FileText, Plus, Search } from "lucide-react";
+import { useDeleteSale, useSales, useSalesSummary } from "@/hooks/useSales";
 import { useMe } from "@/hooks/useAuth";
 import { can } from "@/lib/permissions";
+import { groupByDay } from "@/lib/groupByDay";
+import {
+  customDateRange,
+  dateRangeError,
+  formatDayLabel,
+  getDateRange,
+  manilaDate,
+  PERIOD_OPTIONS,
+  reportRangeError,
+  type Period,
+} from "@/lib/dateRanges";
+import { exportService } from "@/services/export.service";
+import type { Sale } from "@/types/sale.types";
+import ConfirmDialog from "@/components/ConfirmDialog";
+import DropdownMenu from "@/components/DropdownMenu";
+import Pagination from "@/components/Pagination";
+import { formatPeso } from "@/pages/dashboard/report-format";
+import Receipt from "./sales/Receipt";
+import "./sales/sales.css";
 
-/* ─────────────────────────────────────────────
-   GROUPING — by business date (sale.date), in
-   the order the API already returns (newest first).
-   Grouping is page-local: a day split across two
-   pages of results will show as two groups. That's
-   an acceptable tradeoff at 20-per-page; worth a
-   backend "group by day" endpoint if this becomes
-   a real pain point at higher sale volumes.
-   ───────────────────────────────────────────── */
-function groupByDay(sales: Sale[]) {
-  const groups: { date: string; sales: Sale[]; subtotal: number }[] = [];
+const PAGE_SIZE = 20;
+const CANCEL_REASONS = ["Customer changed their mind", "Recorded by mistake", "Wrong donuts on the ticket"];
+const timeFormatter = new Intl.DateTimeFormat("en-PH", { hour: "numeric", minute: "2-digit", timeZone: "Asia/Manila" });
 
-  for (const sale of sales) {
-    const existing = groups.find((g) => g.date === sale.date);
-    if (existing) {
-      existing.sales.push(sale);
-      existing.subtotal += Number(sale.total_amount);
-    } else {
-      groups.push({ date: sale.date, sales: [sale], subtotal: Number(sale.total_amount) });
-    }
-  }
-
-  return groups;
-}
+const PERIOD_PHRASE: Record<Period, string> = {
+  today: "Today",
+  this_week: "This week",
+  this_month: "This month",
+  custom: "In this range",
+};
 
 function matchesSearch(sale: Sale, query: string) {
   const q = query.trim().toLowerCase();
   if (!q) return true;
-
-  if (sale.notes?.toLowerCase().includes(q)) return true;
-  return (sale.sale_items ?? []).some((item) => item.product_name?.toLowerCase().includes(q));
+  return !!sale.notes?.toLowerCase().includes(q) || sale.sale_items.some(item => item.product_name?.toLowerCase().includes(q));
 }
 
-/* ─────────────────────────────────────────────
-   SKELETON — matches the grouped-row layout,
-   not a generic table skeleton.
-   ───────────────────────────────────────────── */
-function SalesSkeleton() {
+function ReceiptsSkeleton() {
   return (
-    <div
-      role="status"
-      aria-label="Loading sales…"
-      style={{ background: "#FFFDFB", border: "1px solid #E8E6E1", borderRadius: 16 }}
-      className="overflow-hidden"
-    >
-      <div className="px-5 py-3" style={{ background: "#FFF8F0" }}>
-        <div className="skeleton" style={{ height: 12, width: 140, borderRadius: 6 }} />
-      </div>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <div
-          key={i}
-          className="flex items-center gap-4 px-5 py-3.5"
-          style={{ borderTop: i > 0 ? "1px solid #F5EDE0" : undefined }}
-        >
-          <div className="skeleton" style={{ height: 12, width: 48, borderRadius: 6 }} />
-          <div className="skeleton flex-1" style={{ height: 12, borderRadius: 6 }} />
-          <div className="skeleton" style={{ height: 14, width: 64, borderRadius: 6 }} />
+    <div className="receipts" aria-hidden="true">
+      {Array.from({ length: 6 }, (_, index) => (
+        <div key={index} className="receipt">
+          <span className="skeleton block h-3 w-16" />
+          <span className="skeleton mt-4 block h-4 w-full" />
+          <span className="skeleton mt-2 block h-4 w-4/5" />
+          <span className="skeleton mt-6 block h-6 w-1/2" />
         </div>
       ))}
-      <span className="sr-only">Loading, please wait…</span>
     </div>
   );
 }
 
-/* ─────────────────────────────────────────────
-   PAGE
-   ───────────────────────────────────────────── */
 export default function SalesPage() {
   const { data: user } = useMe();
-  const canManage = can(user, "sales.update") && can(user, "sales.cancel");
-  const [cancellationReason, setCancellationReason] = useState("");
   const navigate = useNavigate();
+  const ids = useId();
+  const canManage = can(user, "sales.update") && can(user, "sales.cancel");
+  const canSeeMoney = can(user, "finance.read");
+
   const [page, setPage] = useState(1);
   const [period, setPeriod] = useState<Period>("today");
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
   const [search, setSearch] = useState("");
-  const [deleteTarget, setDeleteTarget] = useState<Sale | null>(null);
+  const [cancelTarget, setCancelTarget] = useState<Sale | null>(null);
+  const [reason, setReason] = useState("");
+  const [reasonError, setReasonError] = useState(false);
   const [exporting, setExporting] = useState(false);
 
   const now = new Date();
   const today = manilaDate(now);
-  const dateRange = period === "custom" ? customDateRange(customFrom, customTo) : getDateRange(period, now);
-  const rangeError = dateRangeError(dateRange);
-  const summaryRangeError = reportRangeError(dateRange, now);
+  const range = period === "custom" ? customDateRange(customFrom, customTo) : getDateRange(period, now);
+  const rangeError = dateRangeError(range);
+  const summaryRangeError = reportRangeError(range, now);
 
-  const filters = { page, ...dateRange };
-  const { data, isLoading, isError } = useSales(filters, !rangeError);
-  const { data: financialReport } = useSalesSummary(dateRange, can(user, "finance.read") && !summaryRangeError);
-  const deleteSale = useDeleteSale();
+  const { data, isLoading, isError, refetch } = useSales({ page, ...range }, !rangeError);
+  const summary = useSalesSummary(range, canSeeMoney && !summaryRangeError);
+  const cancelSale = useDeleteSale();
 
-  const sales: Sale[] = data?.data?.results ?? [];
-  const totalCount: number = data?.data?.count ?? 0;
-  const totalPages = Math.ceil(totalCount / 20);
+  const count: number = data?.data?.count ?? 0;
+  const totalPages = Math.ceil(count / PAGE_SIZE);
+  const visible = useMemo(
+    () => ((data?.data?.results ?? []) as Sale[]).filter(sale => matchesSearch(sale, search)),
+    [data, search],
+  );
+  const days = useMemo(
+    () => groupByDay(visible, sale => (sale.status === "cancelled" ? 0 : Number(sale.total_amount))),
+    [visible],
+  );
 
-  const filteredSales = useMemo(() => sales.filter((s) => matchesSearch(s, search)), [sales, search]);
-  const groups = useMemo(() => groupByDay(filteredSales), [filteredSales]);
-  const pageTotal = useMemo(() => filteredSales.reduce((sum, s) => sum + Number(s.total_amount), 0), [filteredSales]);
-
-  const hasActiveFilters = period !== "today" || !!search;
-
-  const handleDeleteConfirm = () => {
-    if (!deleteTarget || !cancellationReason.trim()) return;
-    deleteSale.mutate({ id: deleteTarget.id, revision: deleteTarget.revision, reason: cancellationReason.trim() }, { onSuccess: () => { setDeleteTarget(null); setCancellationReason(""); } });
+  const changePeriod = (next: Period) => {
+    setPeriod(next);
+    setPage(1);
   };
 
-  const handleExport = async (type: "csv" | "pdf") => {
+  const exportAs = async (type: "csv" | "pdf") => {
     if (rangeError) return;
     setExporting(true);
     try {
-      if (type === "csv") await exportService.salesCSV(dateRange);
-      else await exportService.salesPDF(dateRange);
-      toast.success(`Sales exported as ${type.toUpperCase()}.`);
+      if (type === "csv") await exportService.salesCSV(range);
+      else await exportService.salesPDF(range);
+      toast.success(type === "csv" ? "Spreadsheet downloaded." : "PDF downloaded.");
     } catch {
-      toast.error("Export failed.");
+      toast.error("Couldn't download the file. Check the connection and try again.");
     } finally {
       setExporting(false);
     }
   };
 
-  const handlePeriodChange = (value: string) => {
-    setPeriod(value as Period);
-    setPage(1);
+  const closeCancel = () => {
+    setCancelTarget(null);
+    setReason("");
+    setReasonError(false);
   };
 
-  return (
-    <div className="pb-20 sm:pb-0">
-      <PageHeader
-        title="Sales"
-        description={
-          !rangeError && !isLoading && !isError
-            ? `${totalCount} sale${totalCount !== 1 ? "s" : ""} · ₱${pageTotal.toLocaleString("en-PH", { minimumFractionDigits: 2 })} transaction values on this page (includes cancelled records; not net sales)`
-            : "Track all revenue transactions"
-        }
-        action={
-          <div className="hidden sm:flex items-center gap-2">
-            {can(user, "sales.export") && <ExportMenu onExportCSV={() => handleExport("csv")} onExportPDF={() => handleExport("pdf")} exporting={exporting} disabled={!!rangeError} />}
-            <button onClick={() => navigate("/sales/new")} className="btn-primary">
-              <Plus size={16} strokeWidth={2.5} aria-hidden="true" />
-              Record Sale
-            </button>
-          </div>
-        }
-      />
+  const confirmCancel = () => {
+    if (!cancelTarget) return;
+    if (!reason.trim()) {
+      setReasonError(true);
+      return;
+    }
+    cancelSale.mutate(
+      { id: cancelTarget.id, revision: cancelTarget.revision, reason: reason.trim() },
+      { onSuccess: closeCancel },
+    );
+  };
 
-      {/* Filter bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
-        <SearchInput
-          value={search}
-          onChange={(v) => {
-            setSearch(v);
-          }}
-          placeholder="Search by product or note…"
-          ariaLabel="Search sales"
-        />
-        <PeriodToggle options={PERIOD_OPTIONS} value={period} onChange={handlePeriodChange} ariaLabel="Filter sales by period" />
+  const net = summary.data?.totals?.net_sales;
+  const lede = rangeError
+    ? " "
+    : isLoading
+      ? " "
+      : `${PERIOD_PHRASE[period]}: ${count} ${count === 1 ? "sale" : "sales"} recorded${canSeeMoney && net !== undefined ? `, ${formatPeso(Number(net))} kept after cancellations` : ""}.`;
+
+  return (
+    <div className="sales">
+      <header className="page-head">
+        <div>
+          <h1 className="type-page">Sales register</h1>
+          <p className="page-lede">{lede}</p>
+        </div>
+        <div className="sales-head-actions">
+          {can(user, "sales.export") && (
+            <DropdownMenu
+              width={240}
+              trigger={({ open }) => (
+                <button type="button" className="btn-ghost" aria-expanded={open} disabled={exporting || !!rangeError}>
+                  <Download size={18} aria-hidden="true" />
+                  {exporting ? "Preparing…" : "Download"}
+                </button>
+              )}
+            >
+              <button type="button" className="menu-item" onClick={() => void exportAs("csv")}>
+                <FileSpreadsheet size={16} aria-hidden="true" />
+                Spreadsheet (CSV)
+              </button>
+              <button type="button" className="menu-item" onClick={() => void exportAs("pdf")}>
+                <FileText size={16} aria-hidden="true" />
+                Printable PDF
+              </button>
+            </DropdownMenu>
+          )}
+          <button type="button" className="btn-primary" onClick={() => navigate("/sales/new")}>
+            <Plus size={20} aria-hidden="true" />
+            New sale
+          </button>
+        </div>
+      </header>
+
+      <div className="sales-toolbar">
+        <div className="segmented" role="group" aria-label="Which days">
+          {PERIOD_OPTIONS.map(option => (
+            <button key={option.value} type="button" aria-pressed={period === option.value} onClick={() => changePeriod(option.value)}>
+              {option.label}
+            </button>
+          ))}
+        </div>
+        <label className="search-field">
+          <span className="sr-only">Find a donut or note on this page</span>
+          <Search size={18} aria-hidden="true" />
+          <input type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder="Find a donut or note" />
+        </label>
       </div>
 
       {period === "custom" && (
-        <div className="mb-5 animate-fade-in">
-          <DateRangeFilter
-            dateFrom={customFrom}
-            dateTo={customTo}
-            onDateFromChange={(v) => {
-              setCustomFrom(v);
-              setPage(1);
-            }}
-            onDateToChange={(v) => {
-              setCustomTo(v);
-              setPage(1);
-            }}
-            onClear={() => {
-              setCustomFrom("");
-              setCustomTo("");
-              setPage(1);
-            }}
-            hasFilters={!!customFrom || !!customTo}
-            error={rangeError}
-          />
+        <div className="date-range">
+          <div>
+            <label htmlFor={`${ids}-from`} className="field-label">From</label>
+            <input
+              id={`${ids}-from`}
+              type="date"
+              className="field-input"
+              value={customFrom}
+              max={today}
+              onChange={event => { setCustomFrom(event.target.value); setPage(1); }}
+            />
+          </div>
+          <div>
+            <label htmlFor={`${ids}-to`} className="field-label">To</label>
+            <input
+              id={`${ids}-to`}
+              type="date"
+              className="field-input"
+              value={customTo}
+              max={today}
+              onChange={event => { setCustomTo(event.target.value); setPage(1); }}
+            />
+          </div>
+          {rangeError && <p className="field-error date-range-error" role="alert">{rangeError}</p>}
         </div>
       )}
 
-      {isLoading && <SalesSkeleton />}
+      {canSeeMoney && !rangeError && summary.data?.totals && (
+        <div className="sales-summary">
+          <dl aria-label="Money for these days">
+            <div>
+              <dt>Sold</dt>
+              <dd className="num">{formatPeso(Number(summary.data.totals.gross_sales))}</dd>
+            </div>
+            <div>
+              <dt>Cancelled</dt>
+              <dd className="num">{formatPeso(Number(summary.data.totals.cancellation_amount))}</dd>
+            </div>
+            <div>
+              <dt>Changes to past sales</dt>
+              <dd className="num">{formatPeso(Number(summary.data.totals.sales_adjustments))}</dd>
+            </div>
+            <div className="is-net">
+              <dt>Kept</dt>
+              <dd className="num">{formatPeso(Number(summary.data.totals.net_sales))}</dd>
+            </div>
+          </dl>
+          <p className="sales-summary-note">Counted by the day each sale or change was made. Cash refunds aren't tracked here.</p>
+        </div>
+      )}
+      {canSeeMoney && !rangeError && summaryRangeError && (
+        <p className="sales-summary-note">Choose both dates to see the money for this range.</p>
+      )}
+
+      {!rangeError && isLoading && (
+        <>
+          <ReceiptsSkeleton />
+          <span className="sr-only" role="status">Loading sales</span>
+        </>
+      )}
 
       {!rangeError && isError && (
-        <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm">
-          <p className="text-sm" style={{ color: "#ef4444" }}>
-            Failed to load sales. Please try refreshing the page.
-          </p>
+        <div className="sales-empty" role="alert">
+          <h2 className="type-heading">Couldn't load the sales</h2>
+          <p>Check the internet connection, then try again.</p>
+          <button type="button" className="btn-primary" onClick={() => void refetch()}>Try again</button>
         </div>
       )}
 
-      {!rangeError && !isLoading && !isError && filteredSales.length === 0 && (
-        <div style={{ background: "#FFFDFB", border: "1px solid #E8E6E1", borderRadius: 16 }}>
-          <EmptyState
-            icon={search ? SearchX : ShoppingCart}
-            title={search ? "No sales match your search" : hasActiveFilters ? "No sales for this period" : "No sales recorded yet"}
-            description={
-              search
-                ? "Try a different product name or clear the search."
-                : hasActiveFilters
-                  ? "Try a different date range."
-                  : "Record your first sale to start tracking revenue."
-            }
-            action={
-              search ? (
-                <button onClick={() => setSearch("")} className="btn-secondary">
-                  Clear search
-                </button>
-              ) : !hasActiveFilters ? (
-                <button onClick={() => navigate("/sales/new")} className="btn-primary">
-                  <Plus size={16} strokeWidth={2.5} aria-hidden="true" />
-                  Record Sale
-                </button>
-              ) : (
-                <button onClick={() => handlePeriodChange("today")} className="btn-secondary">
-                  Back to today
-                </button>
-              )
-            }
-          />
+      {!rangeError && !isLoading && !isError && visible.length === 0 && (
+        <div className="sales-empty">
+          {search ? (
+            <>
+              <h2 className="type-heading">Nothing matches “{search}”</h2>
+              <p>This searches the sales shown on this page. Try another donut or clear the search.</p>
+              <button type="button" className="btn-secondary" onClick={() => setSearch("")}>Clear search</button>
+            </>
+          ) : period === "today" ? (
+            <>
+              <h2 className="type-heading">No sales yet today</h2>
+              <p>When the first customer comes in, ring them up here.</p>
+              <button type="button" className="btn-primary" onClick={() => navigate("/sales/new")}>
+                <Plus size={20} aria-hidden="true" />
+                New sale
+              </button>
+            </>
+          ) : (
+            <>
+              <h2 className="type-heading">No sales on these days</h2>
+              <p>Try a different range.</p>
+              <button type="button" className="btn-secondary" onClick={() => changePeriod("today")}>Back to today</button>
+            </>
+          )}
         </div>
       )}
 
-      {!rangeError && !isLoading && !isError && filteredSales.length > 0 && (
+      {!rangeError && !isLoading && !isError && visible.length > 0 && (
         <>
-          <div style={{ background: "#FFFDFB", border: "1px solid #E8E6E1", borderRadius: 16 }} className="overflow-hidden">
-            {groups.map((group) => (
-              <div key={group.date}>
-                <div
-                  className="flex items-center justify-between px-5 py-2.5 sticky top-0 z-10"
-                  style={{ background: "#FFF8F0", borderBottom: "1px solid #F0E6D8" }}
-                >
-                  <h2 className="font-heading font-semibold" style={{ fontSize: 13, color: "#6B4226" }}>
-                    {formatDayLabel(group.date, today)}
-                  </h2>
-                  <p className="font-body" style={{ fontSize: 12.5, color: "#9B6644" }}>
-                    {group.sales.length} sale{group.sales.length !== 1 ? "s" : ""} · ₱
-                    {group.subtotal.toLocaleString("en-PH", { minimumFractionDigits: 2 })}
+          {days.map(day => {
+            const cancelled = day.items.filter(sale => sale.status === "cancelled").length;
+            const kept = day.items.length - cancelled;
+            return (
+              <section key={day.date} className="sales-day" aria-labelledby={`${ids}-${day.date}`}>
+                <header className="sales-day-head">
+                  <h2 id={`${ids}-${day.date}`}>{formatDayLabel(day.date, today)}</h2>
+                  <p className="num">
+                    {kept} {kept === 1 ? "sale" : "sales"}, {formatPeso(day.subtotal)}
+                    {cancelled > 0 && ` (${cancelled} cancelled)`}
                   </p>
+                </header>
+                <div className="receipts">
+                  {day.items.map(sale => (
+                    <Receipt key={sale.id} sale={sale} canManage={canManage} onCancel={setCancelTarget} />
+                  ))}
                 </div>
-                {group.sales.map((sale) => (
-                  <SaleRow
-                    key={sale.id}
-                    sale={sale}
-                    canManage={canManage}
-                    onEdit={() => navigate(`/sales/${sale.id}/edit`)}
-                    onDelete={() => setDeleteTarget(sale)}
-                  />
-                ))}
-              </div>
-            ))}
-          </div>
-
+              </section>
+            );
+          })}
           <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
         </>
       )}
 
-      {can(user, "finance.read") && !rangeError && summaryRangeError && (
-        <p className="field-error" role="status">
-          Set both dates to view posting totals for this range. The report defaults omitted dates to January 1 of the current Manila year and today.
-        </p>
-      )}
-      {can(user, "finance.read") && !summaryRangeError && financialReport && (
-        <p className="font-body text-sm my-4" aria-label="Posting-date financial totals">
-          Gross ₱{financialReport.totals.gross_sales} · Adjustments ₱{financialReport.totals.sales_adjustments} · Cancellations ₱{financialReport.totals.cancellation_amount} · Net ₱{financialReport.totals.net_sales}. Cash refunds are not tracked.
-        </p>
-      )}
-      {/* Mobile floating action button */}
-      <button
-        onClick={() => navigate("/sales/new")}
-        className="sm:hidden fixed z-30 flex items-center justify-center rounded-full transition-transform active:scale-95"
-        style={{
-          bottom: 24,
-          right: 20,
-          width: 56,
-          height: 56,
-          background: "#FF6FAE",
-          boxShadow: "0 8px 24px rgba(255, 111, 174, 0.45)",
-        }}
-        aria-label="Record a new sale"
-      >
-        <Plus size={24} color="#FFFFFF" strokeWidth={2.5} aria-hidden="true" />
-      </button>
-
       <ConfirmDialog
-        open={!!deleteTarget}
-        title="Cancel sale?"
-        description={
-          deleteTarget
-            ? `Preserve this sale, reverse its recorded consumption, and post a cancellation on today's business date. No cash refund will be recorded. Unverified legacy sales require reconciliation.`
-            : ""
+        open={!!cancelTarget}
+        title={
+          cancelTarget
+            ? `Cancel the ${timeFormatter.format(new Date(cancelTarget.created_at))} sale of ${formatPeso(Number(cancelTarget.total_amount))}?`
+            : "Cancel this sale?"
         }
-        confirmLabel="Cancel sale"
+        description="It stays in your records marked as cancelled, and its donuts go back into stock. Cash refunds aren't recorded here."
+        confirmLabel="Cancel the sale"
+        cancelLabel="Keep the sale"
         destructive
-        loading={deleteSale.isPending}
-        onConfirm={handleDeleteConfirm}
-        onCancel={() => setDeleteTarget(null)}
+        loading={cancelSale.isPending}
+        onConfirm={confirmCancel}
+        onCancel={closeCancel}
       >
-        <label htmlFor="cancellation-reason" className="field-label">Cancellation reason</label>
-        <textarea id="cancellation-reason" className="field-input" required maxLength={2000} value={cancellationReason} onChange={event => setCancellationReason(event.target.value)} />
+        <fieldset className="cancel-reason">
+          <legend className="field-label">Why is it being cancelled?</legend>
+          <div className="flex flex-wrap gap-2">
+            {CANCEL_REASONS.map(option => (
+              <button
+                key={option}
+                type="button"
+                className="chip"
+                aria-pressed={reason === option}
+                onClick={() => { setReason(option); setReasonError(false); }}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+          <label htmlFor={`${ids}-reason`} className="sr-only">Reason, in your own words</label>
+          <textarea
+            id={`${ids}-reason`}
+            className="field-input mt-3"
+            rows={2}
+            maxLength={2000}
+            placeholder="Or type your own reason"
+            value={reason}
+            onChange={event => { setReason(event.target.value); setReasonError(false); }}
+            aria-invalid={reasonError}
+            aria-describedby={reasonError ? `${ids}-reason-error` : undefined}
+          />
+          {reasonError && <p id={`${ids}-reason-error`} className="field-error">Pick or type a reason so it's clear later.</p>}
+        </fieldset>
       </ConfirmDialog>
     </div>
   );

@@ -1,358 +1,274 @@
-import PaginatedLookup from "@/components/PaginatedLookup";
-import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useForm, useFieldArray, useWatch } from "react-hook-form";
-import type { Control } from "react-hook-form";
+import { useEffect, useRef, useState } from "react";
+import { Link, useBlocker, useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useSale, useCreateSale, useUpdateSale } from "@/hooks/useSales";
-import { Plus, Trash2 } from "lucide-react";
-import SkeletonTable from "@/components/SkeletonTable";
+import toast from "react-hot-toast";
+import { CheckCircle2, X } from "lucide-react";
 import { useMe } from "@/hooks/useAuth";
-import { manilaDate } from "@/lib/permissions";
+import { useCreateSale, useSale, useUpdateSale } from "@/hooks/useSales";
+import { useSellableProducts } from "@/hooks/useProducts";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { manilaDate } from "@/lib/dateRanges";
+import { validRecordId } from "@/lib/managementQueryKeys";
+import type { Product } from "@/types/product.types";
+import type { Sale, SalePayload } from "@/types/sale.types";
+import ConfirmDialog from "@/components/ConfirmDialog";
+import RecordLoadError from "@/components/RecordLoadError";
+import { formatPeso } from "@/pages/dashboard/report-format";
+import Catalog from "./sales/Catalog";
+import TicketPanel, { type Recorded } from "./sales/TicketPanel";
+import { useTicket, type TicketLine } from "./sales/useTicket";
+import "./sales/sales.css";
 
-/* ─────────────────────────────────────────────
-   SCHEMA
-   ───────────────────────────────────────────── */
+const WIDE = "(min-width: 1100px)";
+
+/** Same rules the server enforces, worded for the counter. */
 const saleSchema = z.object({
-  date: z.string().min(1, "Date is required"),
+  date: z.string().min(1, "Choose the sale date."),
   notes: z.string().optional(),
   sale_items: z
     .array(
       z.object({
-        product: z.coerce.number().min(1, "Product is required"),
-        quantity: z.coerce.number().min(1, "Quantity must be at least 1"),
-        unit_price: z.coerce.number().min(0.01, "Price must be greater than ₱0"),
+        product: z.number().min(1),
+        quantity: z.number().int().min(1, "Each donut needs a quantity of at least 1."),
+        unit_price: z.number().min(0.01, "Each price must be more than ₱0."),
       }),
     )
-    .min(1, "At least one item is required"),
+    .min(1, "Add at least one donut to the order."),
 });
 
-type SaleFormInput = z.input<typeof saleSchema>;
-type SaleForm = z.output<typeof saleSchema>;
-
-/* ─────────────────────────────────────────────
-   FIELD — labeled input block
-   ───────────────────────────────────────────── */
-function Field({
-  label,
-  helper,
-  error,
-  required,
-  children,
-}: {
-  label: string;
-  helper?: string;
-  error?: string;
-  required?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      <label className="field-label">
-        {label}
-        {required && (
-          <span style={{ color: "#FF6FAE", marginLeft: 3 }} aria-hidden="true">
-            *
-          </span>
-        )}
-      </label>
-      {children}
-      {helper && !error && <p className="field-helper">{helper}</p>}
-      {error && (
-        <p className="field-error" role="alert">
-          {error}
-        </p>
-      )}
-    </div>
-  );
+function linesFrom(sale?: Sale): TicketLine[] {
+  return (sale?.sale_items ?? []).map(item => ({
+    product: item.product,
+    name: item.product_name ?? "Donut",
+    unitPrice: Number(item.unit_price),
+    quantity: item.quantity,
+  }));
 }
 
-/* ─────────────────────────────────────────────
-   ORDER TOTAL — live computed total
-   ───────────────────────────────────────────── */
-function OrderTotal({ control }: { control: Control<SaleFormInput, unknown, SaleForm> }) {
-  const items = useWatch({ control, name: "sale_items" });
-  const total =
-    items?.reduce((sum: number, item) => {
-      const qty = Number(item.quantity) || 0;
-      const price = Number(item.unit_price) || 0;
-      return sum + qty * price;
-    }, 0) ?? 0;
-
-  return (
-    <div
-      className="flex items-center justify-end gap-3 pt-3 mt-3"
-      style={{ borderTop: "1px solid #F5EDE0" }}
-    >
-      <span className="font-body" style={{ fontSize: 13, color: "#9B6644" }}>
-        Order Total
-      </span>
-      <span className="font-heading font-semibold" style={{ fontSize: 18, color: "#6B4226" }}>
-        ₱{total.toFixed(2)}
-      </span>
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────
-   PAGE
-   ───────────────────────────────────────────── */
-export default function SaleFormPage() {
+function Register({ sale }: { sale?: Sale }) {
   const { data: user } = useMe();
   const isStaff = user?.role === "staff";
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const isEdit = !!id;
+  const isEdit = !!sale;
+  const today = manilaDate();
+  const isWide = useMediaQuery(WIDE);
+  const sheetRef = useRef<HTMLDialogElement>(null);
 
-  const { data: sale, isLoading: saleLoading } = useSale(Number(id));
+  const ticket = useTicket(linesFrom(sale));
+  const [date, setDate] = useState(sale?.date ?? today);
+  const [notes, setNotes] = useState(sale?.notes ?? "");
+  const [error, setError] = useState<string | null>(null);
+  const [recorded, setRecorded] = useState<Recorded | null>(null);
+  const [clearOpen, setClearOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [baseline, setBaseline] = useState(() =>
+    JSON.stringify({ lines: linesFrom(sale), date: sale?.date ?? today, notes: sale?.notes ?? "" }),
+  );
+
+  const products = useSellableProducts();
   const createSale = useCreateSale();
-  const updateSale = useUpdateSale(Number(id), sale?.revision);
+  const updateSale = useUpdateSale(sale?.id ?? 0, sale?.revision);
+  const saving = createSale.isPending || updateSale.isPending;
+  const done = updateSale.isSuccess;
 
+  const dirty = JSON.stringify({ lines: ticket.lines, date, notes }) !== baseline;
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      dirty && ticket.lines.length > 0 && !saving && !done && currentLocation.pathname !== nextLocation.pathname,
+  );
 
-  const {
-    register,
-    handleSubmit,
-    control,
-    reset,
-    setValue,
-    formState: { errors },
-  } = useForm<SaleFormInput, unknown, SaleForm>({
-    resolver: zodResolver(saleSchema),
-  });
-
-  const selectedItems = useWatch({ control, name: "sale_items" });
-  const { fields, append, remove } = useFieldArray({ control, name: "sale_items" });
-
+  const showSheet = sheetOpen && !isWide;
   useEffect(() => {
-    if (isStaff && !isEdit) setValue("date", manilaDate());
-  }, [isStaff, isEdit, setValue]);
+    const sheet = sheetRef.current;
+    if (!sheet) return;
+    if (showSheet && !sheet.open) sheet.showModal();
+    if (!showSheet && sheet.open) sheet.close();
+  }, [showSheet]);
 
-useEffect(() => {
-  if (sale) {
-    reset({
-      date: sale.date,
-      notes: sale.notes ?? "",
-      sale_items: sale.sale_items?.map(
-        (item: { product: number; quantity: number; unit_price: number | string }) => ({
-          product: item.product,
-          quantity: item.quantity,
-          unit_price: Number(item.unit_price),
-        }),
-      ) ?? [{ product: 0, quantity: 1, unit_price: 0 }],
-    });
-  }
-}, [sale, reset]);
-
-  const onSubmit = (data: SaleForm) => {
-    if (isEdit) {
-      updateSale.mutate(data);
-    } else {
-      createSale.mutate(data);
-    }
+  const add = (product: Product) => {
+    setRecorded(null);
+    setError(null);
+    ticket.add(product);
   };
 
-  const isPending = createSale.isPending || updateSale.isPending;
+  const submit = () => {
+    const parsed = saleSchema.safeParse({
+      date,
+      notes: notes.trim(),
+      sale_items: ticket.lines.map(line => ({ product: line.product, quantity: line.quantity, unit_price: line.unitPrice })),
+    });
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message ?? "Check the order and try again.");
+      return;
+    }
+    setError(null);
+    const payload: SalePayload = parsed.data;
 
-  if (isEdit && saleLoading) {
-    return <SkeletonTable rows={4} cols={2} showHeader />;
-  }
+    if (sale) {
+      updateSale.mutate(payload);
+      return;
+    }
+
+    const snapshot = { amount: ticket.totals.amount, pieces: ticket.totals.pieces };
+    createSale.mutate(payload, {
+      onSuccess: () => {
+        const at = new Date();
+        setRecorded({ ...snapshot, at });
+        toast.success(`Sale recorded: ${formatPeso(snapshot.amount)}.`);
+        ticket.clear();
+        setNotes("");
+        setDate(today);
+        setSheetOpen(false);
+        setBaseline(JSON.stringify({ lines: [], date: today, notes: "" }));
+      },
+    });
+  };
+
+  const panel = (
+    <TicketPanel
+      ticket={ticket}
+      title={isEdit ? "This sale" : "Order"}
+      canEditPrice={!isStaff}
+      date={date}
+      today={today}
+      onDateChange={isEdit || isStaff ? undefined : setDate}
+      notes={notes}
+      onNotesChange={setNotes}
+      error={error}
+      saving={saving}
+      submitLabel={isEdit ? "Save changes" : "Record sale"}
+      onSubmit={submit}
+      onClear={() => setClearOpen(true)}
+      recorded={recorded}
+    />
+  );
 
   return (
-    <div className="max-w-400">
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
-        {/* ── Sale info ── */}
-        <div className="card-surface p-6 space-y-5">
-          <Field
-            label="Sale Date"
-            helper="When did this sale take place?"
-            error={errors.date?.message}
-            required
-          >
-            <input
-              {...register("date")}
-              type="date"
-              readOnly={isEdit || isStaff}
-              className="field-input mt-1"
-              aria-invalid={!!errors.date}
-            />
-          </Field>
-
-          <Field
-            label="Notes"
-            helper="Optional — e.g. Morning batch, walk-in customers, event order"
-          >
-            <textarea
-              {...register("notes")}
-              rows={2}
-              className="field-input mt-1"
-              style={{ resize: "none" }}
-              placeholder="Any notes about this sale…"
-            />
-          </Field>
+    <div className="register">
+      <header className="page-head register-head">
+        <div>
+          <h1 className="type-page">{isEdit ? "Edit sale" : "New sale"}</h1>
+          <p className="page-lede">
+            {isEdit
+              ? "Change what was sold. The stock adjusts to match when you save."
+              : "Tap donuts to build the order, then record it."}
+          </p>
         </div>
+      </header>
 
-        {/* ── Sale items ── */}
-        <div className="card-surface p-6">
-          {/* Section header */}
-          <div className="flex items-center justify-between mb-5">
-            <div>
-              <p
-                className="font-heading font-semibold"
-                style={{ fontSize: 14, color: "#6B4226" }}
-              >
-                Items Sold
-              </p>
-              <p className="field-helper" style={{ marginTop: 2 }}>
-                Add each product sold in this transaction
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => append({ product: 0, quantity: 1, unit_price: 0 })}
-              className="btn-ghost"
-              style={{ fontSize: 12, padding: "5px 12px" }}
-            >
-              <Plus size={13} aria-hidden="true" />
-              Add Item
-            </button>
-          </div>
+      {!isWide && recorded && (
+        <p className="register-banner" role="status">
+          <CheckCircle2 size={20} aria-hidden="true" />
+          Recorded {formatPeso(recorded.amount)}. Ready for the next customer.
+          <Link to="/sales" className="home-link">See sales</Link>
+        </p>
+      )}
 
-          {/* List-level error */}
-          {errors.sale_items?.root && (
-            <p className="field-error mb-3" role="alert">
-              {errors.sale_items.root.message}
-            </p>
-          )}
+      <div className="register-body">
+        <Catalog
+          products={products.data ?? []}
+          loading={products.isPending}
+          error={products.isError}
+          onRetry={() => void products.refetch()}
+          onAdd={add}
+          quantityOf={ticket.quantityOf}
+          canManageMenu={!isStaff}
+        />
+        {isWide && <aside className="register-ticket" aria-label="Order ticket">{panel}</aside>}
+      </div>
 
-          {/* Column labels */}
-          <div
-            className="grid gap-3 mb-2 px-1"
-            style={{ gridTemplateColumns: "1fr 80px 110px 32px" }}
-          >
-            {["Product", "Qty", "Unit Price (₱)", ""].map(label => (
-              <p
-                key={label}
-                className="font-heading"
-                style={{
-                  fontSize: 11,
-                  color: "#9B6644",
-                  fontWeight: 600,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.04em",
-                }}
-              >
-                {label}
-              </p>
-            ))}
-          </div>
-
-          {/* Rows */}
-          <div className="space-y-2.5">
-            {fields.map((field, index) => (
-              <div
-                key={field.id}
-                className="grid items-start gap-3"
-                style={{ gridTemplateColumns: "1fr 80px 110px 32px" }}
-              >
-                {/* Product */}
-                <div>
-                  <PaginatedLookup kind="products" label={`Product for item ${index + 1}`}
-                    selectedId={Number(selectedItems?.[index]?.product) || 0}
-                    params={{ is_available: isStaff ? true : undefined }}
-                    {...register(`sale_items.${index}.product`)}
-                    onSelect={product => setValue(`sale_items.${index}.unit_price`, Number(product.price))}
-                    aria-invalid={!!errors.sale_items?.[index]?.product} />
-                  {errors.sale_items?.[index]?.product && (
-                    <p className="field-error mt-1" role="alert">
-                      {errors.sale_items[index]?.product?.message}
-                    </p>
-                  )}
-                </div>
-
-                {/* Quantity */}
-                <div>
-                  <input
-                    {...register(`sale_items.${index}.quantity`)}
-                    type="number"
-                    min="1"
-                    placeholder="1"
-                    className="field-input"
-                    aria-label={`Quantity for item ${index + 1}`}
-                    aria-invalid={!!errors.sale_items?.[index]?.quantity}
-                  />
-                  {errors.sale_items?.[index]?.quantity && (
-                    <p className="field-error mt-1" role="alert">
-                      {errors.sale_items[index]?.quantity?.message}
-                    </p>
-                  )}
-                </div>
-
-                {/* Unit price */}
-                <div>
-                  <input
-                    {...register(`sale_items.${index}.unit_price`)}
-                    readOnly={isStaff}
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    placeholder="0.00"
-                    className="field-input"
-                    aria-label={`Unit price for item ${index + 1}`}
-                    aria-invalid={!!errors.sale_items?.[index]?.unit_price}
-                  />
-                  {errors.sale_items?.[index]?.unit_price && (
-                    <p className="field-error mt-1" role="alert">
-                      {errors.sale_items[index]?.unit_price?.message}
-                    </p>
-                  )}
-                </div>
-
-                {/* Remove */}
-                <button
-                  type="button"
-                  onClick={() => remove(index)}
-                  disabled={fields.length === 1}
-                  className="flex items-center justify-center rounded-lg transition-colors"
-                  style={{
-                    width: 32,
-                    height: 38,
-                    color: fields.length === 1 ? "#D1CEC7" : "#A8A49B",
-                    cursor: fields.length === 1 ? "not-allowed" : "pointer",
-                  }}
-                  onMouseOver={e => {
-                    if (fields.length > 1) {
-                      (e.currentTarget as HTMLElement).style.background = "#FEF2F2";
-                      (e.currentTarget as HTMLElement).style.color = "#EF4444";
-                    }
-                  }}
-                  onMouseOut={e => {
-                    (e.currentTarget as HTMLElement).style.background = "transparent";
-                    (e.currentTarget as HTMLElement).style.color =
-                      fields.length === 1 ? "#D1CEC7" : "#A8A49B";
-                  }}
-                  aria-label={`Remove item ${index + 1}`}
-                >
-                  <Trash2 size={14} aria-hidden="true" />
-                </button>
-              </div>
-            ))}
-          </div>
-
-          {/* Order total */}
-          <OrderTotal control={control} />
-        </div>
-
-        {/* ── Actions ── */}
-        <div className="flex items-center gap-3 pt-1">
-          <button type="submit" disabled={isPending} className="btn-primary">
-            {isPending ? "Saving…" : isEdit ? "Update Sale" : "Record Sale"}
-          </button>
-          <button type="button" onClick={() => navigate("/sales")} className="btn-ghost">
-            Cancel
+      {!isWide && ticket.lines.length > 0 && (
+        <div className="register-dock">
+          <p>
+            <span>{ticket.totals.pieces === 1 ? "1 donut" : `${ticket.totals.pieces} donuts`}</span>
+            <strong key={ticket.totals.pieces} className="num register-dock-total">{formatPeso(ticket.totals.amount)}</strong>
+          </p>
+          <button type="button" className="btn-primary" onClick={() => setSheetOpen(true)} aria-haspopup="dialog">
+            Review order
           </button>
         </div>
-      </form>
+      )}
+
+      {!isWide && (
+        <dialog ref={sheetRef} className="register-sheet" aria-label="Order ticket" onClose={() => setSheetOpen(false)}>
+          <button type="button" className="icon-button register-sheet-close" onClick={() => setSheetOpen(false)}>
+            <X size={22} aria-hidden="true" />
+            <span className="sr-only">Back to the donuts</span>
+          </button>
+          {showSheet && panel}
+        </dialog>
+      )}
+
+      <ConfirmDialog
+        open={clearOpen}
+        title="Start this order over?"
+        description="Everything on the ticket will be cleared. Nothing has been recorded yet."
+        confirmLabel="Clear the ticket"
+        cancelLabel="Keep the order"
+        destructive
+        onConfirm={() => {
+          ticket.clear();
+          setNotes("");
+          setClearOpen(false);
+        }}
+        onCancel={() => setClearOpen(false)}
+      />
+
+      <ConfirmDialog
+        open={blocker.state === "blocked"}
+        title={isEdit ? "Leave without saving?" : "Leave this order?"}
+        description={
+          isEdit
+            ? "Your changes to this sale haven't been saved."
+            : "The donuts on the ticket haven't been recorded as a sale yet."
+        }
+        confirmLabel={isEdit ? "Leave without saving" : "Leave without recording"}
+        cancelLabel={isEdit ? "Keep editing" : "Back to the order"}
+        destructive
+        onConfirm={() => blocker.proceed?.()}
+        onCancel={() => blocker.reset?.()}
+      />
     </div>
   );
+}
+
+function LockedSale({ sale }: { sale: Sale }) {
+  const cancelled = sale.status === "cancelled";
+  return (
+    <div className="card-surface p-6" role="alert">
+      <p>
+        {cancelled
+          ? "This sale was cancelled, so it can't be changed. It stays in your records."
+          : "This sale was recorded before stock tracking began, so it can't be changed here."}
+      </p>
+      <Link to="/sales" className="btn-secondary mt-4">Back to sales</Link>
+    </div>
+  );
+}
+
+export default function SaleFormPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const isEdit = id !== undefined;
+  const recordId = Number(id);
+  const saleQuery = useSale(isEdit && validRecordId(recordId) ? recordId : 0);
+
+  if (!isEdit) return <Register />;
+
+  const back = () => navigate("/sales");
+  if (!validRecordId(recordId)) return <RecordLoadError name="sale" invalidId error={undefined} retry={() => {}} back={back} />;
+  if (saleQuery.isPending) {
+    return (
+      <div aria-busy="true">
+        <span className="skeleton block h-10 w-56" />
+        <span className="skeleton mt-8 block h-96 w-full" aria-hidden="true" />
+        <span className="sr-only" role="status">Loading the sale</span>
+      </div>
+    );
+  }
+  if (saleQuery.isError || !saleQuery.data) {
+    return <RecordLoadError name="sale" invalidId={false} error={saleQuery.error} retry={() => void saleQuery.refetch()} back={back} />;
+  }
+  const sale: Sale = saleQuery.data;
+  if (sale.status === "cancelled" || sale.inventory_tracking === "legacy_unknown") return <LockedSale sale={sale} />;
+  return <Register key={sale.id} sale={sale} />;
 }

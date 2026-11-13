@@ -1,0 +1,182 @@
+/* ==========================================================================
+   SETTINGS-STYLE FORMS — grouped rows, label left and control right. Used by
+   every add/edit form; the Save bar stays pinned to the bottom of the window.
+   ========================================================================== */
+.settings-form { max-width: 820px; }
+
+.settings-group + .settings-group { margin-top: var(--space-6); }
+
+.settings-group-title {
+  margin: 0 0 var(--space-2) var(--space-5);
+  font: 600 var(--text-label) / 1.4 var(--font-sans);
+  letter-spacing: 0;
+  color: var(--color-ink-muted);
+}
+
+.settings-card {
+  overflow: hidden;
+  background: var(--color-surface);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.settings-row {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+}
+
+.settings-row + .settings-row { border-top: 1px solid var(--color-line); }
+
+@media (min-width: 768px) {
+  .settings-row {
+    grid-template-columns: 200px minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-5);
+  }
+  .settings-label { padding-top: 14px; }
+}
+
+.settings-label { font-weight: 600; }
+.settings-control { min-width: 0; }
+.settings-control > .field-hint,
+.settings-control > .field-error { margin-top: var(--space-2); }
+
+.settings-unit-input { position: relative; max-width: 240px; }
+.settings-unit-input .field-input { padding-right: 64px; }
+.settings-unit-input > span {
+  position: absolute;
+  right: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-ink-muted);
+  font-weight: 500;
+  pointer-events: none;
+}
+.settings-unit-input.is-prefix .field-input { padding: 0 var(--space-4) 0 36px; }
+.settings-unit-input.is-prefix > span { right: auto; left: var(--space-4); }
+
+.settings-readout {
+  padding-top: 12px;
+  font-family: var(--font-display);
+  font-size: var(--text-heading);
+  font-variation-settings: var(--heading-soft);
+}
+
+.settings-link {
+  color: var(--color-accent-pressed);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.settings-photo { display: flex; align-items: center; gap: var(--space-4); }
+.settings-photo img {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-control);
+  object-fit: cover;
+}
+.settings-photo-button { cursor: pointer; }
+.settings-photo-button:has(input:focus-visible) { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+
+.settings-notes {
+  display: block;
+  min-height: 7rem;
+  border: 0;
+  border-radius: 0;
+  padding: var(--space-4) var(--space-5);
+  resize: vertical;
+}
+.settings-notes:focus { box-shadow: inset 0 0 0 2px var(--color-accent); }
+
+.settings-danger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 56px;
+  border: 0;
+  background: none;
+  color: var(--color-danger);
+  font: 600 var(--text-body) / 1 var(--font-sans);
+  cursor: pointer;
+  transition: background-color var(--duration-micro) var(--ease-out-soft);
+}
+.settings-danger:hover { background: var(--color-danger-tint); }
+.settings-danger:focus-visible { outline-offset: -3px; }
+
+.settings-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+  padding: var(--space-4) 0;
+  background: var(--color-canvas);
+  border-top: 1px solid var(--color-line);
+}
+
+@media (max-width: 639px) {
+  .settings-actions .btn-primary { flex: 1; }
+}
+
+.settings-notice {
+  margin-bottom: var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--color-tint);
+  color: var(--color-accent-pressed);
+  font-size: var(--text-label);
+}
+
+/* Secondary actions (copy, delete) as full-width rows, away from Save. */
+.settings-actions-card { display: grid; }
+.settings-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 56px;
+  border: 0;
+  background: none;
+  color: var(--color-ink);
+  font: 600 var(--text-body) / 1 var(--font-sans);
+  cursor: pointer;
+  transition: background-color var(--duration-micro) var(--ease-out-soft);
+}
+.settings-action:hover { background: var(--color-canvas); }
+.settings-action:focus-visible { outline-offset: -3px; }
+.settings-actions-card > * + * { border-top: 1px solid var(--color-line); }
+
+/* From / To date pair used by the Sales and Expenses custom ranges. */
+.date-range {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-5);
+}
+.date-range > div { flex: 0 1 200px; }
+.date-range-error { flex-basis: 100%; }
+
+.settings-card-padded { padding: var(--space-4); }
+.settings-date { max-width: 240px; }
+
+/* Underlined text action for secondary choices ("Change", "Add a note", "Continue"). */
+.link-button {
+  justify-self: start;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-accent-pressed);
+  font: 600 var(--text-label) / 1 var(--font-sans);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}

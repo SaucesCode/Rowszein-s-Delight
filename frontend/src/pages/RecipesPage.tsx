@@ -1,389 +1,211 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useRecipes, useDeleteRecipe } from "@/hooks/useRecipes";
-import { useProducts } from "@/hooks/useProducts";
-import type { Recipe } from "@/types/recipe.types";
-import type { Product } from "@/types/product.types";
-import { Plus, BookOpen, SearchX, ArrowUpDown, Check } from "lucide-react";
-import PageHeader from "@/components/PageHeader";
-import SearchInput from "@/components/SearchInput";
-import PaginatedLookup from "@/components/PaginatedLookup";
-import { useListingPageRecovery } from "@/hooks/useListingPageRecovery";
-import DropdownMenu from "@/components/DropdownMenu";
-import EmptyState from "@/components/EmptyState";
-import ConfirmDialog from "@/components/ConfirmDialog";
-import Pagination from "@/components/Pagination";
-import RecipeSummaryBar from "@/components/recipes/RecipeSummaryBar";
-import MissingRecipeBanner from "@/components/recipes/MissingRecipeBanner";
-import RecipeRow from "@/components/recipes/RecipeRow";
-import RecipeCard from "@/components/recipes/RecipeCard";
+import { useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Plus } from "lucide-react";
+import { useProductMargins } from "@/hooks/useDashboard";
+import { useAllRecipes } from "@/hooks/useRecipes";
+import type { ProductMargin } from "@/services/dashboard.service";
+import DonutArt from "@/components/DonutArt";
+import { flavorOf, flavorTint } from "@/lib/flavor";
+import { formatPeso } from "@/pages/dashboard/report-format";
+import "./recipes/recipes.css";
 
-type SortOption = "name" | "batch_cost_desc" | "cost_per_unit_asc" | "most_ingredients";
+type Sort = "least" | "most" | "name";
 
-const SORT_OPTIONS: { value: SortOption; label: string }[] = [
-  { value: "name", label: "Name (A–Z)" },
-  { value: "batch_cost_desc", label: "Highest Batch Cost" },
-  { value: "cost_per_unit_asc", label: "Lowest Cost / Unit" },
-  { value: "most_ingredients", label: "Most Ingredients" },
+const SORTS: { value: Sort; label: string }[] = [
+  { value: "least", label: "Keeps the least" },
+  { value: "most", label: "Keeps the most" },
+  { value: "name", label: "A to Z" },
 ];
 
-function average(values: number[]) {
-  if (values.length === 0) return 0;
-  return values.reduce((sum, v) => sum + v, 0) / values.length;
+/** Below this share of the price, a donut is flagged as earning little. */
+const THIN_MARGIN = 30;
+
+function sortMargins(rows: ProductMargin[], sort: Sort) {
+  const copy = [...rows];
+  if (sort === "name") return copy.sort((a, b) => a.product_name.localeCompare(b.product_name));
+  return copy.sort((a, b) => (sort === "least" ? a.margin_percent - b.margin_percent : b.margin_percent - a.margin_percent));
 }
 
-/* ─────────────────────────────────────────────
-   SKELETON — summary bar shimmer + table/card
-   shimmer, same shape as IngredientsSkeleton.
-   ───────────────────────────────────────────── */
-function RecipesSkeleton() {
+function CostLine({ row, href }: { row: ProductMargin; href: string }) {
+  const price = Number(row.selling_price);
+  const cost = Number(row.production_cost);
+  const keep = Number(row.profit_per_unit);
+  const losing = keep < 0;
+  const thin = !losing && row.margin_percent < THIN_MARGIN;
+  const flavor = flavorOf(row.product_name);
+
   return (
-    <div role="status" aria-label="Loading recipes…">
-      <div
-        className="flex flex-wrap mb-6 overflow-hidden"
-        style={{ background: "#FFFDFB", border: "1px solid #E8E6E1", borderRadius: 10 }}
-      >
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div
-            key={i}
-            className="flex-1 min-w-[150px] px-5 py-4"
-            style={{ borderLeft: i > 0 ? "1px solid #F5EDE0" : undefined }}
-          >
-            <div className="skeleton" style={{ height: 10, width: "60%", borderRadius: 5 }} />
-            <div
-              className="skeleton mt-2"
-              style={{ height: 18, width: "40%", borderRadius: 5 }}
-            />
-          </div>
-        ))}
-      </div>
-
-      <div
-        className="hidden md:block overflow-hidden"
-        style={{ background: "#FFFDFB", border: "1px solid #E8E6E1", borderRadius: 10 }}
-      >
-        <table className="w-full">
-          <thead>
-            <tr style={{ background: "#F5EDE0" }}>
-              {Array.from({ length: 7 }).map((_, i) => (
-                <th key={i} className="px-4 py-3 text-left">
-                  <div
-                    className="skeleton"
-                    style={{ height: 10, width: "60%", borderRadius: 5 }}
-                  />
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {Array.from({ length: 5 }).map((_, i) => (
-              <tr key={i} style={{ borderBottom: "1px solid #F5EDE0" }}>
-                {Array.from({ length: 7 }).map((_, j) => (
-                  <td key={j} className="px-4 py-3.5">
-                    <div
-                      className="skeleton"
-                      style={{ height: 12, width: j === 0 ? "80%" : "55%", borderRadius: 6 }}
-                    />
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="md:hidden space-y-3">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div
-            key={i}
-            className="p-4"
-            style={{ background: "#FFFDFB", border: "1px solid #E8E6E1", borderRadius: 12 }}
-          >
-            <div className="flex items-center gap-3">
-              <div className="skeleton" style={{ width: 40, height: 40, borderRadius: 10 }} />
-              <div className="flex-1 space-y-2">
-                <div
-                  className="skeleton"
-                  style={{ height: 12, width: "60%", borderRadius: 5 }}
-                />
-                <div
-                  className="skeleton"
-                  style={{ height: 10, width: "40%", borderRadius: 5 }}
-                />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <span className="sr-only">Loading recipes, please wait…</span>
-    </div>
+    <li>
+      <Link to={href} className="cost-line">
+        <span className="cost-art" style={{ background: flavorTint(flavor) }} aria-hidden="true">
+          <DonutArt flavor={flavor} size={40} />
+        </span>
+        <span className="cost-main">
+          <span className="cost-top">
+            <span className="cost-name">{row.product_name}</span>
+            {!row.is_available && <span className="cost-tag">Resting</span>}
+            <span className="cost-price num">Sells for {formatPeso(price)}</span>
+          </span>
+          <span className="cost-bar" aria-hidden="true">
+            <span className="cost-bar-cost" style={{ flexGrow: losing ? 1 : cost }} />
+            {!losing && <span className="cost-bar-keep" style={{ flexGrow: keep }} />}
+          </span>
+          <span className="cost-sentence">
+            {losing
+              ? `${formatPeso(cost)} in ingredients, so each one loses ${formatPeso(Math.abs(keep))}.`
+              : `${formatPeso(cost)} in ingredients, you keep ${formatPeso(keep)}.`}
+          </span>
+        </span>
+        <span className={`cost-margin ${losing || thin ? "is-warn" : "is-good"}`}>
+          <strong className="num">{losing ? "Loss" : `${Math.round(row.margin_percent)}%`}</strong>
+          <span>{losing ? "check the price" : thin ? "kept, thin" : "kept"}</span>
+        </span>
+      </Link>
+    </li>
   );
 }
 
-/* ─────────────────────────────────────────────
-   PAGE
-   ───────────────────────────────────────────── */
+function SheetSkeleton() {
+  return (
+    <ul className="cost-lines" aria-hidden="true">
+      {Array.from({ length: 5 }, (_, index) => (
+        <li key={index} className="cost-line">
+          <span className="cost-art skeleton" />
+          <span className="cost-main">
+            <span className="skeleton block h-5 w-1/2" />
+            <span className="skeleton block h-3 w-full" />
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export default function RecipesPage() {
   const navigate = useNavigate();
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("all");
-  const [sort, setSort] = useState<SortOption>("name");
-  const [deleteTarget, setDeleteTarget] = useState<Recipe | null>(null);
+  const [sort, setSort] = useState<Sort>("least");
+  const margins = useProductMargins();
+  const recipes = useAllRecipes();
 
-  const { data, isLoading, isError, error, refetch } = useRecipes(page, { search, category: categoryFilter, ordering: sort });
-  useListingPageRecovery(page, error, setPage);
-  const { data: productsData } = useProducts(1);
-  const deleteRecipe = useDeleteRecipe();
+  const recipeIdByProduct = useMemo(
+    () => new Map((recipes.data ?? []).map(recipe => [recipe.product, recipe.id])),
+    [recipes.data],
+  );
+  const rows = margins.data ?? [];
+  const costed = sortMargins(rows.filter(row => row.has_recipe), sort);
+  const missing = rows.filter(row => !row.has_recipe);
+  const average = costed.length ? costed.reduce((sum, row) => sum + row.margin_percent, 0) / costed.length : 0;
+  const loading = margins.isPending || recipes.isPending;
+  const failed = margins.isError || recipes.isError;
 
-  const recipes: Recipe[] = data?.data?.results ?? [];
-  const totalCount: number = data?.data?.count ?? 0;
-  const totalPages = Math.ceil(totalCount / 20);
-
-  // Products cross-referenced for category labels and for spotting products
-  // that don't have a recipe yet. Like the Ingredients page's out-of-stock
-  // count, this is scoped to the first page of products (20 items) — good
-  // enough for a single shop's menu; revisit with a dedicated endpoint if
-  // the catalog grows past a page.
-  const products: Product[] = productsData?.data?.results ?? [];
-  const costedProductIds = new Set(recipes.map(recipe => recipe.product));
-  const missingRecipeProducts = products.filter(product => !costedProductIds.has(product.id));
-  const visibleRecipes = recipes;
-
-  const avgProductionCost = average(recipes.map(r => Number(r.production_cost)));
-  const avgCostPerUnit = average(recipes.map(r => Number(r.cost_per_unit)));
-  const hasActiveFilters = !!search || categoryFilter !== "all";
-
-  const handleDeleteConfirm = () => {
-    if (!deleteTarget) return;
-    deleteRecipe.mutate(deleteTarget.id, {
-      onSettled: () => setDeleteTarget(null),
-    });
+  const hrefFor = (row: ProductMargin) => {
+    const recipeId = recipeIdByProduct.get(row.product_id);
+    return recipeId ? `/recipes/${recipeId}/edit` : `/recipes/new?product=${row.product_id}`;
   };
 
+  const lede = loading || failed
+    ? " "
+    : rows.length === 0
+      ? "Add donuts to the collection first, then give each one a recipe."
+      : [
+          costed.length ? `On average you keep ${Math.round(average)}% of each donut's price.` : "",
+          missing.length ? `${missing.length} ${missing.length === 1 ? "donut still needs" : "donuts still need"} a recipe.` : "",
+        ]
+          .filter(Boolean)
+          .join(" ");
+
   return (
-    <div className="pb-20 sm:pb-0">
-      <PageHeader
-        title="Recipes"
-        description="Define ingredients and production cost per product"
-        action={
+    <div className="recipes">
+      <header className="page-head">
+        <div>
+          <h1 className="type-page">Recipe costing</h1>
+          <p className="page-lede">{lede}</p>
+        </div>
+        <button type="button" className="btn-primary" onClick={() => navigate("/recipes/new")}>
+          <Plus size={20} aria-hidden="true" />
+          Add a recipe
+        </button>
+      </header>
+
+      {failed && (
+        <div className="recipes-panel recipes-message" role="alert">
+          <h2 className="type-heading">Couldn't load the costs</h2>
+          <p>Check the internet connection, then try again.</p>
           <button
-            onClick={() => navigate("/recipes/new")}
-            className="hidden sm:flex btn-primary"
+            type="button"
+            className="btn-primary"
+            onClick={() => {
+              void margins.refetch();
+              void recipes.refetch();
+            }}
           >
-            <Plus size={15} aria-hidden="true" />
-            Add Recipe
+            Try again
           </button>
-        }
-      />
-
-      {/* Missing-recipe callout — the reason this page exists as a checklist, not just a list */}
-      {!isLoading && !isError && !hasActiveFilters && page === 1 && sort === "name" && (
-        <MissingRecipeBanner
-          productNames={missingRecipeProducts.map(p => p.name)}
-          onClick={() => navigate("/products")}
-        />
+        </div>
       )}
 
-      {/* Summary */}
-      {!isLoading && !isError && (
-        <RecipeSummaryBar
-          totalRecipes={totalCount}
-          missingCount={missingRecipeProducts.length}
-          avgProductionCost={avgProductionCost}
-          avgCostPerUnit={avgCostPerUnit}
-        />
-      )}
-
-      {/* Toolbar */}
-      <div className="flex flex-col gap-3 mb-5">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-          <SearchInput
-            value={search}
-            onChange={value => { setSearch(value); setPage(1); }}
-            placeholder="Search recipes by product…"
-            ariaLabel="Search recipes"
-          />
-          <DropdownMenu
-            width={200}
-            trigger={({ open }) => (
-              <button
-                className="btn-secondary flex-shrink-0"
-                style={{ fontSize: 13, padding: "8px 12px" }}
-                aria-haspopup="menu"
-                aria-expanded={open}
-              >
-                <ArrowUpDown size={14} strokeWidth={2} aria-hidden="true" />
-                Sort
-              </button>
-            )}
-          >
-            {SORT_OPTIONS.map(opt => (
-              <button
-                key={opt.value}
-                onClick={() => { setSort(opt.value); setPage(1); }}
-                className="flex items-center justify-between gap-2 w-full text-left px-3.5 py-2.5 transition-colors hover:bg-[#FFF8F0]"
-                style={{ fontSize: 13, color: "#6B4226" }}
-              >
-                {opt.label}
-                {sort === opt.value && (
-                  <Check size={14} style={{ color: "#FF6FAE" }} aria-hidden="true" />
-                )}
-              </button>
+      {!failed && missing.length > 0 && (
+        <section className="recipes-missing" aria-labelledby="missing-title">
+          <h2 id="missing-title" className="recipes-section-title">Still needs a recipe</h2>
+          <p className="recipes-hint">Without one, you can't see what these donuts cost to make.</p>
+          <ul>
+            {missing.map(row => (
+              <li key={row.product_id}>
+                <span className="cost-art" style={{ background: flavorTint(flavorOf(row.product_name)) }} aria-hidden="true">
+                  <DonutArt flavor={flavorOf(row.product_name)} size={32} />
+                </span>
+                <span className="recipes-missing-name">{row.product_name}</span>
+                <Link to={hrefFor(row)} className="btn-secondary">
+                  Add its recipe<span className="sr-only"> for {row.product_name}</span>
+                </Link>
+              </li>
             ))}
-          </DropdownMenu>
-        </div>
-
-        <PaginatedLookup kind="categories" label="Filter recipes by category" selectedId={Number(categoryFilter) || 0}
-          params={{ is_active: true }} onChange={event => { setCategoryFilter(event.target.value === "0" ? "all" : event.target.value); setPage(1); }} />
-      </div>
-
-      {isLoading && <RecipesSkeleton />}
-      {isError && <button type="button" onClick={() => { void refetch(); }}>Retry recipes</button>}
-
-      {isError && (
-        <div
-          className="p-8 text-center"
-          style={{ background: "#FFFDFB", border: "1px solid #E8E6E1", borderRadius: 10 }}
-        >
-          <p className="font-body" style={{ fontSize: 13, color: "#EF4444" }}>
-            Failed to load recipes. Please try refreshing the page.
-          </p>
-        </div>
+          </ul>
+        </section>
       )}
 
-      {!isLoading && !isError && totalCount === 0 && !hasActiveFilters && (
-        <div style={{ background: "#FFFDFB", border: "1px solid #E8E6E1", borderRadius: 10 }}>
-          <EmptyState
-            icon={BookOpen}
-            title="No recipes yet"
-            description="Define a recipe for each product to calculate accurate production costs."
-            action={
-              <button onClick={() => navigate("/recipes/new")} className="btn-primary">
-                <Plus size={15} aria-hidden="true" />
-                Add Recipe
-              </button>
-            }
-          />
-        </div>
-      )}
-
-      {!isLoading && !isError && hasActiveFilters && visibleRecipes.length === 0 && (
-        <div style={{ background: "#FFFDFB", border: "1px solid #E8E6E1", borderRadius: 10 }}>
-          <EmptyState
-            icon={SearchX}
-            title="No recipes match your filters"
-            description="Try a different search or category filter."
-            action={
-              hasActiveFilters ? (
-                <button
-                  onClick={() => {
-                    setSearch("");
-                    setPage(1);
-                    setCategoryFilter("all");
-                  }}
-                  className="btn-secondary"
-                >
-                  Clear filters
+      {!failed && (
+        <section className="recipes-panel" aria-labelledby="sheet-title">
+          <div className="recipes-panel-head">
+            <div>
+              <h2 id="sheet-title" className="recipes-section-title">What each donut earns</h2>
+              <p className="recipes-legend">
+                <span className="legend-swatch is-cost" aria-hidden="true" /> Ingredients
+                <span className="legend-swatch is-keep" aria-hidden="true" /> What you keep
+              </p>
+            </div>
+            <div className="segmented" role="group" aria-label="Order">
+              {SORTS.map(option => (
+                <button key={option.value} type="button" aria-pressed={sort === option.value} onClick={() => setSort(option.value)}>
+                  {option.label}
                 </button>
-              ) : undefined
-            }
-          />
-        </div>
-      )}
-
-      {!isLoading && !isError && visibleRecipes.length > 0 && (
-        <>
-          {/* Desktop table */}
-          <div
-            className="hidden md:block overflow-hidden overflow-x-auto"
-            style={{ background: "#FFFDFB", border: "1px solid #E8E6E1", borderRadius: 10 }}
-          >
-            <table className="w-full text-sm" style={{ minWidth: 700 }}>
-              <thead>
-                <tr className="table-header-row">
-                  {[
-                    "Product",
-                    "Category",
-                    "Ingredients",
-                    "Yield",
-                    "Batch Cost",
-                    "Cost / Unit",
-                    "",
-                  ].map(col => (
-                    <th
-                      key={col}
-                      className="px-4 py-3 text-left"
-                      style={{ whiteSpace: "nowrap" }}
-                    >
-                      {col}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {visibleRecipes.map(recipe => (
-                  <RecipeRow
-                    key={recipe.id}
-                    recipe={recipe}
-                    category={recipe.category?.name}
-                    onEdit={() => navigate(`/recipes/${recipe.id}/edit`)}
-                    onDelete={() => setDeleteTarget(recipe)}
-                  />
-                ))}
-              </tbody>
-            </table>
+              ))}
+            </div>
           </div>
 
-          {/* Mobile cards */}
-          <div className="md:hidden space-y-3">
-            {visibleRecipes.map(recipe => (
-              <RecipeCard
-                key={recipe.id}
-                recipe={recipe}
-                category={recipe.category?.name}
-                onEdit={() => navigate(`/recipes/${recipe.id}/edit`)}
-                onDelete={() => setDeleteTarget(recipe)}
-              />
-            ))}
-          </div>
-
-          <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
-        </>
+          {loading ? (
+            <>
+              <SheetSkeleton />
+              <span className="sr-only" role="status">Loading the costs</span>
+            </>
+          ) : costed.length === 0 ? (
+            <div className="recipes-message">
+              <DonutArt flavor="classic" size={72} />
+              <p>No recipes yet. Add one and you'll see, to the centavo, what each donut costs and what you keep.</p>
+              <button type="button" className="btn-primary" onClick={() => navigate("/recipes/new")}>
+                <Plus size={20} aria-hidden="true" />
+                Add a recipe
+              </button>
+            </div>
+          ) : (
+            <ul className="cost-lines">
+              {costed.map(row => (
+                <CostLine key={row.product_id} row={row} href={hrefFor(row)} />
+              ))}
+            </ul>
+          )}
+        </section>
       )}
-
-      {/* Mobile floating action button */}
-      <button
-        onClick={() => navigate("/recipes/new")}
-        className="sm:hidden fixed z-30 flex items-center justify-center rounded-full transition-transform active:scale-95"
-        style={{
-          bottom: 24,
-          right: 20,
-          width: 56,
-          height: 56,
-          background: "#FF6FAE",
-          boxShadow: "0 8px 24px rgba(255, 111, 174, 0.45)",
-        }}
-        aria-label="Add a new recipe"
-      >
-        <Plus size={24} color="#FFFFFF" strokeWidth={2.5} aria-hidden="true" />
-      </button>
-
-      <ConfirmDialog
-        open={!!deleteTarget}
-        title="Delete recipe?"
-        description={
-          deleteTarget
-            ? `The recipe for "${deleteTarget.product_name}" will be permanently deleted. Production cost calculations for this product will no longer be available.`
-            : ""
-        }
-        confirmLabel="Delete"
-        destructive
-        loading={deleteRecipe.isPending}
-        onConfirm={handleDeleteConfirm}
-        onCancel={() => setDeleteTarget(null)}
-      />
     </div>
   );
 }

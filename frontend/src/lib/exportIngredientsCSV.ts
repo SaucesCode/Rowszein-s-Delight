@@ -1,11 +1,5 @@
 import type { Ingredient } from "@/types/ingredient.types";
-import { resolveStockStatus } from "@/components/ingredients/StockStatusBadge";
-
-const STATUS_LABEL: Record<string, string> = {
-  healthy: "Healthy",
-  low_stock: "Low Stock",
-  out_of_stock: "Out of Stock",
-};
+import { STOCK_STATUS_LABEL, stockStatus } from "@/lib/stockStatus";
 
 /**
  * Ingredients don't have a backend export endpoint yet (unlike Sales/Expenses),
@@ -25,13 +19,13 @@ export function exportIngredientsCSV(ingredients: Ingredient[]) {
 
   const rows = ingredients.map(ingredient => [
     ingredient.name,
-    ingredient.category ?? "",
+    ingredient.category_display ?? ingredient.category ?? "",
     ingredient.quantity,
     ingredient.unit,
     ingredient.minimum_stock,
     ingredient.cost_per_unit,
     ingredient.supplier ?? "",
-    STATUS_LABEL[resolveStockStatus(ingredient)],
+    STOCK_STATUS_LABEL[stockStatus(ingredient)],
   ]);
 
   const csv = [header, ...rows]

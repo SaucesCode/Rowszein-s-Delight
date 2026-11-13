@@ -1,71 +1,43 @@
 import { Outlet } from "react-router-dom";
-import { CakeSlice } from "lucide-react";
+import DonutArt from "@/components/DonutArt";
+import { BrandDonutIcon } from "@/pages/owner-home/OwnerHomeIcons";
+import "@/pages/auth/auth.css";
 
+const manilaHour = new Intl.DateTimeFormat("en-US", { hour: "numeric", hourCycle: "h23", timeZone: "Asia/Manila" });
+
+function welcomeLine(): string {
+  const hour = Number(manilaHour.format(new Date()));
+  if (hour < 11) return "The first batch is waiting.";
+  if (hour < 17) return "Let's see how the day is going.";
+  return "Time to count the day's sweetness.";
+}
+
+/** Sign-in frame: a blush "shop window" beside the form. */
 export default function AuthLayout() {
   return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-center px-4 py-12"
-      style={{ background: "#FFF8F0" }}
-    >
-      {/* Decorative background rings — purely visual */}
-      <div aria-hidden="true" className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div
-          className="absolute rounded-full"
-          style={{
-            width: 500,
-            height: 500,
-            top: -180,
-            right: -140,
-            background: "radial-gradient(circle, #FFD6E7 0%, transparent 70%)",
-            opacity: 0.45,
-          }}
-        />
-        <div
-          className="absolute rounded-full"
-          style={{
-            width: 360,
-            height: 360,
-            bottom: -120,
-            left: -100,
-            background: "radial-gradient(circle, #FFD6E7 0%, transparent 70%)",
-            opacity: 0.3,
-          }}
-        />
-      </div>
-
-      {/* Shop logo mark */}
-      <div className="relative mb-6 text-center animate-slide-up">
-        <div
-          className="inline-flex items-center justify-center rounded-2xl mb-3"
-          style={{
-            width: 52,
-            height: 52,
-            background: "linear-gradient(135deg, #FF6FAE 0%, #E5528A 100%)",
-            boxShadow: "0 4px 16px rgba(255,111,174,0.40)",
-          }}
-        >
-          <CakeSlice size={26} color="#FFFFFF" />
+    <div className="auth">
+      <aside className="auth-window" aria-hidden="true">
+        <div className="auth-brand">
+          <BrandDonutIcon width={32} height={32} />
+          <span>Rowszein's Delight</span>
         </div>
-        <p
-          className="font-heading font-semibold"
-          style={{ fontSize: 20, color: "#6B4226", lineHeight: 1.2 }}
-        >
-          Rowszein's Delight
-        </p>
-        <p className="font-body mt-1" style={{ fontSize: 13, color: "#9B6644" }}>
-          Owner Portal
-        </p>
-      </div>
+        <div className="auth-tray">
+          <span className="auth-donut is-a"><DonutArt flavor="strawberry" size={132} /></span>
+          <span className="auth-donut is-b"><DonutArt flavor="matcha" size={96} /></span>
+          <span className="auth-donut is-c"><DonutArt flavor="choco" size={112} /></span>
+          <span className="auth-donut is-d"><DonutArt flavor="ube" size={80} /></span>
+        </div>
+        <p className="auth-line">{welcomeLine()}</p>
+      </aside>
 
-      {/* Page content (LoginPage renders here) */}
-      <div className="relative w-full max-w-sm animate-slide-up">
+      <main className="auth-main">
+        <div className="auth-brand auth-brand-compact">
+          <BrandDonutIcon width={28} height={28} aria-hidden="true" />
+          <span>Rowszein's Delight</span>
+        </div>
         <Outlet />
-      </div>
-
-      {/* Footer */}
-      <p className="relative mt-8 font-body" style={{ fontSize: 12, color: "#A8A49B" }}>
-        © {new Date().getFullYear()} Rowszein's Delight
-      </p>
+        <p className="auth-footer">© {new Date().getFullYear()} Rowszein's Delight</p>
+      </main>
     </div>
   );
 }
