@@ -1,11 +1,14 @@
-export type Flavor = "strawberry" | "matcha" | "choco" | "ube" | "classic";
+export type Flavor = "strawberry" | "blueberry" | "matcha" | "choco" | "ube" | "caramel" | "classic";
 
+// Order matters: "blueberry" must be checked before the generic "berry".
 const FLAVOR_WORDS: [Flavor, string[]][] = [
+  ["blueberry", ["blueberry"]],
   ["strawberry", ["strawberry", "berry", "raspberry", "pink"]],
   ["choco", ["choco", "cocoa", "bavarian", "velvet", "mocha"]],
   ["matcha", ["matcha", "green tea", "pistachio"]],
   ["ube", ["ube", "taro", "purple"]],
-  ["classic", ["classic", "glazed", "cinnamon", "sugar", "vanilla", "custard"]],
+  ["caramel", ["caramel", "cinnamon", "biscoff", "butterscotch", "maple", "dulce", "honey"]],
+  ["classic", ["classic", "glazed", "sugar", "vanilla", "custard"]],
 ];
 
 function match(text: string | undefined): Flavor | undefined {

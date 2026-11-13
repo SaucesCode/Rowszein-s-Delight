@@ -1,5 +1,5 @@
 import type { Ref } from "react";
-import DonutArt from "@/components/DonutArt";
+import PatisserieDonut from "./PatisserieDonut";
 import type { CartItem } from "@/hooks/useCart";
 import { flavorOf } from "@/lib/flavor";
 import { formatPeso } from "@/pages/dashboard/report-format";
@@ -26,7 +26,7 @@ export default function BoxDock({ items, totalItems, totalAmount, windowRef, onR
       <span ref={windowRef} className="box-window" aria-hidden="true">
         {shown.map((unit, index) => (
           <span key={`${unit.product_id}-${index}`} className="box-window-donut">
-            <DonutArt flavor={flavorOf(unit.name)} size={30} />
+            <PatisserieDonut flavor={flavorOf(unit.name)} size={30} />
           </span>
         ))}
         {extra > 0 && <span className="box-window-more num">+{extra}</span>}

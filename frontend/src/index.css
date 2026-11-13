@@ -82,6 +82,16 @@
   --color-glaze-ube-tint: #f1ecf8;
   --color-glaze-classic: #f1d4a6;
   --color-glaze-classic-tint: #fbf1e2;
+  --color-glaze-blueberry: #7d79b8;
+  --color-glaze-blueberry-tint: #efeef8;
+  --color-glaze-caramel: #b9763c;
+  --color-glaze-caramel-tint: #fbf0e3;
+
+  /* ── Gilt: thin brass-and-gold trim for the shop. Decorative lines use
+        --color-gilt (2.6:1, never for text); text uses --color-gilt-ink (5.9:1). ── */
+  --color-gilt: #b8935a;
+  --color-gilt-soft: #dcc59d;
+  --color-gilt-ink: #7a5a2b;
 
   /* ── Radii: size encodes hierarchy ── */
   --radius-control: 12px;

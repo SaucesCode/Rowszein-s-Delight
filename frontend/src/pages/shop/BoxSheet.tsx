@@ -1,8 +1,8 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Download, Minus, Plus, X } from "lucide-react";
-import DonutArt from "@/components/DonutArt";
+import PatisserieDonut from "./PatisserieDonut";
 import type { CartItem, useCart } from "@/hooks/useCart";
-import { flavorOf, flavorTint } from "@/lib/flavor";
+import { flavorOf } from "@/lib/flavor";
 import { formatPeso } from "@/pages/dashboard/report-format";
 import OrderCard from "./OrderCard";
 import { SHOP_MESSENGER, cardNumber, downloadNodeAsPng, orderText } from "./order";
@@ -138,8 +138,8 @@ export default function BoxSheet({ open, onClose, cart }: BoxSheetProps) {
                   const flavor = flavorOf(item.name);
                   return (
                     <li key={item.product_id} className="box-line">
-                      <span className="box-line-art" style={{ background: item.image_url ? undefined : flavorTint(flavor) }} aria-hidden="true">
-                        {item.image_url ? <img src={item.image_url} alt="" width={48} height={48} /> : <DonutArt flavor={flavor} size={40} />}
+                      <span className="box-line-art" aria-hidden="true">
+                        {item.image_url ? <img src={item.image_url} alt="" width={48} height={48} /> : <PatisserieDonut flavor={flavor} size={40} />}
                       </span>
                       <span className="box-line-text">
                         <span className="box-line-name">{item.name}</span>

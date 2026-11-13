@@ -1,3 +1,5 @@
+import { Star } from "lucide-react";
+
 /** A pastry box, used for the customer's box everywhere on the shop. */
 export function BoxIcon({ size = 20 }: { size?: number }) {
   return (
@@ -36,5 +38,38 @@ export function Doily({ className }: { className?: string }) {
       <circle cx="100" cy="100" r="84" className="doily-perforation" />
       <circle cx="100" cy="100" r="74" className="doily-ring" />
     </svg>
+  );
+}
+
+/** Gilt divider: two hairlines meeting at a small donut, used between shop sections. */
+export function Ornament({ className }: { className?: string }) {
+  return (
+    <svg className={className} width="168" height="16" viewBox="0 0 168 16" fill="none" aria-hidden="true">
+      <path d="M0 8h66M102 8h66" stroke="currentColor" strokeWidth="1" />
+      <path d="M70 8l4-3 4 3-4 3z M90 8l4-3 4 3-4 3z" fill="currentColor" />
+      <circle cx="84" cy="8" r="5" stroke="currentColor" strokeWidth="1.2" />
+      <circle cx="84" cy="8" r="1.6" fill="currentColor" />
+    </svg>
+  );
+}
+
+/**
+ * A donut's name with the best-seller star tied to its last word, so the star
+ * never wraps onto a line of its own.
+ */
+export function DonutName({ name, bestSeller, starSize = 13 }: { name: string; bestSeller: boolean; starSize?: number }) {
+  if (!bestSeller) return <>{name}</>;
+  const split = name.lastIndexOf(" ");
+  return (
+    <>
+      {split > 0 && `${name.slice(0, split)} `}
+      <span className="donut-name-tail">
+        {name.slice(split + 1)}
+        <span className="donut-star" title="Best seller">
+          <Star size={starSize} strokeWidth={2} aria-hidden="true" />
+          <span className="sr-only">, best seller</span>
+        </span>
+      </span>
+    </>
   );
 }

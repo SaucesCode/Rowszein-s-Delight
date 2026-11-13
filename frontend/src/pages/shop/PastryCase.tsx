@@ -1,9 +1,9 @@
 import { memo, useId, useRef, type CSSProperties } from "react";
-import { Star } from "lucide-react";
-import DonutArt from "@/components/DonutArt";
-import { flavorOf, flavorTint } from "@/lib/flavor";
+import PatisserieDonut from "./PatisserieDonut";
+import { flavorOf } from "@/lib/flavor";
 import { formatPeso } from "@/pages/dashboard/report-format";
 import type { Product } from "@/types/product.types";
+import { Doily, DonutName } from "./ShopIcons";
 import type { Shelf } from "./shelves";
 import { useShelfColumns } from "./useShelfColumns";
 
@@ -18,7 +18,7 @@ interface CaseItemProps {
 const CaseItem = memo(function CaseItem({ product, inBox, order, onAdd }: CaseItemProps) {
   const descriptionId = useId();
   const flavor = flavorOf(product.name, product.category?.name);
-  const label = `Add ${product.name}, ${formatPeso(Number(product.price))}${inBox ? `. ${inBox} in your box` : ""}`;
+  const label = `Add ${product.name}${product.is_featured ? ", best seller" : ""}, ${formatPeso(Number(product.price))}${inBox ? `. ${inBox} in your box` : ""}`;
 
   return (
     <li className="case-item" style={{ "--i": Math.min(order, 8) } as CSSProperties}>
@@ -33,21 +33,16 @@ const CaseItem = memo(function CaseItem({ product, inBox, order, onAdd }: CaseIt
         }}
       >
         <span className="case-plate" aria-hidden="true">
-          <span className="case-art" style={{ background: product.image_url ? undefined : flavorTint(flavor) }}>
-            {product.image_url ? <img src={product.image_url} alt="" loading="lazy" width={96} height={96} /> : <DonutArt flavor={flavor} size={84} />}
+          <Doily className="case-doily" />
+          <span className="case-art">
+            {product.image_url ? <img src={product.image_url} alt="" loading="lazy" width={96} height={96} /> : <PatisserieDonut flavor={flavor} size={84} />}
           </span>
           {inBox > 0 && <span className="case-count num">{inBox}</span>}
         </span>
         <span className="case-glass" aria-hidden="true" />
         <span className="case-tag" aria-hidden="true">
           <span className="case-name">
-            {product.name}
-            {product.is_featured && "\u2060" /* keeps the star on the same line as the name */}
-            {product.is_featured && (
-              <span className="case-star" title="Best seller">
-                <Star size={13} strokeWidth={2} />
-              </span>
-            )}
+            <DonutName name={product.name} bestSeller={product.is_featured} />
           </span>
           <span className="case-price num">{formatPeso(Number(product.price))}</span>
         </span>

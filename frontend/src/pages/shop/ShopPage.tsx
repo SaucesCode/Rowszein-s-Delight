@@ -12,7 +12,7 @@ import BoxSheet from "./BoxSheet";
 import ContactSection from "./ContactSection";
 import HowToOrder from "./HowToOrder";
 import ShopHero from "./ShopHero";
-import { BoxIcon } from "./ShopIcons";
+import { BoxIcon, Ornament } from "./ShopIcons";
 import { SHOP_EMAIL, SHOP_MESSENGER } from "./order";
 import { toShelves } from "./shelves";
 import { useFlyToBox } from "./useFlyToBox";
@@ -101,11 +101,12 @@ export default function ShopPage() {
 
       <header className={`shop-header${headerStuck ? " is-stuck" : ""}`}>
         <div className="shop-header-inner">
-          <a className="shop-brand" href="#top">
-            <BrandDonutIcon width={28} height={28} aria-hidden="true" />
-            <span>Rowszein's Delight</span>
-          </a>
-          <nav className="shop-header-actions" aria-label="Shop">
+          <nav className="shop-header-nav" aria-label="Sections">
+            <a className="shop-header-link" href="#menu">Today's donuts</a>
+            <a className="shop-header-link" href="#how">How to order</a>
+          </nav>
+          <a className="shop-brand" href="#top">Rowszein's Delight</a>
+          <div className="shop-header-actions">
             <a className="shop-header-link" href="#contact">Ask us</a>
             <button ref={boxButtonRef} type="button" className="shop-box-button" onClick={() => setSheetOpen(true)}>
               <BoxIcon />
@@ -115,7 +116,7 @@ export default function ShopPage() {
                 <span className="sr-only">{totalItems === 1 ? " donut" : " donuts"}</span>
               </span>
             </button>
-          </nav>
+          </div>
         </div>
       </header>
 
@@ -123,91 +124,96 @@ export default function ShopPage() {
         <ShopHero products={showcase} onAdd={add} />
 
         <div id="menu" className="shop-intro" data-reveal="">
+          <Ornament className="shop-ornament" />
           <h2 className="shop-title">Today's donuts</h2>
           <p className="shop-lede">Tap the ones you'd like. When your box looks right, send it to us on Messenger.</p>
         </div>
 
-        <div id="case" ref={caseRef} className={`case${caseLit ? " is-lit" : ""}`} tabIndex={-1}>
-          <div className="case-tools">
-            <div className="chip-row" role="group" aria-label="Show">
-              <button type="button" className="chip" aria-pressed={category === "all"} onClick={() => setCategory("all")}>
-                Everything
-              </button>
-              {categories.map(item => (
-                <button
-                  key={item.id}
-                  type="button"
-                  className="chip"
-                  aria-pressed={category === String(item.id)}
-                  onClick={() => setCategory(String(item.id))}
-                >
-                  {item.name}
-                </button>
-              ))}
-            </div>
-            <label className="search-field case-search">
-              <span className="sr-only">Find a donut</span>
-              <Search size={18} aria-hidden="true" />
-              <input
-                type="search"
-                maxLength={100}
-                value={query}
-                placeholder="Find a donut"
-                onChange={event => setQuery(event.target.value)}
-              />
-            </label>
-          </div>
-
-          {catalog.isPending && (
-            <>
-              <PastryCaseSkeleton />
-              <span className="sr-only" role="status">Loading today's donuts</span>
-            </>
-          )}
-
-          {catalog.isError && (
-            <div className="case-message" role="alert">
-              <h2 className="case-message-title">The case didn't load</h2>
-              <p>Check your internet connection, then try again.</p>
-              <button type="button" className="btn-primary" onClick={() => void catalog.refetch()}>Try again</button>
-            </div>
-          )}
-
-          {catalog.isSuccess && products.length === 0 && (
-            <div className="case-message">
-              {filtered ? (
-                <>
-                  <h2 className="case-message-title">{search ? `No donuts called “${search}”` : "Nothing on this shelf today"}</h2>
-                  <p>Try another name, or look at everything in the case.</p>
-                  <button type="button" className="btn-secondary" onClick={showEverything}>Show everything</button>
-                </>
-              ) : (
-                <>
-                  <h2 className="case-message-title">The case is empty right now</h2>
-                  <p>Message us to ask what's coming out next.</p>
-                  <a className="btn-secondary" href={SHOP_MESSENGER} target="_blank" rel="noopener noreferrer">
-                    Message us on Messenger
-                  </a>
-                </>
-              )}
-            </div>
-          )}
-
-          {products.length > 0 && <PastryCase shelves={shelves} quantityOf={quantityOf} onAdd={add} />}
-
-          {catalog.hasNextPage && (
-            <div className="case-more">
+        <div className="case-tools">
+          <div className="chip-row" role="group" aria-label="Show">
+            <button type="button" className="chip" aria-pressed={category === "all"} onClick={() => setCategory("all")}>
+              Everything
+            </button>
+            {categories.map(item => (
               <button
+                key={item.id}
                 type="button"
-                className="btn-secondary"
-                disabled={catalog.isFetchingNextPage}
-                aria-busy={catalog.isFetchingNextPage}
-                onClick={() => void catalog.fetchNextPage()}
+                className="chip"
+                aria-pressed={category === String(item.id)}
+                onClick={() => setCategory(String(item.id))}
               >
-                {catalog.isFetchingNextPage ? "Loading…" : "Show more donuts"}
+                {item.name}
               </button>
-            </div>
-          )}
+            ))}
+          </div>
+          <label className="search-field case-search">
+            <span className="sr-only">Find a donut</span>
+            <Search size={18} aria-hidden="true" />
+            <input
+              type="search"
+              maxLength={100}
+              value={query}
+              placeholder="Find a donut"
+              onChange={event => setQuery(event.target.value)}
+            />
+          </label>
+        </div>
+
+        <div id="case" ref={caseRef} className={`case${caseLit ? " is-lit" : ""}`} tabIndex={-1}>
+          <div className="case-crown" aria-hidden="true" />
+          <div className="case-interior">
+            {catalog.isPending && (
+              <>
+                <PastryCaseSkeleton />
+                <span className="sr-only" role="status">Loading today's donuts</span>
+              </>
+            )}
+
+            {catalog.isError && (
+              <div className="case-message" role="alert">
+                <h2 className="case-message-title">The case didn't load</h2>
+                <p>Check your internet connection, then try again.</p>
+                <button type="button" className="btn-primary" onClick={() => void catalog.refetch()}>Try again</button>
+              </div>
+            )}
+
+            {catalog.isSuccess && products.length === 0 && (
+              <div className="case-message">
+                {filtered ? (
+                  <>
+                    <h2 className="case-message-title">{search ? `No donuts called “${search}”` : "Nothing on this shelf today"}</h2>
+                    <p>Try another name, or look at everything in the case.</p>
+                    <button type="button" className="btn-secondary" onClick={showEverything}>Show everything</button>
+                  </>
+                ) : (
+                  <>
+                    <h2 className="case-message-title">The case is empty right now</h2>
+                    <p>Message us to ask what's coming out next.</p>
+                    <a className="btn-secondary" href={SHOP_MESSENGER} target="_blank" rel="noopener noreferrer">
+                      Message us on Messenger
+                    </a>
+                  </>
+                )}
+              </div>
+            )}
+
+            {products.length > 0 && <PastryCase shelves={shelves} quantityOf={quantityOf} onAdd={add} />}
+
+            {catalog.hasNextPage && (
+              <div className="case-more">
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  disabled={catalog.isFetchingNextPage}
+                  aria-busy={catalog.isFetchingNextPage}
+                  onClick={() => void catalog.fetchNextPage()}
+                >
+                  {catalog.isFetchingNextPage ? "Loading…" : "Show more donuts"}
+                </button>
+              </div>
+            )}
+          </div>
+          <div className="case-base" aria-hidden="true" />
         </div>
 
         <HowToOrder />
@@ -215,14 +221,17 @@ export default function ShopPage() {
       </main>
 
       <footer className="shop-footer" data-reveal="">
-        <span className="shop-footer-brand">Rowszein's Delight</span>
-        <a href={SHOP_MESSENGER} target="_blank" rel="noopener noreferrer">Messenger</a>
-        <a href={`mailto:${SHOP_EMAIL}`}>{SHOP_EMAIL}</a>
-        <span>© {new Date().getFullYear()}</span>
-        {/* Staff sign-in. Deliberately plain so customers read it as a brand mark. */}
-        <Link to="/login" className="shop-footer-mark" aria-label="Staff sign in">
-          <BrandDonutIcon width={18} height={18} aria-hidden="true" />
-        </Link>
+        <Ornament className="shop-ornament" />
+        <p className="shop-footer-brand">Rowszein's Delight</p>
+        <div className="shop-footer-links">
+          <a href={SHOP_MESSENGER} target="_blank" rel="noopener noreferrer">Messenger</a>
+          <a href={`mailto:${SHOP_EMAIL}`}>{SHOP_EMAIL}</a>
+          <span>© {new Date().getFullYear()}</span>
+          {/* Staff sign-in. Deliberately plain so customers read it as a brand mark. */}
+          <Link to="/login" className="shop-footer-mark" aria-label="Staff sign in">
+            <BrandDonutIcon width={18} height={18} aria-hidden="true" />
+          </Link>
+        </div>
       </footer>
 
       {totalItems > 0 && (

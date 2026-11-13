@@ -1,10 +1,10 @@
 import { useRef, useState } from "react";
-import { ArrowDown, Star } from "lucide-react";
-import DonutArt from "@/components/DonutArt";
-import { flavorOf, flavorTint } from "@/lib/flavor";
+import { ArrowDown } from "lucide-react";
+import PatisserieDonut from "./PatisserieDonut";
+import { flavorOf } from "@/lib/flavor";
 import { formatPeso } from "@/pages/dashboard/report-format";
 import type { Product } from "@/types/product.types";
-import { Doily } from "./ShopIcons";
+import { DonutName, Doily } from "./ShopIcons";
 
 const PICKS = 4;
 
@@ -51,7 +51,7 @@ export default function ShopHero({ products, onAdd }: ShopHeroProps) {
               {current?.image_url ? (
                 <img src={current.image_url} alt="" width={240} height={240} fetchPriority="high" />
               ) : (
-                <DonutArt flavor={flavor} size={240} />
+                <PatisserieDonut flavor={flavor} size={240} />
               )}
             </span>
           </span>
@@ -61,14 +61,7 @@ export default function ShopHero({ products, onAdd }: ShopHeroProps) {
           <div className="hero-caption">
             <div className="hero-caption-text">
               <p className="hero-name">
-                {current.name}
-                {current.is_featured && "\u2060" /* keeps the star on the same line as the name */}
-                {current.is_featured && (
-                  <span className="hero-star" title="Best seller">
-                    <Star size={15} strokeWidth={2} aria-hidden="true" />
-                    <span className="sr-only">, best seller</span>
-                  </span>
-                )}
+                <DonutName name={current.name} bestSeller={current.is_featured} starSize={15} />
               </p>
               <p className="hero-price num">{formatPeso(Number(current.price))}</p>
             </div>
@@ -97,8 +90,8 @@ export default function ShopHero({ products, onAdd }: ShopHeroProps) {
                   aria-pressed={product.id === current?.id}
                   onClick={() => setChosenId(product.id)}
                 >
-                  <span className="hero-pick-art" style={{ background: product.image_url ? undefined : flavorTint(pickFlavor) }}>
-                    {product.image_url ? <img src={product.image_url} alt="" width={40} height={40} /> : <DonutArt flavor={pickFlavor} size={36} />}
+                  <span className="hero-pick-art">
+                    {product.image_url ? <img src={product.image_url} alt="" width={40} height={40} /> : <PatisserieDonut flavor={pickFlavor} size={36} />}
                   </span>
                   <span className="sr-only">{product.name}</span>
                 </button>
