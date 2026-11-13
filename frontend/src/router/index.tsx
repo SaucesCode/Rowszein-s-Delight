@@ -10,7 +10,6 @@ import { can } from "@/lib/permissions";
 
 // Each page downloads on first visit; OwnerLayout shows a skeleton meanwhile.
 const ShopPage = lazy(() => import("@/pages/shop/ShopPage"));
-const OwnerHomePreviewHarness = lazy(() => import("@/pages/owner-home/OwnerHomePreviewHarness"));
 const OwnerHomePage = lazy(() => import("@/pages/OwnerHomePage"));
 const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
 const IngredientsPage = lazy(() => import("@/pages/IngredientsPage"));
@@ -45,11 +44,6 @@ const router = createBrowserRouter([
     element: <Suspense fallback={null}><ShopPage /></Suspense>,
   },
 
-  // ── Visual Verification Preview Harness ──
-  {
-    path: "/preview/owner-home",
-    element: <Suspense fallback={null}><OwnerHomePreviewHarness /></Suspense>,
-  },
 
   // ── Public — sign-in for the owner and staff; not linked from the shop ──
   {

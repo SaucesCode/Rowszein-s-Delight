@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from backend.uploads import validate_photo
 from .models import Ingredient
 from sales.storage_precision import validate_quantity_storage
 
@@ -39,6 +40,9 @@ class IngredientSerializer(serializers.ModelSerializer):
         if obj.image and request:
             return request.build_absolute_uri(obj.image.url)
         return None
+
+    def validate_image(self, value):
+        return validate_photo(value)
 
     def validate_name(self, value):
         qs = Ingredient.objects.filter(name__iexact=value)

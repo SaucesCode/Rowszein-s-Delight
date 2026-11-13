@@ -13,7 +13,7 @@ from django.core.exceptions import ValidationError
 from django.db import connection, connections, IntegrityError, transaction
 from django.db.models.deletion import ProtectedError
 from django.test import TestCase, TransactionTestCase
-from rest_framework.test import APIClient
+from accounts.session_fixtures import SessionClient
 from accounts.models import User
 
 from ingredients.models import Ingredient
@@ -246,7 +246,7 @@ class ExtendedConcurrencyTests(base.SalesFixture, TransactionTestCase):
                     cursor.execute("SET statement_timeout='12s'")
                     cursor.execute('SELECT pg_backend_pid()')
                     worker_pid.append(cursor.fetchone()[0])
-                client = APIClient()
+                client = SessionClient()
                 client.force_authenticate(self.user)
                 ready.set()
                 return self.create(client=client)

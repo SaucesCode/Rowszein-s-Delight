@@ -1,7 +1,17 @@
+import shutil
+import tempfile
 from decimal import Decimal
+from io import BytesIO
+from unittest.mock import patch
 
-from django.test import TestCase
+import cloudinary.exceptions
+from django.core.files.base import ContentFile
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import TestCase, override_settings
+from PIL import Image
 from rest_framework.test import APIClient
+
+from backend.media_storage import CloudinaryMediaStorage, PhotoStorageUnavailable
 
 from accounts.models import User
 
@@ -136,3 +146,69 @@ class PublicBoxesTests(BoxFixture, TestCase):
         response = self.anonymous.get('/api/products/', {'search': 'Ube'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Decimal(response.data['data']['results'][0]['box_extra']), Decimal('10.00'))
+
+
+def photo(image_format='PNG', name='donut.png'):
+    buffer = BytesIO()
+    Image.new('RGB', (12, 12), (233, 185, 127)).save(buffer, image_format)
+    return SimpleUploadedFile(name, buffer.getvalue(), content_type=f'image/{image_format.lower()}')
+
+
+class PhotoUploadTests(BoxFixture, TestCase):
+    def setUp(self):
+        super().setUp()
+        self.media = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.media, ignore_errors=True)
+
+    def upload(self, file):
+        with override_settings(MEDIA_ROOT=self.media):
+            return self.owner.patch(f'/api/products/{self.glazed.pk}/', {'image': file}, format='multipart')
+
+    def test_a_small_png_is_accepted(self):
+        self.assertEqual(self.upload(photo()).status_code, 200)
+
+    def test_other_image_formats_are_rejected(self):
+        response = self.upload(photo('GIF', 'donut.gif'))
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('JPG, PNG or WEBP', str(response.data['error']['image']))
+
+    def test_files_that_are_not_images_are_rejected(self):
+        fake = SimpleUploadedFile('donut.png', b'not really a picture', content_type='image/png')
+        self.assertEqual(self.upload(fake).status_code, 400)
+
+    @override_settings(PHOTO_MAX_BYTES=50)
+    def test_photos_over_the_size_limit_are_rejected(self):
+        response = self.upload(photo())
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('under 5 MB', str(response.data['error']['image']))
+
+
+@override_settings(CLOUDINARY_CLOUD_NAME='demo', CLOUDINARY_API_KEY='key', CLOUDINARY_API_SECRET='secret', CLOUDINARY_FOLDER='rowszein')
+class CloudinaryStorageTests(TestCase):
+    def test_save_uploads_under_the_shop_folder_with_a_unique_name(self):
+        storage = CloudinaryMediaStorage()
+        with patch('cloudinary.uploader.upload') as upload:
+            first = storage.save('products/Glazed Ring.JPG', ContentFile(b'x'))
+            second = storage.save('products/Glazed Ring.JPG', ContentFile(b'x'))
+        self.assertNotEqual(first, second)
+        self.assertTrue(first.startswith('products/Glazed Ring-') and first.endswith('.jpg'))
+        public_id = upload.call_args_list[0].kwargs['public_id']
+        self.assertEqual(public_id, 'rowszein/' + first.rsplit('.', 1)[0])
+        self.assertEqual(upload.call_args_list[0].kwargs['resource_type'], 'image')
+
+    def test_long_names_fit_the_database_column(self):
+        name = CloudinaryMediaStorage().get_available_name('products/' + 'a' * 200 + '.png', max_length=100)
+        self.assertLessEqual(len(name), 100)
+
+    def test_url_is_https_and_lets_cloudinary_pick_format_and_quality(self):
+        url = CloudinaryMediaStorage().url('products/ring-1a2b3c4d.jpg')
+        self.assertTrue(url.startswith('https://res.cloudinary.com/demo/image/upload/'))
+        self.assertIn('f_auto', url)
+        self.assertIn('q_auto', url)
+        self.assertIn('rowszein/products/ring-1a2b3c4d', url)
+
+    def test_cloudinary_errors_become_a_friendly_503(self):
+        storage = CloudinaryMediaStorage()
+        with patch('cloudinary.uploader.upload', side_effect=cloudinary.exceptions.Error('down')):
+            with self.assertRaises(PhotoStorageUnavailable):
+                storage.save('products/ring.png', ContentFile(b'x'))

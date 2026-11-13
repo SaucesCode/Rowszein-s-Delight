@@ -61,6 +61,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # ------------------------------------------------------------------------------
 
 MIDDLEWARE = [
+    "backend.request_context.RequestIdMiddleware",
     "accounts.middleware.APIResponsePrivacy",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -159,13 +160,34 @@ STATIC_URL = "/static/"
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_STORAGE = (
-    "whitenoise.storage.CompressedManifestStaticFilesStorage"
-)
-
 MEDIA_URL = "/media/"
 
 MEDIA_ROOT = BASE_DIR / "media"
+
+# Uploaded photos go to Cloudinary when its keys are set (production); otherwise
+# to MEDIA_ROOT on local disk, which Django serves only in DEBUG.
+CLOUDINARY_CLOUD_NAME = config("CLOUDINARY_CLOUD_NAME", default="")
+CLOUDINARY_API_KEY = config("CLOUDINARY_API_KEY", default="")
+CLOUDINARY_API_SECRET = config("CLOUDINARY_API_SECRET", default="")
+CLOUDINARY_FOLDER = config("CLOUDINARY_FOLDER", default="rowszein")
+USE_CLOUDINARY = all([CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET])
+
+# STORAGES replaced STATICFILES_STORAGE, which Django 5.1 removed. Compression
+# without a manifest, so pages never fail if collectstatic was skipped.
+STORAGES = {
+    "default": {
+        "BACKEND": (
+            "backend.media_storage.CloudinaryMediaStorage"
+            if USE_CLOUDINARY
+            else "django.core.files.storage.FileSystemStorage"
+        ),
+    },
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
+}
+
+# Server-side photo limits; the app also checks these before uploading.
+PHOTO_MAX_BYTES = 5 * 1024 * 1024
+PHOTO_FORMATS = {"JPEG", "PNG", "WEBP"}
 
 # ------------------------------------------------------------------------------
 # DEFAULT PRIMARY KEY
@@ -253,3 +275,48 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
 
     CSRF_COOKIE_SECURE = True
+
+    # Send plain-HTTP requests to HTTPS. Can be switched off from the
+    # environment if a host health check only speaks HTTP.
+    SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=True, cast=bool)
+
+    # Tell browsers to use HTTPS for a year (HSTS). Not on the preload list,
+    # so it can be undone by lowering the value.
+    SECURE_HSTS_SECONDS = config("SECURE_HSTS_SECONDS", default=31536000, cast=int)
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
+# Joining the browser HSTS preload list is effectively permanent, so it is
+# deliberately not requested (security.W021).
+SILENCED_SYSTEM_CHECKS = ["security.W021"]
+
+# LOGGING
+# ------------------------------------------------------------------------------
+# One JSON line per event on stdout, where the host (Render) collects it. Sign-in
+# events are kept at INFO so there is a record of who signed in and of failed
+# attempts; every line carries the request ID sent back in X-Request-ID.
+
+LOG_LEVEL = config("LOG_LEVEL", default="WARNING")
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "request_id": {"()": "backend.request_context.RequestIdFilter"},
+    },
+    "formatters": {
+        "json": {"()": "backend.log_format.JsonFormatter"},
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+            "formatter": "json",
+        },
+    },
+    "loggers": {
+        "accounts.security": {"level": "INFO", "filters": ["request_id"]},
+        "django.request": {"level": "WARNING", "filters": ["request_id"]},
+        "django.security": {"level": "WARNING", "filters": ["request_id"]},
+    },
+    "root": {"level": LOG_LEVEL, "handlers": ["console"]},
+}

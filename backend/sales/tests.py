@@ -15,7 +15,7 @@ from uuid import uuid4
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, connection, connections, transaction
 from django.test import TestCase, TransactionTestCase
-from rest_framework.test import APIClient
+from accounts.session_fixtures import SessionClient
 
 from accounts.models import User
 from expenses.models import Expense
@@ -29,7 +29,7 @@ from sales.reporting import financial_summary
 class SalesFixture:
     def setUp(self):
         self.user = User.objects.create_user(username='ledger-test', role='admin')
-        self.client = APIClient()
+        self.client = SessionClient()
         self.client.force_authenticate(self.user)
         category = Category.objects.create(slug='ledger-test', name='Ledger test')
         self.product = Product.objects.create(name='Test donut', price='50', category=category)
@@ -310,7 +310,7 @@ class SalesConcurrencyTests(SalesFixture, TransactionTestCase):
                     cursor.execute("SET statement_timeout='12s'")
                     cursor.execute('SELECT pg_backend_pid()')
                     pids.append(cursor.fetchone()[0])
-                client = APIClient()
+                client = SessionClient()
                 client.force_authenticate(self.user)
                 start.wait()
                 return call(client)

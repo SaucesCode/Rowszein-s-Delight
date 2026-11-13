@@ -28,7 +28,7 @@ os.environ.update(SECRET_KEY='disposable-verification-only-never-deploy-12345678
     DATABASE_URL='sqlite:///:memory:', ALLOWED_HOSTS='localhost,127.0.0.1,testserver',
     CSRF_TRUSTED_ORIGINS='http://localhost:18841,http://127.0.0.1:18841',
     CORS_ALLOWED_ORIGINS='http://localhost:18841,http://127.0.0.1:18841',
-    AUTH_COOKIE_SECURE='False', AUTH_COOKIE_SAMESITE='Lax')
+    AUTH_COOKIE_SECURE='False', AUTH_COOKIE_SAMESITE='Lax', SECURE_SSL_REDIRECT='False')
 from .settings import *  # noqa: E402,F403
 
 PASSWORD_HASHERS = ['django.contrib.auth.hashers.MD5PasswordHasher']

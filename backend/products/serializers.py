@@ -3,6 +3,8 @@ from collections import Counter
 from django.db import transaction
 from rest_framework import serializers
 
+from backend.uploads import validate_photo
+
 from .boxes import assortment_price, is_complete
 from .models import Assortment, AssortmentItem, BoxSize, Category, Product
 
@@ -75,6 +77,9 @@ class ProductSerializer(serializers.ModelSerializer):
         if value <= 0:
             raise serializers.ValidationError('Price must be greater than zero.')
         return value
+
+    def validate_image(self, value):
+        return validate_photo(value)
 
     def validate_box_extra(self, value):
         if value < 0:
