@@ -14,6 +14,7 @@ export function canVisit(user: Identity, path: string): boolean {
   const routes: [RegExp, string][] = [
     [/^\/sales\/new\/?$/, "sales.create"], [/^\/sales\/\d+\/edit\/?$/, "sales.update"], [/^\/sales\/?$/, "sales.read"],
     [/^\/products\/boxes(?:\/(?:new|\d+\/edit))?\/?$/, "catalog.manage"],
+    [/^\/products\/partners\/?$/, "catalog.manage"],
     [/^\/products\/?$/, "catalog.read"], [/^\/products\/(new|\d+\/edit)\/?$/, "catalog.manage"],
     [/^\/ingredients\/?$/, "stock.read"], [/^\/ingredients\/(new|\d+\/edit)\/?$/, "stock.manage"],
     [/^\/recipes(?:\/(?:new|\d+\/edit))?\/?$/, "recipes.manage"],

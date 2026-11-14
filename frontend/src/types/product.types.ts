@@ -1,3 +1,5 @@
+import type { PartnerSummary } from "./partner.types";
+
 export interface Category {
   id: number;
   slug: string;
@@ -21,6 +23,10 @@ export interface Product {
   is_featured: boolean;
   /** Added to a box's price for each of this donut inside it (premium flavours). */
   box_extra?: string;
+  /** Set when a collab partner makes this item; null for Rowszein's own. */
+  partner?: PartnerSummary | null;
+  /** Owner only: "their price", what the partner is paid per item. Patong = price - partner_payout. */
+  partner_payout?: string;
   /**
    * Optional, forward-compatible fields. Not yet returned by the API —
    * see the Products page notes for what each needs on the backend.
@@ -40,5 +46,7 @@ export interface ProductPayload {
   is_available: boolean;
   is_featured: boolean;
   box_extra?: number;
+  partner_id?: number | null;
+  partner_payout?: number;
   image?: File | null;
 }
