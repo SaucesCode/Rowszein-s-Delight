@@ -145,3 +145,76 @@ class PartnerReportingTests(PartnerSalesFixture, TestCase):
         muffin = rows['Banana muffin']
         self.assertEqual((muffin['is_partner'], muffin['production_cost'], muffin['profit_per_unit']), (True, 50.0, 10.0))
         self.assertFalse(rows['Test donut']['is_partner'])
+
+
+class PartnerReviewFixTests(PartnerSalesFixture, TestCase):
+    """Findings from the final review: maker changes, deleted partners, staff listing, report cost."""
+
+    def make_own(self, product):
+        Product.objects.filter(pk=product.pk).update(partner=None, partner_payout=Decimal('0.00'))
+
+    def test_cancel_after_partner_item_became_own(self):
+        sale_id = self.sell([(self.muffin, 2)]).data['data']['id']
+        self.make_own(self.muffin)
+        before = self.stock()
+        self.assertEqual(self.cancel(sale_id).status_code, 200)
+        self.assertEqual(self.stock(), before)
+
+    def test_removing_a_line_after_partner_item_became_own(self):
+        sale_id = self.sell([(self.product, 1), (self.muffin, 2)]).data['data']['id']
+        self.make_own(self.muffin)
+        edited = self.edit(sale_id, {'sale_items': [{'product': self.product.pk, 'quantity': 1, 'unit_price': '50.00'}]})
+        self.assertEqual(edited.status_code, 200, edited.data)
+
+    def test_changing_quantity_after_maker_change_is_refused_clearly(self):
+        sale_id = self.sell([(self.muffin, 2)]).data['data']['id']
+        self.make_own(self.muffin)
+        edited = self.edit(sale_id, {'sale_items': [{'product': self.muffin.pk, 'quantity': 3, 'unit_price': '60.00'}]})
+        self.assertEqual(edited.status_code, 400)
+        self.assertIn('changed maker', str(edited.data))
+
+    def test_cancel_restores_stock_for_a_donut_later_made_a_partner_item(self):
+        start = self.stock()
+        sale_id = self.sell([(self.product, 2)]).data['data']['id']
+        self.assertNotEqual(self.stock(), start)
+        self.recipe.delete()
+        Product.objects.filter(pk=self.product.pk).update(partner=self.kape, partner_payout=Decimal('20.00'))
+        self.assertEqual(self.cancel(sale_id).status_code, 200)
+        self.assertEqual(self.stock(), start)
+
+    def test_partner_in_past_orders_cannot_be_deleted(self):
+        self.sell([(self.muffin, 1)])
+        self.make_own(self.muffin)
+        self.make_own(self.cake)
+        response = self.client.delete(f'/api/products/partners/{self.kape.pk}/')
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.data['error'], 'Kape Lokal is in past orders. Switch the partner off instead.')
+
+    def test_reports_survive_a_partner_missing_from_old_orders(self):
+        self.sell([(self.muffin, 1)])
+        self.make_own(self.muffin)
+        self.make_own(self.cake)
+        Partner.objects.filter(pk=self.kape.pk).delete()
+        report = partner_payouts(date(2026, 11, 1), date(2026, 11, 30))
+        self.assertEqual((report['partners'][0]['name'], report['total']), ('Removed partner', '50.00'))
+        self.assertEqual(self.client.get('/api/dashboard/?date_from=2026-11-01&date_to=2026-11-30').status_code, 200)
+
+    def test_still_to_pay_for_every_partner_in_one_pass(self):
+        atelier = Partner.objects.create(name='Cake Atelier')
+        for _ in range(3):
+            self.sell([(self.muffin, 1), (self.cake, 1)])
+        PartnerPayment.objects.create(partner=atelier, date=date(2026, 11, 10), amount=Decimal('25.00'), recorded_by=self.user)
+        from sales.reporting import still_to_pay_all
+        with self.assertNumQueries(2):
+            balances = still_to_pay_all(date(2026, 11, 14))
+        self.assertEqual(balances[self.kape.pk], Decimal('450.00'))
+        self.assertEqual(balances[atelier.pk], Decimal('-25.00'))
+
+    def test_staff_listing_hides_items_of_switched_off_partner(self):
+        self.kape.is_active = False
+        self.kape.save()
+        names = [row['name'] for row in self.staff.get('/api/products/?page_size=20').data['data']['results']]
+        self.assertNotIn('Banana muffin', names)
+        self.assertIn('Test donut', names)
+        owner_names = [row['name'] for row in self.client.get('/api/products/?page_size=20').data['data']['results']]
+        self.assertIn('Banana muffin', owner_names)

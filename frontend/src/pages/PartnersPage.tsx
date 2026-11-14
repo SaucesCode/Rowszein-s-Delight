@@ -1,7 +1,9 @@
 import { useId, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Pencil, Plus } from "lucide-react";
+import toast from "react-hot-toast";
 import { usePartnerPayouts, usePartners, useSavePartner } from "@/hooks/usePartners";
+import { apiErrorMessage } from "@/lib/csrfTransport";
 import { dateRangeError, getDateRange, getLastMonthRange, manilaDate } from "@/lib/dateRanges";
 import type { Partner, PartnerOwed } from "@/types/partner.types";
 import Switch from "@/components/ui/Switch";
@@ -33,7 +35,15 @@ function PartnerRow({ partner, owed }: { partner: Partner; owed?: PartnerOwed })
         <Switch
           checked={partner.is_active}
           disabled={save.isPending}
-          onChange={next => save.mutate({ id: partner.id, payload: { is_active: next } })}
+          onChange={next =>
+            save.mutate(
+              { id: partner.id, payload: { is_active: next } },
+              {
+                onError: error =>
+                  toast.error(apiErrorMessage(error, `Couldn't ${next ? "show" : "hide"} ${partner.name}. Check the connection and try again.`)),
+              },
+            )
+          }
         >
           In the shop
         </Switch>

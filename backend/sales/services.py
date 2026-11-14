@@ -220,19 +220,26 @@ def execute_sale(*, action, actor, key, data=None, sale_id=None, expected_revisi
         old_quantities = {item['product']: item['quantity'] for item in old_items}
         new_quantities = {} if action == 'sale_cancel' else {item['product']: item['quantity'] for item in new_items}
         changed = {pk for pk in product_ids if old_quantities.get(pk) != new_quantities.get(pk)}
-        # Partner items are made by the partner: no recipe, no pantry stock.
-        stocked = {pk for pk in changed if products[pk].partner_id is None}
-        for product_id in sorted((changed - stocked) & set(new_quantities)):
+        # Partner items are made by the partner: no recipe, no pantry stock. An existing line
+        # follows what the sale recorded when it was sold (lines without a partner key predate
+        # partners, so they were stocked); a new line follows the item as it is now.
+        old_partner = {item['product']: item.get('partner') for item in old_items}
+        old_stocked = {pk for pk in changed & set(old_quantities) if old_partner[pk] is None}
+        new_stocked = {pk for pk in changed & set(new_quantities) if products[pk].partner_id is None}
+        for pk in sorted(changed & set(old_quantities) & set(new_quantities)):
+            if (pk in old_stocked) != (pk in new_stocked):
+                raise ValidationError({'sale_items': f'{products[pk].name} changed maker since this sale. Remove the line, save, then add it again.'})
+        for product_id in sorted((changed & set(new_quantities)) - new_stocked):
             if not products[product_id].is_available:
                 raise ValidationError('New consumption requires an available product and a recipe.')
         if sale:
-            old_allocations = list(SaleConsumption.objects.filter(sale=sale, reversed_by__isnull=True, basis__product_id__in=stocked).select_related('basis').order_by('pk'))
-            if (set(old_quantities) & stocked) != {row.basis.product_id for row in old_allocations}:
+            old_allocations = list(SaleConsumption.objects.filter(sale=sale, reversed_by__isnull=True, basis__product_id__in=old_stocked).select_related('basis').order_by('pk'))
+            if old_stocked != {row.basis.product_id for row in old_allocations}:
                 raise Conflict('Active snapshots do not cover the previous sale items.')
-        recipes = {r.product_id: r for r in Recipe.objects.filter(product_id__in=stocked & set(new_quantities)).prefetch_related('recipe_ingredients').order_by('pk')}
+        recipes = {r.product_id: r for r in Recipe.objects.filter(product_id__in=new_stocked).prefetch_related('recipe_ingredients').order_by('pk')}
         ingredient_ids = {row.basis.ingredient_id for row in old_allocations}
         recipe_lines = []
-        for product_id in sorted(stocked & set(new_quantities)):
+        for product_id in sorted(new_stocked):
             if not products[product_id].is_available or product_id not in recipes:
                 raise ValidationError('New consumption requires an available product and a recipe.')
             recipe = recipes[product_id]

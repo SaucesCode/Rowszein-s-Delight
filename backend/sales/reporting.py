@@ -33,11 +33,21 @@ def financial_summary(date_from, date_to):
 
 
 def _partner_lines(sales):
-    """Yield (sale, line) for every partner line of the given sales, payout as a Decimal."""
-    for sale in sales:
+    """Yield (sale, line) for every partner line, payout as a Decimal. Sales from before
+    current_items existed predate partners, so they are skipped rather than loaded."""
+    for sale in sales.filter(current_items__isnull=False).only('pk', 'date', 'current_items'):
         for line in payout_lines(sale):
             if line['partner'] is not None:
                 yield sale, line
+
+
+class _RemovedPartner:
+    """Stands in for a partner deleted after its items were sold, so old orders still add up."""
+    name = 'Removed partner'
+    sort_order = 2 ** 31
+
+    def __init__(self, pk):
+        self.pk = pk
 
 
 def partner_payouts(date_from, date_to):
@@ -50,7 +60,8 @@ def partner_payouts(date_from, date_to):
         for sale, line in _partner_lines(sales):
             owed = line['partner_payout'] * line['quantity']
             by_month[sale.date.strftime('%Y-%m')] += owed
-            row = owed_by_partner.setdefault(line['partner'], {'partner': partners[line['partner']], 'owed': Decimal('0'), 'items': {}})
+            partner = partners.get(line['partner']) or _RemovedPartner(line['partner'])
+            row = owed_by_partner.setdefault(line['partner'], {'partner': partner, 'owed': Decimal('0'), 'items': {}})
             row['owed'] += owed
             # A rate change gives the same item a second line, so each line has one payout.
             item = row['items'].setdefault((line['product'], line['partner_payout']), {
@@ -71,12 +82,20 @@ def partner_payouts(date_from, date_to):
     }
 
 
-def still_to_pay(partner_id, today):
-    """Owed on all recorded orders up to today, minus payments that aren't voided. Negative = paid ahead."""
-    sales = Sale.objects.filter(status='recorded', date__lte=today)
+def still_to_pay_all(today):
+    """Every partner's balance in one pass: owed on recorded orders up to today, minus payments
+    that aren't voided. Partners with nothing owed or paid are absent. Negative = paid ahead."""
+    balances = defaultdict(Decimal)
     with localcontext() as context:
         context.prec = 50
-        owed = sum((line['partner_payout'] * line['quantity'] for _, line in _partner_lines(sales)
-                    if line['partner'] == partner_id), Decimal('0'))
-        paid = PartnerPayment.objects.filter(partner_id=partner_id, voided_at__isnull=True).aggregate(total=Sum('amount'))['total'] or Decimal('0')
-        return (owed - paid).quantize(Decimal('0.01'))
+        for _, line in _partner_lines(Sale.objects.filter(status='recorded', date__lte=today)):
+            balances[line['partner']] += line['partner_payout'] * line['quantity']
+        paid = PartnerPayment.objects.filter(voided_at__isnull=True).values('partner').annotate(total=Sum('amount'))
+        for row in paid:
+            balances[row['partner']] -= row['total']
+    return {partner: value.quantize(Decimal('0.01')) for partner, value in balances.items()}
+
+
+def still_to_pay(partner_id, today):
+    """One partner's balance; see still_to_pay_all."""
+    return still_to_pay_all(today).get(partner_id, Decimal('0.00'))

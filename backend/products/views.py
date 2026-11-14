@@ -18,7 +18,8 @@ from .serializers import AssortmentSerializer, BoxSizeSerializer, PublicAssortme
 from accounts.authentication import PublicCatalogAuthentication
 from backend.catalog_listing import CatalogListing
 from backend.date_filters import MANILA, report_date_bounds
-from sales.reporting import partner_payouts, still_to_pay
+from sales.models import Sale
+from sales.reporting import partner_payouts, still_to_pay_all
 
 
 class CatalogProjection:
@@ -34,6 +35,8 @@ class CatalogProjection:
                 return queryset.filter(Q(partner__isnull=True) | Q(partner__is_active=True),
                                        is_available=True, category__is_active=True)
             return queryset.filter(is_active=True)
+        if queryset.model is Product and business_role(self.request.user) != 'admin':
+            return queryset.filter(Q(partner__isnull=True) | Q(partner__is_active=True))
         return queryset
 
 
@@ -308,6 +311,14 @@ class PublicBoxesView(APIView):
 
 # ── Partners ────────────────────────────────────────────────────────────────
 
+def _in_past_orders(partner_id):
+    """True when any sale's current lines name this partner (cancelled sales included: their history stays)."""
+    for items in Sale.objects.filter(current_items__isnull=False).values_list('current_items', flat=True).iterator():
+        if any(line.get('partner') == partner_id for line in items):
+            return True
+    return False
+
+
 class PartnerCatalogView(BoxCatalogView):
     """Owner manages partners; staff read them without contact details or notes."""
 
@@ -330,6 +341,8 @@ class PartnerDetailView(PartnerCatalogView, generics.RetrieveUpdateDestroyAPIVie
     @transaction.atomic
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
+        if _in_past_orders(instance.pk):
+            return Response({'success': False, 'error': f'{instance.name} is in past orders. Switch the partner off instead.'}, status=status.HTTP_409_CONFLICT)
         try:
             instance.delete()
         except ProtectedError:
@@ -347,9 +360,10 @@ class PartnerPayoutsView(APIView):
         date_from, date_to = report_date_bounds(request.query_params, today)
         report = partner_payouts(date_from, date_to)
         owed = {row['id']: row for row in report['partners']}
+        balances = still_to_pay_all(today)
         report['partners'] = [
             dict(owed.get(partner.pk, {'id': partner.pk, 'name': partner.name, 'owed': '0.00', 'items': []}),
-                 still_to_pay=format(still_to_pay(partner.pk, today), '.2f'), is_active=partner.is_active)
+                 still_to_pay=format(balances.get(partner.pk, 0), '.2f'), is_active=partner.is_active)
             for partner in Partner.objects.all()
         ]
         report['filters'] = {'date_from': date_from.isoformat(), 'date_to': date_to.isoformat()}
