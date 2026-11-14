@@ -1480,3 +1480,16 @@ html:has(.box-sheet[open]) { overflow: hidden; }
 .case-item.is-not-in-box .case-art { opacity: 0.45; filter: saturate(0.4); }
 .case-item.is-not-in-box .case-item-button { cursor: not-allowed; }
 .box-line-by { color: var(--color-ink-muted); font-size: var(--text-label); }
+
+/* Treat drawings: a small hover detail (a cherry bobs, steam lifts). Off under reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .case-item-button:hover .treat-detail-bob { animation: treat-bob 200ms var(--ease-out-soft); }
+  .case-item-button:hover .treat-detail-steam { animation: treat-steam 200ms var(--ease-out-soft) forwards; }
+}
+@keyframes treat-bob {
+  50% { transform: translateY(-2px); }
+}
+@keyframes treat-steam {
+  to { opacity: 0.7; transform: translateY(-3px); }
+}
+.treat-detail { transform-box: fill-box; transform-origin: center; }
