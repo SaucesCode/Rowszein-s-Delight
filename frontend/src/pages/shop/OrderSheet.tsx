@@ -6,7 +6,7 @@ import { flavorOf } from "@/lib/flavor";
 import BoxArt from "@/pages/boxes/BoxArt";
 import { formatPeso } from "@/pages/dashboard/report-format";
 import OrderCard from "./OrderCard";
-import { SHOP_MESSENGER, cardNumber, downloadNodeAsPng, orderSummary, orderText } from "./order";
+import { cardNumber, downloadNodeAsPng, orderSummary, orderText } from "./order";
 import { boxPrice, describeBox, type BoxLine, type useBoxOrder } from "./useBoxOrder";
 
 type Cart = ReturnType<typeof useCart>;
@@ -18,10 +18,14 @@ interface OrderSheetProps {
   cart: Cart;
   boxes: Boxes;
   total: number;
+  messengerUrl: string;
+  /** The message to show while the owner has paused orders; null while orders are open. */
+  paused: string | null;
+  notice: string;
 }
 
 /** The order: boxes and single donuts, the customer's name, and how to send it. */
-export default function OrderSheet({ open, onClose, cart, boxes, total }: OrderSheetProps) {
+export default function OrderSheet({ open, onClose, cart, boxes, total, messengerUrl, paused, notice }: OrderSheetProps) {
   const ids = useId();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
@@ -78,7 +82,7 @@ export default function OrderSheet({ open, onClose, cart, boxes, total }: OrderS
 
   const openMessenger = () => {
     const text = orderText(boxes.boxes, cart.items, total, name.trim());
-    window.open(SHOP_MESSENGER, "_blank", "noopener,noreferrer");
+    window.open(messengerUrl, "_blank", "noopener,noreferrer");
     if (!navigator.clipboard) {
       setNote("Type your order in the chat, or attach your saved order card.");
       return;
@@ -227,17 +231,35 @@ export default function OrderSheet({ open, onClose, cart, boxes, total }: OrderS
               <strong className="num">{formatPeso(total)}</strong>
             </p>
             <div className="box-sheet-actions">
-              <button type="button" className="btn-primary" onClick={saveCard} disabled={saving} aria-busy={saving}>
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={saveCard}
+                disabled={saving || !!paused}
+                aria-busy={saving}
+                aria-describedby={paused ? `${ids}-paused` : undefined}
+              >
                 <Download size={18} aria-hidden="true" />
                 {saving ? "Saving…" : "Save order card"}
               </button>
-              <button type="button" className="btn-secondary" onClick={openMessenger}>
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={openMessenger}
+                disabled={!!paused}
+                aria-describedby={paused ? `${ids}-paused` : undefined}
+              >
                 Send on Messenger
               </button>
             </div>
-            <p className="box-sheet-help" role="status">
-              {note ?? "Save your card, then send it to us on Messenger. We'll reply to confirm your order."}
-            </p>
+            {paused ? (
+              <p id={`${ids}-paused`} className="box-sheet-paused">{paused} Your order stays here for when we're back.</p>
+            ) : (
+              <p className="box-sheet-help" role="status">
+                {note ?? "Save your card, then send it to us on Messenger. We'll reply to confirm your order."}
+              </p>
+            )}
+            {notice && <p className="box-sheet-notice">{notice}</p>}
           </footer>
         )}
       </div>

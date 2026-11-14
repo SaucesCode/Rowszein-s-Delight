@@ -2,9 +2,6 @@ import type { CartItem } from "@/hooks/useCart";
 import { formatPeso } from "../dashboard/report-format.ts";
 import { boxPrice, describeBox, type BoxLine } from "./useBoxOrder.ts";
 
-export const SHOP_MESSENGER = "https://m.me/rowszeinsdelight";
-export const SHOP_EMAIL = "hello@rowszeinsdelight.com";
-
 const manilaDateTime = new Intl.DateTimeFormat("en-PH", {
   dateStyle: "medium",
   timeStyle: "short",

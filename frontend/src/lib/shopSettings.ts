@@ -87,3 +87,9 @@ export function dayOffLabel({ starts, ends, note }: DayOff): string {
   else range = `${from.month} ${from.day} – ${to.month} ${to.day}`;
   return note ? `${range} · ${note}` : range;
 }
+
+/** "Lucena City, Tayabas and Sariaya". */
+export function listNames(names: string[]): string {
+  if (names.length < 2) return names.join("");
+  return `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`;
+}

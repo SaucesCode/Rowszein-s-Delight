@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Search, ShoppingBag } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
+import { useShopSettings } from "@/hooks/useShopSettings";
+import { DEFAULT_PAUSE_MESSAGE, shopContact } from "@/lib/shopSettings";
 import { useShopBoxes } from "@/hooks/useBoxes";
 import { useListingPages } from "@/hooks/useListingPages";
 import { uniqueRecords } from "@/lib/listingParams";
@@ -15,10 +17,12 @@ import FillingDock from "./FillingDock";
 import OrderDock from "./OrderDock";
 import OrderSheet from "./OrderSheet";
 import ContactSection from "./ContactSection";
+import DeliveryInfo from "./DeliveryInfo";
 import HowToOrder from "./HowToOrder";
+import NoticeBar from "./NoticeBar";
 import ShopHero from "./ShopHero";
 import { Ornament } from "./ShopIcons";
-import { SHOP_EMAIL, SHOP_MESSENGER, orderSummary } from "./order";
+import { orderSummary } from "./order";
 import { heroPicks, toShelves } from "./shelves";
 import { describeBox, fillingDonuts, toggleFillingFlavour } from "./useBoxOrder";
 import { useBoxOrder } from "./useBoxOrder";
@@ -38,6 +42,10 @@ export default function ShopPage() {
   const cart = useCart();
   const boxOrder = useBoxOrder();
   const shopBoxes = useShopBoxes();
+  const shopSettings = useShopSettings();
+  const settings = shopSettings.data;
+  const contact = shopContact(settings);
+  const paused = settings?.orders_paused ? settings.pause_message || DEFAULT_PAUSE_MESSAGE : null;
   const [sheetOpen, setSheetOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
@@ -277,7 +285,7 @@ export default function ShopPage() {
                   <>
                     <h2 className="case-message-title">The case is empty right now</h2>
                     <p>Message us to ask what's coming out next.</p>
-                    <a className="btn-secondary" href={SHOP_MESSENGER} target="_blank" rel="noopener noreferrer">
+                    <a className="btn-secondary" href={contact.messenger_url} target="_blank" rel="noopener noreferrer">
                       Message us on Messenger
                     </a>
                   </>
@@ -305,15 +313,17 @@ export default function ShopPage() {
         </div>
 
         <HowToOrder />
-        <ContactSection />
+        <DeliveryInfo settings={settings} failed={shopSettings.isError} />
+        <ContactSection contact={contact} />
       </main>
 
       <footer className="shop-footer" data-reveal="">
         <Ornament className="shop-ornament" />
         <p className="shop-footer-brand">Rowszein's Delight</p>
         <div className="shop-footer-links">
-          <a href={SHOP_MESSENGER} target="_blank" rel="noopener noreferrer">Messenger</a>
-          <a href={`mailto:${SHOP_EMAIL}`}>{SHOP_EMAIL}</a>
+          <a href={contact.messenger_url} target="_blank" rel="noopener noreferrer">Messenger</a>
+          {contact.facebook_url && <a href={contact.facebook_url} target="_blank" rel="noopener noreferrer">Facebook</a>}
+          {contact.email && <a href={`mailto:${contact.email}`}>{contact.email}</a>}
           <span>© {new Date().getFullYear()}</span>
           {/* Staff sign-in. Deliberately plain so customers read it as a brand mark. */}
           <Link to="/login" className="shop-footer-mark" aria-label="Staff sign in">
@@ -343,7 +353,18 @@ export default function ShopPage() {
         )
       )}
 
-      <OrderSheet open={sheetOpen} onClose={closeSheet} cart={cart} boxes={boxOrder} total={total} />
+      <OrderSheet
+        open={sheetOpen}
+        onClose={closeSheet}
+        cart={cart}
+        boxes={boxOrder}
+        total={total}
+        messengerUrl={contact.messenger_url}
+        paused={paused}
+        notice={settings?.notice ?? ""}
+      />
+
+      {settings && <NoticeBar key={`${paused}|${settings.notice}`} notice={settings.notice} paused={paused} />}
 
       <div className="sr-only" role="status">{announcement}</div>
     </div>

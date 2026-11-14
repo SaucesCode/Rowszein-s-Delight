@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {
   DEFAULT_CONTACT, DEFAULT_PAUSE_MESSAGE, PAYMENT_LABELS,
-  cutoffSentence, dayOffLabel, feeLabel, formatTime, groupHours, shopContact,
+  cutoffSentence, dayOffLabel, feeLabel, formatTime, groupHours, listNames, shopContact,
 } from '../../frontend/src/lib/shopSettings.ts';
 import {formatPeso} from '../../frontend/src/pages/dashboard/report-format.ts';
 import {isDirty, toDraft, toPayload} from '../../frontend/src/pages/settings/draft.ts';
@@ -60,6 +60,12 @@ tests.push(['days off read naturally across months and years', () => {
   assert.equal(dayOffLabel({starts: '2026-11-30', ends: '2026-11-30', note: ''}), 'Nov 30');
   assert.equal(dayOffLabel({starts: '2026-12-30', ends: '2027-01-02', note: ''}), 'Dec 30 – Jan 2');
   assert.equal(dayOffLabel({starts: '2026-11-28', ends: '2026-12-01', note: 'Inventory'}), 'Nov 28 – Dec 1 · Inventory');
+}]);
+tests.push(['names read as an English list', () => {
+  assert.equal(listNames(['Lucena City', 'Tayabas', 'Sariaya']), 'Lucena City, Tayabas and Sariaya');
+  assert.equal(listNames(['Lucena City', 'Tayabas']), 'Lucena City and Tayabas');
+  assert.equal(listNames(['Sariaya']), 'Sariaya');
+  assert.equal(listNames([]), '');
 }]);
 tests.push(['payment labels and the pause fallback', () => {
   assert.deepEqual(Object.values(PAYMENT_LABELS), ['GCash', 'Maya', 'Bank transfer', 'Cash on delivery']);

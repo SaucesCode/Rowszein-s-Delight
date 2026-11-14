@@ -11,6 +11,17 @@ export function BoxIcon({ size = 20 }: { size?: number }) {
   );
 }
 
+/** A rounded "f" mark for the Facebook page link, drawn in the same line style as the other shop icons. */
+export function FacebookMark({ size = 20 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <path d="M15.5 7.5H14a2 2 0 0 0-2 2V21" />
+      <path d="M9.5 12.5h5.5" />
+    </svg>
+  );
+}
+
 const SCALLOPS = 30;
 const OUTER = 96;
 
