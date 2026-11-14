@@ -50,6 +50,12 @@ export function useTicket(initial: TicketLine[] = [], initialBoxes: TicketBox[] 
     setOpenBox(null);
   }, [openBox]);
 
+  const removeFlavour = useCallback(
+    (productId: number) =>
+      setOpenBox(current => (current ? { ...current, flavours: current.flavours.filter(flavour => flavour.product !== productId) } : current)),
+    [],
+  );
+
   const cancelBox = useCallback(() => setOpenBox(null), []);
   const addReadyMade = useCallback((assortment: Assortment) => setBoxes(current => [...current, readyMadeBox(assortment)]), []);
   const removeBox = useCallback((index: number) => setBoxes(current => current.filter((_, position) => position !== index)), []);
@@ -110,7 +116,7 @@ export function useTicket(initial: TicketLine[] = [], initialBoxes: TicketBox[] 
 
   return {
     lines, add, change, setPrice, clear, totals, quantityOf,
-    boxes, openBox, startBox, toggleInBox, finishBox, cancelBox, addReadyMade, removeBox, setBoxPrice,
+    boxes, openBox, startBox, toggleInBox, removeFlavour, finishBox, cancelBox, addReadyMade, removeBox, setBoxPrice,
   };
 }
 

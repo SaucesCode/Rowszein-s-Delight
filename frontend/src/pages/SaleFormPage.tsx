@@ -17,6 +17,11 @@ import { formatPeso } from "@/pages/dashboard/report-format";
 import Catalog from "./sales/Catalog";
 import TicketPanel, { type Recorded } from "./sales/TicketPanel";
 import { countLabel, useTicket, type TicketLine } from "./sales/useTicket";
+import { boxPayload, openBoxPrice, savedBox, type TicketBox } from "./sales/boxTicket";
+import OpenBoxPanel from "./sales/OpenBoxPanel";
+import RegisterBoxChooser from "./sales/RegisterBoxChooser";
+import { useAssortments, useBoxSizes } from "@/hooks/useBoxes";
+import { apiFieldErrors } from "@/lib/csrfTransport";
 import "./sales/sales.css";
 
 const WIDE = "(min-width: 1100px)";
@@ -25,16 +30,23 @@ const WIDE = "(min-width: 1100px)";
 const saleSchema = z.object({
   date: z.string().min(1, "Choose the sale date."),
   notes: z.string().optional(),
-  sale_items: z
-    .array(
-      z.object({
-        product: z.number().min(1),
-        quantity: z.number().int().min(1, "Each donut needs a quantity of at least 1."),
-        unit_price: z.number().min(0.01, "Each price must be more than ₱0."),
-      }),
-    )
-    .min(1, "Add at least one donut to the order."),
-});
+  sale_items: z.array(
+    z.object({
+      product: z.number().min(1),
+      quantity: z.number().int().min(1, "Each donut needs a quantity of at least 1."),
+      unit_price: z.number().min(0.01, "Each price must be more than ₱0."),
+    }),
+  ),
+  boxes: z.array(z.unknown()),
+}).refine(sale => sale.sale_items.length > 0 || sale.boxes.length > 0, { message: "Add at least one item or box." });
+
+/** The server's first message for a refused sale (field or general), worded for the counter. */
+function serverMessage(error: unknown): string | null {
+  const fields = apiFieldErrors(error);
+  if (fields) return Object.values(fields)[0] ?? null;
+  const failure = (error as { response?: { data?: { error?: unknown } } })?.response?.data?.error;
+  return Array.isArray(failure) && typeof failure[0] === "string" ? failure[0] : null;
+}
 
 function linesFrom(sale?: Sale): TicketLine[] {
   return (sale?.sale_items ?? []).map(item => ({
@@ -45,6 +57,10 @@ function linesFrom(sale?: Sale): TicketLine[] {
   }));
 }
 
+function boxesFrom(sale?: Sale): TicketBox[] {
+  return (sale?.boxes ?? []).map(savedBox);
+}
+
 function Register({ sale }: { sale?: Sale }) {
   const { data: user } = useMe();
   const isStaff = user?.role === "staff";
@@ -53,7 +69,10 @@ function Register({ sale }: { sale?: Sale }) {
   const isWide = useMediaQuery(WIDE);
   const sheetRef = useRef<HTMLDialogElement>(null);
 
-  const ticket = useTicket(linesFrom(sale));
+  const ticket = useTicket(linesFrom(sale), boxesFrom(sale));
+  const [boxMessage, setBoxMessage] = useState<string | null>(null);
+  const boxSizes = useBoxSizes();
+  const assortments = useAssortments();
   const [date, setDate] = useState(sale?.date ?? today);
   const [notes, setNotes] = useState(sale?.notes ?? "");
   const [error, setError] = useState<string | null>(null);
@@ -61,7 +80,7 @@ function Register({ sale }: { sale?: Sale }) {
   const [clearOpen, setClearOpen] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [baseline, setBaseline] = useState(() =>
-    JSON.stringify({ lines: linesFrom(sale), date: sale?.date ?? today, notes: sale?.notes ?? "" }),
+    JSON.stringify({ lines: linesFrom(sale), boxes: boxesFrom(sale), date: sale?.date ?? today, notes: sale?.notes ?? "" }),
   );
 
   const products = useSellableProducts();
@@ -71,10 +90,11 @@ function Register({ sale }: { sale?: Sale }) {
   const saving = createSale.isPending || updateSale.isPending;
   const done = updateSale.isSuccess;
 
-  const dirty = JSON.stringify({ lines: ticket.lines, date, notes }) !== baseline;
+  const dirty = JSON.stringify({ lines: ticket.lines, boxes: ticket.boxes, date, notes }) !== baseline;
+  const hasAnything = ticket.lines.length > 0 || ticket.boxes.length > 0 || !!ticket.openBox;
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
-      dirty && ticket.lines.length > 0 && !saving && !done && currentLocation.pathname !== nextLocation.pathname,
+      dirty && hasAnything && !saving && !done && currentLocation.pathname !== nextLocation.pathname,
   );
 
   const showSheet = sheetOpen && !isWide;
@@ -88,29 +108,40 @@ function Register({ sale }: { sale?: Sale }) {
   const add = (product: Product) => {
     setRecorded(null);
     setError(null);
+    if (ticket.openBox) {
+      setBoxMessage(ticket.toggleInBox(product));
+      return;
+    }
     ticket.add(product);
   };
 
   const submit = () => {
+    if (ticket.openBox) {
+      setError("Finish or cancel the box first.");
+      return;
+    }
     const parsed = saleSchema.safeParse({
       date,
       notes: notes.trim(),
       sale_items: ticket.lines.map(line => ({ product: line.product, quantity: line.quantity, unit_price: line.unitPrice })),
+      boxes: ticket.boxes.map(boxPayload),
     });
     if (!parsed.success) {
       setError(parsed.error.issues[0]?.message ?? "Check the order and try again.");
       return;
     }
     setError(null);
-    const payload: SalePayload = parsed.data;
+    const payload: SalePayload = { ...parsed.data, boxes: ticket.boxes.map(boxPayload) };
+    const showRefusal = (failure: unknown) => setError(serverMessage(failure));
 
     if (sale) {
-      updateSale.mutate(payload);
+      updateSale.mutate(payload, { onError: showRefusal });
       return;
     }
 
     const snapshot = { amount: ticket.totals.amount, pieces: ticket.totals.pieces };
     createSale.mutate(payload, {
+      onError: showRefusal,
       onSuccess: () => {
         const at = new Date();
         setRecorded({ ...snapshot, at });
@@ -119,10 +150,41 @@ function Register({ sale }: { sale?: Sale }) {
         setNotes("");
         setDate(today);
         setSheetOpen(false);
-        setBaseline(JSON.stringify({ lines: [], date: today, notes: "" }));
+        setBaseline(JSON.stringify({ lines: [], boxes: [], date: today, notes: "" }));
       },
     });
   };
+
+  // On phones the ticket is a drawer over the donuts, so box tools sit above the donuts instead.
+  const boxTools = ticket.openBox ? (
+    <OpenBoxPanel
+      box={ticket.openBox}
+      message={boxMessage}
+      onRemoveFlavour={ticket.removeFlavour}
+      onFinish={() => {
+        ticket.finishBox();
+        setBoxMessage(null);
+      }}
+      onCancel={() => {
+        ticket.cancelBox();
+        setBoxMessage(null);
+      }}
+    />
+  ) : (
+    <RegisterBoxChooser
+      sizes={boxSizes.data ?? []}
+      readyMade={assortments.data ?? []}
+      isOwner={!isStaff}
+      onStartSize={size => {
+        setRecorded(null);
+        ticket.startBox(size);
+      }}
+      onAddReadyMade={assortment => {
+        setRecorded(null);
+        ticket.addReadyMade(assortment);
+      }}
+    />
+  );
 
   const panel = (
     <TicketPanel
@@ -141,6 +203,7 @@ function Register({ sale }: { sale?: Sale }) {
       onSubmit={submit}
       onClear={() => setClearOpen(true)}
       recorded={recorded}
+      boxTools={isWide ? boxTools : undefined}
     />
   );
 
@@ -152,7 +215,7 @@ function Register({ sale }: { sale?: Sale }) {
           <p className="page-lede">
             {isEdit
               ? "Change what was sold. The stock adjusts to match when you save."
-              : "Tap donuts to build the order, then record it."}
+              : "Tap donuts or add a box to build the order, then record it."}
           </p>
         </div>
       </header>
@@ -165,6 +228,8 @@ function Register({ sale }: { sale?: Sale }) {
         </p>
       )}
 
+      {!isWide && <div className="register-box-tools">{boxTools}</div>}
+
       <div className="register-body">
         <Catalog
           products={products.data ?? []}
@@ -173,15 +238,36 @@ function Register({ sale }: { sale?: Sale }) {
           onRetry={() => void products.refetch()}
           onAdd={add}
           quantityOf={ticket.quantityOf}
+          boxPicking={ticket.openBox ? { picked: ticket.openBox.flavours.map(flavour => flavour.product), maxFlavors: ticket.openBox.maxFlavors } : null}
           canManageMenu={!isStaff}
         />
         {isWide && <aside className="register-ticket" aria-label="Order ticket">{panel}</aside>}
       </div>
 
-      {!isWide && ticket.lines.length > 0 && (
+      {!isWide && ticket.openBox && (
         <div className="register-dock">
           <p>
-            <span>{countLabel(ticket.totals.pieces, ticket.lines.some(line => partnerNames.get(line.product)))}</span>
+            <span>{`${ticket.openBox.name} · ${ticket.openBox.flavours.length} of ${ticket.openBox.maxFlavors} flavours`}</span>
+            <strong className="num register-dock-total">{formatPeso(openBoxPrice(ticket.openBox))}</strong>
+          </p>
+          <button
+            type="button"
+            className="btn-primary"
+            disabled={ticket.openBox.flavours.length === 0}
+            onClick={() => {
+              ticket.finishBox();
+              setBoxMessage(null);
+            }}
+          >
+            Add box to sale
+          </button>
+        </div>
+      )}
+
+      {!isWide && !ticket.openBox && hasAnything && (
+        <div className="register-dock">
+          <p>
+            <span>{countLabel(ticket.totals.pieces, ticket.lines.some(line => partnerNames.get(line.product)), ticket.totals.boxes)}</span>
             <strong key={ticket.totals.pieces} className="num register-dock-total">{formatPeso(ticket.totals.amount)}</strong>
           </p>
           <button type="button" className="btn-primary" onClick={() => setSheetOpen(true)} aria-haspopup="dialog">
