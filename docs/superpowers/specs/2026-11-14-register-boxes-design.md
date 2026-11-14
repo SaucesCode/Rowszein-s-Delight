@@ -1,6 +1,6 @@
 # Boxes in the Sales register — design
 
-Date: 14 November 2026 · Branch: `pre-launch-hardening` · Status: approved by the owner on 14 November 2026, including the flavour-rule revision
+Date: 14 November 2026 · Branch: `pre-launch-hardening` · Status: approved by the owner on 14 November 2026, including the flavour-rule revision; built on 14 November 2026
 
 ## Why
 

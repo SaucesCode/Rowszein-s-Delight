@@ -37,8 +37,9 @@ Rowszein's Delight Management System is a web application for a donut shop. It h
 ## How boxes work
 
 * The owner sets each **box size** (for example 8, 12 and 24) with one fixed price, and can switch a size on or off.
+* Each size has a **most flavours** limit (it starts at 8 → 2, 12 → 3, 24 → 4). A box holds 1 up to that many flavours and **fills evenly** between them: 12 is 12, 6 + 6 or 4 + 4 + 4. Customers, the ready-made box builder and the Sales register all pick flavours, not single donuts.
 * A donut can carry an **extra when in a box** (₱0 by default). A box costs its fixed price plus that extra for each premium donut inside.
-* **Ready-made boxes** must fill their size exactly. The shop only shows one when its size and every donut in it are on sale.
+* **Ready-made boxes** must fill their size exactly and follow the flavour rule. The shop only shows one when its size and every donut in it are on sale; one that breaks the rule is flagged on the Boxes page.
 * The server calculates every box price, so the shop never shows a total the server would not.
 
 API (under `/api/products/`):
@@ -49,7 +50,12 @@ API (under `/api/products/`):
 | `box-sizes/`, `box-sizes/<id>/` | Owner manages, staff read | Box sizes and prices |
 | `assortments/`, `assortments/<id>/` | Owner manages, staff read | Ready-made boxes and their contents |
 
-Selling boxes at the counter (Sales register, with stock deducted per donut) is not built yet.
+### Boxes in the Sales register
+
+* **Add a box** in the register: fill a size by tapping flavours (it fills evenly), or add a ready-made box in one tap. Boxes sit on the same sale as single donuts and partner items.
+* A box keeps its name, price and contents as sold. The owner can lower a box's price for a discount; staff always use the shop's price.
+* Pantry stock comes off for every donut inside a box, and cancelling the sale puts it all back. Editing a sale can remove a box or add another; to change what's inside a saved box, remove it and add it again.
+* Sale history, receipts and the CSV/PDF exports list boxes with their contents. Analytics shows boxes sold, and best sellers count donuts inside boxes.
 
 ## How partner items work
 
@@ -104,7 +110,7 @@ cd backend
 .venv\Scripts\python.exe manage.py test --settings=backend.test_settings
 ```
 
-This uses a temporary in-memory database and test-only keys, so it never touches a real database or `.env` secrets. All 197 tests pass; 17 PostgreSQL-only tests are skipped. Frontend checks: `npm run build`, `npm run lint`, and `node tests/regression/<file>.mjs` from the repository root.
+This uses a temporary in-memory database and test-only keys, so it never touches a real database or `.env` secrets. All 248 tests pass; 17 PostgreSQL-only tests are skipped. Frontend checks: `npm run build`, `npm run lint`, and `node tests/regression/<file>.mjs` from the repository root.
 
 Known gaps:
 
@@ -116,7 +122,7 @@ Earlier checkpoint: Phase 1B.3 disposable database verification was completed fo
 ## Deployment
 
 * **Frontend:** Vercel, with `frontend` as the root directory. `frontend/vercel.json` sends `/api` to the backend and sets the security headers, including a Content-Security-Policy that only allows the site's own scripts and photos from Cloudinary. A new outside service (for example an analytics script) must be added to that policy, or the browser will block it.
-* **Backend:** Render. Every deploy must run `python manage.py migrate` (for example in the build command) so new database changes, such as `products/0005_boxes` and `products/0006_partners`, are applied.
+* **Backend:** Render. Every deploy must run `python manage.py migrate` (for example in the build command) so new database changes, such as `products/0005_boxes`, `products/0006_partners`, `products/0007_boxsize_max_flavors` and `sales/0004_sale_current_boxes`, are applied.
 * **Photos:** stored on Cloudinary in production. Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` on Render; without them, photos are saved to the server's disk, which Render wipes on redeploy. Photos must be JPG, PNG or WEBP and under 5 MB.
 * **Database backups:** the live database is on Supabase. Take and check a backup every week and before every deploy with a migration; see [Database backup and restore](docs/BACKUP_AND_RESTORE.md).
 * **Logs:** the backend writes one JSON line per event to stdout (Render's Logs tab), including every sign-in. Each response has an `X-Request-ID` header that matches its log lines.
