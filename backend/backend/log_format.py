@@ -7,7 +7,7 @@ import json
 import logging
 from datetime import datetime, timezone
 
-ALLOWED_EXTRAS = ("request_id", "actor_id", "retry_seconds", "identified", "status_code")
+ALLOWED_EXTRAS = ("request_id", "actor_id", "retry_seconds", "identified", "status_code", "revision", "changed")
 
 
 class JsonFormatter(logging.Formatter):
