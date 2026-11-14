@@ -139,7 +139,22 @@ cd backend
 .venv\Scripts\python.exe manage.py test --settings=backend.test_settings
 ```
 
-This uses a temporary in-memory database and test-only keys, so it never touches a real database or `.env` secrets. All 278 tests pass; 17 PostgreSQL-only tests are skipped. Frontend checks: `npm run build`, `npm run lint`, and `node tests/regression/<file>.mjs` from the repository root.
+This uses a temporary in-memory database and test-only keys, so it never touches a real database or `.env` secrets. All 280 tests pass; 17 PostgreSQL-only tests are skipped here. Frontend checks: `npm run build`, `npm run lint`, and `node tests/regression/<file>.mjs` from the repository root.
+
+To run the whole suite on PostgreSQL too, including those 17 tests, start Docker Desktop and run this from the repository root:
+
+```cmd
+python scripts	est_postgres.py
+```
+
+It creates a throwaway PostgreSQL 17 container with a random name, password and port, runs the tests, and always removes it. Add app names to run only some tests, for example `python scripts	est_postgres.py sales`.
+
+**Automatic checks:** every push and pull request on GitHub runs four checks (`.github/workflows/checks.yml`):
+
+* the backend tests on SQLite, plus a check that no migration is missing;
+* the backend tests on a throwaway PostgreSQL;
+* the frontend type check, lint, build and regression scripts;
+* a dependency audit (`pip-audit` and `npm audit --audit-level=high`).
 
 Known gaps:
 
