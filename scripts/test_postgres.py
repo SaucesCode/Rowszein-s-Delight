@@ -72,19 +72,24 @@ def backend_python() -> Path:
 def docker_available() -> bool:
     if shutil.which("docker") is None:
         return False
-    return subprocess.run(["docker", "info"], capture_output=True, text=True).returncode == 0
-
-
-def database_ready(container: str, db_name: str, port: int) -> bool:
-    check = subprocess.run(["docker", "exec", container, "pg_isready", "-U", "postgres", "-d", db_name],
-                           capture_output=True, text=True)
-    if check.returncode != 0:
-        return False
     try:
-        with socket.create_connection(("127.0.0.1", port), timeout=1):
-            return True
-    except OSError:
+        return subprocess.run(["docker", "info"], capture_output=True, text=True, timeout=30).returncode == 0
+    except subprocess.TimeoutExpired:
         return False
+
+
+def database_ready(container: str, db_name: str) -> bool:
+    """Ask over TCP inside the container: the image's first-run setup server listens only on a socket file,
+    so this can't mistake it for the real server. (The host port accepts connections as soon as the
+    container starts, so it proves nothing.)"""
+    try:
+        check = subprocess.run(
+            ["docker", "exec", container, "pg_isready", "-h", "127.0.0.1", "-p", "5432", "-U", "postgres", "-d", db_name],
+            capture_output=True, text=True, timeout=5,
+        )
+    except subprocess.TimeoutExpired:
+        return False
+    return check.returncode == 0
 
 
 def run_tests(labels: list[str], env: dict[str, str]) -> int:
@@ -109,10 +114,17 @@ def main(argv: list[str]) -> int:
         return 2
     try:
         print(f"Throwaway PostgreSQL {container} on 127.0.0.1:{port}")
-        wait_until_ready(lambda: database_ready(container, db_name, port))
+        try:
+            wait_until_ready(lambda: database_ready(container, db_name))
+        except RuntimeError as error:
+            print(error)
+            return 2
         return run_tests(argv, test_environment(db_name, port, password))
     finally:
-        subprocess.run(["docker", "stop", container], capture_output=True, text=True)
+        try:
+            subprocess.run(["docker", "stop", container], capture_output=True, text=True, timeout=60)
+        except subprocess.TimeoutExpired:
+            print(f"Couldn't remove {container}. Remove it with: docker rm -f {container}")
 
 
 if __name__ == "__main__":

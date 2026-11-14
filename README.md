@@ -159,7 +159,6 @@ It creates a throwaway PostgreSQL 17 container with a random name, password and 
 Known gaps:
 
 * Box screens and the box shop were checked in a browser against a simulated API, not yet end to end with a signed-in owner on the local server.
-* The 17 PostgreSQL-only tests (concurrency, precision, migrations) need the disposable PostgreSQL runner, which is no longer in the repository.
 
 Earlier checkpoint: Phase 1B.3 disposable database verification was completed for owner review on `codex/phase-1b3-disposable-verification` (the SQLite migration fix is at `b9957e0`). Its report has since been removed from `docs/`. Production, dependencies, infrastructure and deployment validation remain separate outstanding gates; the application is not production-ready.
 

@@ -85,5 +85,48 @@ class RunnerTests(unittest.TestCase):
         self.assertIn(["docker", "stop", name], [c[:3] for c in calls])
 
 
+class HardeningTests(unittest.TestCase):
+    def test_probe_asks_over_tcp_inside_the_container(self):
+        seen = []
+
+        def fake_run(command, **kwargs):
+            seen.append((command, kwargs))
+            return subprocess.CompletedProcess(command, 0, "", "")
+
+        with mock.patch.object(runner.subprocess, "run", side_effect=fake_run):
+            self.assertTrue(runner.database_ready("rowszein-test-x", "rowszein_phase1a_" + "a" * 32))
+        command, kwargs = seen[0]
+        self.assertEqual(command[:3], ["docker", "exec", "rowszein-test-x"])
+        self.assertIn("pg_isready", command)
+        self.assertEqual(command[command.index("-h") + 1], "127.0.0.1")
+        self.assertIn("timeout", kwargs)
+
+    def test_stuck_probe_counts_as_not_ready(self):
+        with mock.patch.object(runner.subprocess, "run", side_effect=subprocess.TimeoutExpired("docker", 5)):
+            self.assertFalse(runner.database_ready("c", "db"))
+
+    def test_stuck_docker_counts_as_not_running(self):
+        with (mock.patch.object(runner.shutil, "which", return_value="docker"),
+              mock.patch.object(runner.subprocess, "run", side_effect=subprocess.TimeoutExpired("docker", 15)),
+              mock.patch("sys.stdout")):
+            self.assertEqual(runner.main([]), 2)
+
+    def test_database_that_never_starts_exits_2_and_is_removed(self):
+        calls = []
+
+        def fake_run(command, **kwargs):
+            calls.append(command)
+            return subprocess.CompletedProcess(command, 0, "", "")
+
+        with (mock.patch.object(runner.shutil, "which", return_value="docker"),
+              mock.patch.object(runner.subprocess, "run", side_effect=fake_run),
+              mock.patch.object(runner, "wait_until_ready", side_effect=RuntimeError("PostgreSQL didn't start within 60 seconds.")),
+              mock.patch("sys.stdout") as out):
+            self.assertEqual(runner.main([]), 2)
+        printed = "".join(str(c.args[0]) for c in out.write.call_args_list if c.args)
+        self.assertIn("didn't start", printed)
+        self.assertTrue(any(c[:2] == ["docker", "stop"] for c in calls))
+
+
 if __name__ == "__main__":
     unittest.main()
