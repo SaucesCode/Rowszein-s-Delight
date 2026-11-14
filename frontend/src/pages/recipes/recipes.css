@@ -251,3 +251,5 @@ a.cost-line:hover .cost-name { color: var(--color-accent-pressed); }
 @media (max-width: 399px) {
   .recipes-panel-head .segmented button { white-space: normal; line-height: 1.2; text-align: center; }
 }
+.recipes-partner-patong { color: var(--color-ink-muted); font-size: var(--text-label); }
+.recipes-partner-patong strong { color: var(--color-good); }

@@ -16,7 +16,7 @@ import RecordLoadError from "@/components/RecordLoadError";
 import { formatPeso } from "@/pages/dashboard/report-format";
 import Catalog from "./sales/Catalog";
 import TicketPanel, { type Recorded } from "./sales/TicketPanel";
-import { useTicket, type TicketLine } from "./sales/useTicket";
+import { countLabel, useTicket, type TicketLine } from "./sales/useTicket";
 import "./sales/sales.css";
 
 const WIDE = "(min-width: 1100px)";
@@ -65,6 +65,7 @@ function Register({ sale }: { sale?: Sale }) {
   );
 
   const products = useSellableProducts();
+  const partnerNames = new Map((products.data ?? []).map(product => [product.id, product.partner?.name]));
   const createSale = useCreateSale();
   const updateSale = useUpdateSale(sale?.id ?? 0, sale?.revision);
   const saving = createSale.isPending || updateSale.isPending;
@@ -126,6 +127,7 @@ function Register({ sale }: { sale?: Sale }) {
   const panel = (
     <TicketPanel
       ticket={ticket}
+      partnerOf={productId => partnerNames.get(productId)}
       title={isEdit ? "This sale" : "Order"}
       canEditPrice={!isStaff}
       date={date}
@@ -179,7 +181,7 @@ function Register({ sale }: { sale?: Sale }) {
       {!isWide && ticket.lines.length > 0 && (
         <div className="register-dock">
           <p>
-            <span>{ticket.totals.pieces === 1 ? "1 donut" : `${ticket.totals.pieces} donuts`}</span>
+            <span>{countLabel(ticket.totals.pieces, ticket.lines.some(line => partnerNames.get(line.product)))}</span>
             <strong key={ticket.totals.pieces} className="num register-dock-total">{formatPeso(ticket.totals.amount)}</strong>
           </p>
           <button type="button" className="btn-primary" onClick={() => setSheetOpen(true)} aria-haspopup="dialog">
