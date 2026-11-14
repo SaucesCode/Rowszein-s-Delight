@@ -15,7 +15,7 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 import RecordLoadError from "@/components/RecordLoadError";
 import ProductArt from "@/components/ProductArt";
 import TreatArt from "@/pages/shop/treats/TreatArt";
-import { SHAPES, guessShape, type Shape } from "@/lib/treatShape";
+import { SHAPES, guessShape, savedShapeChoice, type Shape } from "@/lib/treatShape";
 import Switch from "@/components/ui/Switch";
 import Row from "@/components/ui/SettingsRow";
 import { formatPeso } from "@/pages/dashboard/report-format";
@@ -80,8 +80,9 @@ function DonutForm({ product, duplicate, initialPartner = 0 }: {
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
   // Follows the name (guessShape) until the owner picks a drawing; a saved partner item keeps its own.
-  const [shape, setShape] = useState<Shape>(product?.partner ? (product.shape ?? "whole_cake") : "whole_cake");
-  const [shapeTouched, setShapeTouched] = useState(!!product?.partner);
+  const [initialShape] = useState(() => savedShapeChoice(product));
+  const [shape, setShape] = useState<Shape>(initialShape.shape);
+  const [shapeTouched, setShapeTouched] = useState(initialShape.touched);
 
   const {
     register,
@@ -147,7 +148,7 @@ function DonutForm({ product, duplicate, initialPartner = 0 }: {
   const isDone = createProduct.isSuccess || updateProduct.isSuccess || deleteProduct.isPending || deleteProduct.isSuccess;
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
-      (isDirty || !!photoFile) && !isSaving && !isDone && currentLocation.pathname !== nextLocation.pathname,
+      (isDirty || !!photoFile || shape !== initialShape.shape) && !isSaving && !isDone && currentLocation.pathname !== nextLocation.pathname,
   );
 
   const handlePhoto = (event: ChangeEvent<HTMLInputElement>) => {

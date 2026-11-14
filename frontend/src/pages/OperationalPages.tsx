@@ -4,7 +4,7 @@ import { useIngredients } from "@/hooks/useIngredients";
 import { useCategories, useProducts } from "@/hooks/useProducts";
 import { useListingPageRecovery } from "@/hooks/useListingPageRecovery";
 import Pagination from "@/components/Pagination";
-import DonutArt from "@/components/DonutArt";
+import ProductArt from "@/components/ProductArt";
 import { flavorOf, flavorTint } from "@/lib/flavor";
 import { STOCK_STATUS_LABEL, formatAmount, stockStatus, type StockStatus } from "@/lib/stockStatus";
 import { formatPeso } from "@/pages/dashboard/report-format";
@@ -175,7 +175,7 @@ function MenuReadLine({ product }: { product: Product }) {
   return (
     <li className="menu-line" data-resting={!product.is_available || undefined}>
       <span className="menu-line-art" style={{ background: flavorTint(flavor) }} aria-hidden="true">
-        {product.image_url ? <img src={product.image_url} alt="" loading="lazy" /> : <DonutArt flavor={flavor} size={44} />}
+        {product.image_url ? <img src={product.image_url} alt="" loading="lazy" /> : <ProductArt shape={product.shape} flavor={flavor} size={44} />}
       </span>
       <span className="menu-line-main">
         <span className="menu-line-top">

@@ -1,5 +1,5 @@
 import type { Ref } from "react";
-import PatisserieDonut from "./PatisserieDonut";
+import TreatArt from "./treats/TreatArt";
 import type { CartItem } from "@/hooks/useCart";
 import { flavorOf } from "@/lib/flavor";
 import { formatPeso } from "@/pages/dashboard/report-format";
@@ -35,7 +35,7 @@ export default function OrderDock({ boxes, singles, singleCount, total, windowRe
         ))}
         {shown.map((unit, index) => (
           <span key={`${unit.product_id}-${index}`} className="box-window-donut">
-            <PatisserieDonut flavor={flavorOf(unit.name)} size={30} />
+            <TreatArt shape={unit.shape} flavor={flavorOf(unit.name)} size={30} />
           </span>
         ))}
         {hidden > 0 && <span className="box-window-more num">+{hidden}</span>}

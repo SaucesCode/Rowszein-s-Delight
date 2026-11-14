@@ -29,3 +29,12 @@ export function guessShape(name: string): Exclude<Shape, "donut"> {
   const lower = name.toLowerCase();
   return RULES.find(([, words]) => words.some(word => lower.includes(word)))?.[0] ?? "whole_cake";
 }
+
+/**
+ * Where the item form's picker starts. A saved partner item keeps the drawing the owner chose; one
+ * saved as a donut (from before drawings existed; the picker never offers a donut) starts on the guess.
+ */
+export function savedShapeChoice(product?: { partner?: unknown; shape?: Shape }): { shape: Exclude<Shape, "donut">; touched: boolean } {
+  const shape = product?.partner ? product.shape : undefined;
+  return shape && shape !== "donut" ? { shape, touched: true } : { shape: "whole_cake", touched: false };
+}

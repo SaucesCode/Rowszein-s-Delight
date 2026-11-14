@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {SHAPES, guessShape} from '../../frontend/src/lib/treatShape.ts';
+import {SHAPES, guessShape, savedShapeChoice} from '../../frontend/src/lib/treatShape.ts';
 
 const tests=[];
 tests.push(['each keyword picks its drawing',()=>{
@@ -17,6 +17,12 @@ tests.push(['earlier rules win, and the default is a whole cake',()=>{
 }]);
 tests.push(['the picker lists the seven treats with labels',()=>{
   assert.deepEqual(SHAPES.map(s=>s.label),['Whole cake','Cake slice','Cupcake','Muffin','Brownie','Cookie','Bread']);
+}]);
+tests.push(['a partner item saved before drawings existed opens with the guess, not a donut',()=>{
+  assert.deepEqual(savedShapeChoice({partner:{id:1},shape:'donut'}),{shape:'whole_cake',touched:false});
+  assert.deepEqual(savedShapeChoice({partner:{id:1},shape:'muffin'}),{shape:'muffin',touched:true});
+  assert.deepEqual(savedShapeChoice({partner:null,shape:'donut'}),{shape:'whole_cake',touched:false});
+  assert.deepEqual(savedShapeChoice(undefined),{shape:'whole_cake',touched:false});
 }]);
 for(const [name,run] of tests){await run();console.log('PASS '+name);}
 console.log(JSON.stringify({tests:tests.length,failures:0,browser_tests:false,schema_executed:false}));
