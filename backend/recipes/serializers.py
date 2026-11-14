@@ -51,6 +51,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         ]
 
     def validate_product(self, value):
+        if value.partner_id:
+            raise serializers.ValidationError('Partner items are made by the partner, so they have no recipe.')
         if self.instance is not None and value.pk != self.instance.product_id:
             raise serializers.ValidationError('A recipe cannot be transferred to another product. Create a separate recipe.')
         if self.instance is None:

@@ -251,6 +251,9 @@ class AssortmentSerializer(serializers.ModelSerializer):
             contents = [{'product': item.product, 'quantity': item.quantity} for item in self.instance.items.all()]
         if contents is None:
             raise serializers.ValidationError({'contents': 'Choose the donuts that go in this box.'})
+        partner_item = next((entry['product'] for entry in contents if entry['product'].partner_id), None)
+        if partner_item:
+            raise serializers.ValidationError({'contents': f"{partner_item.name} is a partner item and can't go in a box."})
         repeated = [product.name for product, count in Counter(entry['product'] for entry in contents).items() if count > 1]
         if repeated:
             raise serializers.ValidationError({'contents': f'{repeated[0]} is listed twice. Combine it into one line.'})

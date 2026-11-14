@@ -175,3 +175,22 @@ class PartnerProductTests(PartnerFixture, TestCase):
         response = self.owner.patch(f'/api/products/{item.pk}/', {'partner_id': None, 'partner_payout': '0.00'}, format='json')
         self.assertEqual(response.status_code, 200, response.data)
         self.assertIsNone(Product.objects.get(pk=item.pk).partner)
+
+
+class PartnerExclusionTests(PartnerFixture, TestCase):
+    def test_ready_made_box_rejects_partner_item(self):
+        self.partner_item()
+        size = BoxSize.objects.create(size=2, price=Decimal('100.00'))
+        muffin = Product.objects.get(name='Banana muffin')
+        response = self.owner.post('/api/products/assortments/', {
+            'name': 'Muffin box', 'box_size_id': size.pk, 'is_available': True,
+            'contents': [{'product_id': muffin.pk, 'quantity': 2}]}, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(messages(response.data['error'], 'contents'), ["Banana muffin is a partner item and can't go in a box."])
+
+    def test_recipe_rejected_for_partner_item(self):
+        muffin = self.partner_item()
+        response = self.owner.post('/api/recipes/', {'product': muffin.pk, 'yield_quantity': 1, 'recipe_ingredients': []}, format='json')
+        self.assertEqual(response.status_code, 400)
+        errors = response.data.get('error', response.data)
+        self.assertEqual(messages(errors, 'product'), ['Partner items are made by the partner, so they have no recipe.'])
