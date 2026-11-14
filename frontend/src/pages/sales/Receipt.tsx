@@ -35,6 +35,19 @@ export default function Receipt({
       </header>
 
       <ul className="receipt-items">
+        {(sale.boxes ?? []).map(box => (
+          <li key={box.key} className="receipt-box">
+            <span className="receipt-qty num">1×</span>
+            <span className="receipt-name">
+              {box.name}
+              <span className="receipt-box-contents">
+                {box.contents.map(content => `${content.quantity} ${content.product_name}`).join(", ")}
+              </span>
+            </span>
+            <span className="receipt-leader" aria-hidden="true" />
+            <span className="receipt-amount num">{formatPeso(Number(box.price))}</span>
+          </li>
+        ))}
         {sale.sale_items.map((item, index) => (
           <li key={item.id ?? index}>
             <span className="receipt-qty num">{item.quantity}×</span>

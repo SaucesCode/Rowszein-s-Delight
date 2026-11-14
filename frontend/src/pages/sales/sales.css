@@ -627,3 +627,6 @@ span.catalog-tile { display: block; cursor: default; }
 .catalog-tile.is-unavailable { cursor: not-allowed; }
 .catalog-tile.is-unavailable .catalog-art { opacity: 0.45; filter: saturate(0.4); }
 .catalog-tile.is-picked { box-shadow: inset 0 0 0 2px var(--color-accent); }
+
+/* Boxes on a receipt. */
+.receipt-box-contents { display: block; color: var(--color-ink-muted); font-size: var(--text-label); }

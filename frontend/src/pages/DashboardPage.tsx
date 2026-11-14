@@ -45,6 +45,12 @@ function BottomLine({ report, phrase }: { report: DashboardReport; phrase: strin
         )}{" "}
         and <strong className="num">{formatPeso(spent)}</strong> spent.
       </p>
+      {report.boxes && report.boxes.count > 0 && (
+        <p className="analytics-boxes">
+          <strong className="num">{report.boxes.count}</strong> {report.boxes.count === 1 ? "box" : "boxes"} sold ·{" "}
+          <span className="num">{formatPeso(Number(report.boxes.revenue))}</span>
+        </p>
+      )}
       <p className="analytics-note">Sold counts sales after cancellations and changes, on the day they were made.</p>
     </section>
   );
