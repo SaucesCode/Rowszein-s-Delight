@@ -47,6 +47,9 @@ function load(): BoxOrder {
   }
 }
 
+/** Boxes are donut-only: a collab partner's muffin or cake is sold on its own. */
+export const canGoInBox = (product: Pick<Product, "partner">) => !product.partner;
+
 export const boxPrice = (box: { boxPrice: number; donuts: BoxDonut[] }) =>
   box.boxPrice + box.donuts.reduce((sum, donut) => sum + donut.box_extra, 0);
 
@@ -88,7 +91,7 @@ export function useBoxOrder() {
   const addToBox = useCallback((product: Product) => {
     setOrder(current => {
       const filling = current.filling;
-      if (!filling || filling.donuts.length >= filling.size) return current;
+      if (!filling || filling.donuts.length >= filling.size || !canGoInBox(product)) return current;
       return { ...current, filling: { ...filling, donuts: [...filling.donuts, donutFrom(product)] } };
     });
   }, []);

@@ -38,7 +38,7 @@ export default function OrderCard({ cardRef, boxes, singles, total, name, number
           ))}
           {singles.map(item => (
             <li key={item.product_id}>
-              <span>{item.quantity} × {item.name}</span>
+              <span>{item.quantity} × {item.name}{item.partner ? ` (by ${item.partner})` : ""}</span>
               <span className="num">{formatPeso(item.price * item.quantity)}</span>
             </li>
           ))}

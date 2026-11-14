@@ -41,7 +41,7 @@ export default function OrderDock({ boxes, singles, singleCount, total, windowRe
         {hidden > 0 && <span className="box-window-more num">+{hidden}</span>}
       </span>
       <p className="box-dock-summary">
-        <span>{orderSummary(boxes.length, singleCount)}</span>
+        <span>{orderSummary(boxes.length, singleCount, singles.some(item => item.partner))}</span>
         <strong className="num">{formatPeso(total)}</strong>
       </p>
       <button type="button" className="btn-primary box-dock-review" onClick={onReview}>

@@ -1472,3 +1472,11 @@ html:has(.box-sheet[open]) { overflow: hidden; }
   .hero-start:hover svg,
   .hero-pick:hover { transform: none; }
 }
+
+/* ── Collab partners ───────────────────────────────────────────────── */
+.case-shelf-blurb { margin-top: calc(var(--space-2) * -1); color: var(--color-ink-muted); font-size: var(--text-label); }
+/* While filling a box, partner items stay visible but read as unavailable.
+   The art is dimmed rather than the plate, which the reveal animation owns. */
+.case-item.is-not-in-box .case-art { opacity: 0.45; filter: saturate(0.4); }
+.case-item.is-not-in-box .case-item-button { cursor: not-allowed; }
+.box-line-by { color: var(--color-ink-muted); font-size: var(--text-label); }

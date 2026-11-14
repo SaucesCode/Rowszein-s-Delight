@@ -19,7 +19,8 @@ import HowToOrder from "./HowToOrder";
 import ShopHero from "./ShopHero";
 import { Ornament } from "./ShopIcons";
 import { SHOP_EMAIL, SHOP_MESSENGER, orderSummary } from "./order";
-import { toShelves } from "./shelves";
+import { heroPicks, toShelves } from "./shelves";
+import { canGoInBox } from "./useBoxOrder";
 import { useBoxOrder } from "./useBoxOrder";
 import { useFlyToBox } from "./useFlyToBox";
 import { useInView } from "./useInView";
@@ -29,6 +30,9 @@ import "./shop.css";
 
 type BoxSize = ShopBoxes["sizes"][number];
 type ReadyMade = ShopBoxes["assortments"][number];
+
+/** The "From our friends" chip: every collab partner's shelf, filtered here rather than by the API. */
+const PARTNERS = "partners";
 
 export default function ShopPage() {
   const cart = useCart();
@@ -56,7 +60,7 @@ export default function ShopPage() {
 
   const catalog = useListingPages<Product>(
     "products",
-    { search, category, is_available: true, category_active: true },
+    { search, category: category === PARTNERS ? "all" : category, is_available: true, category_active: true },
     "storefront",
     true,
     true,
@@ -72,10 +76,12 @@ export default function ShopPage() {
 
   const products = uniqueRecords(catalog.data?.pages.map(page => page.data.results) ?? []);
   const categories = uniqueRecords(categoryList.data?.pages.map(page => page.data.results) ?? []);
-  const shelves = toShelves(products, categories);
+  const allShelves = toShelves(products, categories);
+  const hasPartners = allShelves.some(shelf => shelf.partner);
+  const shelves = category === PARTNERS ? allShelves.filter(shelf => shelf.partner) : allShelves;
   const filtered = !!search || category !== "all";
   const featured = uniqueRecords(bestSellers.data?.pages.map(page => page.data.results) ?? []);
-  const showcase = featured.length > 0 ? featured : filtered ? [] : products;
+  const showcase = heroPicks(featured, products, filtered);
 
   const sizes = shopBoxes.data?.sizes ?? [];
   const readyMade = shopBoxes.data?.assortments ?? [];
@@ -95,6 +101,10 @@ export default function ShopPage() {
 
   const add = useCallback(
     (product: Product, art: HTMLElement) => {
+      if (filling && !canGoInBox(product)) {
+        setAnnouncement(`${product.name} can't go in a box. Finish your box first, then add it to your order.`);
+        return;
+      }
       if (filling) {
         const left = filling.size - filling.donuts.length;
         if (left <= 0) {
@@ -216,6 +226,11 @@ export default function ShopPage() {
                 {item.name}
               </button>
             ))}
+            {(hasPartners || category === PARTNERS) && (
+              <button type="button" className="chip" aria-pressed={category === PARTNERS} onClick={() => setCategory(PARTNERS)}>
+                From our friends
+              </button>
+            )}
           </div>
           <label className="search-field case-search">
             <span className="sr-only">Find a donut</span>

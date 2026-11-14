@@ -280,7 +280,11 @@ function DonutForm({ product, duplicate, initialPartner = 0 }: {
             <Row
               label="Photo"
               error={photoError ?? undefined}
-              hint="Optional. Without one, the shop shows the donut drawing above."
+              hint={
+                isPartnerItem
+                  ? "Add one: without a photo, the shop draws a donut, which won't look like their item."
+                  : "Optional. Without one, the shop shows the donut drawing above."
+              }
             >
               <label className="btn-secondary settings-photo-button">
                 <ImagePlus size={18} aria-hidden="true" />

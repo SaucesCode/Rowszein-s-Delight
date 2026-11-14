@@ -10,6 +10,8 @@ export interface CartItem {
   price: number;
   image_url: string | null;
   quantity: number;
+  /** The partner's name for a collab partner's item. */
+  partner?: string;
 }
 
 const STORAGE_KEY = "rowszein_cart";
@@ -67,6 +69,7 @@ export function useCart() {
           price: Number(product.price),
           image_url: product.image_url,
           quantity: 1,
+          partner: product.partner?.name,
         },
       ];
     });

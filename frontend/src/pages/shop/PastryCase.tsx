@@ -5,6 +5,7 @@ import { formatPeso } from "@/pages/dashboard/report-format";
 import type { Product } from "@/types/product.types";
 import { Doily, DonutName } from "./ShopIcons";
 import type { Shelf } from "./shelves";
+import { canGoInBox } from "./useBoxOrder";
 import { useShelfColumns } from "./useShelfColumns";
 
 interface CaseItemProps {
@@ -21,17 +22,22 @@ const CaseItem = memo(function CaseItem({ product, filling, inBox, order, onAdd 
   const descriptionId = useId();
   const flavor = flavorOf(product.name, product.category?.name);
   const extra = Number(product.box_extra ?? 0);
-  const details = `${product.is_featured ? ", best seller" : ""}, ${formatPeso(Number(product.price))}`;
-  const label = filling
-    ? `Put ${product.name} in your box${extra > 0 ? `, adds ${formatPeso(extra)}` : ""}`
-    : `Add ${product.name}${details}${inBox ? `. ${inBox} in your order` : ""}`;
+  const maker = product.partner ? ` by ${product.partner.name}` : "";
+  const details = `${maker}${product.is_featured ? ", best seller" : ""}, ${formatPeso(Number(product.price))}`;
+  const notInBox = filling && !canGoInBox(product);
+  const label = notInBox
+    ? `${product.name}${maker}, not in boxes. Finish your box first, then add it to your order.`
+    : filling
+      ? `Put ${product.name} in your box${extra > 0 ? `, adds ${formatPeso(extra)}` : ""}`
+      : `Add ${product.name}${details}${inBox ? `. ${inBox} in your order` : ""}`;
 
   return (
-    <li className="case-item" style={{ "--i": Math.min(order, 8) } as CSSProperties}>
+    <li className={`case-item${notInBox ? " is-not-in-box" : ""}`} style={{ "--i": Math.min(order, 8) } as CSSProperties}>
       <button
         type="button"
         className="case-item-button"
         aria-label={label}
+        aria-disabled={notInBox || undefined}
         aria-describedby={product.description ? descriptionId : undefined}
         onClick={event => {
           const art = event.currentTarget.querySelector<HTMLElement>(".case-art");
@@ -52,6 +58,7 @@ const CaseItem = memo(function CaseItem({ product, filling, inBox, order, onAdd 
           </span>
           <span className="case-price num">{formatPeso(Number(product.price))}</span>
           {extra > 0 && <span className="case-extra num">+{formatPeso(extra)} in a box</span>}
+          {notInBox && <span className="case-extra">Not in boxes</span>}
         </span>
       </button>
       {product.description && (
@@ -75,8 +82,9 @@ export default function PastryCase({ shelves, filling, quantityOf, onAdd }: Past
   return (
     <div ref={ref} className="case-shelves" style={{ "--cols": columns } as CSSProperties}>
       {shelves.map(shelf => (
-        <section key={shelf.category.id} className="case-shelf" aria-labelledby={`shelf-${shelf.category.id}`}>
-          <h2 id={`shelf-${shelf.category.id}`} className="case-shelf-title">{shelf.category.name}</h2>
+        <section key={shelf.id} className={`case-shelf${shelf.partner ? " is-partner" : ""}`} aria-labelledby={`shelf-${shelf.id}`}>
+          <h2 id={`shelf-${shelf.id}`} className="case-shelf-title">{shelf.title}</h2>
+          {shelf.blurb && <p className="case-shelf-blurb">{shelf.blurb}</p>}
           <ul className="case-row">
             {shelf.items.map(product => (
               <CaseItem
