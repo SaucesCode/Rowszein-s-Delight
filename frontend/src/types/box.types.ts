@@ -43,6 +43,7 @@ export interface BoxSizePayload {
   size?: number;
   price?: number;
   is_available?: boolean;
+  max_flavors?: number;
 }
 
 /** What the online shop can sell right now. */

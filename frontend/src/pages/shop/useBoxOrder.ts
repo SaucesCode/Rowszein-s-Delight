@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { fillEvenly } from "../../lib/boxRule.ts";
 import type { Product } from "@/types/product.types";
 import type { ShopBoxes } from "@/types/box.types";
 
@@ -21,11 +22,12 @@ export interface BoxLine {
   assortmentId?: number;
 }
 
-/** The box the customer is filling from the case right now. */
+/** The box the customer is filling right now: the flavours picked, in pick order. */
 export interface FillingBox {
   size: number;
   boxPrice: number;
-  donuts: BoxDonut[];
+  maxFlavors: number;
+  flavours: BoxDonut[];
 }
 
 interface BoxOrder {
@@ -36,13 +38,24 @@ interface BoxOrder {
 const STORAGE_KEY = "rowszein_box_order";
 const EMPTY: BoxOrder = { filling: null, boxes: [] };
 
+/** A stored order; a half-filled box saved before the flavour rule is dropped, finished boxes are kept. */
+export function parseStoredOrder(raw: string | null): BoxOrder {
+  try {
+    const parsed = raw ? (JSON.parse(raw) as BoxOrder) : EMPTY;
+    if (!Array.isArray(parsed?.boxes)) return EMPTY;
+    const filling = parsed.filling && Array.isArray(parsed.filling.flavours) ? parsed.filling : null;
+    return { filling, boxes: parsed.boxes };
+  } catch {
+    // Unreadable stored order: start empty rather than fail.
+    return EMPTY;
+  }
+}
+
 function load(): BoxOrder {
   try {
-    const raw = sessionStorage.getItem(STORAGE_KEY);
-    const parsed = raw ? (JSON.parse(raw) as BoxOrder) : EMPTY;
-    return Array.isArray(parsed?.boxes) ? parsed : EMPTY;
+    return parseStoredOrder(sessionStorage.getItem(STORAGE_KEY));
   } catch {
-    // Unreadable or blocked storage: start with an empty order rather than fail.
+    // Blocked storage: start with an empty order rather than fail.
     return EMPTY;
   }
 }
@@ -60,6 +73,20 @@ export const donutFrom = (product: Product): BoxDonut => ({
   image_url: product.image_url,
   box_extra: Number(product.box_extra ?? 0),
 });
+
+/** Every slot of the box being filled: its flavours filled evenly. */
+export const fillingDonuts = (box: FillingBox): BoxDonut[] =>
+  fillEvenly(box.size, box.flavours).flatMap(({ item, quantity }) => Array.from({ length: quantity }, () => item));
+
+/** Pick a flavour, or take it out if it's already picked. */
+export function toggleFillingFlavour(box: FillingBox, product: Product): FillingBox | { error: string } {
+  if (box.flavours.some(flavour => flavour.product_id === product.id)) {
+    return { ...box, flavours: box.flavours.filter(flavour => flavour.product_id !== product.id) };
+  }
+  if (!canGoInBox(product)) return { error: "Not in boxes" };
+  if (box.flavours.length >= box.maxFlavors) return { error: `This box takes up to ${box.maxFlavors} flavours` };
+  return { ...box, flavours: [...box.flavours, donutFrom(product)] };
+}
 
 /** Groups a box's slots into "4 Glazed, 3 Ube" for summaries and the order card. */
 export function describeBox(donuts: BoxDonut[]): string {
@@ -81,34 +108,32 @@ export function useBoxOrder() {
     }
   }, [order]);
 
-  const startBox = useCallback((size: number, price: number) => {
-    setOrder(current => ({ ...current, filling: { size, boxPrice: price, donuts: [] } }));
+  const startBox = useCallback((size: number, price: number, maxFlavors: number) => {
+    setOrder(current => ({ ...current, filling: { size, boxPrice: price, maxFlavors, flavours: [] } }));
   }, []);
 
   const cancelBox = useCallback(() => setOrder(current => ({ ...current, filling: null })), []);
 
-  /** Puts a donut in the next empty slot; ignored when no box is open or it is full. */
-  const addToBox = useCallback((product: Product) => {
+  /** Picks or unpicks a flavour; ignored when no box is open or the pick isn't allowed. */
+  const toggleInBox = useCallback((product: Product) => {
     setOrder(current => {
-      const filling = current.filling;
-      if (!filling || filling.donuts.length >= filling.size || !canGoInBox(product)) return current;
-      return { ...current, filling: { ...filling, donuts: [...filling.donuts, donutFrom(product)] } };
+      if (!current.filling) return current;
+      const next = toggleFillingFlavour(current.filling, product);
+      return "error" in next ? current : { ...current, filling: next };
     });
   }, []);
 
-  const removeFromBox = useCallback((index: number) => {
+  const unpickLast = useCallback(() => {
     setOrder(current =>
-      current.filling
-        ? { ...current, filling: { ...current.filling, donuts: current.filling.donuts.filter((_, slot) => slot !== index) } }
-        : current,
+      current.filling ? { ...current, filling: { ...current.filling, flavours: current.filling.flavours.slice(0, -1) } } : current,
     );
   }, []);
 
   const finishBox = useCallback(() => {
     setOrder(current => {
       const filling = current.filling;
-      if (!filling || filling.donuts.length !== filling.size) return current;
-      const line: BoxLine = { key: newKey(), name: `Box of ${filling.size}`, size: filling.size, boxPrice: filling.boxPrice, donuts: filling.donuts };
+      if (!filling || filling.flavours.length === 0) return current;
+      const line: BoxLine = { key: newKey(), name: `Box of ${filling.size}`, size: filling.size, boxPrice: filling.boxPrice, donuts: fillingDonuts(filling) };
       return { filling: null, boxes: [...current.boxes, line] };
     });
   }, []);
@@ -140,8 +165,8 @@ export function useBoxOrder() {
     boxesTotal: order.boxes.reduce((sum, box) => sum + boxPrice(box), 0),
     startBox,
     cancelBox,
-    addToBox,
-    removeFromBox,
+    toggleInBox,
+    unpickLast,
     finishBox,
     addReadyMade,
     removeBox,

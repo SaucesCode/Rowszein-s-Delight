@@ -20,7 +20,7 @@ import ShopHero from "./ShopHero";
 import { Ornament } from "./ShopIcons";
 import { SHOP_EMAIL, SHOP_MESSENGER, orderSummary } from "./order";
 import { heroPicks, toShelves } from "./shelves";
-import { canGoInBox } from "./useBoxOrder";
+import { describeBox, fillingDonuts, toggleFillingFlavour } from "./useBoxOrder";
 import { useBoxOrder } from "./useBoxOrder";
 import { useFlyToBox } from "./useFlyToBox";
 import { useInView } from "./useInView";
@@ -86,7 +86,7 @@ export default function ShopPage() {
   const sizes = shopBoxes.data?.sizes ?? [];
   const readyMade = shopBoxes.data?.assortments ?? [];
   const { addItem, items, totalItems } = cart;
-  const { filling, boxes, addToBox, startBox: openBox } = boxOrder;
+  const { filling, boxes, toggleInBox, startBox: openBox } = boxOrder;
   const total = cart.totalAmount + boxOrder.boxesTotal;
   const hasOrder = totalItems > 0 || boxes.length > 0;
 
@@ -94,41 +94,43 @@ export default function ShopPage() {
   const quantityOf = useCallback(
     (productId: number) =>
       filling
-        ? filling.donuts.filter(donut => donut.product_id === productId).length
+        ? fillingDonuts(filling).filter(donut => donut.product_id === productId).length
         : (items.find(item => item.product_id === productId)?.quantity ?? 0),
     [filling, items],
   );
 
   const add = useCallback(
     (product: Product, art: HTMLElement) => {
-      if (filling && !canGoInBox(product)) {
-        setAnnouncement(`${product.name} can't go in a box. Finish your box first, then add it to your order.`);
-        return;
-      }
       if (filling) {
-        const left = filling.size - filling.donuts.length;
-        if (left <= 0) {
-          setAnnouncement(`Your box of ${filling.size} is full. Add it to your order.`);
+        const next = toggleFillingFlavour(filling, product);
+        if ("error" in next) {
+          setAnnouncement(
+            next.error === "Not in boxes"
+              ? `${product.name} can't go in a box. Finish your box first, then add it to your order.`
+              : `${next.error}. Tap a picked flavour to take it out first.`,
+          );
           return;
         }
-        addToBox(product);
-        flyToFillingBox(art);
-        setAnnouncement(left === 1 ? `${product.name} in. Your box is full.` : `${product.name} in. ${left - 1} more to go.`);
+        const picked = next.flavours.length > filling.flavours.length;
+        toggleInBox(product);
+        if (picked) flyToFillingBox(art);
+        const contents = describeBox(fillingDonuts(next));
+        setAnnouncement(`${product.name} ${picked ? "in" : "out"}. ${contents ? `Your box: ${contents}.` : "Pick a flavour."}`);
         return;
       }
       addItem(product);
       flyToOrder(art);
       setAnnouncement(`${product.name} added to your order.`);
     },
-    [filling, addToBox, addItem, flyToFillingBox, flyToOrder],
+    [filling, toggleInBox, addItem, flyToFillingBox, flyToOrder],
   );
 
   const startBox = (size: BoxSize) => {
-    if (filling && filling.donuts.length > 0) {
+    if (filling && filling.flavours.length > 0) {
       setAnnouncement(`Finish or cancel your box of ${filling.size} first.`);
     } else {
-      openBox(size.size, Number(size.price));
-      setAnnouncement(`Box of ${size.size} open. Tap donuts in the case to fill it.`);
+      openBox(size.size, Number(size.price), size.max_flavors);
+      setAnnouncement(`Box of ${size.size} open. Pick up to ${size.max_flavors} flavours in the case; the box fills evenly.`);
     }
     document.getElementById("menu")?.scrollIntoView({ block: "start" });
   };
@@ -203,7 +205,7 @@ export default function ShopPage() {
           <h2 className="shop-title">Today's donuts</h2>
           <p className="shop-lede">
             {filling
-              ? `Tap donuts to fill your box of ${filling.size}. Premium flavours show their extra on the price card.`
+              ? `Pick up to ${filling.maxFlavors} flavours for your box of ${filling.size}; it fills evenly. Premium flavours show their extra on the price card.`
               : sizes.length > 0
                 ? "Tap a donut to add it on its own, or choose a box above and fill it from here."
                 : "Tap the ones you'd like. When your order looks right, send it to us on Messenger."}
@@ -283,7 +285,7 @@ export default function ShopPage() {
               </div>
             )}
 
-            {products.length > 0 && <PastryCase shelves={shelves} filling={!!filling} quantityOf={quantityOf} onAdd={add} />}
+            {products.length > 0 && <PastryCase shelves={shelves} filling={!!filling} picked={filling?.flavours.map(flavour => flavour.product_id)} maxFlavors={filling?.maxFlavors} quantityOf={quantityOf} onAdd={add} />}
 
             {catalog.hasNextPage && (
               <div className="case-more">
@@ -324,7 +326,7 @@ export default function ShopPage() {
         <FillingDock
           box={filling}
           boxRef={fillingBoxRef}
-          onUndo={() => boxOrder.removeFromBox(filling.donuts.length - 1)}
+          onUndo={boxOrder.unpickLast}
           onCancel={boxOrder.cancelBox}
           onFinish={finishBox}
         />

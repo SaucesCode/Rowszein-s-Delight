@@ -16,19 +16,27 @@ function BoxSizeRow({ box }: { box: BoxSize }) {
   const save = useSaveBoxSize();
   const remove = useDeleteBoxSize();
   const [price, setPrice] = useState(String(Number(box.price)));
+  const [flavours, setFlavours] = useState(String(box.max_flavors));
   const [error, setError] = useState<string | null>(null);
+  const flavourLimit = Math.min(box.size, 12);
+  const flavoursChanged = Number(flavours) !== box.max_flavors;
   const [confirmOpen, setConfirmOpen] = useState(false);
   const changed = Number(price) !== Number(box.price);
 
   const savePrice = (event: FormEvent) => {
     event.preventDefault();
     const value = Number(price);
+    const most = Number(flavours);
     if (!price.trim() || !Number.isFinite(value) || value <= 0) {
       setError("Enter a price above ₱0.");
       return;
     }
+    if (!Number.isInteger(most) || most < 1 || most > flavourLimit) {
+      setError(`Choose 1 to ${flavourLimit} flavours.`);
+      return;
+    }
     setError(null);
-    save.mutate({ id: box.id, payload: { price: value } });
+    save.mutate({ id: box.id, payload: { price: value, max_flavors: most } });
   };
 
   return (
@@ -52,9 +60,25 @@ function BoxSizeRow({ box }: { box: BoxSize }) {
               onChange={event => setPrice(event.target.value)}
             />
           </div>
-          {changed && (
+        </div>
+        <div className="box-size-flavours">
+          <label htmlFor={`${id}-flavours`} className="box-size-flavours-label">Most flavours</label>
+          <input
+            id={`${id}-flavours`}
+            type="number"
+            inputMode="numeric"
+            min="1"
+            max={flavourLimit}
+            className="field-input num"
+            value={flavours}
+            aria-invalid={!!error}
+            aria-describedby={error ? `${id}-error` : `${id}-flavours-hint`}
+            onChange={event => setFlavours(event.target.value)}
+          />
+          <span id={`${id}-flavours-hint`} className="sr-only">The box fills evenly between the flavours picked.</span>
+          {(changed || flavoursChanged) && (
             <button type="submit" className="btn-primary box-size-save" disabled={save.isPending} aria-busy={save.isPending}>
-              {save.isPending ? "Saving…" : "Save price"}
+              {save.isPending ? "Saving…" : "Save"}
             </button>
           )}
         </div>
@@ -169,6 +193,7 @@ function AddBoxSize({ existing }: { existing: number[] }) {
 
 function assortmentStatus(assortment: Assortment): { label: string; tone: "on" | "off" | "warn" } {
   if (!assortment.is_complete) return { label: "Not full: shop hides it", tone: "warn" };
+  if (!assortment.follows_rule) return { label: "Doesn't follow the flavour rule: shop hides it", tone: "warn" };
   if (assortment.items.some(item => !item.is_available)) return { label: "A donut is resting: shop hides it", tone: "warn" };
   if (!assortment.box_size.is_available) return { label: `Box of ${assortment.box_size.size} is off sale`, tone: "warn" };
   return assortment.is_available ? { label: "In the shop", tone: "on" } : { label: "Hidden", tone: "off" };
@@ -237,7 +262,7 @@ export default function BoxesPage() {
           {sizes.isSuccess && <AddBoxSize existing={sizeList.map(box => box.size)} />}
         </div>
         <p className="field-hint box-hint">
-          Premium donuts can add an extra per donut on top of the box price. Set it on each donut in the Donut collection.
+          Each box fills evenly between the flavours a customer picks, up to its “most flavours”. Premium donuts can add an extra per donut on top of the box price; set it on each donut in the Donut collection.
         </p>
       </section>
 

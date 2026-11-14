@@ -1,7 +1,8 @@
 import { useId, useState, type FormEvent } from "react";
 import { useBlocker, useNavigate, useParams } from "react-router-dom";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { Check, Trash2 } from "lucide-react";
 import { useAssortment, useBoxSizes, useCollection, useDeleteAssortment, useSaveAssortment } from "@/hooks/useBoxes";
+import { fillEvenly } from "@/lib/boxRule";
 import { validRecordId } from "@/lib/managementQueryKeys";
 import { flavorOf } from "@/lib/flavor";
 import { formatPeso } from "@/pages/dashboard/report-format";
@@ -15,26 +16,26 @@ import Row from "@/components/ui/SettingsRow";
 import BoxArt from "./boxes/BoxArt";
 import "./boxes/boxes.css";
 
-type Quantities = Record<number, number>;
-
 interface Draft {
   name: string;
   description: string;
   sizeId: number;
   available: boolean;
-  quantities: Quantities;
+  /** Product ids in pick order; the box fills evenly between them. */
+  flavours: number[];
 }
 
 function draftFrom(assortment: Assortment | undefined, sizes: BoxSize[]): Draft {
   if (!assortment) {
-    return { name: "", description: "", sizeId: sizes[0]?.id ?? 0, available: true, quantities: {} };
+    return { name: "", description: "", sizeId: sizes[0]?.id ?? 0, available: true, flavours: [] };
   }
   return {
     name: assortment.name,
     description: assortment.description,
     sizeId: assortment.box_size.id,
     available: assortment.is_available,
-    quantities: Object.fromEntries(assortment.items.map(item => [item.product_id, item.quantity])),
+    // Largest counts first, so an even box reads back exactly as it was saved.
+    flavours: [...assortment.items].sort((a, b) => b.quantity - a.quantity).map(item => item.product_id),
   };
 }
 
@@ -53,15 +54,18 @@ function AssortmentForm({ assortment, sizes, collection }: { assortment?: Assort
 
   const size = sizes.find(box => box.id === draft.sizeId);
   const capacity = size?.size ?? 0;
-  const filled = Object.values(draft.quantities).reduce((sum, quantity) => sum + quantity, 0);
-  const missing = capacity - filled;
+  const maxFlavors = size?.max_flavors ?? 0;
+  const tooMany = size ? draft.flavours.length - maxFlavors : 0;
+  const quantities: Record<number, number> = Object.fromEntries(
+    size && tooMany <= 0 ? fillEvenly(capacity, draft.flavours).map(({ item, quantity }) => [item, quantity]) : [],
+  );
   const byId = new Map(collection.map(product => [product.id, product]));
-  const extras = Object.entries(draft.quantities).reduce(
+  const extras = Object.entries(quantities).reduce(
     (sum, [productId, quantity]) => sum + quantity * Number(byId.get(Number(productId))?.box_extra ?? 0),
     0,
   );
   const price = (size ? Number(size.price) : 0) + extras;
-  const units = Object.entries(draft.quantities).flatMap(([productId, quantity]) => {
+  const units = Object.entries(quantities).flatMap(([productId, quantity]) => {
     const product = byId.get(Number(productId));
     return product
       ? Array.from({ length: quantity }, () => ({ name: product.name, category: product.category?.name, image_url: product.image_url }))
@@ -75,16 +79,25 @@ function AssortmentForm({ assortment, sizes, collection }: { assortment?: Assort
   );
 
   const update = (patch: Partial<Draft>) => setDraft(current => ({ ...current, ...patch }));
-  const setQuantity = (productId: number, quantity: number) =>
-    setDraft(current => {
-      const quantities = { ...current.quantities };
-      if (quantity <= 0) delete quantities[productId];
-      else quantities[productId] = quantity;
-      return { ...current, quantities };
-    });
+  const toggleFlavour = (productId: number) =>
+    setDraft(current => ({
+      ...current,
+      flavours: current.flavours.includes(productId)
+        ? current.flavours.filter(id => id !== productId)
+        : [...current.flavours, productId],
+    }));
 
-  const fillState =
-    !size ? "Choose a box size." : missing > 0 ? `${filled} of ${capacity}: add ${missing} more` : missing < 0 ? `${filled} of ${capacity}: take out ${-missing}` : `Full: ${capacity} donuts`;
+  const contentsText = draft.flavours
+    .map(productId => `${quantities[productId] ?? 0} ${byId.get(productId)?.name ?? "donut"}`)
+    .join(" · ");
+  const fillState = !size
+    ? "Choose a box size."
+    : draft.flavours.length === 0
+      ? `Pick up to ${maxFlavors} ${maxFlavors === 1 ? "flavour" : "flavours"}; the box fills evenly.`
+      : tooMany > 0
+        ? `A box of ${capacity} takes up to ${maxFlavors} flavours. Take out ${tooMany}.`
+        : `Full: ${contentsText}`;
+  const ready = !!size && draft.flavours.length > 0 && tooMany <= 0;
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -94,13 +107,13 @@ function AssortmentForm({ assortment, sizes, collection }: { assortment?: Assort
       return;
     }
     setNameError(null);
-    if (!size || missing !== 0) return;
+    if (!ready) return;
     save.mutate({
       name: draft.name.trim(),
       description: draft.description.trim(),
       box_size_id: draft.sizeId,
       is_available: draft.available,
-      contents: Object.entries(draft.quantities).map(([productId, quantity]) => ({ product_id: Number(productId), quantity })),
+      contents: Object.entries(quantities).map(([productId, quantity]) => ({ product_id: Number(productId), quantity })),
     });
   };
 
@@ -110,14 +123,19 @@ function AssortmentForm({ assortment, sizes, collection }: { assortment?: Assort
         <header className="page-head">
           <div>
             <h1 className="type-page">{assortment ? assortment.name : "New ready-made box"}</h1>
-            <p className="page-lede">Fill the box with donuts. Customers pick it in one tap in the online shop.</p>
+            <p className="page-lede">Pick its flavours; the box fills evenly. Customers pick it in one tap in the online shop.</p>
           </div>
         </header>
+        {assortment && !assortment.follows_rule && (
+          <p className="settings-notice" role="status">
+            This box doesn't follow its size's flavour rule, so the shop hides it. Saving fills it evenly with the flavours below.
+          </p>
+        )}
 
         <div className="assortment-layout">
           <aside className="assortment-preview" aria-live="polite">
             {size ? <BoxArt size={capacity} units={units.slice(0, capacity)} /> : <span className="skeleton block h-40 w-full" />}
-            <p className={`assortment-fill${missing === 0 && size ? " is-full" : ""}`}>{fillState}</p>
+            <p className={`assortment-fill${ready ? " is-full" : ""}`}>{fillState}</p>
             <p className="assortment-preview-price">
               <span>Box price</span>
               <strong className="num">{formatPeso(price)}</strong>
@@ -185,8 +203,10 @@ function AssortmentForm({ assortment, sizes, collection }: { assortment?: Assort
             <section className="settings-group" aria-labelledby={field("contents")}>
               <h2 id={field("contents")} className="settings-group-title">What goes in</h2>
               <ul className="assortment-picker settings-card">
-                {collection.map(product => {
-                  const quantity = draft.quantities[product.id] ?? 0;
+                {collection.filter(product => !product.partner).map(product => {
+                  const picked = draft.flavours.includes(product.id);
+                  const quantity = quantities[product.id] ?? 0;
+                  const atLimit = !!size && draft.flavours.length >= maxFlavors;
                   const extra = Number(product.box_extra ?? 0);
                   return (
                     <li key={product.id} className="assortment-pick">
@@ -204,17 +224,23 @@ function AssortmentForm({ assortment, sizes, collection }: { assortment?: Assort
                           {!product.is_available && " · Resting"}
                         </span>
                       </span>
-                      <span className="box-stepper" role="group" aria-label={`${product.name} in the box`}>
-                        <button type="button" onClick={() => setQuantity(product.id, quantity - 1)} disabled={quantity === 0}>
-                          <Minus size={18} aria-hidden="true" />
-                          <span className="sr-only">One less {product.name}</span>
-                        </button>
-                        <span className="num" aria-live="polite">{quantity}</span>
-                        <button type="button" onClick={() => setQuantity(product.id, quantity + 1)} disabled={!size || missing <= 0}>
-                          <Plus size={18} aria-hidden="true" />
-                          <span className="sr-only">One more {product.name}</span>
-                        </button>
-                      </span>
+                      <button
+                        type="button"
+                        className="chip assortment-pick-toggle"
+                        aria-pressed={picked}
+                        disabled={!size || (!picked && atLimit)}
+                        onClick={() => toggleFlavour(product.id)}
+                      >
+                        {picked ? (
+                          <>
+                            <Check size={16} aria-hidden="true" />
+                            <span className="num">{quantity}</span> in the box
+                          </>
+                        ) : (
+                          "Pick"
+                        )}
+                        <span className="sr-only"> {product.name}</span>
+                      </button>
                     </li>
                   );
                 })}
@@ -239,7 +265,7 @@ function AssortmentForm({ assortment, sizes, collection }: { assortment?: Assort
           <button type="button" className="btn-ghost" onClick={() => navigate("/products/boxes")}>
             Cancel
           </button>
-          <button type="submit" className="btn-primary" disabled={save.isPending || !size || missing !== 0} aria-busy={save.isPending}>
+          <button type="submit" className="btn-primary" disabled={save.isPending || !ready} aria-busy={save.isPending}>
             {save.isPending ? "Saving…" : assortment ? "Save changes" : "Add box"}
           </button>
         </footer>

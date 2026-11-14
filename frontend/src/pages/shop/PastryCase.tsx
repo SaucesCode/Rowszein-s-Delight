@@ -13,31 +13,42 @@ interface CaseItemProps {
   /** True while the customer is filling a box: tapping puts the donut in the box. */
   filling: boolean;
   inBox: number;
+  /** While filling: this flavour is in the box. */
+  picked: boolean;
+  /** While filling: the box already has its most flavours. */
+  atLimit: boolean;
+  maxFlavors: number;
   order: number;
   onAdd: (product: Product, art: HTMLElement) => void;
 }
 
 /** One donut on a plate, with its price tag hanging below the glass. Tapping adds it to the box. */
-const CaseItem = memo(function CaseItem({ product, filling, inBox, order, onAdd }: CaseItemProps) {
+const CaseItem = memo(function CaseItem({ product, filling, inBox, picked, atLimit, maxFlavors, order, onAdd }: CaseItemProps) {
   const descriptionId = useId();
   const flavor = flavorOf(product.name, product.category?.name);
   const extra = Number(product.box_extra ?? 0);
   const maker = product.partner ? ` by ${product.partner.name}` : "";
   const details = `${maker}${product.is_featured ? ", best seller" : ""}, ${formatPeso(Number(product.price))}`;
   const notInBox = filling && !canGoInBox(product);
+  const limited = filling && !notInBox && !picked && atLimit;
   const label = notInBox
     ? `${product.name}${maker}, not in boxes. Finish your box first, then add it to your order.`
-    : filling
-      ? `Put ${product.name} in your box${extra > 0 ? `, adds ${formatPeso(extra)}` : ""}`
-      : `Add ${product.name}${details}${inBox ? `. ${inBox} in your order` : ""}`;
+    : limited
+      ? `${product.name}: this box takes up to ${maxFlavors} flavours. Take one out to swap.`
+      : filling
+        ? picked
+          ? `Take ${product.name} out of your box. ${inBox} in it now`
+          : `Pick ${product.name} for your box${extra > 0 ? `, adds ${formatPeso(extra)} each` : ""}`
+        : `Add ${product.name}${details}${inBox ? `. ${inBox} in your order` : ""}`;
 
   return (
-    <li className={`case-item${notInBox ? " is-not-in-box" : ""}`} style={{ "--i": Math.min(order, 8) } as CSSProperties}>
+    <li className={`case-item${notInBox || limited ? " is-not-in-box" : ""}${filling && picked ? " is-picked" : ""}`} style={{ "--i": Math.min(order, 8) } as CSSProperties}>
       <button
         type="button"
         className="case-item-button"
         aria-label={label}
-        aria-disabled={notInBox || undefined}
+        aria-disabled={notInBox || limited || undefined}
+        aria-pressed={filling && !notInBox ? picked : undefined}
         aria-describedby={product.description ? descriptionId : undefined}
         onClick={event => {
           const art = event.currentTarget.querySelector<HTMLElement>(".case-art");
@@ -59,6 +70,8 @@ const CaseItem = memo(function CaseItem({ product, filling, inBox, order, onAdd 
           <span className="case-price num">{formatPeso(Number(product.price))}</span>
           {extra > 0 && <span className="case-extra num">+{formatPeso(extra)} in a box</span>}
           {notInBox && <span className="case-extra">Not in boxes</span>}
+          {limited && <span className="case-extra">Up to {maxFlavors} flavours</span>}
+          {filling && picked && <span className="case-extra">In your box</span>}
         </span>
       </button>
       {product.description && (
@@ -71,11 +84,14 @@ const CaseItem = memo(function CaseItem({ product, filling, inBox, order, onAdd 
 interface PastryCaseProps {
   shelves: Shelf[];
   filling: boolean;
+  /** Flavours already in the box being filled. */
+  picked?: number[];
+  maxFlavors?: number;
   quantityOf: (productId: number) => number;
   onAdd: (product: Product, art: HTMLElement) => void;
 }
 
-export default function PastryCase({ shelves, filling, quantityOf, onAdd }: PastryCaseProps) {
+export default function PastryCase({ shelves, filling, picked = [], maxFlavors = 0, quantityOf, onAdd }: PastryCaseProps) {
   const ref = useRef<HTMLDivElement>(null);
   const columns = useShelfColumns(ref);
   let order = 0;
@@ -92,6 +108,9 @@ export default function PastryCase({ shelves, filling, quantityOf, onAdd }: Past
                 product={product}
                 filling={filling}
                 inBox={quantityOf(product.id)}
+                picked={picked.includes(product.id)}
+                atLimit={picked.length >= maxFlavors}
+                maxFlavors={maxFlavors}
                 order={order++}
                 onAdd={onAdd}
               />
