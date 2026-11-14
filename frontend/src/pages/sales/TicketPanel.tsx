@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { CheckCircle2, Minus, Plus } from "lucide-react";
 import { formatPeso } from "@/pages/dashboard/report-format";
 import { formatBusinessDate } from "@/lib/dateRanges";
-import { lineTotal, type Ticket } from "./useTicket";
+import { countLabel, lineTotal, type Ticket } from "./useTicket";
 
 export interface Recorded {
   amount: number;
@@ -13,6 +13,8 @@ export interface Recorded {
 
 interface TicketPanelProps {
   ticket: Ticket;
+  /** The partner's name for a partner item, so the ticket shows who made it. */
+  partnerOf: (productId: number) => string | undefined;
   title: string;
   canEditPrice: boolean;
   date: string;
@@ -69,6 +71,7 @@ export default function TicketPanel(props: TicketPanelProps) {
               <li key={line.product} className="ticket-line">
                 <div className="ticket-line-text">
                   <span className="ticket-line-name">{line.name}</span>
+                  {props.partnerOf(line.product) && <span className="ticket-line-by">by {props.partnerOf(line.product)}</span>}
                   {canEditPrice ? (
                     <label className="ticket-line-price">
                       <span className="sr-only">Price each for {line.name}</span>
@@ -152,7 +155,7 @@ export default function TicketPanel(props: TicketPanelProps) {
 
       <footer className="ticket-foot">
         <p className="ticket-total">
-          <span>{ticket.totals.pieces === 1 ? "1 donut" : `${ticket.totals.pieces} donuts`}</span>
+          <span>{countLabel(ticket.totals.pieces, ticket.lines.some(line => props.partnerOf(line.product)))}</span>
           <strong className="num">{formatPeso(ticket.totals.amount)}</strong>
         </p>
         {error && <p className="field-error" role="alert">{error}</p>}

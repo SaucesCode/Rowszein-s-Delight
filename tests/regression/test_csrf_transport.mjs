@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { AxiosError } from '../../frontend/node_modules/axios/index.js';
-import { createCookieApi, createCsrfState, apiErrorMessage } from '../../frontend/src/lib/csrfTransport.ts';
+import { createCookieApi, createCsrfState, apiErrorMessage, apiFieldErrors } from '../../frontend/src/lib/csrfTransport.ts';
 
 const A = 'A'.repeat(64), B = 'B'.repeat(64), C = 'C'.repeat(64);
 const deferred = () => { let resolve, reject; const promise = new Promise((ok, bad) => { resolve = ok; reject = bad; }); return {promise, resolve, reject}; };
@@ -90,5 +90,12 @@ const tests = [
     assert.equal(apiErrorMessage(new Error('offline'), 'fallback'), 'fallback');
   }],
 ];
+tests.push(['field errors come back per field, first message each', async () => {
+  const fail = (status, error) => new AxiosError('bad', 'ERR_BAD_REQUEST', {}, {}, {status, data: {success: false, error}, statusText: '', headers: {}, config: {}});
+  assert.deepEqual(apiFieldErrors(fail(400, {partner_payout: ["Your patong can't be less than ₱0."], name: ['Taken', 'Second']})),
+    {partner_payout: "Your patong can't be less than ₱0.", name: 'Taken'});
+  assert.equal(apiFieldErrors(fail(409, 'This payment is already voided.')), null);
+  assert.equal(apiFieldErrors(new Error('offline')), null);
+}]);
 for (const [name, test] of tests) { await test(); console.log('PASS: ' + name); }
 console.log(JSON.stringify({tests:tests.length, failures:0, database_access:false}, null, 2));

@@ -1,0 +1,4 @@
+# Shell and SQL run inside Linux containers; batch files need CRLF for labels.
+*.sh  text eol=lf
+*.sql text eol=lf
+*.cmd text eol=crlf

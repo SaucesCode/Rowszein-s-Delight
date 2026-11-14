@@ -3,3 +3,7 @@
 .verification-runtime/
 *.log
 docs/antigravity_discovery/
+
+# Database backups hold customer and sales data; never commit them.
+*.dump
+*.counts.txt

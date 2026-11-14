@@ -104,8 +104,15 @@ def item_total(items):
         return value
 
 
+def payout_lines(sale):
+    """Current lines with each line's partner and the payout owed per item (0 for Rowszein's own)."""
+    return [dict(item, partner=item.get('partner'), partner_payout=Decimal(item.get('partner_payout', '0.00')))
+            for item in current_items(sale)]
+
+
 def sale_data(sale):
-    items = current_items(sale)
+    # The partner payout is supplier cost data: kept in storage, never sent back.
+    items = [{key: value for key, value in item.items() if key != 'partner_payout'} for item in current_items(sale)]
     return {'id': sale.pk, 'date': sale.date.isoformat(), 'notes': sale.notes, 'sale_items': items,
             'total_amount': signed_money_text(sale.total_amount if sale.current_items is None else item_total(items)), 'original_total_amount': signed_money_text(sale.total_amount),
             'status': sale.status, 'revision': str(sale.revision), 'inventory_tracking': sale.inventory_tracking,
@@ -113,7 +120,8 @@ def sale_data(sale):
             'updated_at': sale.updated_at.isoformat()}
 
 
-def _items(data, products, originals):
+def _items(data, products, originals, snapshots):
+    """Lines kept from the sale keep their partner payout snapshot; new lines take the item's current one."""
     result = []
     for item in data:
         product = products[item['product'].pk]
@@ -123,8 +131,10 @@ def _items(data, products, originals):
         with localcontext() as context:
             context.prec = 50
             subtotal = money_text(price * qty)
+        partner, payout = snapshots.get(product.pk, (product.partner_id, money_text(product.partner_payout)))
         result.append({'id': originals.get(product.pk), 'product': product.pk, 'product_name': product.name,
-                       'quantity': qty, 'unit_price': money_text(price), 'subtotal': subtotal, 'subtotal_amount': subtotal})
+                       'quantity': qty, 'unit_price': money_text(price), 'subtotal': subtotal, 'subtotal_amount': subtotal,
+                       'partner': partner, 'partner_payout': payout})
     if not result or len({item['product'] for item in result}) != len(result):
         raise ValidationError('A sale requires unique product lines.')
     item_total(result)
@@ -198,21 +208,38 @@ def execute_sale(*, action, actor, key, data=None, sale_id=None, expected_revisi
                 raise ValidationError({'date': 'Staff must use the current Asia/Manila business date.'})
             if any(item['unit_price'] != products[item['product'].pk].price for item in input_items or []):
                 raise ValidationError({'sale_items': 'Staff must use current catalog prices.'})
+            for item in input_items or []:
+                partner = products[item['product'].pk].partner
+                if partner is not None and not partner.is_active:
+                    raise ValidationError({'sale_items': f'{partner.name} is switched off.'})
         originals = {} if sale is None else dict(sale.sale_items.values_list('product_id', 'pk'))
-        new_items = old_items if input_items is None else _items(input_items, products, originals)
+        snapshots = {item['product']: (item.get('partner'), item.get('partner_payout', '0.00')) for item in old_items}
+        new_items = old_items if input_items is None else _items(input_items, products, originals, snapshots)
         if action == 'sale_create' and not new_items:
             raise ValidationError('Sale items are required.')
         old_quantities = {item['product']: item['quantity'] for item in old_items}
         new_quantities = {} if action == 'sale_cancel' else {item['product']: item['quantity'] for item in new_items}
         changed = {pk for pk in product_ids if old_quantities.get(pk) != new_quantities.get(pk)}
+        # Partner items are made by the partner: no recipe, no pantry stock. An existing line
+        # follows what the sale recorded when it was sold (lines without a partner key predate
+        # partners, so they were stocked); a new line follows the item as it is now.
+        old_partner = {item['product']: item.get('partner') for item in old_items}
+        old_stocked = {pk for pk in changed & set(old_quantities) if old_partner[pk] is None}
+        new_stocked = {pk for pk in changed & set(new_quantities) if products[pk].partner_id is None}
+        for pk in sorted(changed & set(old_quantities) & set(new_quantities)):
+            if (pk in old_stocked) != (pk in new_stocked):
+                raise ValidationError({'sale_items': f'{products[pk].name} changed maker since this sale. Remove the line, save, then add it again.'})
+        for product_id in sorted((changed & set(new_quantities)) - new_stocked):
+            if not products[product_id].is_available:
+                raise ValidationError('New consumption requires an available product and a recipe.')
         if sale:
-            old_allocations = list(SaleConsumption.objects.filter(sale=sale, reversed_by__isnull=True, basis__product_id__in=changed).select_related('basis').order_by('pk'))
-            if (set(old_quantities) & changed) != {row.basis.product_id for row in old_allocations}:
+            old_allocations = list(SaleConsumption.objects.filter(sale=sale, reversed_by__isnull=True, basis__product_id__in=old_stocked).select_related('basis').order_by('pk'))
+            if old_stocked != {row.basis.product_id for row in old_allocations}:
                 raise Conflict('Active snapshots do not cover the previous sale items.')
-        recipes = {r.product_id: r for r in Recipe.objects.filter(product_id__in=changed & set(new_quantities)).prefetch_related('recipe_ingredients').order_by('pk')}
+        recipes = {r.product_id: r for r in Recipe.objects.filter(product_id__in=new_stocked).prefetch_related('recipe_ingredients').order_by('pk')}
         ingredient_ids = {row.basis.ingredient_id for row in old_allocations}
         recipe_lines = []
-        for product_id in sorted(changed & set(new_quantities)):
+        for product_id in sorted(new_stocked):
             if not products[product_id].is_available or product_id not in recipes:
                 raise ValidationError('New consumption requires an available product and a recipe.')
             recipe = recipes[product_id]

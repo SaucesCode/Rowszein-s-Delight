@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
-  customDateRange, dateRangeError, formatDayLabel, getDateRange, manilaDate, reportRangeError,
+  customDateRange, dateRangeError, formatDayLabel, getDateRange, getLastMonthRange, manilaDate, reportRangeError,
 } from "../../frontend/src/lib/dateRanges.ts";
 
 for (const [period, instant, from, to] of [
@@ -51,4 +51,9 @@ test("history labels use the same Manila calendar even across year and leap-day 
   assert.equal(formatDayLabel("2025-01-01", newYear), "Today");
   assert.equal(formatDayLabel("2024-12-31", newYear), "Yesterday");
   assert.equal(formatDayLabel("2024-02-29", "2024-03-01"), "Yesterday");
+});
+
+test("last month covers the whole previous Manila calendar month", () => {
+  assert.deepEqual(getLastMonthRange(new Date("2024-03-15T03:00:00Z")), { date_from: "2024-02-01", date_to: "2024-02-29" });
+  assert.deepEqual(getLastMonthRange(new Date("2025-01-01T16:30:00Z")), { date_from: "2024-12-01", date_to: "2024-12-31" });
 });

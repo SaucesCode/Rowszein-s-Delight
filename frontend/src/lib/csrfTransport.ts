@@ -92,6 +92,19 @@ export function createCookieApi(origin: string, bootstrap: () => Promise<string>
   return api;
 }
 
+/** A 400's per-field messages (first message per field), or null when the error isn't about fields. */
+export function apiFieldErrors(error: unknown): Record<string, string> | null {
+  if (!axios.isAxiosError(error) || error.response?.status !== 400) return null;
+  const failure: unknown = error.response.data?.error;
+  if (!failure || typeof failure !== "object" || Array.isArray(failure)) return null;
+  const fields: Record<string, string> = {};
+  for (const [field, messages] of Object.entries(failure)) {
+    const first = Array.isArray(messages) ? messages[0] : messages;
+    if (typeof first === "string") fields[field] = first;
+  }
+  return Object.keys(fields).length ? fields : null;
+}
+
 export function apiErrorMessage(error: unknown, fallback: string): string {
   if (!axios.isAxiosError(error) || !error.response) return fallback;
   const failure: unknown = error.response.data?.error;

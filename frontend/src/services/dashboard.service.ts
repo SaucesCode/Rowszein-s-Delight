@@ -11,12 +11,14 @@ export interface ChartMonth {
   month: string;
   sales: number;
   expenses: number;
+  /** Owed to partners for their items sold that month (their price, not the patong). */
+  payouts: number;
   profit: number;
 }
 
 export interface DashboardReport {
   filters: Required<DashboardFilters>;
-  totals: { net_sales: `${number}`; total_expenses: number; net_profit: number };
+  totals: { net_sales: `${number}`; total_expenses: number; partner_payouts: `${number}`; net_profit: number };
   chart_data: ChartMonth[];
   best_selling: { product_id: number; product_name: string; total_quantity: number; total_revenue: number }[];
   low_stock: { id: number; name: string; quantity: string; minimum_stock: string; unit: string }[];
@@ -31,6 +33,8 @@ export interface ProductMargin {
   profit_per_unit: number;
   margin_percent: number;
   has_recipe: boolean;
+  /** A partner's item: production_cost is their price and profit_per_unit is the patong. */
+  is_partner: boolean;
   is_available: boolean;
 }
 

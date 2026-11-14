@@ -17,6 +17,7 @@ const IngredientFormPage = lazy(() => import("@/pages/IngredientFormPage"));
 const ProductsPage = lazy(() => import("@/pages/ProductsPage"));
 const ProductFormPage = lazy(() => import("@/pages/ProductFormPage"));
 const BoxesPage = lazy(() => import("@/pages/BoxesPage"));
+const PartnersPage = lazy(() => import("@/pages/PartnersPage"));
 const AssortmentFormPage = lazy(() => import("@/pages/AssortmentFormPage"));
 const RecipesPage = lazy(() => import("@/pages/RecipesPage"));
 const RecipeFormPage = lazy(() => import("@/pages/RecipeFormPage"));
@@ -74,6 +75,7 @@ const router = createBrowserRouter([
           { path: "/products/new", element: <ProductFormPage /> },
           { path: "/products/:id/edit", element: <ProductFormPage /> },
           { path: "/products/boxes", element: <BoxesPage /> },
+          { path: "/products/partners", element: <PartnersPage /> },
           { path: "/products/boxes/new", element: <AssortmentFormPage /> },
           { path: "/products/boxes/:id/edit", element: <AssortmentFormPage /> },
           { path: "/ingredients", element: <StockRoute /> },

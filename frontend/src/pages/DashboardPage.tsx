@@ -30,14 +30,20 @@ function monthsInRange(report: DashboardReport): ChartMonth[] {
 function BottomLine({ report, phrase }: { report: DashboardReport; phrase: string }) {
   const sold = Number(report.totals.net_sales);
   const spent = Number(report.totals.total_expenses);
+  const owedToPartners = Number(report.totals.partner_payouts ?? 0);
   const kept = Number(report.totals.net_profit);
   return (
     <section className="analytics-hero" aria-labelledby="bottom-line">
       <h2 id="bottom-line" className="analytics-kicker">{phrase}, after expenses</h2>
       <p className={`analytics-kept num ${kept < 0 ? "is-loss" : ""}`}>{formatPeso(Math.abs(kept))}</p>
       <p className="analytics-sentence">
-        {kept >= 0 ? "kept" : "lost"}, from <strong className="num">{formatPeso(sold)}</strong> sold and{" "}
-        <strong className="num">{formatPeso(spent)}</strong> spent.
+        {kept >= 0 ? "kept" : "lost"}, from <strong className="num">{formatPeso(sold)}</strong> sold
+        {owedToPartners > 0 && (
+          <>
+            , <strong className="num">{formatPeso(owedToPartners)}</strong> owed to partners
+          </>
+        )}{" "}
+        and <strong className="num">{formatPeso(spent)}</strong> spent.
       </p>
       <p className="analytics-note">Sold counts sales after cancellations and changes, on the day they were made.</p>
     </section>

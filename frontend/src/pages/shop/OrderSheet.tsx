@@ -163,7 +163,7 @@ export default function OrderSheet({ open, onClose, cart, boxes, total }: OrderS
               )}
 
               {cart.items.length > 0 && (
-                <ul className="box-lines" aria-label="Single donuts in your order">
+                <ul className="box-lines" aria-label="Single items in your order">
                   {cart.items.map(item => (
                     <li key={item.product_id} className="box-line">
                       <span className="box-line-art" aria-hidden="true">
@@ -175,6 +175,7 @@ export default function OrderSheet({ open, onClose, cart, boxes, total }: OrderS
                       </span>
                       <span className="box-line-text">
                         <span className="box-line-name">{item.name}</span>
+                        {item.partner && <span className="box-line-by">by {item.partner}</span>}
                         <span className="box-line-each num">{formatPeso(item.price)} each</span>
                       </span>
                       <span className="box-stepper" role="group" aria-label={`${item.name} quantity`}>
@@ -222,7 +223,7 @@ export default function OrderSheet({ open, onClose, cart, boxes, total }: OrderS
               {nameError && <p id={`${ids}-name-error`} className="field-error">{nameError}</p>}
             </div>
             <p className="box-sheet-total">
-              <span>{orderSummary(boxes.boxes.length, cart.totalItems)}</span>
+              <span>{orderSummary(boxes.boxes.length, cart.totalItems, cart.items.some(item => item.partner))}</span>
               <strong className="num">{formatPeso(total)}</strong>
             </p>
             <div className="box-sheet-actions">

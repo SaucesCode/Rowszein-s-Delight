@@ -104,6 +104,7 @@ export default function Catalog({ products, loading, error, onRetry, onAdd, quan
                       {product.image_url ? <img src={product.image_url} alt="" loading="lazy" /> : <DonutArt flavor={flavor} size={64} />}
                     </span>
                     <span className="catalog-name">{product.name}</span>
+                    {product.partner && <span className="catalog-by">by {product.partner.name}</span>}
                     <span className="catalog-price num">{formatPeso(Number(product.price))}</span>
                     {inOrder > 0 && (
                       <span key={inOrder} className="catalog-badge num">

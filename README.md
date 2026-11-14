@@ -17,6 +17,7 @@ Rowszein's Delight Management System is a web application for a donut shop. It h
 * "Choose your box": fill a box yourself from the display case, or add a ready-made box in one tap
 * Display case of today's donuts grouped by category, with price cards and premium "+₱ in a box" extras
 * Order with boxes and single donuts, kept through a page refresh
+* “From our friends” shelves with food from collab partners (muffins, cakes and more), sold one at a time in the same order and delivery
 * Order card picture to save and send, and a pre-written Messenger message
 * Contact form (Messenger or email)
 * No visible sign-in link; staff sign in through a quiet mark at the end of the footer or at `/login`
@@ -29,6 +30,7 @@ Rowszein's Delight Management System is a web application for a donut shop. It h
 * Pantry: stock levels and stock updates
 * Donut collection: menu, availability, best sellers, and the "extra when in a box" for premium donuts
 * Boxes: box sizes and prices, and a builder for ready-made boxes
+* Partners: collab partners and their items (their price plus your patong), what each partner is owed, and payments to them
 * Recipe costing, shop expenses, and profit & analytics
 * Read-only Pantry and Donut collection views for staff
 
@@ -48,6 +50,25 @@ API (under `/api/products/`):
 | `assortments/`, `assortments/<id>/` | Owner manages, staff read | Ready-made boxes and their contents |
 
 Selling boxes at the counter (Sales register, with stock deducted per donut) is not built yet.
+
+## How partner items work
+
+* A **partner** is someone whose food the shop sells for them: a muffin, a cake or another baked good. The owner adds partners under Donut collection → Partners and can switch a partner off, which hides all their items from the shop.
+* Each partner item has **their price** (what the partner is paid per item sold) and the owner's **patong** (the charge on top). The shop price is the two added together, and the patong can't be below ₱0.
+* Customers order partner items with their donuts in one Messenger message, pay the shop, and get one delivery. Partner items never go in boxes, have no recipe, and never touch pantry stock.
+* The whole order is recorded in the Sales register. Each sale keeps the payout rate it was sold at, so changing a rate later never changes what is already owed.
+* **Amount owed** (on the Partners page) adds up each partner's items by order date; cancelled orders aren't counted. **Payments** to a partner are recorded there too. A payment entered by mistake is voided with a reason, never deleted. **Still to pay** is everything owed so far minus payments.
+* Profit counts only the patong: profit is sales minus partner payouts minus expenses. Payments to partners must not also be entered as shop expenses.
+* Contact details, notes and payout amounts are never shown to staff or to the public shop.
+
+API (under `/api/products/`):
+
+| Endpoint | Who | Purpose |
+| --- | --- | --- |
+| `partners/`, `partners/<id>/` | Owner manages, staff read (no contact or notes) | Partners |
+| `partners/payouts/?date_from&date_to` | Owner | What each partner is owed, and still to pay |
+| `partners/<id>/payments/` | Owner | List and record payments |
+| `partners/<id>/payments/<id>/void/` | Owner | Void a payment, with a reason |
 
 ## Design
 
@@ -83,7 +104,7 @@ cd backend
 .venv\Scripts\python.exe manage.py test --settings=backend.test_settings
 ```
 
-This uses a temporary in-memory database and test-only keys, so it never touches a real database or `.env` secrets. All 153 tests pass; 17 PostgreSQL-only tests are skipped. Frontend checks: `npm run build`, `npm run lint`, and `node tests/regression/<file>.mjs` from the repository root.
+This uses a temporary in-memory database and test-only keys, so it never touches a real database or `.env` secrets. All 197 tests pass; 17 PostgreSQL-only tests are skipped. Frontend checks: `npm run build`, `npm run lint`, and `node tests/regression/<file>.mjs` from the repository root.
 
 Known gaps:
 
@@ -94,9 +115,10 @@ Earlier checkpoint: Phase 1B.3 disposable database verification was completed fo
 
 ## Deployment
 
-* **Frontend:** Vercel, with `frontend` as the root directory. `frontend/vercel.json` sends `/api` to the backend.
-* **Backend:** Render. Every deploy must run `python manage.py migrate` (for example in the build command) so new database changes, such as `products/0005_boxes`, are applied.
+* **Frontend:** Vercel, with `frontend` as the root directory. `frontend/vercel.json` sends `/api` to the backend and sets the security headers, including a Content-Security-Policy that only allows the site's own scripts and photos from Cloudinary. A new outside service (for example an analytics script) must be added to that policy, or the browser will block it.
+* **Backend:** Render. Every deploy must run `python manage.py migrate` (for example in the build command) so new database changes, such as `products/0005_boxes` and `products/0006_partners`, are applied.
 * **Photos:** stored on Cloudinary in production. Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` on Render; without them, photos are saved to the server's disk, which Render wipes on redeploy. Photos must be JPG, PNG or WEBP and under 5 MB.
+* **Database backups:** the live database is on Supabase. Take and check a backup every week and before every deploy with a migration; see [Database backup and restore](docs/BACKUP_AND_RESTORE.md).
 * **Logs:** the backend writes one JSON line per event to stdout (Render's Logs tab), including every sign-in. Each response has an `X-Request-ID` header that matches its log lines.
 * **Settings:** every environment setting the backend reads is listed, without values, in [`backend/.env.example`](backend/.env.example).
 

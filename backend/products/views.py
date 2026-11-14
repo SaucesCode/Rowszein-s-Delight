@@ -2,19 +2,24 @@ from accounts.permissions import BusinessPermission, business_role
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.db import transaction
+from django.utils import timezone
 from django.db.models.deletion import ProtectedError
 
 from rest_framework.views import APIView
 
 from .boxes import assortments_with_items, shop_assortments, shop_box_sizes
-from .models import BoxSize, Category, Product
+from .models import BoxSize, Category, Partner, PartnerPayment, Product
 from .serializers import CategorySerializer, ProductSerializer
 from .serializers import OperationalCategorySerializer, OperationalProductSerializer
+from .serializers import OperationalPartnerSerializer, PartnerPaymentSerializer, PartnerSerializer
 from .serializers import AssortmentSerializer, BoxSizeSerializer, PublicAssortmentSerializer, PublicBoxSizeSerializer
 from accounts.authentication import PublicCatalogAuthentication
 from backend.catalog_listing import CatalogListing
+from backend.date_filters import MANILA, report_date_bounds
+from sales.models import Sale
+from sales.reporting import partner_payouts, still_to_pay_all
 
 
 class CatalogProjection:
@@ -27,8 +32,11 @@ class CatalogProjection:
         queryset = super().get_queryset()
         if not self.request.user.is_authenticated:
             if queryset.model is Product:
-                return queryset.filter(is_available=True, category__is_active=True)
+                return queryset.filter(Q(partner__isnull=True) | Q(partner__is_active=True),
+                                       is_available=True, category__is_active=True)
             return queryset.filter(is_active=True)
+        if queryset.model is Product and business_role(self.request.user) != 'admin':
+            return queryset.filter(Q(partner__isnull=True) | Q(partner__is_active=True))
         return queryset
 
 
@@ -120,7 +128,7 @@ class ProductListCreateView(CatalogListing, CatalogProjection, generics.ListCrea
     permission_classes = [BusinessPermission]
     business_actions = {'GET': 'catalog.public', 'POST': 'catalog.manage', 'OPTIONS': 'catalog.read'}
     serializer_class = ProductSerializer
-    queryset = Product.objects.select_related('category')
+    queryset = Product.objects.select_related('category', 'partner')
     parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get_serializer_context(self):
@@ -155,7 +163,7 @@ class ProductDetailView(CatalogProjection, generics.RetrieveUpdateDestroyAPIView
     permission_classes = [BusinessPermission]
     business_actions = {'GET': 'catalog.read', 'PUT': 'catalog.manage', 'PATCH': 'catalog.manage', 'DELETE': 'catalog.manage', 'OPTIONS': 'catalog.read'}
     serializer_class = ProductSerializer
-    queryset = Product.objects.select_related('category')
+    queryset = Product.objects.select_related('category', 'partner')
     parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get_serializer_context(self):
@@ -299,3 +307,107 @@ class PublicBoxesView(APIView):
             'sizes': PublicBoxSizeSerializer(shop_box_sizes(), many=True).data,
             'assortments': PublicAssortmentSerializer(shop_assortments(), many=True, context={'request': request}).data,
         })
+
+
+# ── Partners ────────────────────────────────────────────────────────────────
+
+def _in_past_orders(partner_id):
+    """True when any sale's current lines name this partner (cancelled sales included: their history stays)."""
+    for items in Sale.objects.filter(current_items__isnull=False).values_list('current_items', flat=True).iterator():
+        if any(line.get('partner') == partner_id for line in items):
+            return True
+    return False
+
+
+class PartnerCatalogView(BoxCatalogView):
+    """Owner manages partners; staff read them without contact details or notes."""
+
+    def get_serializer_class(self):
+        return PartnerSerializer if business_role(self.request.user) == 'admin' else OperationalPartnerSerializer
+
+    def get_queryset(self):
+        return Partner.objects.annotate(product_count=Count('products'))
+
+
+class PartnerListCreateView(PartnerCatalogView, generics.ListCreateAPIView):
+    business_actions = {'GET': 'catalog.read', 'POST': 'catalog.manage', 'OPTIONS': 'catalog.read'}
+    created_message = 'Partner added.'
+
+
+class PartnerDetailView(PartnerCatalogView, generics.RetrieveUpdateDestroyAPIView):
+    business_actions = {'GET': 'catalog.read', 'PUT': 'catalog.manage', 'PATCH': 'catalog.manage', 'DELETE': 'catalog.manage', 'OPTIONS': 'catalog.read'}
+    updated_message = 'Partner saved.'
+
+    @transaction.atomic
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if _in_past_orders(instance.pk):
+            return Response({'success': False, 'error': f'{instance.name} is in past orders. Switch the partner off instead.'}, status=status.HTTP_409_CONFLICT)
+        try:
+            instance.delete()
+        except ProtectedError:
+            return Response({'success': False, 'error': f'{instance.name} has items. Switch the partner off instead.'}, status=status.HTTP_409_CONFLICT)
+        return _ok(None, 'Partner deleted.')
+
+
+class PartnerPayoutsView(APIView):
+    """What each partner is owed for orders in the range, and what is still to pay overall."""
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'finance.read', 'OPTIONS': 'finance.read'}
+
+    def get(self, request):
+        today = timezone.localdate(timezone=MANILA)
+        date_from, date_to = report_date_bounds(request.query_params, today)
+        report = partner_payouts(date_from, date_to)
+        owed = {row['id']: row for row in report['partners']}
+        balances = still_to_pay_all(today)
+        report['partners'] = [
+            dict(owed.get(partner.pk, {'id': partner.pk, 'name': partner.name, 'owed': '0.00', 'items': []}),
+                 still_to_pay=format(balances.get(partner.pk, 0), '.2f'), is_active=partner.is_active)
+            for partner in Partner.objects.all()
+        ]
+        report['filters'] = {'date_from': date_from.isoformat(), 'date_to': date_to.isoformat()}
+        return _ok(report)
+
+
+class PartnerPaymentListCreateView(generics.ListCreateAPIView):
+    """A partner's payments, newest first. Payments are never edited or deleted, only voided."""
+    permission_classes = [BusinessPermission]
+    business_actions = {'GET': 'finance.read', 'POST': 'partners.pay', 'OPTIONS': 'finance.read'}
+    serializer_class = PartnerPaymentSerializer
+
+    def get_partner(self):
+        return generics.get_object_or_404(Partner, pk=self.kwargs['partner_pk'])
+
+    def get_queryset(self):
+        return PartnerPayment.objects.filter(partner=self.get_partner()).select_related('recorded_by')
+
+    def list(self, request, *args, **kwargs):
+        return _ok(super().list(request, *args, **kwargs).data)
+
+    def create(self, request, *args, **kwargs):
+        partner = self.get_partner()
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            return _invalid(serializer.errors)
+        payment = serializer.save(partner=partner, recorded_by=request.user)
+        return _ok(self.get_serializer(payment).data, f'Payment to {partner.name} recorded.', status.HTTP_201_CREATED)
+
+
+class PartnerPaymentVoidView(APIView):
+    permission_classes = [BusinessPermission]
+    business_actions = {'POST': 'partners.pay', 'OPTIONS': 'finance.read'}
+
+    @transaction.atomic
+    def post(self, request, partner_pk, pk):
+        payment = generics.get_object_or_404(PartnerPayment.objects.select_for_update(), pk=pk, partner_id=partner_pk)
+        reason = str(request.data.get('reason', '')).strip()
+        if not reason:
+            return _invalid({'reason': ['Say why this payment is being voided.']})
+        if len(reason) > 200:
+            return _invalid({'reason': ['Keep the reason under 200 characters.']})
+        if payment.voided_at is not None:
+            return Response({'success': False, 'error': 'This payment is already voided.'}, status=status.HTTP_409_CONFLICT)
+        payment.voided_at, payment.voided_by, payment.void_reason = timezone.now(), request.user, reason
+        payment.save(update_fields=['voided_at', 'voided_by', 'void_reason'])
+        return _ok(PartnerPaymentSerializer(payment).data, 'Payment voided.')

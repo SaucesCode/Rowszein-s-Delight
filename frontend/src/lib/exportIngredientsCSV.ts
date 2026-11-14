@@ -1,5 +1,6 @@
 import type { Ingredient } from "@/types/ingredient.types";
 import { STOCK_STATUS_LABEL, stockStatus } from "@/lib/stockStatus";
+import { downloadCSV } from "@/lib/csv";
 
 /**
  * Ingredients don't have a backend export endpoint yet (unlike Sales/Expenses),
@@ -28,14 +29,5 @@ export function exportIngredientsCSV(ingredients: Ingredient[]) {
     STOCK_STATUS_LABEL[stockStatus(ingredient)],
   ]);
 
-  const csv = [header, ...rows]
-    .map(row => row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(","))
-    .join("\n");
-
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = "ingredients.csv";
-  link.click();
-  URL.revokeObjectURL(link.href);
+  downloadCSV("ingredients.csv", header, rows);
 }

@@ -76,7 +76,9 @@ function RecipeForm({ recipe, presetProduct }: { recipe?: Recipe; presetProduct?
 
   const pantry = ingredients.data ?? [];
   const pantryById = new Map(pantry.map(item => [item.id, item]));
-  const donuts = (margins.data ?? []).filter(row => isEdit || !row.has_recipe || row.product_id === Number(product));
+  const donuts = (margins.data ?? []).filter(
+    row => !row.is_partner && (isEdit || !row.has_recipe || row.product_id === Number(product)),
+  );
   const donut = (margins.data ?? []).find(row => row.product_id === Number(product));
 
   const lineCost = (row?: { ingredient?: unknown; quantity?: unknown }) => {

@@ -570,3 +570,7 @@ span.catalog-tile { display: block; cursor: default; }
 @media (prefers-reduced-motion: reduce) {
   .catalog-badge, .register-dock, .register-dock-total, .ticket-line, .ticket-recorded, .register-sheet[open] { animation: none; }
 }
+
+/* Partner items: who made it, under the name. */
+.catalog-by,
+.ticket-line-by { color: var(--color-ink-muted); font-size: var(--text-label); }

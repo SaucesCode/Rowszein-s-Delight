@@ -11,6 +11,12 @@ export interface TicketLine {
 
 const centavos = (pesos: number) => Math.round(pesos * 100);
 
+/** "3 donuts", or "3 items" once a partner's item (a muffin, a cake) is in the order. */
+export function countLabel(pieces: number, hasPartnerItem: boolean): string {
+  const unit = hasPartnerItem ? "item" : "donut";
+  return `${pieces} ${unit}${pieces === 1 ? "" : "s"}`;
+}
+
 /** The order being rung up. Totals are summed in centavos so ₱45.00 × 3 never drifts. */
 export function useTicket(initial: TicketLine[] = []) {
   const [lines, setLines] = useState<TicketLine[]>(initial);

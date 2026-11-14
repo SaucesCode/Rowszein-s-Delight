@@ -1,6 +1,6 @@
 type Identity = { role: string } | null | undefined;
 const STAFF = new Set(["self.read", "catalog.read", "stock.read", "sales.read", "sales.create"]);
-const OWNER = new Set([...STAFF, "catalog.manage", "stock.manage", "stock.adjust", "recipes.manage", "sales.update", "sales.cancel", "sales.export", "finance.read", "expenses.manage"]);
+const OWNER = new Set([...STAFF, "catalog.manage", "stock.manage", "stock.adjust", "recipes.manage", "sales.update", "sales.cancel", "sales.export", "finance.read", "expenses.manage", "partners.pay"]);
 
 export function can(user: Identity, capability: string): boolean {
   return (user?.role === "admin" ? OWNER : user?.role === "staff" ? STAFF : new Set()).has(capability);
@@ -14,6 +14,7 @@ export function canVisit(user: Identity, path: string): boolean {
   const routes: [RegExp, string][] = [
     [/^\/sales\/new\/?$/, "sales.create"], [/^\/sales\/\d+\/edit\/?$/, "sales.update"], [/^\/sales\/?$/, "sales.read"],
     [/^\/products\/boxes(?:\/(?:new|\d+\/edit))?\/?$/, "catalog.manage"],
+    [/^\/products\/partners\/?$/, "catalog.manage"],
     [/^\/products\/?$/, "catalog.read"], [/^\/products\/(new|\d+\/edit)\/?$/, "catalog.manage"],
     [/^\/ingredients\/?$/, "stock.read"], [/^\/ingredients\/(new|\d+\/edit)\/?$/, "stock.manage"],
     [/^\/recipes(?:\/(?:new|\d+\/edit))?\/?$/, "recipes.manage"],

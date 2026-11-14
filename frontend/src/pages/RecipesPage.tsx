@@ -93,7 +93,8 @@ export default function RecipesPage() {
   );
   const rows = margins.data ?? [];
   const costed = sortMargins(rows.filter(row => row.has_recipe), sort);
-  const missing = rows.filter(row => !row.has_recipe);
+  const missing = rows.filter(row => !row.has_recipe && !row.is_partner);
+  const partnerItems = rows.filter(row => row.is_partner);
   const average = costed.length ? costed.reduce((sum, row) => sum + row.margin_percent, 0) / costed.length : 0;
   const loading = margins.isPending || recipes.isPending;
   const failed = margins.isError || recipes.isError;
@@ -158,6 +159,23 @@ export default function RecipesPage() {
                 <Link to={hrefFor(row)} className="btn-secondary">
                   Add its recipe<span className="sr-only"> for {row.product_name}</span>
                 </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {!failed && partnerItems.length > 0 && (
+        <section className="recipes-missing" aria-labelledby="partner-items-title">
+          <h2 id="partner-items-title" className="recipes-section-title">Partner items</h2>
+          <p className="recipes-hint">Made by your collab partners, so there's no recipe. What you keep is your patong.</p>
+          <ul>
+            {partnerItems.map(row => (
+              <li key={row.product_id}>
+                <span className="recipes-missing-name">{row.product_name}</span>
+                <span className="recipes-partner-patong">
+                  Your patong <strong className="num">{formatPeso(row.profit_per_unit)}</strong> of {formatPeso(row.selling_price)}
+                </span>
               </li>
             ))}
           </ul>

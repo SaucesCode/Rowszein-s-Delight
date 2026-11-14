@@ -7,6 +7,11 @@ import { useMe } from "@/hooks/useAuth";
 import { listingParams, type ListingParams } from "@/lib/listingParams";
 import { queryScope, requestedRecord, validRecordId } from "@/lib/managementQueryKeys";
 import { can } from "@/lib/permissions";
+import { apiErrorMessage, apiFieldErrors } from "@/lib/csrfTransport";
+
+/** A rejected field is shown next to that field by the form; the toast just points to it. */
+const saveFailure = (error: unknown, fallback: string) =>
+  apiFieldErrors(error) ? "Check the highlighted fields." : apiErrorMessage(error, fallback);
 
 export function useProducts(page = 1, params: ListingParams = {}) {
   const auth = useMe();
@@ -68,8 +73,8 @@ export function useCreateProduct() {
       toast.success("Donut added to your collection.");
       navigate("/products");
     },
-    onError: () => {
-      toast.error("Couldn't add the donut. Check the connection and try again.");
+    onError: error => {
+      toast.error(saveFailure(error, "Couldn't add the item. Check the connection and try again."));
     },
   });
 }
@@ -86,8 +91,8 @@ export function useUpdateProduct(id: number) {
       toast.success("Changes saved.");
       navigate("/products");
     },
-    onError: () => {
-      toast.error("Couldn't save the changes. Check the connection and try again.");
+    onError: error => {
+      toast.error(saveFailure(error, "Couldn't save the changes. Check the connection and try again."));
     },
   });
 }
