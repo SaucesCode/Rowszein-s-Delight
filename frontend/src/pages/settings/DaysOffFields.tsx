@@ -79,7 +79,7 @@ export default function DaysOffFields({
           );
         })}
       </ul>
-      <div className="settings-row">
+      <div className="settings-list-foot">
         <button
           type="button"
           className="link-button settings-add"

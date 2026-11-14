@@ -1,5 +1,5 @@
 /* Shop settings: weekly hours, towns and days off as list rows inside the settings cards. */
-.shop-settings-switch { display: grid; gap: var(--space-1); }
+.shop-settings-switch { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
 .shop-settings-switch .field-hint,
 .shop-settings-switch .field-error { margin: 0; padding-left: 56px; }
 
@@ -26,7 +26,7 @@
   gap: var(--space-2);
   color: var(--color-ink-muted);
 }
-.hours-times .field-input { flex: 1 1 0; min-width: 0; max-width: 11rem; }
+.hours-times .field-input { flex: 1 1 0; min-width: 0; max-width: 11rem; padding-inline: var(--space-2); }
 .hours-messages,
 .day-off-messages { grid-column: 1 / -1; }
 .hours-messages:empty,
@@ -37,26 +37,28 @@
   .hours-times { grid-column: auto; }
 }
 
-.town-row { grid-template-columns: 1fr auto; align-items: start; }
+.town-row { grid-template-columns: minmax(0, 1fr) 44px; align-items: center; }
 .town-name,
 .town-fee { grid-column: 1 / -1; }
 .town-fee .settings-unit-input { max-width: 12rem; }
 .town-row .settings-remove { justify-self: end; }
 
 @media (min-width: 768px) {
-  .town-row { grid-template-columns: minmax(0, 1fr) 11rem auto auto; }
+  .town-row { grid-template-columns: minmax(0, 1fr) 11rem 9rem 44px; align-items: start; }
   .town-name,
   .town-fee { grid-column: auto; }
 }
 
-.day-off-row { grid-template-columns: 1fr 1fr auto; align-items: end; }
-.day-off-note { grid-column: 1 / -1; grid-row: 2; }
-.day-off-row .settings-remove { grid-column: 3; grid-row: 1; }
+/* Phones: From, To and the note stacked, the remove button beside the first. */
+.day-off-row { grid-template-columns: minmax(0, 1fr) 44px; align-items: end; }
+.day-off-field { grid-column: 1; min-width: 0; }
+.day-off-field .field-input { width: 100%; min-width: 0; }
+.day-off-row .settings-remove { grid-column: 2; grid-row: 1; }
 .day-off-field .field-label { margin-bottom: var(--space-1); }
 
 @media (min-width: 768px) {
-  .day-off-row { grid-template-columns: 10rem 10rem minmax(0, 1fr) auto; }
-  .day-off-note { grid-column: auto; grid-row: auto; }
+  .day-off-row { grid-template-columns: 10rem 10rem minmax(0, 1fr) 44px; }
+  .day-off-field { grid-column: auto; }
   .day-off-row .settings-remove { grid-column: auto; grid-row: auto; }
 }
 
@@ -118,3 +120,14 @@
   color: var(--color-ink);
 }
 .settings-conflict p { margin: 0; max-width: 65ch; }
+
+/* Actions under a list ("Add town", "Copy Monday's hours"), full width with their hint. */
+.settings-list-foot {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-5) var(--space-4);
+  border-top: 1px solid var(--color-line);
+}
+.settings-list-foot .field-hint { margin: 0; max-width: 65ch; }
+.settings-list-foot .link-button { text-align: left; line-height: 1.3; }

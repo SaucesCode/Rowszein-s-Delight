@@ -72,8 +72,7 @@ export default function TownsFields({
           );
         })}
       </ul>
-      <div className="settings-row">
-        <p className="field-hint">Leave the fee blank until you decide; customers see "Fee confirmed when we reply". 0 means free delivery.</p>
+      <div className="settings-list-foot">
         <button
           type="button"
           className="link-button settings-add"
@@ -82,6 +81,7 @@ export default function TownsFields({
         >
           <Plus size={16} aria-hidden="true" /> Add town
         </button>
+        <p className="field-hint">Leave the fee blank until you decide; customers see "Fee confirmed when we reply". 0 means free delivery.</p>
       </div>
     </div>
   );

@@ -75,7 +75,7 @@ export default function HoursFields({
           );
         })}
       </ul>
-      <div className="settings-row">
+      <div className="settings-list-foot">
         <button type="button" className="link-button" onClick={copyMonday} disabled={!monday?.is_open}>
           Copy Monday's hours to the other open days
         </button>
