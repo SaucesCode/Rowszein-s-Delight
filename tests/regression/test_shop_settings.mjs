@@ -4,6 +4,7 @@ import {
   cutoffSentence, dayOffLabel, feeLabel, formatTime, groupHours, shopContact,
 } from '../../frontend/src/lib/shopSettings.ts';
 import {formatPeso} from '../../frontend/src/pages/dashboard/report-format.ts';
+import {isDirty, toDraft, toPayload} from '../../frontend/src/pages/settings/draft.ts';
 
 const day = (weekday, opens, closes) => ({weekday, is_open: opens !== null, opens, closes});
 const week = (rows = {}) => Array.from({length: 7}, (_, weekday) => rows[weekday] ?? day(weekday, '09:00', '18:00'));
@@ -63,6 +64,41 @@ tests.push(['days off read naturally across months and years', () => {
 tests.push(['payment labels and the pause fallback', () => {
   assert.deepEqual(Object.values(PAYMENT_LABELS), ['GCash', 'Maya', 'Bank transfer', 'Cash on delivery']);
   assert.equal(DEFAULT_PAUSE_MESSAGE, "We're not taking orders right now. Message us on Messenger for anything urgent.");
+}]);
+
+const managed = {
+  ...loaded, show_hours: true, revision: 4, updated_at: '2026-11-14T09:00:00+08:00', order_cutoff: '15:00',
+  payment_methods: ['gcash', 'cod'], notice: 'No deliveries on Nov 30',
+  hours: week({0: day(0, null, null)}),
+  towns: [{id: 1, name: 'Lucena City', is_active: true, fee: '0.00'}, {id: 2, name: 'Tayabas', is_active: false, fee: null},
+    {id: 3, name: 'Sariaya', is_active: true, fee: '50.00'}],
+  days_off: [{starts: '2026-12-24', ends: '2026-12-26', note: 'Christmas break'}],
+};
+tests.push(['a loaded document round-trips through the form unchanged', () => {
+  const {updated_at: _updated, ...payload} = managed;
+  assert.deepEqual(toPayload(toDraft(managed)), payload);
+}]);
+tests.push(['blank fee and cutoff mean none; typed fees become money', () => {
+  const draft = toDraft(managed);
+  draft.towns[0].fee = '';
+  draft.towns[2].fee = '0';
+  draft.order_cutoff = '';
+  draft.towns[1].name = '  Tayabas  ';
+  const payload = toPayload(draft);
+  assert.equal(payload.towns[0].fee, null);
+  assert.equal(payload.towns[2].fee, '0.00');
+  assert.equal(payload.order_cutoff, null);
+  assert.equal(payload.towns[1].name, 'Tayabas');
+  assert.equal(toPayload({...draft, towns: [{...draft.towns[0], fee: 'abc'}]}).towns[0].fee, 'abc');
+}]);
+tests.push(['new rows have no id; dirty tracks real changes only', () => {
+  const draft = toDraft(managed);
+  assert.equal(isDirty(draft, toDraft(managed)), false);
+  const renamed = {...draft, towns: draft.towns.map((town, i) => i === 1 ? {...town, name: 'Tayabas City'} : town)};
+  assert.equal(isDirty(renamed, draft), true);
+  const added = {...draft, towns: [...draft.towns, {key: 'new', name: 'Pagbilao', is_active: true, fee: ''}]};
+  assert.equal('id' in toPayload(added).towns[3], false);
+  assert.notEqual(draft.towns[0].key, draft.towns[1].key);
 }]);
 
 for (const [name, test] of tests) { test(); console.log('PASS: ' + name); }

@@ -224,9 +224,6 @@ a.menu-line-main:hover .menu-line-name { color: var(--color-accent-pressed); }
 .settings-price { max-width: 200px; }
 .settings-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 
-.settings-switch-row { display: grid; gap: var(--space-1); }
-.settings-switch-row .field-hint { margin-top: 0; padding-left: 56px; }
-.settings-switch-row + .settings-switch-row { margin-top: var(--space-3); }
 
 @media (max-width: 359px) {
   .menu-count { display: none; }

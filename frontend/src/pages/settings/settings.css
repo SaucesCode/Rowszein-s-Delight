@@ -1,0 +1,120 @@
+/* Shop settings: weekly hours, towns and days off as list rows inside the settings cards. */
+.shop-settings-switch { display: grid; gap: var(--space-1); }
+.shop-settings-switch .field-hint,
+.shop-settings-switch .field-error { margin: 0; padding-left: 56px; }
+
+.hours-list,
+.settings-list { margin: 0; padding: 0; list-style: none; }
+
+.hours-row,
+.settings-list-row {
+  display: grid;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--color-line);
+}
+
+.hours-row {
+  grid-template-columns: minmax(6.5rem, auto) 1fr;
+  align-items: center;
+}
+.hours-day { font-weight: 600; }
+.hours-times {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-ink-muted);
+}
+.hours-times .field-input { flex: 1 1 0; min-width: 0; max-width: 11rem; }
+.hours-messages,
+.day-off-messages { grid-column: 1 / -1; }
+.hours-messages:empty,
+.day-off-messages:empty { display: none; }
+
+@media (min-width: 768px) {
+  .hours-row { grid-template-columns: 8rem 9rem 1fr; }
+  .hours-times { grid-column: auto; }
+}
+
+.town-row { grid-template-columns: 1fr auto; align-items: start; }
+.town-name,
+.town-fee { grid-column: 1 / -1; }
+.town-fee .settings-unit-input { max-width: 12rem; }
+.town-row .settings-remove { justify-self: end; }
+
+@media (min-width: 768px) {
+  .town-row { grid-template-columns: minmax(0, 1fr) 11rem auto auto; }
+  .town-name,
+  .town-fee { grid-column: auto; }
+}
+
+.day-off-row { grid-template-columns: 1fr 1fr auto; align-items: end; }
+.day-off-note { grid-column: 1 / -1; grid-row: 2; }
+.day-off-row .settings-remove { grid-column: 3; grid-row: 1; }
+.day-off-field .field-label { margin-bottom: var(--space-1); }
+
+@media (min-width: 768px) {
+  .day-off-row { grid-template-columns: 10rem 10rem minmax(0, 1fr) auto; }
+  .day-off-note { grid-column: auto; grid-row: auto; }
+  .day-off-row .settings-remove { grid-column: auto; grid-row: auto; }
+}
+
+.settings-remove {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: none;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  transition: background-color var(--duration-micro) var(--ease-out-soft), color var(--duration-micro) var(--ease-out-soft);
+}
+.settings-remove:hover { background: var(--color-danger-tint); color: var(--color-danger); }
+.settings-remove:active { transform: scale(0.96); }
+
+.settings-add { display: inline-flex; align-items: center; gap: var(--space-1); }
+.link-button:disabled { color: var(--color-ink-muted); text-decoration: none; cursor: not-allowed; }
+
+.settings-empty {
+  margin: 0;
+  padding: var(--space-4) var(--space-5) 0;
+  color: var(--color-ink-muted);
+}
+
+.payment-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  transition: border-color var(--duration-micro) var(--ease-out-soft), background-color var(--duration-micro) var(--ease-out-soft);
+}
+.payment-option:hover { background: var(--color-canvas); }
+.payment-option:has(input:checked) { border-color: var(--color-accent); background: var(--color-accent-tint); }
+.payment-option input { width: 18px; height: 18px; accent-color: var(--color-accent); }
+
+.settings-conflict {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+  margin-bottom: var(--space-5);
+  padding: var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--color-danger-tint);
+  color: var(--color-ink);
+}
+.settings-conflict p { margin: 0; max-width: 65ch; }

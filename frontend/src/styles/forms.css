@@ -165,6 +165,11 @@
 .date-range-error { flex-basis: 100%; }
 
 .settings-card-padded { padding: var(--space-4); }
+
+/* A switch with its hint underneath, aligned past the track. */
+.settings-switch-row { display: grid; gap: var(--space-1); }
+.settings-switch-row .field-hint { margin-top: 0; padding-left: 56px; }
+.settings-switch-row + .settings-switch-row { margin-top: var(--space-3); }
 .settings-date { max-width: 240px; }
 
 /* Underlined text action for secondary choices ("Change", "Add a note", "Continue"). */

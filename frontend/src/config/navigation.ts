@@ -3,6 +3,7 @@ import {
   BookOpen,
   Donut,
   Receipt,
+  Store,
   TrendingUp,
   Wallet,
   Wheat,
@@ -18,7 +19,7 @@ export interface OwnerSection {
 }
 
 /**
- * The six owner sections, ordered by how often the counter uses them.
+ * The seven owner sections, ordered by how often the counter uses them.
  * Drives the sidebar, the hub's "Around the shop" list and the back link.
  */
 export const OWNER_SECTIONS: OwnerSection[] = [
@@ -67,6 +68,12 @@ export const OWNER_SECTIONS: OwnerSection[] = [
     title: "Profit & analytics",
     icon: TrendingUp,
     capability: "finance.read",
+  },
+  {
+    to: "/settings",
+    title: "Shop settings",
+    icon: Store,
+    capability: "shop.manage",
   },
 ];
 

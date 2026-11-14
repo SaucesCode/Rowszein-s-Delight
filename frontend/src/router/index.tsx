@@ -18,6 +18,7 @@ const ProductsPage = lazy(() => import("@/pages/ProductsPage"));
 const ProductFormPage = lazy(() => import("@/pages/ProductFormPage"));
 const BoxesPage = lazy(() => import("@/pages/BoxesPage"));
 const PartnersPage = lazy(() => import("@/pages/PartnersPage"));
+const ShopSettingsPage = lazy(() => import("@/pages/ShopSettingsPage"));
 const AssortmentFormPage = lazy(() => import("@/pages/AssortmentFormPage"));
 const RecipesPage = lazy(() => import("@/pages/RecipesPage"));
 const RecipeFormPage = lazy(() => import("@/pages/RecipeFormPage"));
@@ -91,6 +92,7 @@ const router = createBrowserRouter([
           { path: "/sales/new", element: <SaleFormPage /> },
           { path: "/sales/:id/edit", element: <SaleFormPage /> },
           { path: "/analytics", element: <DashboardPage /> },
+          { path: "/settings", element: <ShopSettingsPage /> },
           // Donut margins now live on the Recipe costing sheet.
           { path: "/profit-margins", element: <Navigate to="/recipes" replace /> },
         ],
