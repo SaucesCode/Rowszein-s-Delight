@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { saleRefusalMessage } from "@/pages/sales/saleErrors";
 import { useNavigate } from "react-router-dom";
 import { saleService } from "@/services/sale.service";
 import type { SaleFilters } from "@/services/sale.service";
@@ -42,7 +43,7 @@ export function useCreateSale() {
     },
     onError: (error) => {
       identity.reject("sale:create", error);
-      toast.error(apiErrorMessage(error, "Couldn't record the sale. Check the connection and try again; it won't be counted twice."));
+      toast.error(saleRefusalMessage(error) ?? apiErrorMessage(error, "Couldn't record the sale. Check the connection and try again; it won't be counted twice."));
     },
   });
 }
@@ -69,7 +70,7 @@ export function useUpdateSale(id: number, revision?: string) {
     onError: (error) => {
       identity.reject(`sale:update:${id}`, error);
       queryClient.invalidateQueries({ queryKey: ["sales", id] });
-      toast.error(apiErrorMessage(error, "Couldn't save the changes. Someone may have changed this sale; reload it and try again."));
+      toast.error(saleRefusalMessage(error) ?? apiErrorMessage(error, "Couldn't save the changes. Someone may have changed this sale; reload it and try again."));
     },
   });
 }

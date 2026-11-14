@@ -21,7 +21,7 @@ import { boxPayload, openBoxPrice, savedBox, type TicketBox } from "./sales/boxT
 import OpenBoxPanel from "./sales/OpenBoxPanel";
 import RegisterBoxChooser from "./sales/RegisterBoxChooser";
 import { useAssortments, useBoxSizes } from "@/hooks/useBoxes";
-import { apiFieldErrors } from "@/lib/csrfTransport";
+import { saleRefusalMessage } from "./sales/saleErrors";
 import "./sales/sales.css";
 
 const WIDE = "(min-width: 1100px)";
@@ -40,13 +40,7 @@ const saleSchema = z.object({
   boxes: z.array(z.unknown()),
 }).refine(sale => sale.sale_items.length > 0 || sale.boxes.length > 0, { message: "Add at least one item or box." });
 
-/** The server's first message for a refused sale (field or general), worded for the counter. */
-function serverMessage(error: unknown): string | null {
-  const fields = apiFieldErrors(error);
-  if (fields) return Object.values(fields)[0] ?? null;
-  const failure = (error as { response?: { data?: { error?: unknown } } })?.response?.data?.error;
-  return Array.isArray(failure) && typeof failure[0] === "string" ? failure[0] : null;
-}
+
 
 function linesFrom(sale?: Sale): TicketLine[] {
   return (sale?.sale_items ?? []).map(item => ({
@@ -71,6 +65,7 @@ function Register({ sale }: { sale?: Sale }) {
 
   const ticket = useTicket(linesFrom(sale), boxesFrom(sale));
   const [boxMessage, setBoxMessage] = useState<string | null>(null);
+  const [focusChooser, setFocusChooser] = useState(false);
   const boxSizes = useBoxSizes();
   const assortments = useAssortments();
   const [date, setDate] = useState(sale?.date ?? today);
@@ -120,6 +115,11 @@ function Register({ sale }: { sale?: Sale }) {
       setError("Finish or cancel the box first.");
       return;
     }
+    const badBox = ticket.boxes.find(box => !box.saved && (!(box.price >= 0.01) || Math.round(box.price * 100) !== box.price * 100));
+    if (badBox) {
+      setError(`Enter a price above ₱0 for ${badBox.name}, in pesos and centavos.`);
+      return;
+    }
     const parsed = saleSchema.safeParse({
       date,
       notes: notes.trim(),
@@ -132,7 +132,7 @@ function Register({ sale }: { sale?: Sale }) {
     }
     setError(null);
     const payload: SalePayload = { ...parsed.data, boxes: ticket.boxes.map(boxPayload) };
-    const showRefusal = (failure: unknown) => setError(serverMessage(failure));
+    const showRefusal = (failure: unknown) => setError(saleRefusalMessage(failure));
 
     if (sale) {
       updateSale.mutate(payload, { onError: showRefusal });
@@ -164,19 +164,23 @@ function Register({ sale }: { sale?: Sale }) {
       onFinish={() => {
         ticket.finishBox();
         setBoxMessage(null);
+        setFocusChooser(true);
       }}
       onCancel={() => {
         ticket.cancelBox();
         setBoxMessage(null);
+        setFocusChooser(true);
       }}
     />
   ) : (
     <RegisterBoxChooser
+      autoFocus={focusChooser}
       sizes={boxSizes.data ?? []}
       readyMade={assortments.data ?? []}
       isOwner={!isStaff}
       onStartSize={size => {
         setRecorded(null);
+        setFocusChooser(false);
         ticket.startBox(size);
       }}
       onAddReadyMade={assortment => {

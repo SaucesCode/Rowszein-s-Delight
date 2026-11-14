@@ -252,6 +252,34 @@ class BoxSaleTests(BoxSalesFixture, TestCase):
         self.assertEqual(self.edit(legacy.pk, {'boxes': [self.box((self.ube, 12))]}).status_code, 409)
 
 
+class BoxReviewFixTests(BoxSalesFixture, TestCase):
+    def test_removing_a_box_with_a_resting_donut_is_allowed(self):
+        sale = self.created({'sale_items': [self.item(self.ube, 1)], 'boxes': [self.box((self.ube, 6), (self.choco, 6))]})
+        Product.objects.filter(pk=self.ube.pk).update(is_available=False)
+        edited = self.edit(sale['id'], {'boxes': []})
+        self.assertEqual(edited.status_code, 200, edited.data)
+        self.assertEqual(self.stock()[self.flour.pk], Decimal('19'))
+
+    def test_swapping_a_single_while_keeping_a_box_with_a_resting_donut(self):
+        sale = self.created({'sale_items': [self.item(self.ube, 1)], 'boxes': [self.box((self.ube, 6), (self.choco, 6))]})
+        Product.objects.filter(pk=self.ube.pk).update(is_available=False)
+        edited = self.edit(sale['id'], {'sale_items': [self.item(self.choco, 1)], 'boxes': [{'key': sale['boxes'][0]['key']}]})
+        self.assertEqual(edited.status_code, 200, edited.data)
+
+    def test_adding_more_of_a_resting_donut_is_still_refused_by_name(self):
+        sale = self.created({'sale_items': [self.item(self.ube, 1)]})
+        Product.objects.filter(pk=self.ube.pk).update(is_available=False)
+        edited = self.edit(sale['id'], {'sale_items': [self.item(self.ube, 2)]})
+        self.assertEqual(edited.status_code, 400)
+        self.assertIn("Ube test isn't available.", str(edited.data))
+
+    def test_missing_recipe_message_names_the_donut(self):
+        Recipe.objects.filter(product=self.choco).delete()
+        response = self.post_sale({'boxes': [self.box((self.ube, 6), (self.choco, 6))]})
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('Choco test has no recipe, so its stock can\'t be counted. Add its recipe first.', str(response.data))
+
+
 class BoxReportTests(BoxSalesFixture, TestCase):
     def test_boxes_summary_counts_recorded_boxes_by_order_date(self):
         from sales.reporting import boxes_summary

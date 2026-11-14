@@ -284,9 +284,10 @@ def execute_sale(*, action, actor, key, data=None, sale_id=None, expected_revisi
         for pk in sorted(changed & set(old_quantities) & set(new_quantities)):
             if (pk in old_stocked) != (pk in new_stocked):
                 raise ValidationError({'sale_items': f'{products[pk].name} changed maker since this sale. Remove the line, save, then add it again.'})
-        for product_id in sorted((changed & set(new_quantities)) - new_stocked):
-            if not products[product_id].is_available:
-                raise ValidationError('New consumption requires an available product and a recipe.')
+        # A resting donut can't be sold more, but a sale that keeps or lowers it (say, a kept box) can still change.
+        for product_id in sorted(changed & set(new_quantities)):
+            if not products[product_id].is_available and new_quantities[product_id] > old_quantities.get(product_id, 0):
+                raise ValidationError(f"{products[product_id].name} isn't available.")
         if sale:
             old_allocations = list(SaleConsumption.objects.filter(sale=sale, reversed_by__isnull=True, basis__product_id__in=old_stocked).select_related('basis').order_by('pk'))
             if old_stocked != {row.basis.product_id for row in old_allocations}:
@@ -295,8 +296,8 @@ def execute_sale(*, action, actor, key, data=None, sale_id=None, expected_revisi
         ingredient_ids = {row.basis.ingredient_id for row in old_allocations}
         recipe_lines = []
         for product_id in sorted(new_stocked):
-            if not products[product_id].is_available or product_id not in recipes:
-                raise ValidationError('New consumption requires an available product and a recipe.')
+            if product_id not in recipes:
+                raise ValidationError(f"{products[product_id].name} has no recipe, so its stock can't be counted. Add its recipe first.")
             recipe = recipes[product_id]
             lines = list(recipe.recipe_ingredients.all())
             if not lines:

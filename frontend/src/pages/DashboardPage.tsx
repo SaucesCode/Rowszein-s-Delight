@@ -122,7 +122,8 @@ function BestSellers({ products }: { products: DashboardReport["best_selling"] }
               </span>
               <span className="ranking-value num">
                 {formatUnits(product.total_quantity)} sold
-                <small>{formatPeso(product.total_revenue)}</small>
+                {/* Donuts in boxes count here, but a box's price isn't split between its donuts. */}
+                {product.total_revenue > 0 && <small>{formatPeso(product.total_revenue)} single sales</small>}
               </span>
             </li>
           ))}

@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Package } from "lucide-react";
 import { formatPeso } from "@/pages/dashboard/report-format";
 import type { Assortment, BoxSize } from "@/types/box.types";
@@ -8,6 +8,8 @@ interface RegisterBoxChooserProps {
   readyMade: Assortment[];
   /** The owner may record boxes that are off sale (late orders); staff only see what's on sale. */
   isOwner: boolean;
+  /** Put focus on "Add a box" when the chooser comes back after a box closes. */
+  autoFocus?: boolean;
   onStartSize: (size: BoxSize) => void;
   onAddReadyMade: (assortment: Assortment) => void;
 }
@@ -16,9 +18,13 @@ const sellable = (assortment: Assortment) => assortment.is_complete && assortmen
 const onSale = (assortment: Assortment) => assortment.is_available && assortment.box_size.is_available;
 
 /** "Add a box": box sizes to fill by flavour, and ready-made boxes added in one tap. */
-export default function RegisterBoxChooser({ sizes, readyMade, isOwner, onStartSize, onAddReadyMade }: RegisterBoxChooserProps) {
+export default function RegisterBoxChooser({ sizes, readyMade, isOwner, autoFocus = false, onStartSize, onAddReadyMade }: RegisterBoxChooserProps) {
   const id = useId();
   const [open, setOpen] = useState(false);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (autoFocus) toggleRef.current?.focus();
+  }, [autoFocus]);
   const visibleSizes = sizes.filter(size => isOwner || size.is_available);
   const visibleReady = readyMade.filter(box => sellable(box) && (isOwner || onSale(box)));
   if (visibleSizes.length === 0 && visibleReady.length === 0) return null;
@@ -26,11 +32,15 @@ export default function RegisterBoxChooser({ sizes, readyMade, isOwner, onStartS
   const choose = (action: () => void) => {
     action();
     setOpen(false);
+    // A ready-made box keeps this chooser on screen; send focus back to its button.
+    requestAnimationFrame(() => {
+      if (toggleRef.current?.isConnected) toggleRef.current.focus();
+    });
   };
 
   return (
     <div className="register-boxes">
-      <button type="button" className="btn-secondary register-boxes-toggle" aria-expanded={open} aria-controls={`${id}-list`} onClick={() => setOpen(value => !value)}>
+      <button ref={toggleRef} type="button" className="btn-secondary register-boxes-toggle" aria-expanded={open} aria-controls={`${id}-list`} onClick={() => setOpen(value => !value)}>
         <Package size={18} aria-hidden="true" />
         Add a box
       </button>

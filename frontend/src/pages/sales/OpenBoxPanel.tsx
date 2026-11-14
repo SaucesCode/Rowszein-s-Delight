@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { formatPeso } from "@/pages/dashboard/report-format";
@@ -16,13 +16,16 @@ interface OpenBoxPanelProps {
 /** The box being filled: tap donuts to pick flavours, and the box fills evenly. */
 export default function OpenBoxPanel({ box, message, onRemoveFlavour, onFinish, onCancel }: OpenBoxPanelProps) {
   const [confirmCancel, setConfirmCancel] = useState(false);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  // The button that opened the box is gone; continue from the box itself.
+  useEffect(() => titleRef.current?.focus(), []);
   const contents = openBoxContents(box);
   const picked = box.flavours.length;
 
   return (
     <section className="open-box" aria-label={`${box.name}, being filled`}>
       <header className="open-box-head">
-        <h3 className="open-box-title">{box.name}</h3>
+        <h3 ref={titleRef} tabIndex={-1} className="open-box-title">{box.name}</h3>
         <span className="open-box-count">
           {picked} of {box.maxFlavors} {box.maxFlavors === 1 ? "flavour" : "flavours"}
         </span>
