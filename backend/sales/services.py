@@ -1,5 +1,5 @@
 """Authorized atomic sale/stock commands preserving retained ledger history."""
-from collections import defaultdict
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from decimal import Decimal, localcontext
 from uuid import UUID
@@ -13,6 +13,7 @@ from ingredients.models import Ingredient
 from products.models import Product
 from recipes.models import Recipe
 from sales.financial_math import posting_amount
+from sales.box_lines import box_quantities, boxes_total, new_box_line
 from sales.inventory_math import Basis, MAX_ACTIVE_UNITS, UNITS, allocate, apply_deltas, intent_fingerprint, money_text, signed_money_text, quantity_quanta, quantity_text
 from sales.models import ConsumptionBasis, InventoryOperation, Sale, SaleConsumption, SaleFinancialEntry, SaleItem, StockMovement
 from sales.storage_precision import validate_quantity_storage
@@ -110,11 +111,19 @@ def payout_lines(sale):
             for item in current_items(sale)]
 
 
+def current_boxes(sale):
+    return sale.current_boxes or []
+
+
 def sale_data(sale):
     # The partner payout is supplier cost data: kept in storage, never sent back.
     items = [{key: value for key, value in item.items() if key != 'partner_payout'} for item in current_items(sale)]
-    return {'id': sale.pk, 'date': sale.date.isoformat(), 'notes': sale.notes, 'sale_items': items,
-            'total_amount': signed_money_text(sale.total_amount if sale.current_items is None else item_total(items)), 'original_total_amount': signed_money_text(sale.total_amount),
+    boxes = current_boxes(sale)
+    with localcontext() as context:
+        context.prec = 50
+        total = sale.total_amount if sale.current_items is None else item_total(items) + boxes_total(boxes)
+    return {'id': sale.pk, 'date': sale.date.isoformat(), 'notes': sale.notes, 'sale_items': items, 'boxes': boxes,
+            'total_amount': signed_money_text(total), 'original_total_amount': signed_money_text(sale.total_amount),
             'status': sale.status, 'revision': str(sale.revision), 'inventory_tracking': sale.inventory_tracking,
             'financial_tracking': sale.financial_tracking, 'created_at': sale.created_at.isoformat(),
             'updated_at': sale.updated_at.isoformat()}
@@ -135,7 +144,7 @@ def _items(data, products, originals, snapshots):
         result.append({'id': originals.get(product.pk), 'product': product.pk, 'product_name': product.name,
                        'quantity': qty, 'unit_price': money_text(price), 'subtotal': subtotal, 'subtotal_amount': subtotal,
                        'partner': partner, 'partner_payout': payout})
-    if not result or len({item['product'] for item in result}) != len(result):
+    if len({item['product'] for item in result}) != len(result):
         raise ValidationError('A sale requires unique product lines.')
     item_total(result)
     return sorted(result, key=lambda item: item['product'])
@@ -149,7 +158,37 @@ def _intent(action, target, revision, data, reason):
         payload['notes'] = data['notes']
     if 'sale_items' in data:
         payload['sale_items'] = sorted([{'product': item['product'].pk, 'quantity': item['quantity'], 'unit_price': money_text(item['unit_price'])} for item in data['sale_items']], key=lambda item: item['product'])
+    if 'boxes' in data:
+        payload['boxes'] = [_box_intent(entry) for entry in data['boxes']]
     return intent_fingerprint(payload)
+
+
+def _box_intent(entry):
+    if 'key' in entry:
+        return {'key': entry['key']}
+    intent = {'assortment': entry['assortment'].pk} if 'assortment' in entry else {
+        'box_size': entry['box_size'].pk,
+        'contents': sorted([{'product': c['product'].pk, 'quantity': c['quantity']} for c in entry['contents']], key=lambda c: c['product'])}
+    if 'price' in entry:
+        intent['price'] = money_text(entry['price'])
+    return intent
+
+
+def _box_product_ids(entries):
+    ids = set()
+    for entry in entries:
+        if 'assortment' in entry:
+            ids.update(entry['assortment'].items.values_list('product_id', flat=True))
+        elif 'box_size' in entry:
+            ids.update(content['product'].pk for content in entry['contents'])
+    return ids
+
+
+def _merged(*counts):
+    total = Counter()
+    for count in counts:
+        total.update(count)
+    return dict(total)
 
 
 def _basis_key(product, ingredient, unit, batch, batch_yield):
@@ -185,7 +224,7 @@ def execute_sale(*, action, actor, key, data=None, sale_id=None, expected_revisi
             if 'date' in data and data['date'] != sale.date:
                 raise Conflict('Posted/legacy dates require a separately approved financial correction.')
             if sale.inventory_tracking != 'tracked' or sale.financial_tracking != 'ledger':
-                if action == 'sale_cancel' or 'sale_items' in data:
+                if action == 'sale_cancel' or 'sale_items' in data or 'boxes' in data:
                     raise Conflict('Legacy consumption is unverified; explicit reconciliation is required.')
                 sale.notes = data.get('notes', sale.notes)
                 sale.revision += 1
@@ -195,10 +234,13 @@ def execute_sale(*, action, actor, key, data=None, sale_id=None, expected_revisi
                     request_fingerprint=fingerprint, reason=reason, before_snapshot=before, response_status=200, response_body=body)
                 return CommandResult(body, 200)
 
-        input_items = data.get('sale_items')
-        product_ids = {item['product'] for item in old_items}
+        input_items, input_boxes = data.get('sale_items'), data.get('boxes')
+        old_boxes = current_boxes(sale) if sale else []
+        product_ids = {item['product'] for item in old_items} | set(box_quantities(old_boxes))
         if input_items is not None:
             product_ids.update(item['product'].pk for item in input_items)
+        if input_boxes is not None:
+            product_ids.update(_box_product_ids(input_boxes))
         products = {p.pk: p for p in Product.objects.select_for_update().filter(pk__in=product_ids).order_by('pk')}
         if set(products) != product_ids:
             raise ValidationError('A referenced product no longer exists.')
@@ -215,16 +257,29 @@ def execute_sale(*, action, actor, key, data=None, sale_id=None, expected_revisi
         originals = {} if sale is None else dict(sale.sale_items.values_list('product_id', 'pk'))
         snapshots = {item['product']: (item.get('partner'), item.get('partner_payout', '0.00')) for item in old_items}
         new_items = old_items if input_items is None else _items(input_items, products, originals, snapshots)
-        if action == 'sale_create' and not new_items:
-            raise ValidationError('Sale items are required.')
-        old_quantities = {item['product']: item['quantity'] for item in old_items}
-        new_quantities = {} if action == 'sale_cancel' else {item['product']: item['quantity'] for item in new_items}
+        if input_boxes is None:
+            new_boxes = old_boxes
+        else:
+            old_by_key, new_boxes, role = {box['key']: box for box in old_boxes}, [], authorize_command(actor, action)
+            for entry in input_boxes:
+                if 'key' in entry:
+                    if entry['key'] not in old_by_key or any(box['key'] == entry['key'] for box in new_boxes):
+                        raise ValidationError({'boxes': 'This box is no longer on the sale. Reload and try again.'})
+                    new_boxes.append(old_by_key[entry['key']])
+                else:
+                    new_boxes.append(new_box_line(entry, products, role))
+        if action != 'sale_cancel' and not new_items and not new_boxes:
+            raise ValidationError('Add at least one item or box.')
+        # Donuts inside boxes take stock exactly like single donuts of the same kind.
+        old_quantities = _merged({item['product']: item['quantity'] for item in old_items}, box_quantities(old_boxes))
+        new_quantities = {} if action == 'sale_cancel' else _merged(
+            {item['product']: item['quantity'] for item in new_items}, box_quantities(new_boxes))
         changed = {pk for pk in product_ids if old_quantities.get(pk) != new_quantities.get(pk)}
         # Partner items are made by the partner: no recipe, no pantry stock. An existing line
         # follows what the sale recorded when it was sold (lines without a partner key predate
         # partners, so they were stocked); a new line follows the item as it is now.
         old_partner = {item['product']: item.get('partner') for item in old_items}
-        old_stocked = {pk for pk in changed & set(old_quantities) if old_partner[pk] is None}
+        old_stocked = {pk for pk in changed & set(old_quantities) if old_partner.get(pk) is None}
         new_stocked = {pk for pk in changed & set(new_quantities) if products[pk].partner_id is None}
         for pk in sorted(changed & set(old_quantities) & set(new_quantities)):
             if (pk in old_stocked) != (pk in new_stocked):
@@ -290,8 +345,10 @@ def execute_sale(*, action, actor, key, data=None, sale_id=None, expected_revisi
                     validate_quantity_storage(value)
         for _, allocation, _ in additions:
             validate_quantity_storage(allocation.applied_quantity)
-        old_amount = item_total(old_items) if old_items else Decimal('0.00')
-        new_amount = Decimal('0.00') if action == 'sale_cancel' else item_total(new_items)
+        with localcontext() as context:
+            context.prec = 50
+            old_amount = item_total(old_items) + boxes_total(old_boxes)
+            new_amount = Decimal('0.00') if action == 'sale_cancel' else item_total(new_items) + boxes_total(new_boxes)
         if sale:
             book = SaleFinancialEntry.objects.filter(sale=sale).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
             if book != old_amount:
@@ -310,7 +367,7 @@ def execute_sale(*, action, actor, key, data=None, sale_id=None, expected_revisi
         # Business writes begin only after ALL projected balances are valid.
         if sale is None:
             sale = Sale.objects.create(date=data['date'], notes=data.get('notes', ''), total_amount=new_amount,
-                inventory_tracking='tracked', financial_tracking='ledger', revision=1, current_items=new_items)
+                inventory_tracking='tracked', financial_tracking='ledger', revision=1, current_items=new_items, current_boxes=new_boxes)
             original_rows = SaleItem.objects.bulk_create([SaleItem(sale=sale, product_id=item['product'], quantity=item['quantity'], unit_price=Decimal(item['unit_price']), subtotal_amount=Decimal(item['subtotal'])) for item in new_items])
             original_ids = {item.product_id: item.pk for item in original_rows}
             new_items = [dict(item, id=original_ids[item['product']]) for item in new_items]
@@ -320,8 +377,8 @@ def execute_sale(*, action, actor, key, data=None, sale_id=None, expected_revisi
             sale.notes = data.get('notes', sale.notes)
             sale.revision += 1
             if action != 'sale_cancel':
-                sale.current_items = new_items
-                sale.save(update_fields=['notes', 'revision', 'current_items', 'updated_at'])
+                sale.current_items, sale.current_boxes = new_items, new_boxes
+                sale.save(update_fields=['notes', 'revision', 'current_items', 'current_boxes', 'updated_at'])
         body_data = sale_data(sale)
         if action == 'sale_cancel':
             body_data['status'] = 'cancelled'
