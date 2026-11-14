@@ -1,6 +1,6 @@
 # Boxes in the Sales register — design
 
-Date: 14 November 2026 · Branch: `pre-launch-hardening` · Status: approved by the owner on 14 November 2026
+Date: 14 November 2026 · Branch: `pre-launch-hardening` · Status: approved by the owner on 14 November 2026, including the flavour-rule revision
 
 ## Why
 
@@ -44,6 +44,39 @@ Customers order boxes online (Box of 8/12/24, filled by the customer, or a ready
 * Staff may only create sales, dated today in Manila, at catalog prices.
 * Box pricing exists in `products/boxes.py`: size price plus each donut's `box_extra`; ready-made boxes are `Assortment` with items.
 * Partner items: lines carry a `partner` and `partner_payout` snapshot and never touch stock.
+
+## Revision: the flavour rule (owner's request, 14 November 2026)
+
+Making a box where every donut is a different flavour is hard for the kitchen. So every box, wherever it's made, follows one rule:
+
+* **A limit per size.** Each box size has a **most flavours** number the owner sets on the Boxes page. The migration starts existing sizes at: size ≤ 8 → 2, size ≤ 12 → 3, larger → 4. Allowed values: 1 up to the size, at most 12.
+* **Even fill.** A box holds 1 to *most flavours* different donuts, and they fill the box **as evenly as possible**:
+  * `even_split(size, k)` gives each flavour `size // k`, and the first `size % k` flavours (in the order picked) one more.
+  * So a Box of 12 is 12, 6 + 6 or 4 + 4 + 4, and a Box of 10 with 3 flavours is 4 + 3 + 3.
+  * A box is therefore always full the moment one flavour is picked.
+* **Checking a box.** A box's contents are valid when:
+  * the number of different donuts is between 1 and *most flavours*; and
+  * the quantities, sorted from largest, equal `even_split(size, k)` sorted the same way.
+* **Where it's checked.** The server checks it everywhere, so nothing can get round it:
+  * register box lines (`new_box_line`);
+  * ready-made boxes (the `AssortmentSerializer` refuses to save one that breaks it);
+  * the shop's ready-made list (`is_shop_ready` hides a box that breaks the rule, for example after the owner lowers *most flavours*).
+* **Premium extras** still count per donut. Price = size price + Σ(`box_extra` × quantity).
+* **The same rule applies to the owner** (my call: the limit is about what the kitchen can make; to allow a special order, raise *most flavours* for that size).
+
+What this changes in the screens:
+
+* **Boxes page:** each size row gets a "Most flavours" number. A ready-made box that breaks the rule is flagged "Doesn't follow the flavour rule: shop hides it".
+* **Ready-made box builder:** the owner picks flavours (up to the size's limit) and the box fills evenly, the same way as the shop.
+* **Shop, "Fill it yourself":**
+  * The customer taps donuts to **pick or unpick flavours**. The box fills evenly as they go ("4 Glazed · 4 Ube · 4 Choco Dip").
+  * Once the limit is reached, the other donuts dim with "This box takes up to 3 flavours".
+  * Partner items stay "Not in boxes".
+  * "Add box" works as soon as one flavour is picked.
+  * A box order saved in the browser under the old format is cleared on load rather than shown wrong.
+* **Register:** the same flavour picking replaces "tap each donut, then + and −". Pick the size, tap the flavours from the Messenger order card, then "Add box to sale".
+
+The register sections below are read with this revision: wherever they say "tap a donut tile puts one in the box" or "− and +", read it as "tap to pick or unpick a flavour; the box fills evenly".
 
 ## Design
 
@@ -145,6 +178,14 @@ Customers order boxes online (Box of 8/12/24, filled by the customer, or a ready
   * regression tests for the box-filling state (add, take out, can't overfill, partner refused, price with extras) and the ticket totals;
   * browser checks at 375 and 1440 px, keyboard-only and axe;
   * a WebKit run.
+
+**Flavour rule tests:**
+
+* `even_split`: 12/3 → [4,4,4]; 10/3 → [4,3,3]; 8/1 → [8].
+* A box over the flavour limit is refused, and so is an uneven box (7 + 1 in a Box of 8).
+* A ready-made box that breaks the rule can't be saved, and one broken by a later limit change is hidden from the shop and refused in the register.
+* The migration defaults for existing sizes.
+* Shop and register flavour picking (regression tests on the pure helpers, plus browser checks).
 
 ## Left to the builder
 
