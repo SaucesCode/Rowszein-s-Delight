@@ -66,6 +66,10 @@ class Product(models.Model):
     # for each one sold; the patong is always price - partner_payout.
     partner = models.ForeignKey(Partner, null=True, blank=True, on_delete=models.PROTECT, related_name='products')
     partner_payout = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    # How the shop draws the item without a photo. Rowszein's own items are always donuts.
+    shape = models.CharField(max_length=12, default='donut', choices=[
+        ('donut', 'Donut'), ('whole_cake', 'Whole cake'), ('cake_slice', 'Cake slice'), ('cupcake', 'Cupcake'),
+        ('muffin', 'Muffin'), ('brownie', 'Brownie'), ('cookie', 'Cookie'), ('bread', 'Bread')])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

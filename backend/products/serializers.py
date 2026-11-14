@@ -95,6 +95,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'partner',
             'partner_id',
             'partner_payout',
+            'shape',
             'created_at',
             'updated_at',
         ]
@@ -141,6 +142,9 @@ class ProductSerializer(serializers.ModelSerializer):
         if partner is None:
             if payout != 0:
                 raise serializers.ValidationError({'partner_payout': 'Only partner items have a partner price.'})
+            if attrs.get('shape', 'donut') != 'donut':
+                raise serializers.ValidationError({'shape': 'Only partner items can be shown as another treat.'})
+            attrs['shape'] = 'donut'
             return attrs
         if payout <= 0:
             raise serializers.ValidationError({'partner_payout': 'Enter their price, above ₱0.'})
@@ -169,7 +173,7 @@ class OperationalProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'price', 'image_url', 'category', 'is_available', 'is_featured', 'box_extra', 'partner']
+        fields = ['id', 'name', 'description', 'price', 'image_url', 'category', 'is_available', 'is_featured', 'box_extra', 'partner', 'shape']
         read_only_fields = fields
 
     def get_image_url(self, obj):
