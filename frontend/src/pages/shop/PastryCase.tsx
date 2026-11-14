@@ -1,5 +1,5 @@
 import { memo, useId, useRef, type CSSProperties } from "react";
-import PatisserieDonut from "./PatisserieDonut";
+import TreatArt from "./treats/TreatArt";
 import { flavorOf } from "@/lib/flavor";
 import { formatPeso } from "@/pages/dashboard/report-format";
 import type { Product } from "@/types/product.types";
@@ -58,7 +58,7 @@ const CaseItem = memo(function CaseItem({ product, filling, inBox, picked, atLim
         <span className="case-plate" aria-hidden="true">
           <Doily className="case-doily" />
           <span className="case-art">
-            {product.image_url ? <img src={product.image_url} alt="" loading="lazy" width={96} height={96} /> : <PatisserieDonut flavor={flavor} size={84} />}
+            {product.image_url ? <img src={product.image_url} alt="" loading="lazy" width={96} height={96} /> : <TreatArt shape={product.shape} flavor={flavor} size={84} />}
           </span>
           {inBox > 0 && <span className="case-count num">{inBox}</span>}
         </span>

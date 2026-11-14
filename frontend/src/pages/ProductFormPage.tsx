@@ -13,7 +13,9 @@ import type { Category, Product } from "@/types/product.types";
 import type { Partner } from "@/types/partner.types";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import RecordLoadError from "@/components/RecordLoadError";
-import DonutArt from "@/components/DonutArt";
+import ProductArt from "@/components/ProductArt";
+import TreatArt from "@/pages/shop/treats/TreatArt";
+import { SHAPES, guessShape, type Shape } from "@/lib/treatShape";
 import Switch from "@/components/ui/Switch";
 import Row from "@/components/ui/SettingsRow";
 import { formatPeso } from "@/pages/dashboard/report-format";
@@ -77,6 +79,9 @@ function DonutForm({ product, duplicate, initialPartner = 0 }: {
   const [photoPreview, setPhotoPreview] = useState<string | null>(product?.image_url ?? null);
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  // Follows the name (guessShape) until the owner picks a drawing; a saved partner item keeps its own.
+  const [shape, setShape] = useState<Shape>(product?.partner ? (product.shape ?? "whole_cake") : "whole_cake");
+  const [shapeTouched, setShapeTouched] = useState(!!product?.partner);
 
   const {
     register,
@@ -119,6 +124,7 @@ function DonutForm({ product, duplicate, initialPartner = 0 }: {
     name: ["name", "description", "price", "category_id", "is_available", "is_featured", "partner_id", "their_price", "patong"],
   });
   const isPartnerItem = partnerId > 0;
+  const shownShape: Shape = shapeTouched ? shape : guessShape(name ?? "");
   const price = isPartnerItem ? joinPartnerPrice(theirPrice || 0, patong || 0) : ownPrice;
   // Active partners, plus this item's own partner even if it has been switched off.
   const partnerChoices = ((partnersQuery.data ?? []) as Partner[]).filter(
@@ -165,6 +171,7 @@ function DonutForm({ product, duplicate, initialPartner = 0 }: {
       box_extra: partnered ? 0 : data.box_extra,
       partner_id: partnered ? partner_id : null,
       partner_payout: partnered ? their_price : 0,
+      shape: partnered ? shownShape : ("donut" as Shape),
     };
     const showFieldErrors = (error: unknown) => {
       const fields = apiFieldErrors(error) ?? {};
@@ -214,7 +221,7 @@ function DonutForm({ product, duplicate, initialPartner = 0 }: {
 
         <div className="donut-preview" data-resting={!isAvailable || undefined} aria-hidden="true">
           <span className="donut-preview-art" style={{ background: flavorTint(flavor) }}>
-            {photoPreview ? <img src={photoPreview} alt="" /> : <DonutArt flavor={flavor} size={88} />}
+            {photoPreview ? <img src={photoPreview} alt="" /> : <ProductArt shape={isPartnerItem ? shownShape : "donut"} flavor={flavor} size={88} />}
           </span>
           <div className="donut-preview-body">
             <p className="donut-preview-label">How it reads on the menu</p>
@@ -318,6 +325,30 @@ function DonutForm({ product, duplicate, initialPartner = 0 }: {
                     <option key={partner.id} value={partner.id}>{partner.name}</option>
                   ))}
                 </select>
+              </Row>
+            )}
+            {isPartnerItem && (
+              <Row label="Shown in the shop as" hint={shapeTouched ? undefined : "Guessed from the name. Pick another if it's wrong."}>
+                <fieldset className="treat-picker" aria-label="Shown in the shop as">
+                  {SHAPES.map(option => (
+                    <label key={option.value} className="treat-option">
+                      <input
+                        type="radio"
+                        name={field("shape")}
+                        className="sr-only"
+                        checked={shownShape === option.value}
+                        onChange={() => {
+                          setShape(option.value);
+                          setShapeTouched(true);
+                        }}
+                      />
+                      <span className="treat-option-art" aria-hidden="true">
+                        <TreatArt shape={option.value} flavor={flavor} size={48} />
+                      </span>
+                      <span className="treat-option-label">{option.label}</span>
+                    </label>
+                  ))}
+                </fieldset>
               </Row>
             )}
             {isPartnerItem ? (

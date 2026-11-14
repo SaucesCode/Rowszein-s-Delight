@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Search } from "lucide-react";
-import DonutArt from "@/components/DonutArt";
+import ProductArt from "@/components/ProductArt";
 import { flavorOf, flavorTint } from "@/lib/flavor";
 import { formatPeso } from "@/pages/dashboard/report-format";
 import type { Product } from "@/types/product.types";
@@ -120,7 +120,7 @@ export default function Catalog({ products, loading, error, onRetry, onAdd, quan
                     onClick={() => onAdd(product)}
                   >
                     <span className="catalog-art" style={{ background: flavorTint(flavor) }} aria-hidden="true">
-                      {product.image_url ? <img src={product.image_url} alt="" loading="lazy" /> : <DonutArt flavor={flavor} size={64} />}
+                      {product.image_url ? <img src={product.image_url} alt="" loading="lazy" /> : <ProductArt shape={product.shape} flavor={flavor} size={64} />}
                     </span>
                     <span className="catalog-name">{product.name}</span>
                     {product.partner && <span className="catalog-by">by {product.partner.name}</span>}

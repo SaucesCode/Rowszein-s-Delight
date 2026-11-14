@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Download, Minus, Plus, Trash2, X } from "lucide-react";
-import PatisserieDonut from "./PatisserieDonut";
+import TreatArt from "./treats/TreatArt";
 import type { CartItem, useCart } from "@/hooks/useCart";
 import { flavorOf } from "@/lib/flavor";
 import BoxArt from "@/pages/boxes/BoxArt";
@@ -170,7 +170,7 @@ export default function OrderSheet({ open, onClose, cart, boxes, total }: OrderS
                         {item.image_url ? (
                           <img src={item.image_url} alt="" width={48} height={48} />
                         ) : (
-                          <PatisserieDonut flavor={flavorOf(item.name)} size={40} />
+                          <TreatArt shape={item.shape} flavor={flavorOf(item.name)} size={40} />
                         )}
                       </span>
                       <span className="box-line-text">
