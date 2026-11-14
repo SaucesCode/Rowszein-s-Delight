@@ -60,6 +60,7 @@ API (under `/api/products/`):
 ## How partner items work
 
 * A **partner** is someone whose food the shop sells for them: a muffin, a cake or another baked good. The owner adds partners under Donut collection → Partners and can switch a partner off, which hides all their items from the shop.
+* Partner items without a photo are **drawn as their treat** (whole cake, cake slice, cupcake, muffin, brownie, cookie or bread) in the donuts' style and flavour colours. The item form's **Shown in the shop as** guesses the drawing from the name; the owner can pick another. Rowszein's own items are always donuts.
 * Each partner item has **their price** (what the partner is paid per item sold) and the owner's **patong** (the charge on top). The shop price is the two added together, and the patong can't be below ₱0.
 * Customers order partner items with their donuts in one Messenger message, pay the shop, and get one delivery. Partner items never go in boxes, have no recipe, and never touch pantry stock.
 * The whole order is recorded in the Sales register. Each sale keeps the payout rate it was sold at, so changing a rate later never changes what is already owed.
@@ -110,7 +111,7 @@ cd backend
 .venv\Scripts\python.exe manage.py test --settings=backend.test_settings
 ```
 
-This uses a temporary in-memory database and test-only keys, so it never touches a real database or `.env` secrets. All 248 tests pass; 17 PostgreSQL-only tests are skipped. Frontend checks: `npm run build`, `npm run lint`, and `node tests/regression/<file>.mjs` from the repository root.
+This uses a temporary in-memory database and test-only keys, so it never touches a real database or `.env` secrets. All 256 tests pass; 17 PostgreSQL-only tests are skipped. Frontend checks: `npm run build`, `npm run lint`, and `node tests/regression/<file>.mjs` from the repository root.
 
 Known gaps:
 
@@ -122,7 +123,7 @@ Earlier checkpoint: Phase 1B.3 disposable database verification was completed fo
 ## Deployment
 
 * **Frontend:** Vercel, with `frontend` as the root directory. `frontend/vercel.json` sends `/api` to the backend and sets the security headers, including a Content-Security-Policy that only allows the site's own scripts and photos from Cloudinary. A new outside service (for example an analytics script) must be added to that policy, or the browser will block it.
-* **Backend:** Render. Every deploy must run `python manage.py migrate` (for example in the build command) so new database changes, such as `products/0005_boxes`, `products/0006_partners`, `products/0007_boxsize_max_flavors` and `sales/0004_sale_current_boxes`, are applied.
+* **Backend:** Render. Every deploy must run `python manage.py migrate` (for example in the build command) so new database changes, such as `products/0005_boxes`, `products/0006_partners`, `products/0007_boxsize_max_flavors`, `products/0008_product_shape` and `sales/0004_sale_current_boxes`, are applied.
 * **Photos:** stored on Cloudinary in production. Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` on Render; without them, photos are saved to the server's disk, which Render wipes on redeploy. Photos must be JPG, PNG or WEBP and under 5 MB.
 * **Database backups:** the live database is on Supabase. Take and check a backup every week and before every deploy with a migration; see [Database backup and restore](docs/BACKUP_AND_RESTORE.md).
 * **Logs:** the backend writes one JSON line per event to stdout (Render's Logs tab), including every sign-in. Each response has an `X-Request-ID` header that matches its log lines.

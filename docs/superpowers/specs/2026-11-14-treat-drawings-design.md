@@ -1,6 +1,6 @@
 # Drawn treats for partner items — design
 
-Date: 14 November 2026 · Branch: `pre-launch-hardening` · Status: approved by the owner on 14 November 2026
+Date: 14 November 2026 · Branch: `pre-launch-hardening` · Status: approved by the owner on 14 November 2026; built on 14 November 2026
 
 ## Why
 
