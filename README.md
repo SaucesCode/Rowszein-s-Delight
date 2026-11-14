@@ -94,7 +94,7 @@ Earlier checkpoint: Phase 1B.3 disposable database verification was completed fo
 
 ## Deployment
 
-* **Frontend:** Vercel, with `frontend` as the root directory. `frontend/vercel.json` sends `/api` to the backend.
+* **Frontend:** Vercel, with `frontend` as the root directory. `frontend/vercel.json` sends `/api` to the backend and sets the security headers, including a Content-Security-Policy that only allows the site's own scripts and photos from Cloudinary. A new outside service (for example an analytics script) must be added to that policy, or the browser will block it.
 * **Backend:** Render. Every deploy must run `python manage.py migrate` (for example in the build command) so new database changes, such as `products/0005_boxes`, are applied.
 * **Photos:** stored on Cloudinary in production. Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` on Render; without them, photos are saved to the server's disk, which Render wipes on redeploy. Photos must be JPG, PNG or WEBP and under 5 MB.
 * **Logs:** the backend writes one JSON line per event to stdout (Render's Logs tab), including every sign-in. Each response has an `X-Request-ID` header that matches its log lines.
