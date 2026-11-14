@@ -12,8 +12,8 @@ from ingredients.models import Ingredient
 from ingredients.serializers import IngredientSerializer
 from products.models import Product
 from recipes.models import Recipe
-from sales.reporting import financial_summary, partner_payouts
-from sales.services import current_items
+from sales.reporting import boxes_summary, financial_summary, partner_payouts
+from sales.services import current_boxes, current_items
 from decimal import Decimal, localcontext
 
 
@@ -66,6 +66,11 @@ class DashboardView(APIView):
                     row = product_mix.setdefault(item['product'], {'product__id': item['product'], 'product__name': item['product_name'], 'total_quantity': 0, 'total_revenue': Decimal('0')})
                     row['total_quantity'] += item['quantity']
                     row['total_revenue'] += Decimal(item['unit_price']) * item['quantity']
+                # Donuts inside boxes count as sold; a box's price isn't split between them.
+                for box in current_boxes(sale):
+                    for content in box['contents']:
+                        row = product_mix.setdefault(content['product'], {'product__id': content['product'], 'product__name': content['product_name'], 'total_quantity': 0, 'total_revenue': Decimal('0')})
+                        row['total_quantity'] += content['quantity']
         best_selling = sorted(product_mix.values(), key=lambda row: (-row['total_quantity'], row['product__id']))[:5]
 
         # --- Monthly chart (filtered year range) ---
@@ -145,6 +150,7 @@ class DashboardView(APIView):
                     for item in best_selling
                 ],
                 'chart_data': chart_data,
+                'boxes': boxes_summary(date_from, date_to),
                 'low_stock': low_stock_data,
                 'refund_status': 'not_tracked',
                 'product_mix_scope': 'current recorded items by original sale date; not posting-date net sales',

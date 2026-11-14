@@ -6,6 +6,7 @@ from django.test import TestCase
 
 from rest_framework.exceptions import ValidationError
 
+from ingredients.models import Ingredient
 from products.models import Assortment, AssortmentItem, BoxSize, Product
 from recipes.models import Recipe, RecipeIngredient
 from sales.box_lines import box_quantities, boxes_total, new_box_line, shop_box_price
@@ -39,6 +40,20 @@ class BoxSalesFixture(PartnerSalesFixture):
         for product, quantity in pairs:
             AssortmentItem.objects.create(assortment=box, product=product, quantity=quantity)
         return box
+
+    def box(self, *pairs, **extra):
+        return {'box_size': self.box_of_12.pk, 'contents': [{'product': p.pk, 'quantity': q} for p, q in pairs], **extra}
+
+    def item(self, product, quantity):
+        return {'product': product.pk, 'quantity': quantity, 'unit_price': str(product.price)}
+
+    def created(self, payload, **kwargs):
+        response = self.post_sale(payload, **kwargs)
+        self.assertEqual(response.status_code, 201, response.data)
+        return response.data['data']
+
+    def ledger(self, sale_id):
+        return sum((e.amount for e in SaleFinancialEntry.objects.filter(sale_id=sale_id)), Decimal('0'))
 
     def post_sale(self, payload, client=None, key=None):
         body = {'date': '2026-11-09', 'notes': '', **payload}
@@ -151,20 +166,6 @@ class BoxLineTests(BoxSalesFixture, TestCase):
 class BoxSaleTests(BoxSalesFixture, TestCase):
     """Fixture stock: flour 20, milk 10. Test donut uses 2 flour + 1 milk; Ube and Choco use 1 flour each."""
 
-    def box(self, *pairs, **extra):
-        return {'box_size': self.box_of_12.pk, 'contents': [{'product': p.pk, 'quantity': q} for p, q in pairs], **extra}
-
-    def item(self, product, quantity):
-        return {'product': product.pk, 'quantity': quantity, 'unit_price': str(product.price)}
-
-    def created(self, payload, **kwargs):
-        response = self.post_sale(payload, **kwargs)
-        self.assertEqual(response.status_code, 201, response.data)
-        return response.data['data']
-
-    def ledger(self, sale_id):
-        return sum((e.amount for e in SaleFinancialEntry.objects.filter(sale_id=sale_id)), Decimal('0'))
-
     def test_box_only_sale_posts_money_and_takes_stock_per_donut(self):
         sale = self.created({'boxes': [self.box((self.product, 4), (self.ube, 4), (self.choco, 4))]})
         self.assertEqual((sale['total_amount'], len(sale['boxes']), sale['boxes'][0]['price']), ('440.00', 1, '440.00'))
@@ -249,3 +250,34 @@ class BoxSaleTests(BoxSalesFixture, TestCase):
         legacy = Sale.objects.create(date=date(2026, 11, 1), total_amount=Decimal('50.00'))
         SaleItem.objects.create(sale=legacy, product=self.product, quantity=1, unit_price=Decimal('50.00'))
         self.assertEqual(self.edit(legacy.pk, {'boxes': [self.box((self.ube, 12))]}).status_code, 409)
+
+
+class BoxReportTests(BoxSalesFixture, TestCase):
+    def test_boxes_summary_counts_recorded_boxes_by_order_date(self):
+        from sales.reporting import boxes_summary
+        Ingredient.objects.filter(pk=self.flour.pk).update(quantity=Decimal('100'))
+        self.created({'boxes': [self.box((self.ube, 6), (self.choco, 6)), self.box((self.choco, 12))]})
+        cancelled = self.created({'boxes': [self.box((self.ube, 12))]})
+        self.assertEqual(self.cancel(cancelled['id']).status_code, 200)
+        self.created({'date': '2026-10-01', 'boxes': [self.box((self.choco, 12))]})
+        self.assertEqual(boxes_summary(date(2026, 11, 1), date(2026, 11, 30)), {'count': 2, 'revenue': '860.00'})
+        data = self.client.get('/api/dashboard/?date_from=2026-11-01&date_to=2026-11-30').data['data']
+        self.assertEqual(data['boxes'], {'count': 2, 'revenue': '860.00'})
+
+    def test_best_sellers_include_donuts_inside_boxes(self):
+        self.created({'sale_items': [self.item(self.ube, 1)], 'boxes': [self.box((self.ube, 6), (self.choco, 6))]})
+        data = self.client.get('/api/dashboard/?date_from=2026-11-01&date_to=2026-11-30').data['data']
+        quantities = {row['product_name']: row['total_quantity'] for row in data['best_selling']}
+        self.assertEqual((quantities['Ube test'], quantities['Choco test']), (7, 6))
+
+    def test_csv_lists_boxes_with_contents(self):
+        self.created({'sale_items': [self.item(self.ube, 2)], 'boxes': [self.box((self.ube, 6), (self.choco, 6))]})
+        response = self.client.get('/api/sales/export/csv/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Ube test x2, Box of 12 (6 Ube test, 6 Choco test)', response.content.decode())
+
+    def test_pdf_uses_current_lines(self):
+        from sales.reporting import describe_sale_lines
+        sale = self.created({'sale_items': [self.item(self.ube, 1)], 'boxes': [self.box((self.choco, 12))]})
+        self.assertEqual(describe_sale_lines(sale), 'Ube test x1, Box of 12 (12 Choco test)')
+        self.assertEqual(self.client.get('/api/sales/export/pdf/').status_code, 200)
