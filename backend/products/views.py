@@ -2,16 +2,17 @@ from accounts.permissions import BusinessPermission, business_role
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.db import transaction
 from django.db.models.deletion import ProtectedError
 
 from rest_framework.views import APIView
 
 from .boxes import assortments_with_items, shop_assortments, shop_box_sizes
-from .models import BoxSize, Category, Product
+from .models import BoxSize, Category, Partner, Product
 from .serializers import CategorySerializer, ProductSerializer
 from .serializers import OperationalCategorySerializer, OperationalProductSerializer
+from .serializers import OperationalPartnerSerializer, PartnerSerializer
 from .serializers import AssortmentSerializer, BoxSizeSerializer, PublicAssortmentSerializer, PublicBoxSizeSerializer
 from accounts.authentication import PublicCatalogAuthentication
 from backend.catalog_listing import CatalogListing
@@ -27,7 +28,8 @@ class CatalogProjection:
         queryset = super().get_queryset()
         if not self.request.user.is_authenticated:
             if queryset.model is Product:
-                return queryset.filter(is_available=True, category__is_active=True)
+                return queryset.filter(Q(partner__isnull=True) | Q(partner__is_active=True),
+                                       is_available=True, category__is_active=True)
             return queryset.filter(is_active=True)
         return queryset
 
@@ -120,7 +122,7 @@ class ProductListCreateView(CatalogListing, CatalogProjection, generics.ListCrea
     permission_classes = [BusinessPermission]
     business_actions = {'GET': 'catalog.public', 'POST': 'catalog.manage', 'OPTIONS': 'catalog.read'}
     serializer_class = ProductSerializer
-    queryset = Product.objects.select_related('category')
+    queryset = Product.objects.select_related('category', 'partner')
     parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get_serializer_context(self):
@@ -155,7 +157,7 @@ class ProductDetailView(CatalogProjection, generics.RetrieveUpdateDestroyAPIView
     permission_classes = [BusinessPermission]
     business_actions = {'GET': 'catalog.read', 'PUT': 'catalog.manage', 'PATCH': 'catalog.manage', 'DELETE': 'catalog.manage', 'OPTIONS': 'catalog.read'}
     serializer_class = ProductSerializer
-    queryset = Product.objects.select_related('category')
+    queryset = Product.objects.select_related('category', 'partner')
     parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get_serializer_context(self):
@@ -299,3 +301,34 @@ class PublicBoxesView(APIView):
             'sizes': PublicBoxSizeSerializer(shop_box_sizes(), many=True).data,
             'assortments': PublicAssortmentSerializer(shop_assortments(), many=True, context={'request': request}).data,
         })
+
+
+# ── Partners ────────────────────────────────────────────────────────────────
+
+class PartnerCatalogView(BoxCatalogView):
+    """Owner manages partners; staff read them without contact details or notes."""
+
+    def get_serializer_class(self):
+        return PartnerSerializer if business_role(self.request.user) == 'admin' else OperationalPartnerSerializer
+
+    def get_queryset(self):
+        return Partner.objects.annotate(product_count=Count('products'))
+
+
+class PartnerListCreateView(PartnerCatalogView, generics.ListCreateAPIView):
+    business_actions = {'GET': 'catalog.read', 'POST': 'catalog.manage', 'OPTIONS': 'catalog.read'}
+    created_message = 'Partner added.'
+
+
+class PartnerDetailView(PartnerCatalogView, generics.RetrieveUpdateDestroyAPIView):
+    business_actions = {'GET': 'catalog.read', 'PUT': 'catalog.manage', 'PATCH': 'catalog.manage', 'DELETE': 'catalog.manage', 'OPTIONS': 'catalog.read'}
+    updated_message = 'Partner saved.'
+
+    @transaction.atomic
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        try:
+            instance.delete()
+        except ProtectedError:
+            return Response({'success': False, 'error': f'{instance.name} has items. Switch the partner off instead.'}, status=status.HTTP_409_CONFLICT)
+        return _ok(None, 'Partner deleted.')

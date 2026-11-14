@@ -36,7 +36,7 @@ class CatalogListing:
     def filter_queryset(self, queryset):
         kind=self.listing_kind
         owner=business_role(self.request.user)=='admin'
-        extra={'products': {'category','is_available','is_featured','category_active'},
+        extra={'products': {'category','is_available','is_featured','category_active','partner'},
             'categories': {'is_active'},'ingredients': {'unit','status'}|({'category'} if owner else set()),'recipes': {'category'}}[kind]
         allowed={'page','page_size','search','ordering','id','format'}|extra
         raw=self.request.query_params
@@ -53,6 +53,9 @@ class CatalogListing:
             else:
                 path='product__category_id' if kind=='recipes' else 'category_id'
                 queryset=queryset.filter(**{path:positive(params['category'])})
+        if 'partner' in params:
+            # "none" lists Rowszein's own items; an id lists that partner's items.
+            queryset=queryset.filter(partner__isnull=True) if params['partner']=='none' else queryset.filter(partner_id=positive(params['partner']))
         for key,path in [('is_available','is_available'),('is_featured','is_featured'),('category_active','category__is_active'),('is_active','is_active')]:
             if key in params:
                 if params[key] not in ['true','false']: invalid()

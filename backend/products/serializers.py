@@ -1,12 +1,42 @@
 from collections import Counter
+from decimal import Decimal
 
 from django.db import transaction
 from rest_framework import serializers
 
 from backend.uploads import validate_photo
+from recipes.models import Recipe
 
 from .boxes import assortment_price, is_complete
-from .models import Assortment, AssortmentItem, BoxSize, Category, Product
+from .models import Assortment, AssortmentItem, BoxSize, Category, Partner, Product
+
+
+class OperationalPartnerSerializer(serializers.ModelSerializer):
+    """What staff and the public may see about a partner: never contact details or notes."""
+
+    class Meta:
+        model = Partner
+        fields = ['id', 'name', 'blurb', 'is_active', 'sort_order']
+        read_only_fields = fields
+
+
+class PartnerSerializer(serializers.ModelSerializer):
+    product_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Partner
+        fields = ['id', 'name', 'blurb', 'contact', 'notes', 'is_active', 'sort_order',
+                  'product_count', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'product_count', 'created_at', 'updated_at']
+
+    def validate_name(self, value):
+        value = value.strip()
+        taken = Partner.objects.filter(name__iexact=value)
+        if self.instance:
+            taken = taken.exclude(pk=self.instance.pk)
+        if taken.exists():
+            raise serializers.ValidationError('A partner with this name already exists.')
+        return value
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -36,6 +66,14 @@ class ProductSerializer(serializers.ModelSerializer):
         source='category',
         write_only=True,
     )
+    partner = OperationalPartnerSerializer(read_only=True)
+    partner_id = serializers.PrimaryKeyRelatedField(
+        queryset=Partner.objects.all(),
+        source='partner',
+        write_only=True,
+        allow_null=True,
+        required=False,
+    )
 
     class Meta:
         model = Product
@@ -51,6 +89,9 @@ class ProductSerializer(serializers.ModelSerializer):
             'is_available',
             'is_featured',
             'box_extra',
+            'partner',
+            'partner_id',
+            'partner_payout',
             'created_at',
             'updated_at',
         ]
@@ -86,6 +127,30 @@ class ProductSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('The extra in a box cannot be negative.')
         return value
 
+    def validate(self, attrs):
+        """Partner items: their price (partner_payout) above 0, patong (price - payout) never below 0."""
+        current = self.instance
+        partner = attrs['partner'] if 'partner' in attrs else getattr(current, 'partner', None)
+        if partner is None and 'partner_payout' not in attrs:
+            attrs['partner_payout'] = Decimal('0.00')
+        payout = attrs.get('partner_payout', getattr(current, 'partner_payout', Decimal('0.00')))
+        price = attrs.get('price', getattr(current, 'price', None))
+        if partner is None:
+            if payout != 0:
+                raise serializers.ValidationError({'partner_payout': 'Only partner items have a partner price.'})
+            return attrs
+        if payout <= 0:
+            raise serializers.ValidationError({'partner_payout': 'Enter their price, above ₱0.'})
+        if price is not None and payout > price:
+            raise serializers.ValidationError({'partner_payout': "Your patong can't be less than ₱0."})
+        attrs['box_extra'] = Decimal('0.00')
+        if current is not None and current.partner_id is None:
+            if Recipe.objects.filter(product=current).exists():
+                raise serializers.ValidationError({'partner_id': "This item has a recipe, so it's made here."})
+            if current.assortment_items.exists():
+                raise serializers.ValidationError({'partner_id': 'This item is in a ready-made box. Take it out first.'})
+        return attrs
+
 
 class OperationalCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -97,10 +162,11 @@ class OperationalCategorySerializer(serializers.ModelSerializer):
 class OperationalProductSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
     category = OperationalCategorySerializer(read_only=True)
+    partner = OperationalPartnerSerializer(read_only=True)
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'price', 'image_url', 'category', 'is_available', 'is_featured', 'box_extra']
+        fields = ['id', 'name', 'description', 'price', 'image_url', 'category', 'is_available', 'is_featured', 'box_extra', 'partner']
         read_only_fields = fields
 
     def get_image_url(self, obj):
