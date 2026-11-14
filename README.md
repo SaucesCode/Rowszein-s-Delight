@@ -144,10 +144,10 @@ This uses a temporary in-memory database and test-only keys, so it never touches
 To run the whole suite on PostgreSQL too, including those 17 tests, start Docker Desktop and run this from the repository root:
 
 ```cmd
-python scripts	est_postgres.py
+python scripts\test_postgres.py
 ```
 
-It creates a throwaway PostgreSQL 17 container with a random name, password and port, runs the tests, and always removes it. Add app names to run only some tests, for example `python scripts	est_postgres.py sales`.
+It creates a throwaway PostgreSQL 17 container with a random name, password and port, runs the tests, and always removes it. Add app names to run only some tests, for example `python scripts\test_postgres.py sales`.
 
 **Automatic checks:** every push and pull request on GitHub runs four checks (`.github/workflows/checks.yml`):
 

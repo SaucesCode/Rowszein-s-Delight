@@ -66,7 +66,7 @@ The original playground and the other Supabase projects remain separate from the
 The normal backend tests use an in-memory SQLite database and skip 17 tests that need real PostgreSQL behaviour: locking, concurrent transactions and full decimal precision. To run everything on PostgreSQL, start Docker Desktop and run this from the repository root:
 
 ```cmd
-python scripts	est_postgres.py
+python scripts\test_postgres.py
 ```
 
 The script:
@@ -77,4 +77,4 @@ The script:
 
 It never uses `rowszein-playground`, `backend/.env` or Supabase.
 
-If Docker isn't running, it says so and exits with code 2. The runner's own tests run with `python scripts	est_test_postgres.py`. The same script runs in the GitHub `backend-postgres` check.
+If Docker isn't running, it says so and exits with code 2. The runner's own tests run with `python scripts\test_test_postgres.py`. The same script runs in the GitHub `backend-postgres` check.
