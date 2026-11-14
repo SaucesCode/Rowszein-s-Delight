@@ -2,13 +2,15 @@ from collections import Counter
 from decimal import Decimal
 
 from django.db import transaction
+from django.utils import timezone
 from rest_framework import serializers
 
+from backend.date_filters import MANILA
 from backend.uploads import validate_photo
 from recipes.models import Recipe
 
 from .boxes import assortment_price, is_complete
-from .models import Assortment, AssortmentItem, BoxSize, Category, Partner, Product
+from .models import Assortment, AssortmentItem, BoxSize, Category, Partner, PartnerPayment, Product
 
 
 class OperationalPartnerSerializer(serializers.ModelSerializer):
@@ -313,3 +315,22 @@ class PublicAssortmentSerializer(serializers.ModelSerializer):
 
     def get_price(self, obj):
         return str(assortment_price(obj))
+
+
+class PartnerPaymentSerializer(serializers.ModelSerializer):
+    recorded_by_name = serializers.CharField(source='recorded_by.username', read_only=True)
+
+    class Meta:
+        model = PartnerPayment
+        fields = ['id', 'date', 'amount', 'note', 'recorded_by_name', 'created_at', 'voided_at', 'void_reason']
+        read_only_fields = ['id', 'recorded_by_name', 'created_at', 'voided_at', 'void_reason']
+
+    def validate_amount(self, value):
+        if value <= 0:
+            raise serializers.ValidationError('Enter an amount above ₱0.')
+        return value
+
+    def validate_date(self, value):
+        if value > timezone.localdate(timezone=MANILA):
+            raise serializers.ValidationError("The payment date can't be in the future.")
+        return value

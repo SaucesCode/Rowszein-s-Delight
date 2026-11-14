@@ -194,3 +194,64 @@ class PartnerExclusionTests(PartnerFixture, TestCase):
         self.assertEqual(response.status_code, 400)
         errors = response.data.get('error', response.data)
         self.assertEqual(messages(errors, 'product'), ['Partner items are made by the partner, so they have no recipe.'])
+
+
+class PartnerPaymentApiTests(PartnerFixture, TestCase):
+    def pay(self, client=None, **fields):
+        payload = {'date': '2026-11-10', 'amount': '100.00', 'note': 'GCash ref 1234'}
+        payload.update(fields)
+        return (client or self.owner).post(f'/api/products/partners/{self.kape.pk}/payments/', payload, format='json')
+
+    def balance(self):
+        rows = self.owner.get('/api/products/partners/payouts/?date_from=2026-11-01&date_to=2026-11-30').data['data']['partners']
+        return next(row for row in rows if row['id'] == self.kape.pk)['still_to_pay']
+
+    def test_owner_records_payment_and_still_to_pay_drops(self):
+        self.assertEqual(self.balance(), '0.00')
+        response = self.pay()
+        self.assertEqual(response.status_code, 201, response.data)
+        self.assertEqual(response.data['data']['recorded_by_name'], 'partner-owner')
+        self.assertEqual(self.balance(), '-100.00')
+        listed = results(self.owner.get(f'/api/products/partners/{self.kape.pk}/payments/'))
+        self.assertEqual([(row['amount'], row['note']) for row in listed], [('100.00', 'GCash ref 1234')])
+
+    def test_staff_cannot_see_or_record_payments(self):
+        self.assertEqual(self.pay(client=self.staff).status_code, 403)
+        self.assertEqual(self.staff.get(f'/api/products/partners/{self.kape.pk}/payments/').status_code, 403)
+        self.assertEqual(self.staff.get('/api/products/partners/payouts/').status_code, 403)
+
+    def test_zero_amount_and_future_date_rejected(self):
+        zero = self.pay(amount='0.00')
+        self.assertEqual(zero.status_code, 400)
+        self.assertEqual(messages(zero.data['error'], 'amount'), ['Enter an amount above ₱0.'])
+        future = self.pay(date='2999-01-01')
+        self.assertEqual(future.status_code, 400)
+        self.assertEqual(messages(future.data['error'], 'date'), ["The payment date can't be in the future."])
+        self.assertFalse(PartnerPayment.objects.exists())
+
+    def test_void_needs_reason_and_happens_once(self):
+        payment_id = self.pay().data['data']['id']
+        url = f'/api/products/partners/{self.kape.pk}/payments/{payment_id}/void/'
+        blank = self.owner.post(url, {'reason': '  '}, format='json')
+        self.assertEqual(blank.status_code, 400)
+        voided = self.owner.post(url, {'reason': 'Typed the wrong amount'}, format='json')
+        self.assertEqual(voided.status_code, 200, voided.data)
+        self.assertEqual(voided.data['data']['void_reason'], 'Typed the wrong amount')
+        self.assertEqual(self.balance(), '0.00')
+        again = self.owner.post(url, {'reason': 'Again'}, format='json')
+        self.assertEqual(again.status_code, 409)
+        self.assertEqual(again.data['error'], 'This payment is already voided.')
+
+    def test_payments_cannot_be_edited_or_deleted(self):
+        payment_id = self.pay().data['data']['id']
+        url = f'/api/products/partners/{self.kape.pk}/payments/{payment_id}/void/'
+        self.assertEqual(self.owner.patch(url, {'amount': '1.00'}, format='json').status_code, 403)
+        self.assertEqual(self.owner.delete(url).status_code, 403)
+        self.assertEqual(PartnerPayment.objects.get().amount, Decimal('100.00'))
+
+    def test_payouts_endpoint_lists_every_partner_with_still_to_pay(self):
+        Partner.objects.create(name='Cake Atelier')
+        data = self.owner.get('/api/products/partners/payouts/?date_from=2026-11-01&date_to=2026-11-30').data['data']
+        self.assertEqual(data['total'], '0.00')
+        self.assertEqual([(row['name'], row['owed'], row['still_to_pay'], row['items']) for row in data['partners']],
+                         [('Cake Atelier', '0.00', '0.00', []), ('Kape Lokal', '0.00', '0.00', [])])
