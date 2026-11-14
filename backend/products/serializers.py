@@ -9,7 +9,8 @@ from backend.date_filters import MANILA
 from backend.uploads import validate_photo
 from recipes.models import Recipe
 
-from .boxes import assortment_price, is_complete
+from .boxes import (assortment_follows_rule, assortment_price, default_max_flavors, flavour_rule_message,
+                    follows_flavour_rule, is_complete)
 from .models import Assortment, AssortmentItem, BoxSize, Category, Partner, PartnerPayment, Product
 
 
@@ -179,8 +180,18 @@ class OperationalProductSerializer(serializers.ModelSerializer):
 class BoxSizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = BoxSize
-        fields = ['id', 'size', 'price', 'is_available', 'created_at', 'updated_at']
+        fields = ['id', 'size', 'price', 'is_available', 'max_flavors', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
+        extra_kwargs = {'max_flavors': {'required': False}}
+
+    def validate(self, attrs):
+        size = attrs.get('size', getattr(self.instance, 'size', None))
+        limit = attrs.get('max_flavors', getattr(self.instance, 'max_flavors', None))
+        if limit is None and size:
+            attrs['max_flavors'] = limit = default_max_flavors(size)
+        if size and not 1 <= limit <= min(size, 12):
+            raise serializers.ValidationError({'max_flavors': f'Choose 1 to {min(size, 12)} flavours.'})
+        return attrs
 
     def validate_price(self, value):
         if value <= 0:
@@ -222,17 +233,21 @@ class AssortmentSerializer(serializers.ModelSerializer):
     contents = AssortmentItemInputSerializer(many=True, write_only=True, required=False)
     price = serializers.SerializerMethodField()
     is_complete = serializers.SerializerMethodField()
+    follows_rule = serializers.SerializerMethodField()
 
     class Meta:
         model = Assortment
         fields = [
             'id', 'name', 'description', 'box_size', 'box_size_id', 'items', 'contents',
-            'price', 'is_complete', 'is_available', 'sort_order', 'created_at', 'updated_at',
+            'price', 'is_complete', 'follows_rule', 'is_available', 'sort_order', 'created_at', 'updated_at',
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
     def get_price(self, obj):
         return str(assortment_price(obj))
+
+    def get_follows_rule(self, obj):
+        return assortment_follows_rule(obj)
 
     def get_is_complete(self, obj):
         return is_complete(obj)
@@ -267,6 +282,8 @@ class AssortmentSerializer(serializers.ModelSerializer):
             else:
                 message = f'Take out {-missing} to fit the box of {box_size.size}.'
             raise serializers.ValidationError({'contents': message})
+        if box_size and not follows_flavour_rule(box_size.size, box_size.max_flavors, [entry['quantity'] for entry in contents]):
+            raise serializers.ValidationError({'contents': flavour_rule_message(box_size.size, box_size.max_flavors)})
         return attrs
 
     @transaction.atomic
@@ -298,7 +315,7 @@ class AssortmentSerializer(serializers.ModelSerializer):
 class PublicBoxSizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = BoxSize
-        fields = ['id', 'size', 'price']
+        fields = ['id', 'size', 'price', 'max_flavors']
         read_only_fields = fields
 
 

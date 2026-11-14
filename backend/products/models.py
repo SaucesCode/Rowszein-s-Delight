@@ -89,12 +89,15 @@ class BoxSize(models.Model):
     size = models.PositiveSmallIntegerField(unique=True, validators=[MinValueValidator(2), MaxValueValidator(48)])
     price = models.DecimalField(max_digits=10, decimal_places=2)
     is_available = models.BooleanField(default=True)
+    # The most different donuts one box may hold; a box always fills evenly between them.
+    max_flavors = models.PositiveSmallIntegerField(default=2)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['size']
         constraints = [
+            models.CheckConstraint(condition=models.Q(max_flavors__gte=1, max_flavors__lte=12), name='box_size_max_flavors_range'),
             models.CheckConstraint(condition=models.Q(price__gt=0), name='box_size_price_positive'),
             models.CheckConstraint(condition=models.Q(size__gte=2, size__lte=48), name='box_size_range'),
         ]

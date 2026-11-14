@@ -83,9 +83,9 @@ class AssortmentRuleTests(BoxFixture, TestCase):
         self.assertFalse(Assortment.objects.exists())
 
     def test_price_is_box_price_plus_premium_extras(self):
-        response = self.post((self.glazed, 5), (self.ube, 3))
+        response = self.post((self.glazed, 4), (self.ube, 4))
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(Decimal(response.data['data']['price']), Decimal('310.00'))
+        self.assertEqual(Decimal(response.data['data']['price']), Decimal('320.00'))
         self.assertTrue(response.data['data']['is_complete'])
 
     def test_the_same_donut_cannot_be_listed_twice(self):
@@ -118,21 +118,21 @@ class PublicBoxesTests(BoxFixture, TestCase):
         return response.data['data']
 
     def test_shop_lists_sizes_on_sale_and_complete_ready_made_boxes(self):
-        self.assortment([(self.glazed, 5), (self.ube, 3)])
+        self.assortment([(self.glazed, 4), (self.ube, 4)])
         BoxSize.objects.create(size=24, price='750', is_available=False)
         data = self.shop()
         self.assertEqual([size['size'] for size in data['sizes']], [8])
         self.assertEqual(len(data['assortments']), 1)
-        self.assertEqual(Decimal(data['assortments'][0]['price']), Decimal('310.00'))
+        self.assertEqual(Decimal(data['assortments'][0]['price']), Decimal('320.00'))
 
     def test_box_with_a_donut_off_sale_is_hidden(self):
-        self.assortment([(self.glazed, 5), (self.ube, 3)])
+        self.assortment([(self.glazed, 4), (self.ube, 4)])
         self.ube.is_available = False
         self.ube.save()
         self.assertEqual(self.shop()['assortments'], [])
 
     def test_box_left_short_by_a_deleted_donut_is_hidden(self):
-        self.assortment([(self.glazed, 5), (self.ube, 3)])
+        self.assortment([(self.glazed, 4), (self.ube, 4)])
         self.ube.delete()
         self.assertEqual(self.shop()['assortments'], [])
 
