@@ -52,6 +52,7 @@ LOCAL_APPS = [
     "expenses",
     "sales",
     "dashboard",
+    "shop",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -315,6 +316,7 @@ LOGGING = {
     },
     "loggers": {
         "accounts.security": {"level": "INFO", "filters": ["request_id"]},
+        "shop.settings": {"level": "INFO", "filters": ["request_id"]},
         "django.request": {"level": "WARNING", "filters": ["request_id"]},
         "django.security": {"level": "WARNING", "filters": ["request_id"]},
     },

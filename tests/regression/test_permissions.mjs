@@ -29,6 +29,10 @@ const tests=[
   ['unmapped private routes fail closed for both roles',()=>{
     for(const user of [staff,owner]) for(const path of ['/users','/sales/export','/sales/abc/edit','/new-private-module']) assert.equal(canVisit(user,path),false);
   }],
+  ['only the owner manages shop settings',()=>{
+    assert.equal(can(owner,'shop.manage'),true);assert.equal(can(staff,'shop.manage'),false);
+    assert.equal(canVisit(owner,'/settings'),true);assert.equal(canVisit(owner,'/settings/'),true);assert.equal(canVisit(staff,'/settings'),false);
+  }],
   ['post-login homes follow role',()=>{
     assert.equal(homeFor(owner),'/home');assert.equal(homeFor(staff),'/sales');assert.equal(homeFor({role:'unknown'}),'/login');
   }],
