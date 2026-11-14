@@ -1,4 +1,5 @@
 import type { PartnerSummary } from "./partner.types";
+import type { Shape } from "@/lib/treatShape";
 
 export interface Category {
   id: number;
@@ -27,6 +28,8 @@ export interface Product {
   partner?: PartnerSummary | null;
   /** Owner only: "their price", what the partner is paid per item. Patong = price - partner_payout. */
   partner_payout?: string;
+  /** How the shop draws it without a photo; always "donut" for Rowszein's own items. */
+  shape?: Shape;
   /**
    * Optional, forward-compatible fields. Not yet returned by the API —
    * see the Products page notes for what each needs on the backend.
@@ -48,5 +51,6 @@ export interface ProductPayload {
   box_extra?: number;
   partner_id?: number | null;
   partner_payout?: number;
+  shape?: Shape;
   image?: File | null;
 }
