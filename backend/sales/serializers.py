@@ -1,6 +1,8 @@
+from decimal import Decimal
+
 from rest_framework import serializers
 from .models import Sale, SaleItem
-from products.models import Product
+from products.models import Assortment, BoxSize, Product
 
 
 class SaleItemSerializer(serializers.ModelSerializer):
@@ -35,8 +37,34 @@ class SaleItemSerializer(serializers.ModelSerializer):
         return value
 
 
+class BoxContentInputSerializer(serializers.Serializer):
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+    quantity = serializers.IntegerField(min_value=1, max_value=48)
+
+
+class SaleBoxInputSerializer(serializers.Serializer):
+    """One box on a sale: keep a saved box by key, or add a filled size or a ready-made box."""
+    key = serializers.CharField(max_length=64, required=False)
+    box_size = serializers.PrimaryKeyRelatedField(queryset=BoxSize.objects.all(), required=False)
+    assortment = serializers.PrimaryKeyRelatedField(queryset=Assortment.objects.select_related('box_size'), required=False)
+    contents = BoxContentInputSerializer(many=True, required=False, max_length=12)
+    price = serializers.DecimalField(max_digits=10, decimal_places=2, min_value=Decimal('0.01'), required=False)
+
+    def validate(self, attrs):
+        if sum(name in attrs for name in ('key', 'box_size', 'assortment')) != 1:
+            raise serializers.ValidationError('Choose a box size or a ready-made box.')
+        if 'contents' in attrs and 'box_size' not in attrs:
+            raise serializers.ValidationError('Only a box size takes contents.')
+        if 'box_size' in attrs and not attrs.get('contents'):
+            raise serializers.ValidationError('Choose the flavours for this box.')
+        if 'key' in attrs and 'price' in attrs:
+            raise serializers.ValidationError('A saved box keeps its price.')
+        return attrs
+
+
 class SaleSerializer(serializers.ModelSerializer):
-    sale_items = SaleItemSerializer(many=True)
+    sale_items = SaleItemSerializer(many=True, required=False)
+    boxes = SaleBoxInputSerializer(many=True, required=False, max_length=50)
     total_amount = serializers.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -50,16 +78,19 @@ class SaleSerializer(serializers.ModelSerializer):
             'date',
             'notes',
             'sale_items',
+            'boxes',
             'total_amount',
             'created_at',
             'updated_at',
         ]
         read_only_fields = ['id', 'total_amount', 'created_at', 'updated_at']
 
-    def validate_sale_items(self, value):
-        if not value:
-            raise serializers.ValidationError('A sale must have at least one item.')
+    def validate(self, attrs):
+        if not self.partial and not attrs.get('sale_items') and not attrs.get('boxes'):
+            raise serializers.ValidationError('Add at least one item or box.')
+        return attrs
 
+    def validate_sale_items(self, value):
         product_ids = [item['product'].id for item in value]
         if len(product_ids) != len(set(product_ids)):
             raise serializers.ValidationError('Duplicate products are not allowed.')

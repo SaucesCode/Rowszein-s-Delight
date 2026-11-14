@@ -24,6 +24,8 @@ class Sale(models.Model):
     # Original SaleItem rows and total_amount are preserved. This is a current
     # projection; every committed version is retained in InventoryOperation.
     current_items = models.JSONField(null=True, blank=True, default=None)
+    # Box lines as sold: name, size, price and contents, fixed when recorded.
+    current_boxes = models.JSONField(null=True, blank=True, default=None)
     cancellation_operation = models.OneToOneField('InventoryOperation', null=True, blank=True, default=None, on_delete=models.PROTECT, related_name='cancelled_sale')
 
     class Meta:
