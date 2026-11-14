@@ -231,3 +231,6 @@ a.menu-line-main:hover .menu-line-name { color: var(--color-accent-pressed); }
 @media (max-width: 359px) {
   .menu-count { display: none; }
 }
+
+/* "Made by" choice on the item form. */
+.settings-select { max-width: 20rem; }

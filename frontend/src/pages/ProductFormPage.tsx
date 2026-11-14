@@ -5,26 +5,43 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Copy, ImagePlus, Star, Trash2 } from "lucide-react";
 import { useCategories, useCreateProduct, useDeleteProduct, useProduct, useUpdateProduct } from "@/hooks/useProducts";
+import { usePartners } from "@/hooks/usePartners";
+import { apiFieldErrors } from "@/lib/csrfTransport";
 import { validRecordId } from "@/lib/managementQueryKeys";
 import { flavorOf, flavorTint } from "@/lib/flavor";
 import type { Category, Product } from "@/types/product.types";
+import type { Partner } from "@/types/partner.types";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import RecordLoadError from "@/components/RecordLoadError";
 import DonutArt from "@/components/DonutArt";
 import Switch from "@/components/ui/Switch";
 import Row from "@/components/ui/SettingsRow";
 import { formatPeso } from "@/pages/dashboard/report-format";
+import { joinPartnerPrice, splitPartnerPrice } from "./products/partnerPricing";
 import "./products/products.css";
 
-const productSchema = z.object({
-  name: z.string().trim().min(1, "Give the donut a name"),
-  description: z.string().optional(),
-  price: z.number({ error: "Enter a price, like 45" }).min(0.01, "The price must be more than ₱0"),
-  category_id: z.number().min(1, "Choose a category"),
-  is_available: z.boolean(),
-  is_featured: z.boolean(),
-  box_extra: z.number({ error: "Enter an amount, like 10, or 0" }).min(0, "The extra can't be below ₱0"),
-});
+const productSchema = z
+  .object({
+    name: z.string().trim().min(1, "Give the item a name"),
+    description: z.string().optional(),
+    price: z.number({ error: "Enter a price, like 45" }),
+    category_id: z.number().min(1, "Choose a category"),
+    is_available: z.boolean(),
+    is_featured: z.boolean(),
+    box_extra: z.number({ error: "Enter an amount, like 10, or 0" }).min(0, "The extra can't be below ₱0"),
+    /** 0 means made by Rowszein's Delight. */
+    partner_id: z.number(),
+    their_price: z.number({ error: "Enter their price, like 50" }),
+    patong: z.number({ error: "Enter your patong, or 0" }),
+  })
+  .superRefine((data, ctx) => {
+    if (!data.partner_id) {
+      if (!(data.price > 0)) ctx.addIssue({ code: "custom", path: ["price"], message: "The price must be more than ₱0" });
+      return;
+    }
+    if (!(data.their_price > 0)) ctx.addIssue({ code: "custom", path: ["their_price"], message: "Enter their price, above ₱0" });
+    if (!(data.patong >= 0)) ctx.addIssue({ code: "custom", path: ["patong"], message: "Your patong can't be less than ₱0" });
+  });
 
 type ProductForm = z.infer<typeof productSchema>;
 
@@ -38,7 +55,11 @@ interface DuplicateState {
 const PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const PHOTO_MAX_MB = 5;
 
-function DonutForm({ product, duplicate }: { product?: Product; duplicate?: DuplicateState }) {
+function DonutForm({ product, duplicate, initialPartner = 0 }: {
+  product?: Product;
+  duplicate?: DuplicateState;
+  initialPartner?: number;
+}) {
   const navigate = useNavigate();
   const id = useId();
   const field = (name: string) => `${id}-${name}`;
@@ -49,6 +70,8 @@ function DonutForm({ product, duplicate }: { product?: Product; duplicate?: Dupl
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct(product?.id ?? 0);
   const deleteProduct = useDeleteProduct();
+  const partnersQuery = usePartners();
+  const savedSplit = product?.partner ? splitPartnerPrice(product.price, product.partner_payout ?? 0) : { their: 0, patong: 0 };
 
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(product?.image_url ?? null);
@@ -60,6 +83,7 @@ function DonutForm({ product, duplicate }: { product?: Product; duplicate?: Dupl
     handleSubmit,
     control,
     setValue,
+    setError,
     formState: { errors, isDirty },
   } = useForm<ProductForm>({
     resolver: zodResolver(productSchema),
@@ -72,6 +96,9 @@ function DonutForm({ product, duplicate }: { product?: Product; duplicate?: Dupl
           is_available: product.is_available,
           is_featured: product.is_featured,
           box_extra: Number(product.box_extra ?? 0),
+          partner_id: product.partner?.id ?? 0,
+          their_price: savedSplit.their,
+          patong: savedSplit.patong,
         }
       : {
           name: duplicate?.name ?? "",
@@ -81,13 +108,23 @@ function DonutForm({ product, duplicate }: { product?: Product; duplicate?: Dupl
           is_available: true,
           is_featured: false,
           box_extra: 0,
+          partner_id: initialPartner,
+          their_price: 0,
+          patong: 0,
         },
   });
 
-  const [name, description, price, categoryId, isAvailable, isFeatured] = useWatch({
+  const [name, description, ownPrice, categoryId, isAvailable, isFeatured, partnerId, theirPrice, patong] = useWatch({
     control,
-    name: ["name", "description", "price", "category_id", "is_available", "is_featured"],
+    name: ["name", "description", "price", "category_id", "is_available", "is_featured", "partner_id", "their_price", "patong"],
   });
+  const isPartnerItem = partnerId > 0;
+  const price = isPartnerItem ? joinPartnerPrice(theirPrice || 0, patong || 0) : ownPrice;
+  // Active partners, plus this item's own partner even if it has been switched off.
+  const partnerChoices = ((partnersQuery.data ?? []) as Partner[]).filter(
+    partner => partner.is_active || partner.id === product?.partner?.id,
+  );
+  const partnerName = partnerChoices.find(partner => partner.id === partnerId)?.name;
   const categoryName = categories.find(category => category.id === categoryId)?.name;
   const flavor = flavorOf(name, categoryName);
 
@@ -118,10 +155,28 @@ function DonutForm({ product, duplicate }: { product?: Product; duplicate?: Dupl
     setPhotoPreview(URL.createObjectURL(file));
   };
 
-  const onSubmit = (data: ProductForm) => {
-    const payload = { ...data, name: data.name.trim(), image: photoFile };
-    if (product) updateProduct.mutate(payload);
-    else createProduct.mutate(payload);
+  const onSubmit = ({ their_price, patong: ownerPatong, partner_id, ...data }: ProductForm) => {
+    const partnered = partner_id > 0;
+    const payload = {
+      ...data,
+      name: data.name.trim(),
+      image: photoFile,
+      price: partnered ? joinPartnerPrice(their_price, ownerPatong) : data.price,
+      box_extra: partnered ? 0 : data.box_extra,
+      partner_id: partnered ? partner_id : null,
+      partner_payout: partnered ? their_price : 0,
+    };
+    const showFieldErrors = (error: unknown) => {
+      const fields = apiFieldErrors(error) ?? {};
+      if (fields.name) setError("name", { message: fields.name });
+      if (fields.price) setError(partnered ? "patong" : "price", { message: fields.price });
+      if (fields.partner_id) setError("partner_id", { message: fields.partner_id });
+      if (fields.partner_payout) {
+        setError(fields.partner_payout.includes("patong") ? "patong" : "their_price", { message: fields.partner_payout });
+      }
+    };
+    if (product) updateProduct.mutate(payload, { onError: showFieldErrors });
+    else createProduct.mutate(payload, { onError: showFieldErrors });
   };
 
   const makeCopy = () =>
@@ -144,7 +199,7 @@ function DonutForm({ product, duplicate }: { product?: Product; duplicate?: Dupl
       <form className="settings-form" onSubmit={handleSubmit(onSubmit)} noValidate>
         <header className="page-head">
           <div>
-            <h1 className="type-page">{product ? product.name : "Add a donut"}</h1>
+            <h1 className="type-page">{product ? product.name : isPartnerItem ? "Add a partner item" : "Add a donut"}</h1>
             <p className="page-lede">
               {product ? "Changes show in the online shop as soon as you save." : "Fill in the basics. You can change any of it later."}
             </p>
@@ -177,7 +232,7 @@ function DonutForm({ product, duplicate }: { product?: Product; duplicate?: Dupl
         </div>
 
         <section className="settings-group" aria-labelledby={field("about")}>
-          <h2 id={field("about")} className="settings-group-title">About the donut</h2>
+          <h2 id={field("about")} className="settings-group-title">{isPartnerItem ? "About the item" : "About the donut"}</h2>
           <div className="settings-card">
             <Row label="Name" htmlFor={field("name")} error={errors.name?.message}>
               <input
@@ -239,22 +294,92 @@ function DonutForm({ product, duplicate }: { product?: Product; duplicate?: Dupl
         <section className="settings-group" aria-labelledby={field("selling")}>
           <h2 id={field("selling")} className="settings-group-title">Selling</h2>
           <div className="settings-card">
-            <Row label="Price per piece" htmlFor={field("price")} error={errors.price?.message}>
-              <div className="settings-unit-input is-prefix settings-price">
-                <span aria-hidden="true">₱</span>
-                <input
-                  id={field("price")}
-                  type="number"
-                  inputMode="decimal"
-                  step="0.01"
-                  min="0.01"
-                  className="field-input num"
-                  aria-invalid={!!errors.price}
-                  aria-describedby={errors.price ? `${field("price")}-msg` : undefined}
-                  {...register("price", { valueAsNumber: true })}
-                />
-              </div>
-            </Row>
+            {(partnerChoices.length > 0 || isPartnerItem) && (
+              <Row
+                label="Made by"
+                htmlFor={field("partner")}
+                error={errors.partner_id?.message}
+                hint={isPartnerItem ? "A collab partner's item: sold one at a time, never in boxes." : undefined}
+              >
+                <select
+                  id={field("partner")}
+                  className="field-input settings-select"
+                  value={partnerId}
+                  aria-invalid={!!errors.partner_id}
+                  aria-describedby={`${field("partner")}-msg`}
+                  onChange={event => setValue("partner_id", Number(event.target.value), { shouldDirty: true, shouldValidate: true })}
+                >
+                  <option value={0}>Rowszein's Delight</option>
+                  {partnerChoices.map(partner => (
+                    <option key={partner.id} value={partner.id}>{partner.name}</option>
+                  ))}
+                </select>
+              </Row>
+            )}
+            {isPartnerItem ? (
+              <>
+                <Row
+                  label="Their price"
+                  htmlFor={field("their-price")}
+                  error={errors.their_price?.message}
+                  hint={`What you pay ${partnerName ?? "the partner"} for each one sold.`}
+                >
+                  <div className="settings-unit-input is-prefix settings-price">
+                    <span aria-hidden="true">₱</span>
+                    <input
+                      id={field("their-price")}
+                      type="number"
+                      inputMode="decimal"
+                      step="0.01"
+                      min="0.01"
+                      className="field-input num"
+                      aria-invalid={!!errors.their_price}
+                      aria-describedby={`${field("their-price")}-msg`}
+                      {...register("their_price", { valueAsNumber: true })}
+                    />
+                  </div>
+                </Row>
+                <Row
+                  label="Your patong"
+                  htmlFor={field("patong")}
+                  error={errors.patong?.message}
+                  hint={`Your charge on top. Sells for ${priceText} in the shop.`}
+                >
+                  <div className="settings-unit-input is-prefix settings-price">
+                    <span aria-hidden="true">₱</span>
+                    <input
+                      id={field("patong")}
+                      type="number"
+                      inputMode="decimal"
+                      step="0.01"
+                      min="0"
+                      className="field-input num"
+                      aria-invalid={!!errors.patong}
+                      aria-describedby={`${field("patong")}-msg`}
+                      {...register("patong", { valueAsNumber: true })}
+                    />
+                  </div>
+                </Row>
+              </>
+            ) : (
+              <Row label="Price per piece" htmlFor={field("price")} error={errors.price?.message}>
+                <div className="settings-unit-input is-prefix settings-price">
+                  <span aria-hidden="true">₱</span>
+                  <input
+                    id={field("price")}
+                    type="number"
+                    inputMode="decimal"
+                    step="0.01"
+                    min="0.01"
+                    className="field-input num"
+                    aria-invalid={!!errors.price}
+                    aria-describedby={errors.price ? `${field("price")}-msg` : undefined}
+                    {...register("price", { valueAsNumber: true })}
+                  />
+                </div>
+              </Row>
+            )}
+            {!isPartnerItem && (
             <Row
               label="Extra when in a box"
               htmlFor={field("box-extra")}
@@ -276,6 +401,7 @@ function DonutForm({ product, duplicate }: { product?: Product; duplicate?: Dupl
                 />
               </div>
             </Row>
+            )}
             <Row label="In the shop">
               <div className="settings-switch-row">
                 <Switch
@@ -374,7 +500,10 @@ export default function ProductFormPage() {
   const productQuery = useProduct(isEdit ? recordId : 0);
   const duplicate = isEdit ? undefined : (location.state as { duplicate?: DuplicateState } | null)?.duplicate;
 
-  if (!isEdit) return <DonutForm key={location.key} duplicate={duplicate} />;
+  if (!isEdit) {
+    const partnerParam = Number(new URLSearchParams(location.search).get("partner"));
+    return <DonutForm key={location.key} duplicate={duplicate} initialPartner={validRecordId(partnerParam) ? partnerParam : 0} />;
+  }
 
   const back = () => navigate("/products");
   if (!validRecordId(recordId)) {
