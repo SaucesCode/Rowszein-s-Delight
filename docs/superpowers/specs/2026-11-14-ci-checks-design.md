@@ -63,7 +63,7 @@ The 17 backend tests that need a real PostgreSQL database have been skipped sinc
    - Generate the database name `rowszein_phase1a_<32 random hex>` and a random password.
    - Choose a free loopback port.
    - `docker run -d --rm` a container named `rowszein-test-<hex>`:
-     - image `postgres:16-alpine` (the local playground uses Postgres 16);
+     - image `postgres:17-alpine` (the local playground uses Postgres 17);
      - `POSTGRES_PASSWORD` and `POSTGRES_DB` set to the generated values;
      - published on `127.0.0.1:<port>`.
 2. **Wait up to 60 seconds** for `pg_isready` inside the container.
