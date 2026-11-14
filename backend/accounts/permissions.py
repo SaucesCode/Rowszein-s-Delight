@@ -5,7 +5,7 @@ from rest_framework.permissions import BasePermission
 
 STAFF = frozenset({'self.read', 'catalog.read', 'stock.read', 'sales.read', 'sales.create'})
 OWNER = STAFF | frozenset({'catalog.manage', 'stock.manage', 'stock.adjust', 'recipes.manage',
-    'sales.update', 'sales.cancel', 'sales.export', 'finance.read', 'expenses.manage'})
+    'sales.update', 'sales.cancel', 'sales.export', 'finance.read', 'expenses.manage', 'partners.pay'})
 ROLE_CAPABILITIES = {'staff': STAFF, 'admin': OWNER}
 COMMAND_CAPABILITIES = {'sale_create':'sales.create', 'sale_update':'sales.update',
     'sale_cancel':'sales.cancel', 'stock_adjust':'stock.adjust'}

@@ -1,6 +1,6 @@
 type Identity = { role: string } | null | undefined;
 const STAFF = new Set(["self.read", "catalog.read", "stock.read", "sales.read", "sales.create"]);
-const OWNER = new Set([...STAFF, "catalog.manage", "stock.manage", "stock.adjust", "recipes.manage", "sales.update", "sales.cancel", "sales.export", "finance.read", "expenses.manage"]);
+const OWNER = new Set([...STAFF, "catalog.manage", "stock.manage", "stock.adjust", "recipes.manage", "sales.update", "sales.cancel", "sales.export", "finance.read", "expenses.manage", "partners.pay"]);
 
 export function can(user: Identity, capability: string): boolean {
   return (user?.role === "admin" ? OWNER : user?.role === "staff" ? STAFF : new Set()).has(capability);
