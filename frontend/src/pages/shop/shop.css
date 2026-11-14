@@ -1563,6 +1563,7 @@ html:has(.box-sheet[open]) { overflow: hidden; }
 }
 .shop.has-box .shop-notice,
 .shop.has-filling .shop-notice { display: none; }
+.shop:not(.has-box):not(.has-filling):has(> .shop-notice) { padding-bottom: var(--notice-space, 0px); }
 .shop-notice-inner {
   display: flex;
   align-items: flex-start;
@@ -1572,7 +1573,7 @@ html:has(.box-sheet[open]) { overflow: hidden; }
   padding: var(--space-3) var(--space-2) var(--space-3) var(--space-4);
   border-radius: var(--radius-card);
   background: var(--color-surface);
-  box-shadow: var(--shadow-card), 0 12px 32px rgb(59 31 43 / 0.12);
+  box-shadow: var(--shadow-card);
   border-left: 4px solid var(--color-gilt-ink);
   pointer-events: auto;
 }

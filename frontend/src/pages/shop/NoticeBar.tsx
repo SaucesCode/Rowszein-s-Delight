@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Info, PauseCircle, X } from "lucide-react";
 
 const DISMISSED_KEY = "rowszein-notice-dismissed";
@@ -19,7 +19,25 @@ function wasDismissed(text: string): boolean {
 export default function NoticeBar({ notice, paused }: { notice: string; paused: string | null }) {
   const text = [paused, notice].filter(Boolean).join(" ");
   const [dismissed, setDismissed] = useState(() => wasDismissed(text));
-  if (!text || dismissed) return null;
+  const stripRef = useRef<HTMLElement>(null);
+  const showing = !!text && !dismissed;
+
+  // The page keeps room at the bottom for the strip, so the footer is never stuck underneath it.
+  useEffect(() => {
+    const strip = stripRef.current;
+    const root = document.documentElement;
+    if (!showing || !strip) return;
+    const reserve = () => root.style.setProperty("--notice-space", `${strip.offsetHeight}px`);
+    reserve();
+    const observer = new ResizeObserver(reserve);
+    observer.observe(strip);
+    return () => {
+      observer.disconnect();
+      root.style.removeProperty("--notice-space");
+    };
+  }, [showing]);
+
+  if (!showing) return null;
 
   const dismiss = () => {
     setDismissed(true);
@@ -31,7 +49,7 @@ export default function NoticeBar({ notice, paused }: { notice: string; paused: 
   };
 
   return (
-    <aside className={`shop-notice${paused ? " is-paused" : ""}`} aria-label="Shop notice">
+    <aside ref={stripRef} className={`shop-notice${paused ? " is-paused" : ""}`} aria-label="Shop notice">
       <div className="shop-notice-inner">
         {paused ? <PauseCircle size={20} aria-hidden="true" /> : <Info size={20} aria-hidden="true" />}
         <div className="shop-notice-text">

@@ -36,12 +36,24 @@ function ShopSettingsForm({ settings }: { settings: ManagedShopSettings }) {
     error: key => errors[key],
     fid: key => `${id}-${key.replace(/[^a-z0-9_-]/gi, "-")}`,
   };
-  const set = <K extends keyof Draft>(key: K, value: Draft[K]) => setDraft(current => ({ ...current, [key]: value }));
+  const set = <K extends keyof Draft>(key: K, value: Draft[K]) => {
+    const before = draft[key];
+    if (Array.isArray(value) && Array.isArray(before) && value.length !== before.length) {
+      setErrors(current => Object.fromEntries(Object.entries(current).filter(([name]) => name !== key && !name.startsWith(`${key}.`))));
+    }
+    setDraft(current => ({ ...current, [key]: value }));
+  };
+  const conflictRef = useRef<HTMLDivElement>(null);
 
   const dirty = isDirty(draft, saved);
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) => dirty && !save.isPending && currentLocation.pathname !== nextLocation.pathname,
   );
+
+  // A refused save because of a newer version: bring the owner to the explanation, wherever they pressed Save.
+  useEffect(() => {
+    if (conflict) conflictRef.current?.focus();
+  }, [conflict]);
 
   // After a refused save, take the owner to the first field that needs fixing.
   useEffect(() => {
@@ -66,6 +78,7 @@ function ShopSettingsForm({ settings }: { settings: ManagedShopSettings }) {
       onError: error => {
         if (isAxiosError(error) && error.response?.status === 409) {
           setConflict(error.response.data?.data ?? null);
+          toast.error("Not saved: these settings were changed somewhere else.");
           return;
         }
         const found = apiFieldErrors(error);
@@ -89,7 +102,7 @@ function ShopSettingsForm({ settings }: { settings: ManagedShopSettings }) {
         </header>
 
         {conflict && (
-          <div role="alert" className="settings-conflict">
+          <div ref={conflictRef} tabIndex={-1} role="alert" className="settings-conflict">
             <p>These settings were changed in another tab or by someone else. Your edits are still here, but saving them would undo those changes.</p>
             <button type="button" className="btn-secondary" onClick={() => adopt(conflict)}>Reload their version</button>
           </div>
@@ -250,7 +263,11 @@ function ShopSettingsForm({ settings }: { settings: ManagedShopSettings }) {
         </section>
 
         <footer className="settings-actions">
-          <button type="button" className="btn-ghost" disabled={!dirty || save.isPending} onClick={() => setDraft(saved)}>
+          <button type="button" className="btn-ghost" disabled={!dirty || save.isPending} onClick={() => {
+              setDraft(saved);
+              setErrors({});
+            }}
+          >
             Undo changes
           </button>
           <button type="submit" className="btn-primary" disabled={save.isPending || !dirty} aria-busy={save.isPending}>

@@ -9,8 +9,10 @@ from .models import PAYMENT_METHODS, DayOff, DeliveryHours, DeliveryTown, ShopSe
 
 MESSENGER_LINK = RegexValidator(r'^https://(m\.me|www\.messenger\.com)/[^\s<>"]+$',
                                 'Use your Messenger link, like https://m.me/rowszeinsdelight.')
-FACEBOOK_LINK = RegexValidator(r'^https://((www|m)\.facebook\.com|fb\.com)/[^\s<>"]+$',
+FACEBOOK_LINK = RegexValidator(r'^https://(((www|m|web)\.)?facebook\.com|fb\.com)/[^\s<>"]+$',
                                'Use your Facebook page link, like https://www.facebook.com/rowszeinsdelight.')
+# A plain address only: no quoted parts, markup, or ?/& that would add headers to a mailto: link.
+PLAIN_EMAIL = RegexValidator(r'^[^\s"<>?&]+@[^\s"<>?&]+$', 'Enter an email address like hello@rowszeinsdelight.com.')
 PHONE = RegexValidator(r'^[+0-9()\-\s]{7,20}$', 'Enter a phone number like 0917 123 4567.')
 PLAIN_TEXT = RegexValidator(r'^[^<>]*$', "Leave out the < and > characters.")
 TIME_FORMAT = '%H:%M'
@@ -62,7 +64,7 @@ class ShopSettingsInputSerializer(serializers.Serializer):
     revision = serializers.IntegerField(min_value=1)
     messenger_url = serializers.CharField(max_length=200, validators=[MESSENGER_LINK])
     facebook_url = serializers.CharField(max_length=200, allow_blank=True, validators=[FACEBOOK_LINK])
-    email = serializers.EmailField(allow_blank=True)
+    email = serializers.EmailField(allow_blank=True, max_length=254, validators=[PLAIN_EMAIL])
     phone = serializers.CharField(max_length=20, allow_blank=True, validators=[PHONE])
     notice = _text(160)
     orders_paused = serializers.BooleanField()

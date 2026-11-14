@@ -108,6 +108,21 @@ class ShopSettingsApiTests(TestCase):
         ok = self.put(self.body(facebook_url='https://www.facebook.com/rowszeinsdelight', email='', phone='0917 123 4567'))
         self.assertEqual(ok.status_code, 200, ok.content)
 
+    def test_email_rejects_markup_mail_headers_and_overlong(self):
+        for bad in ('"<script>alert(1)</script>"@example.com', '"?bcc=x@evil.com"@example.com',
+                    'owner@example.com?bcc=x@evil.com', 'a' * 250 + '@example.com'):
+            response = self.put(self.body(email=bad))
+            self.assertEqual(response.status_code, 400, bad)
+            self.assertIn('email', response.json()['error'])
+        self.assertEqual(ShopSettings.load().revision, 1)
+
+    def test_facebook_links_people_copy_are_accepted(self):
+        for good in ('https://facebook.com/rowszeinsdelight', 'https://web.facebook.com/rowszeinsdelight',
+                     'https://m.facebook.com/rowszeinsdelight', 'https://www.facebook.com/profile.php?id=61550000000000'):
+            response = self.put(self.body(facebook_url=good))
+            self.assertEqual(response.status_code, 200, (good, response.content))
+        self.assertEqual(self.put(self.body(facebook_url='https://facebook.com.evil.example/x')).status_code, 400)
+
     def test_row_errors_use_flat_keys(self):
         body = self.body(notice='<b>Sale</b>')
         body['hours'][2] = {'weekday': 2, 'is_open': True, 'opens': '18:00', 'closes': '09:00'}
