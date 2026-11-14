@@ -22,6 +22,8 @@ export interface DashboardReport {
   chart_data: ChartMonth[];
   best_selling: { product_id: number; product_name: string; total_quantity: number; total_revenue: number }[];
   low_stock: { id: number; name: string; quantity: string; minimum_stock: string; unit: string }[];
+  /** Boxes on recorded orders in the range, and what they sold for. */
+  boxes?: { count: number; revenue: `${number}` };
 }
 
 /** One donut's price split, from /dashboard/profit-margins/ (every product, recipe or not). */

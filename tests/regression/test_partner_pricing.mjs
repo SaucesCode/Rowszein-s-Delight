@@ -16,6 +16,8 @@ tests.push(['the register counts donuts, or items once a partner item is in the 
   assert.equal(countLabel(1,false),'1 donut');
   assert.equal(countLabel(3,false),'3 donuts');
   assert.equal(countLabel(2,true),'2 items');
+  assert.equal(countLabel(3,false,1),'1 box, 3 donuts');
+  assert.equal(countLabel(0,false,2),'2 boxes');
 }]);
 for(const [name,run] of tests){await run();console.log('PASS '+name);}
 console.log(JSON.stringify({tests:tests.length,failures:0,browser_tests:false,schema_executed:false}));
