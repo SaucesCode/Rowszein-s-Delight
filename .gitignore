@@ -7,3 +7,6 @@ docs/antigravity_discovery/
 # Database backups hold customer and sales data; never commit them.
 *.dump
 *.counts.txt
+
+# Python caches from the scripts/ folder
+__pycache__/
