@@ -1,6 +1,6 @@
 # Partner products (collabs) — design
 
-Date: 14 November 2026 · Branch: `pre-launch-hardening` · Status: approved by the owner on 14 November 2026 (including recording payments to partners)
+Date: 14 November 2026 · Branch: `pre-launch-hardening` · Status: approved by the owner on 14 November 2026 (including recording payments to partners); built on 14 November 2026 (see the plan and README)
 
 ## Why
 
