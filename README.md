@@ -77,6 +77,34 @@ API (under `/api/products/`):
 | `partners/<id>/payments/` | Owner | List and record payments |
 | `partners/<id>/payments/<id>/void/` | Owner | Void a payment, with a reason |
 
+## Shop settings
+
+The owner edits the shop's own details under **Shop settings** in the sidebar, with no developer needed. Staff can't see this page.
+
+* **Delivery hours** for each weekday: closed, or one opening and closing time. They stay hidden from customers until **Show delivery hours in the shop** is switched on. If every day is closed, the shop says "Message us for delivery days".
+* **Days off**: date ranges with an optional note, such as "Dec 24–26 · Christmas break". Days off that have ended are dropped when the page is saved.
+* **Delivery towns**: Lucena City, Tayabas and Sariaya to start. Each town can be switched off and has its own fee. A blank fee shows "Fee confirmed when we reply", and ₱0 shows "Free delivery".
+* **Ordering**:
+  * how far ahead to order, with an optional cutoff, for example "Order by 3:00 PM for next-day delivery";
+  * **Pause orders**: customers can still browse, but Save order card and Send on Messenger are disabled and show the pause message;
+  * a **notice bar**.
+* **Payment methods** (GCash, Maya, Bank transfer, Cash on delivery) and **contact** (Messenger link, required; Facebook page, email and phone, each hidden when blank).
+
+How it behaves:
+
+* The shop never waits for these settings before showing the donuts. While they load, or if they fail, it falls back to the original Messenger link and email.
+* The notice and pause message show in a strip fixed to the bottom of the screen, so they never push the page down. They are also repeated in the order sheet.
+* The server checks every value, for example that closing comes after opening and that the Messenger link really is a Messenger link.
+* If the settings were changed in another tab, saving is refused instead of overwriting them, and the owner can reload the newer version.
+* Every save is logged with who made it and which fields changed.
+
+API (under `/api/shop/`):
+
+| Endpoint | Who | Purpose |
+| --- | --- | --- |
+| `settings/` | Anyone | What the shop shows: contact, active towns, hours (when shown), upcoming days off, ordering rules |
+| `settings/manage/` | Owner | Read and replace the whole settings document; send the `revision` you loaded |
+
 ## Design
 
 The look is "pâtisserie pink": blush and white, cocoa-plum ink, one raspberry accent, thin gilt trim on the shop, Fraunces for display type and Geist for text. Colours, type, spacing and motion are role-named design tokens in `frontend/src/index.css`, so a palette change only touches values there. Motion respects the visitor's reduce-motion setting.
@@ -111,7 +139,7 @@ cd backend
 .venv\Scripts\python.exe manage.py test --settings=backend.test_settings
 ```
 
-This uses a temporary in-memory database and test-only keys, so it never touches a real database or `.env` secrets. All 256 tests pass; 17 PostgreSQL-only tests are skipped. Frontend checks: `npm run build`, `npm run lint`, and `node tests/regression/<file>.mjs` from the repository root.
+This uses a temporary in-memory database and test-only keys, so it never touches a real database or `.env` secrets. All 278 tests pass; 17 PostgreSQL-only tests are skipped. Frontend checks: `npm run build`, `npm run lint`, and `node tests/regression/<file>.mjs` from the repository root.
 
 Known gaps:
 
@@ -123,7 +151,7 @@ Earlier checkpoint: Phase 1B.3 disposable database verification was completed fo
 ## Deployment
 
 * **Frontend:** Vercel, with `frontend` as the root directory. `frontend/vercel.json` sends `/api` to the backend and sets the security headers, including a Content-Security-Policy that only allows the site's own scripts and photos from Cloudinary. A new outside service (for example an analytics script) must be added to that policy, or the browser will block it.
-* **Backend:** Render. Every deploy must run `python manage.py migrate` (for example in the build command) so new database changes, such as `products/0005_boxes`, `products/0006_partners`, `products/0007_boxsize_max_flavors`, `products/0008_product_shape` and `sales/0004_sale_current_boxes`, are applied.
+* **Backend:** Render. Every deploy must run `python manage.py migrate` (for example in the build command) so new database changes, such as `products/0005_boxes`, `products/0006_partners`, `products/0007_boxsize_max_flavors`, `products/0008_product_shape`, `sales/0004_sale_current_boxes`, `shop/0001_initial` and `shop/0002_seed_settings`, are applied.
 * **Photos:** stored on Cloudinary in production. Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` on Render; without them, photos are saved to the server's disk, which Render wipes on redeploy. Photos must be JPG, PNG or WEBP and under 5 MB.
 * **Database backups:** the live database is on Supabase. Take and check a backup every week and before every deploy with a migration; see [Database backup and restore](docs/BACKUP_AND_RESTORE.md).
 * **Logs:** the backend writes one JSON line per event to stdout (Render's Logs tab), including every sign-in. Each response has an `X-Request-ID` header that matches its log lines.
