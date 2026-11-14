@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Package, Plus, Search, Star } from "lucide-react";
+import { Handshake, Package, Plus, Search, Star } from "lucide-react";
 import { useCategories, useProducts, useUpdateProduct } from "@/hooks/useProducts";
 import { useListingPageRecovery } from "@/hooks/useListingPageRecovery";
 import type { Category, Product, ProductPayload } from "@/types/product.types";
@@ -128,6 +128,10 @@ export default function ProductsPage() {
           <Link to="/products/boxes" className="btn-secondary">
             <Package size={18} aria-hidden="true" />
             Boxes
+          </Link>
+          <Link to="/products/partners" className="btn-secondary">
+            <Handshake size={18} aria-hidden="true" />
+            Partners
           </Link>
           <button type="button" className="btn-primary" onClick={() => navigate("/products/new")}>
             <Plus size={20} aria-hidden="true" />

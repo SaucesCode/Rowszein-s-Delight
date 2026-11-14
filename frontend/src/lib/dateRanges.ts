@@ -64,6 +64,15 @@ export function getDateRange(period: Preset, now = new Date()): Required<DateRan
   return { date_from: calendarString(from), date_to: today };
 }
 
+/** The whole previous calendar month in Manila, e.g. for paying partners monthly. */
+export function getLastMonthRange(now = new Date()): Required<DateRange> {
+  const end = calendarDay(manilaDate(now));
+  end.setUTCDate(0);
+  const start = new Date(end.getTime());
+  start.setUTCDate(1);
+  return { date_from: calendarString(start), date_to: calendarString(end) };
+}
+
 export function customDateRange(from: string, to: string): DateRange {
   return { ...(from && { date_from: from }), ...(to && { date_to: to }) };
 }
