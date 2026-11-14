@@ -12,7 +12,7 @@ from ingredients.models import Ingredient
 from ingredients.serializers import IngredientSerializer
 from products.models import Product
 from recipes.models import Recipe
-from sales.reporting import financial_summary
+from sales.reporting import financial_summary, partner_payouts
 from sales.services import current_items
 from decimal import Decimal, localcontext
 
@@ -34,12 +34,17 @@ class DashboardView(APIView):
             date__lte=date_to,
         ).aggregate(total=Sum('amount'))['total'] or 0
 
+        # Partner items: only the patong is Rowszein's; their price is owed to the partner.
+        payouts = partner_payouts(date_from, date_to)
+        total_payouts = Decimal(payouts['total'])
+
         with localcontext() as context:
             context.prec = 50
-            net_profit = float(total_sales - total_expenses)
+            net_profit = float(total_sales - total_payouts - total_expenses)
 
         # --- This month (always current month, unaffected by filter) ---
         monthly_sales = Decimal(financial_summary(today.replace(day=1), today)['totals']['net_sales'])
+        monthly_payouts = Decimal(partner_payouts(today.replace(day=1), today)['total'])
 
         monthly_expenses = Expense.objects.filter(
             date__year=today.year,
@@ -48,7 +53,7 @@ class DashboardView(APIView):
 
         with localcontext() as context:
             context.prec = 50
-            monthly_profit = float(monthly_sales - monthly_expenses)
+            monthly_profit = float(monthly_sales - monthly_payouts - monthly_expenses)
 
         # --- Best selling (filtered) ---
         # Current recorded product mix by ORIGINAL sale date, not a financial
@@ -79,6 +84,7 @@ class DashboardView(APIView):
         ]
 
         sales_by_month = {month: Decimal(values['net_sales']) for month, values in sales_report['months'].items()}
+        payouts_by_month = {month: Decimal(value) for month, value in payouts['by_month'].items()}
         expenses_by_month = {
             entry['month'].strftime('%Y-%m'): entry['total']
             for entry in monthly_expenses_chart
@@ -96,7 +102,8 @@ class DashboardView(APIView):
                     'month': months[int(key[-2:]) - 1] if date_from.year == date_to.year else key,
                     'sales': float(sales_by_month.get(key, 0)),
                     'expenses': float(expenses_by_month.get(key, 0)),
-                    'profit': float(sales_by_month.get(key, 0) - expenses_by_month.get(key, 0)),
+                    'payouts': float(payouts_by_month.get(key, 0)),
+                    'profit': float(sales_by_month.get(key, 0) - payouts_by_month.get(key, 0) - expenses_by_month.get(key, 0)),
                 }
                 for key in keys
             ]
@@ -119,10 +126,12 @@ class DashboardView(APIView):
                     **sales_report['totals'],
                     'total_sales': float(total_sales),
                     'total_expenses': float(total_expenses),
+                    'partner_payouts': payouts['total'],
                     'net_profit': net_profit,
                 },
                 'this_month': {
                     'sales': float(monthly_sales),
+                    'partner_payouts': float(monthly_payouts),
                     'expenses': float(monthly_expenses),
                     'profit': monthly_profit,
                 },
@@ -154,16 +163,21 @@ class ProfitMarginView(APIView):
 
         for product in products:
             selling_price = float(product.price)
+            is_partner = product.partner_id is not None
+            has_recipe = False
 
-            try:
-                recipe = Recipe.objects.prefetch_related(
-                    'recipe_ingredients__ingredient'
-                ).get(product=product)
-                production_cost = float(recipe.cost_per_unit)
-                has_recipe = True
-            except Recipe.DoesNotExist:
-                production_cost = 0
-                has_recipe = False
+            if is_partner:
+                # Their price is the cost; the profit per item is the patong.
+                production_cost = float(product.partner_payout)
+            else:
+                try:
+                    recipe = Recipe.objects.prefetch_related(
+                        'recipe_ingredients__ingredient'
+                    ).get(product=product)
+                    production_cost = float(recipe.cost_per_unit)
+                    has_recipe = True
+                except Recipe.DoesNotExist:
+                    production_cost = 0
 
             profit_per_unit = selling_price - production_cost
             margin_percent = (
@@ -179,6 +193,7 @@ class ProfitMarginView(APIView):
                 'profit_per_unit': round(profit_per_unit, 2),
                 'margin_percent': margin_percent,
                 'has_recipe': has_recipe,
+                'is_partner': is_partner,
                 'is_available': product.is_available,
             })
 

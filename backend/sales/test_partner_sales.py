@@ -1,3 +1,4 @@
+from datetime import date
 from decimal import Decimal
 from uuid import uuid4
 from zoneinfo import ZoneInfo
@@ -7,8 +8,9 @@ from django.utils import timezone
 
 from accounts.models import User
 from accounts.session_fixtures import SessionClient
-from products.models import Partner, Product
+from products.models import Partner, PartnerPayment, Product
 from sales.models import Sale, SaleConsumption
+from sales.reporting import partner_payouts, still_to_pay
 from sales.tests import SalesFixture
 
 
@@ -88,3 +90,58 @@ class PartnerSalesTests(PartnerSalesFixture, TestCase):
         self.kape.is_active = False
         self.kape.save()
         self.assertEqual(self.sell([(self.muffin, 1)]).status_code, 201)
+
+
+class PartnerReportingTests(PartnerSalesFixture, TestCase):
+    NOVEMBER = (date(2026, 11, 1), date(2026, 11, 30))
+
+    def test_payouts_grouped_by_partner_and_item(self):
+        self.sell([(self.product, 1), (self.muffin, 2), (self.cake, 1)])
+        report = partner_payouts(*self.NOVEMBER)
+        self.assertEqual(report['total'], '200.00')
+        self.assertEqual(report['by_month'], {'2026-11': '200.00'})
+        kape = report['partners'][0]
+        self.assertEqual((kape['id'], kape['name'], kape['owed']), (self.kape.pk, 'Kape Lokal', '200.00'))
+        self.assertEqual(kape['items'], [
+            {'product': self.muffin.pk, 'product_name': 'Banana muffin', 'quantity': 2, 'payout': '50.00', 'owed': '100.00'},
+            {'product': self.cake.pk, 'product_name': 'Ube cake slice', 'quantity': 1, 'payout': '100.00', 'owed': '100.00'},
+        ])
+
+    def test_cancelled_sale_owes_nothing(self):
+        sale_id = self.sell([(self.muffin, 2)]).data['data']['id']
+        self.assertEqual(self.cancel(sale_id).status_code, 200)
+        self.assertEqual(partner_payouts(*self.NOVEMBER)['total'], '0.00')
+
+    def test_payouts_counted_by_order_date(self):
+        self.sell([(self.muffin, 1)], day='2026-10-31')
+        self.assertEqual(partner_payouts(*self.NOVEMBER)['total'], '0.00')
+        self.assertEqual(partner_payouts(date(2026, 10, 1), date(2026, 10, 31))['total'], '50.00')
+
+    def test_still_to_pay_follows_edits_and_ignores_voided_payments(self):
+        sale_id = self.sell([(self.muffin, 2)]).data['data']['id']
+        payment = PartnerPayment.objects.create(partner=self.kape, date=date(2026, 11, 10), amount=Decimal('30.00'), recorded_by=self.user)
+        self.assertEqual(still_to_pay(self.kape.pk, date(2026, 11, 14)), Decimal('70.00'))
+        payment.voided_at, payment.voided_by, payment.void_reason = timezone.now(), self.user, 'Typed the wrong amount'
+        payment.save()
+        self.assertEqual(still_to_pay(self.kape.pk, date(2026, 11, 14)), Decimal('100.00'))
+        self.edit(sale_id, {'sale_items': [{'product': self.muffin.pk, 'quantity': 1, 'unit_price': '60.00'}]})
+        self.assertEqual(still_to_pay(self.kape.pk, date(2026, 11, 14)), Decimal('50.00'))
+
+    def test_overpayment_gives_negative_still_to_pay(self):
+        self.sell([(self.muffin, 1)])
+        PartnerPayment.objects.create(partner=self.kape, date=date(2026, 11, 10), amount=Decimal('80.00'), recorded_by=self.user)
+        self.assertEqual(still_to_pay(self.kape.pk, date(2026, 11, 14)), Decimal('-30.00'))
+
+    def test_dashboard_profit_subtracts_partner_payouts(self):
+        self.sell([(self.product, 1), (self.muffin, 2)])
+        data = self.client.get('/api/dashboard/?date_from=2026-11-01&date_to=2026-11-30').data['data']
+        self.assertEqual(data['totals']['partner_payouts'], '100.00')
+        self.assertEqual(data['totals']['net_profit'], 70.0)
+        november = next(row for row in data['chart_data'] if row['month'] == 'Nov')
+        self.assertEqual((november['payouts'], november['profit']), (100.0, 70.0))
+
+    def test_profit_margin_marks_partner_item_with_patong(self):
+        rows = {row['product_name']: row for row in self.client.get('/api/dashboard/profit-margins/').data['data']}
+        muffin = rows['Banana muffin']
+        self.assertEqual((muffin['is_partner'], muffin['production_cost'], muffin['profit_per_unit']), (True, 50.0, 10.0))
+        self.assertFalse(rows['Test donut']['is_partner'])

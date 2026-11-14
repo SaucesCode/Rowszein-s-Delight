@@ -1,8 +1,14 @@
 """Read-only financial postings plus an explicitly disjoint legacy source."""
 from collections import defaultdict
+from decimal import Decimal, localcontext
+
+from django.db.models import Sum
+
+from products.models import Partner, PartnerPayment
 
 from sales.financial_math import financial_totals
 from sales.models import Sale, SaleFinancialEntry
+from sales.services import payout_lines
 
 
 def financial_summary(date_from, date_to):
@@ -24,3 +30,53 @@ def financial_summary(date_from, date_to):
         'refund_status': 'not_tracked',
         'source_policy': 'legacy_source sale totals plus ledger postings; no overlap',
     }
+
+
+def _partner_lines(sales):
+    """Yield (sale, line) for every partner line of the given sales, payout as a Decimal."""
+    for sale in sales:
+        for line in payout_lines(sale):
+            if line['partner'] is not None:
+                yield sale, line
+
+
+def partner_payouts(date_from, date_to):
+    """What Rowszein owes each partner for recorded (not cancelled) orders dated in the range."""
+    sales = Sale.objects.filter(status='recorded', date__gte=date_from, date__lte=date_to).order_by('date', 'pk')
+    partners = {partner.pk: partner for partner in Partner.objects.all()}
+    owed_by_partner, by_month = {}, defaultdict(Decimal)
+    with localcontext() as context:
+        context.prec = 50
+        for sale, line in _partner_lines(sales):
+            owed = line['partner_payout'] * line['quantity']
+            by_month[sale.date.strftime('%Y-%m')] += owed
+            row = owed_by_partner.setdefault(line['partner'], {'partner': partners[line['partner']], 'owed': Decimal('0'), 'items': {}})
+            row['owed'] += owed
+            # A rate change gives the same item a second line, so each line has one payout.
+            item = row['items'].setdefault((line['product'], line['partner_payout']), {
+                'product': line['product'], 'product_name': line['product_name'], 'quantity': 0,
+                'payout': line['partner_payout'], 'owed': Decimal('0')})
+            item['quantity'] += line['quantity']
+            item['owed'] += owed
+        total = sum(by_month.values(), Decimal('0'))
+    rows = sorted(owed_by_partner.values(), key=lambda row: (row['partner'].sort_order, row['partner'].name))
+    return {
+        'partners': [{
+            'id': row['partner'].pk, 'name': row['partner'].name, 'owed': format(row['owed'], '.2f'),
+            'items': [dict(item, payout=format(item['payout'], '.2f'), owed=format(item['owed'], '.2f'))
+                      for item in sorted(row['items'].values(), key=lambda item: (item['product_name'], item['payout']))],
+        } for row in rows],
+        'total': format(total, '.2f'),
+        'by_month': {month: format(value, '.2f') for month, value in sorted(by_month.items())},
+    }
+
+
+def still_to_pay(partner_id, today):
+    """Owed on all recorded orders up to today, minus payments that aren't voided. Negative = paid ahead."""
+    sales = Sale.objects.filter(status='recorded', date__lte=today)
+    with localcontext() as context:
+        context.prec = 50
+        owed = sum((line['partner_payout'] * line['quantity'] for _, line in _partner_lines(sales)
+                    if line['partner'] == partner_id), Decimal('0'))
+        paid = PartnerPayment.objects.filter(partner_id=partner_id, voided_at__isnull=True).aggregate(total=Sum('amount'))['total'] or Decimal('0')
+        return (owed - paid).quantize(Decimal('0.01'))
