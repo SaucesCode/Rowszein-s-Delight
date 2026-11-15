@@ -105,3 +105,22 @@ def placed_document(order) -> dict:
 def status_document(order) -> dict:
     """The public status page. First name only; never the phone, address or note."""
     return {**order_lines(order), 'customer_first_name': order.customer_name.split()[0] if order.customer_name else ''}
+
+
+def owner_row(order) -> dict:
+    return {
+        'id': order.pk, 'number': order.number, 'status': order.shown_status, 'customer_name': order.customer_name,
+        'town_name': order.town_name, 'delivery_date': order.delivery_date.isoformat(), 'total': _money(order.total),
+        'created_at': order.created_at.isoformat(),
+    }
+
+
+def owner_document(order) -> dict:
+    """Everything the owner needs to confirm, decline and deliver: contact details included until cleared."""
+    return {
+        **order_lines(order), 'id': order.pk, 'customer_name': order.customer_name, 'phone': order.phone,
+        'address': order.address, 'note': order.note, 'payment_method': order.payment_method,
+        'decided_at': order.decided_at.isoformat() if order.decided_at else None,
+        'contact_cleared_at': order.contact_cleared_at.isoformat() if order.contact_cleared_at else None,
+        'sale': {'id': order.sale.pk, 'status': order.sale.status} if order.sale_id else None,
+    }

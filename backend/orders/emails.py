@@ -105,3 +105,11 @@ def queue_delivery(email_id: int) -> None:
         deliver(email_id)
     else:
         threading.Thread(target=deliver, args=(email_id,), daemon=True).start()
+
+
+def retry_due_emails_soon() -> None:
+    """Run the retry sweep without holding up the owner's page."""
+    if settings.ORDER_EMAIL_INLINE:
+        send_due_emails()
+    else:
+        threading.Thread(target=send_due_emails, daemon=True).start()
