@@ -10,6 +10,7 @@ import { can } from "@/lib/permissions";
 
 // Each page downloads on first visit; OwnerLayout shows a skeleton meanwhile.
 const ShopPage = lazy(() => import("@/pages/shop/ShopPage"));
+const OrderStatusPage = lazy(() => import("@/pages/OrderStatusPage"));
 const OwnerHomePage = lazy(() => import("@/pages/OwnerHomePage"));
 const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
 const IngredientsPage = lazy(() => import("@/pages/IngredientsPage"));
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <Suspense fallback={null}><ShopPage /></Suspense>,
+  },
+  {
+    path: "/order/:token",
+    element: <Suspense fallback={null}><OrderStatusPage /></Suspense>,
   },
 
 

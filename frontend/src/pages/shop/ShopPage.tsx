@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Search, ShoppingBag } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import { useShopSettings } from "@/hooks/useShopSettings";
+import { lastOrder } from "@/lib/orderCheckout";
 import { DEFAULT_PAUSE_MESSAGE, shopContact } from "@/lib/shopSettings";
 import { useShopBoxes } from "@/hooks/useBoxes";
 import { useListingPages } from "@/hooks/useListingPages";
@@ -51,6 +52,7 @@ export default function ShopPage() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [announcement, setAnnouncement] = useState("");
+  const [recentOrder, setRecentOrder] = useState(() => lastOrder());
   const boxWindowRef = useRef<HTMLSpanElement>(null);
   const fillingBoxRef = useRef<HTMLDivElement>(null);
   const boxButtonRef = useRef<HTMLButtonElement>(null);
@@ -160,6 +162,7 @@ export default function ShopPage() {
   // The dock's button disappears if the box was emptied while open; keep focus somewhere sensible.
   const closeSheet = () => {
     setSheetOpen(false);
+    setRecentOrder(lastOrder());
     requestAnimationFrame(() => {
       if (document.activeElement === document.body) boxButtonRef.current?.focus();
     });
@@ -216,8 +219,13 @@ export default function ShopPage() {
               ? `Pick up to ${filling.maxFlavors} flavours for your box of ${filling.size}; it fills evenly. Premium flavours show their extra on the price card.`
               : sizes.length > 0
                 ? "Tap a donut to add it on its own, or choose a box above and fill it from here."
-                : "Tap the ones you'd like. When your order looks right, send it to us on Messenger."}
+                : "Tap the ones you'd like. When your order looks right, send it to us from here."}
           </p>
+          {recentOrder && (
+            <Link className="last-order-link" to={`/order/${recentOrder.token}`}>
+              Check your last order, <span className="num">{recentOrder.number}</span>
+            </Link>
+          )}
         </div>
 
         <div className="case-tools">
@@ -362,6 +370,9 @@ export default function ShopPage() {
         messengerUrl={contact.messenger_url}
         paused={paused}
         notice={settings?.notice ?? ""}
+        settings={settings}
+        settingsFailed={shopSettings.isError}
+        sizes={sizes}
       />
 
       {settings && <NoticeBar key={`${paused}|${settings.notice}`} notice={settings.notice} paused={paused} />}

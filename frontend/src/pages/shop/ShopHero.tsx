@@ -27,7 +27,7 @@ export default function ShopHero({ products, onAdd }: ShopHeroProps) {
       <div className="hero-copy">
         <h1 id="hero-title" className="hero-title">Donuts worth stopping for.</h1>
         <p className="hero-lede">
-          Choose from today's case, fill a box, and send your order to us on Messenger. No account needed.
+          Choose from today's case, fill a box, and send your order right here. We text or call to confirm. No account needed.
         </p>
         <div className="hero-actions">
           <a href="#menu" className="btn-primary hero-start">

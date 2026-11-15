@@ -15,17 +15,6 @@ export function boxUnits(items: CartItem[]): CartItem[] {
   return items.flatMap(item => Array.from({ length: item.quantity }, () => item));
 }
 
-/**
- * A short label the customer can quote in Messenger, e.g. "RD-1113-4F8K".
- * It is not stored anywhere; the shop confirms orders by replying.
- */
-export function cardNumber(date: Date): string {
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const random = Math.random().toString(36).slice(2, 6).toUpperCase();
-  return `RD-${month}${day}-${random}`;
-}
-
 const plural = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
 
 /** "1 box, 3 donuts", "2 boxes" or "1 donut"; "items" once a partner's muffin or cake is among the singles. */

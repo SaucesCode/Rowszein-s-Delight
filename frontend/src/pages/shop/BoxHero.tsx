@@ -36,8 +36,8 @@ export default function BoxHero({ sizes, products, hasReadyMade, onStart }: BoxH
       <div className="hero-copy">
         <h1 id="hero-title" className="hero-title">Donuts worth stopping for.</h1>
         <p className="hero-lede">
-          Fill a box of {sizeList(sizes)} with today's donuts{hasReadyMade ? ", or pick one of ours" : ""}. Send your order to us on
-          Messenger. No account needed.
+          Fill a box of {sizeList(sizes)} with today's donuts{hasReadyMade ? ", or pick one of ours" : ""}. Send your order right here;
+          we text or call to confirm. No account needed.
         </p>
         <div className="hero-actions">
           <button type="button" className="btn-primary hero-start" onClick={() => onStart(chosen)}>
