@@ -1,6 +1,6 @@
 type Identity = { role: string } | null | undefined;
 const STAFF = new Set(["self.read", "catalog.read", "stock.read", "sales.read", "sales.create"]);
-const OWNER = new Set([...STAFF, "catalog.manage", "stock.manage", "stock.adjust", "recipes.manage", "sales.update", "sales.cancel", "sales.export", "finance.read", "expenses.manage", "partners.pay", "shop.manage"]);
+const OWNER = new Set([...STAFF, "catalog.manage", "stock.manage", "stock.adjust", "recipes.manage", "sales.update", "sales.cancel", "sales.export", "finance.read", "expenses.manage", "partners.pay", "shop.manage", "orders.manage"]);
 
 export function can(user: Identity, capability: string): boolean {
   return (user?.role === "admin" ? OWNER : user?.role === "staff" ? STAFF : new Set()).has(capability);
@@ -21,6 +21,7 @@ export function canVisit(user: Identity, path: string): boolean {
     [/^\/expenses(?:\/(?:new|\d+\/edit))?\/?$/, "expenses.manage"],
     [/^\/(home|dashboard|profit-margins|analytics)\/?$/, "finance.read"],
     [/^\/settings\/?$/, "shop.manage"],
+    [/^\/orders(?:\/\d+)?\/?$/, "orders.manage"],
   ];
   const route = routes.find(([pattern]) => pattern.test(path));
   return !!route && can(user, route[1]);

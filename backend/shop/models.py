@@ -12,6 +12,8 @@ class ShopSettings(models.Model):
     messenger_url = models.URLField(max_length=200)
     facebook_url = models.URLField(max_length=200, blank=True)
     email = models.EmailField(blank=True)
+    # Private: where new-order emails go. Never in the public settings.
+    order_email = models.EmailField(blank=True)
     phone = models.CharField(max_length=20, blank=True)
     notice = models.CharField(max_length=160, blank=True)
     orders_paused = models.BooleanField(default=False)

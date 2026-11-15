@@ -8,7 +8,7 @@ from .serializers import managed_document
 
 logger = logging.getLogger('shop.settings')
 
-SETTINGS_FIELDS = ('messenger_url', 'facebook_url', 'email', 'phone', 'notice', 'orders_paused', 'pause_message',
+SETTINGS_FIELDS = ('messenger_url', 'facebook_url', 'email', 'order_email', 'phone', 'notice', 'orders_paused', 'pause_message',
                    'lead_days', 'order_cutoff', 'show_hours', 'payment_methods')
 
 

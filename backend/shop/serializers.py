@@ -65,6 +65,7 @@ class ShopSettingsInputSerializer(serializers.Serializer):
     messenger_url = serializers.CharField(max_length=200, validators=[MESSENGER_LINK])
     facebook_url = serializers.CharField(max_length=200, allow_blank=True, validators=[FACEBOOK_LINK])
     email = serializers.EmailField(allow_blank=True, max_length=254, validators=[PLAIN_EMAIL])
+    order_email = serializers.EmailField(allow_blank=True, max_length=254, validators=[PLAIN_EMAIL], required=False, default='')
     phone = serializers.CharField(max_length=20, allow_blank=True, validators=[PHONE])
     notice = _text(160)
     orders_paused = serializers.BooleanField()
@@ -173,6 +174,7 @@ def managed_document():
     return {
         **_contact_and_ordering(settings),
         'show_hours': settings.show_hours,
+        'order_email': settings.order_email,
         'revision': settings.revision,
         'updated_at': settings.updated_at.isoformat(),
         'hours': [{'weekday': row.weekday, 'is_open': row.is_open, 'opens': _time(row.opens), 'closes': _time(row.closes)}
