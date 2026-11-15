@@ -105,6 +105,47 @@ API (under `/api/shop/`):
 | `settings/` | Anyone | What the shop shows: contact, active towns, hours (when shown), upcoming days off, ordering rules |
 | `settings/manage/` | Owner | Read and replace the whole settings document; send the `revision` you loaded |
 
+## Online orders
+
+Customers send their order from the shop, and it is saved in the app. Messenger is now optional.
+
+**For customers:**
+
+* After reviewing the order, they add delivery details: name, mobile number, town, address with a landmark, delivery day, how they'd like to pay, and a note.
+* The delivery days offered follow Shop settings: lead time, cutoff, days off, open days when hours are shown, and up to 30 days ahead. The days are always worked out in Manila time.
+* After sending, they see their order number (`RD-YYMMDD-XXXX`) and a link to `/order/<token>`, which shows Waiting, Confirmed, Declined or Cancelled, plus any message from the shop. The shop also remembers their last order on that phone.
+
+**For the owner (Orders, first in the sidebar; owner only):**
+
+* The sidebar shows how many orders are waiting, and Home shows a "New orders" card.
+* **Confirm** records the sale through the same sales command as the register, so stock, reports and partner payouts all count it. The sale keeps the customer's prices and box contents even if the catalog changed since. If stock is short, the message says why and the order stays waiting.
+* **Decline** needs a short message, which the customer sees.
+* An order whose sale is later cancelled in Sales shows as Cancelled.
+
+**Behind the scenes:**
+
+* **Pricing:** the server prices every order from the current catalog; the customer's browser never sends prices.
+* **Duplicates:** a double tap or a retry sends the same order key, so only one order is saved.
+* **Spam protection:** a connection can send at most 5 orders in 10 minutes (only saved orders count), and a hidden field catches bots.
+* **Emails:** every new order is emailed to the private "New-order emails go to" address in Shop settings, through Resend.
+  * The email is sent after the order is saved, and is retried when the owner opens Orders. A failed email never loses an order.
+  * The email leaves out the customer's phone, address and note.
+* **Privacy:** phone, address and note are cleared 90 days after the delivery day. The order and its sale stay.
+* **Delivery fees:** the town's fee shows on the order, but it is not added to the sale yet; the sale notes mention it.
+
+API (under `/api/orders/`):
+
+| Endpoint | Who | Purpose |
+| --- | --- | --- |
+| `POST /` | Anyone | Send an order (rate limited) |
+| `GET status/<token>/` | Anyone with the link | The customer's status page (first name only, no contact details) |
+| `GET manage/?status=&page=` | Owner | Orders, the waiting count, and whether the email address is missing |
+| `GET manage/<id>/` | Owner | One order with contact details |
+| `POST manage/<id>/confirm/` | Owner | Record the sale |
+| `POST manage/<id>/decline/` | Owner | Decline with a message |
+
+Management commands: `send_order_emails` (retry due emails) and `clear_old_order_contacts` (the 90-day clean-up). The Orders page does both when opened.
+
 ## Design
 
 The look is "pâtisserie pink": blush and white, cocoa-plum ink, one raspberry accent, thin gilt trim on the shop, Fraunces for display type and Geist for text. Colours, type, spacing and motion are role-named design tokens in `frontend/src/index.css`, so a palette change only touches values there. Motion respects the visitor's reduce-motion setting.
@@ -139,7 +180,7 @@ cd backend
 .venv\Scripts\python.exe manage.py test --settings=backend.test_settings
 ```
 
-This uses a temporary in-memory database and test-only keys, so it never touches a real database or `.env` secrets. All 280 tests pass; 17 PostgreSQL-only tests are skipped here. Frontend checks: `npm run build`, `npm run lint`, and `node tests/regression/<file>.mjs` from the repository root.
+This uses a temporary in-memory database and test-only keys, so it never touches a real database or `.env` secrets. All 329 tests pass; 17 PostgreSQL-only tests are skipped here. Frontend checks: `npm run build`, `npm run lint`, and `node tests/regression/<file>.mjs` from the repository root.
 
 To run the whole suite on PostgreSQL too, including those 17 tests, start Docker Desktop and run this from the repository root:
 
@@ -165,7 +206,7 @@ Earlier checkpoint: Phase 1B.3 disposable database verification was completed fo
 ## Deployment
 
 * **Frontend:** Vercel, with `frontend` as the root directory. `frontend/vercel.json` sends `/api` to the backend and sets the security headers, including a Content-Security-Policy that only allows the site's own scripts and photos from Cloudinary. A new outside service (for example an analytics script) must be added to that policy, or the browser will block it.
-* **Backend:** Render. Every deploy must run `python manage.py migrate` (for example in the build command) so new database changes, such as `products/0005_boxes`, `products/0006_partners`, `products/0007_boxsize_max_flavors`, `products/0008_product_shape`, `sales/0004_sale_current_boxes`, `shop/0001_initial` and `shop/0002_seed_settings`, are applied.
+* **Backend:** Render. Every deploy must run `python manage.py migrate` (for example in the build command) so new database changes, such as `products/0005_boxes`, `products/0006_partners`, `products/0007_boxsize_max_flavors`, `products/0008_product_shape`, `sales/0004_sale_current_boxes`, `shop/0001_initial`, `shop/0002_seed_settings`, `shop/0003_shopsettings_order_email`, `accounts/0004_order_rate_limit_scope` and `orders/0001_initial`, are applied. Online orders also need `RESEND_API_KEY`, `ORDER_EMAIL_FROM` and `APP_URL` set on Render (see `backend/.env.example`); without the key, new-order emails are only logged.
 * **Photos:** stored on Cloudinary in production. Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` on Render; without them, photos are saved to the server's disk, which Render wipes on redeploy. Photos must be JPG, PNG or WEBP and under 5 MB.
 * **Database backups:** the live database is on Supabase. Take and check a backup every week and before every deploy with a migration; see [Database backup and restore](docs/BACKUP_AND_RESTORE.md).
 * **Logs:** the backend writes one JSON line per event to stdout (Render's Logs tab), including every sign-in. Each response has an `X-Request-ID` header that matches its log lines.

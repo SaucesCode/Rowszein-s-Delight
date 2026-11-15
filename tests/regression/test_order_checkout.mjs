@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {
-  allowedDeliveryDates, checkoutErrors, deliveryDayLabel, lastOrder, normalisePhone, orderPayload, rememberLastOrder,
+  allowedDeliveryDates, checkoutErrors, deliveryDayLabel, displayPhone, lastOrder, normalisePhone, orderPayload, rememberLastOrder,
 } from '../../frontend/src/lib/orderCheckout.ts';
 
 const week = (closed = []) => Array.from({length: 7}, (_, weekday) =>
@@ -49,6 +49,11 @@ tests.push(['mobile numbers are normalised like the server does', () => {
   assert.equal(normalisePhone('639171234567'), '+639171234567');
   assert.equal(normalisePhone('12345'), null);
   assert.equal(normalisePhone(''), null);
+}]);
+tests.push(['stored numbers read the way people write them', () => {
+  assert.equal(displayPhone('+639171234567'), '0917 123 4567');
+  assert.equal(displayPhone('0917 123 4567'), '0917 123 4567');
+  assert.equal(displayPhone(''), '');
 }]);
 tests.push(['the form explains each problem next to its field', () => {
   const form = {customer_name: '', phone: '123', town: '', address: '<b>', delivery_date: '2026-11-16', payment_method: '', note: 'x'.repeat(301)};

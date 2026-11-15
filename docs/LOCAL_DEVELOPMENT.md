@@ -78,3 +78,18 @@ The script:
 It never uses `rowszein-playground`, `backend/.env` or Supabase.
 
 If Docker isn't running, it says so and exits with code 2. The runner's own tests run with `python scripts\test_test_postgres.py`. The same script runs in the GitHub `backend-postgres` check.
+
+## New-order emails
+
+Online orders email the owner through Resend. Locally, leave `RESEND_API_KEY` empty: the email is written to the Django log as "New-order email would send", and the order is still saved.
+
+To try real emails:
+
+1. Create a free Resend account with the owner's email address.
+2. Put its API key in `backend/.env` as `RESEND_API_KEY`.
+3. In Shop settings, set "New-order emails go to" to that same address.
+
+On the free plan without a verified domain, Resend only delivers from `onboarding@resend.dev` to the account's own address.
+
+To retry waiting emails by hand, run `manage.py send_order_emails`.
+

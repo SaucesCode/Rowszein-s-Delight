@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import RecordLoadError from "@/components/RecordLoadError";
 import { useConfirmOrder, useDeclineOrder, useOrder } from "@/hooks/useOrders";
-import { deliveryDayLabel } from "@/lib/orderCheckout";
+import { deliveryDayLabel, displayPhone } from "@/lib/orderCheckout";
 import { validRecordId } from "@/lib/managementQueryKeys";
 import { formatPeso } from "@/pages/dashboard/report-format";
 import type { OwnerOrder } from "@/types/order.types";
@@ -88,7 +88,7 @@ function OrderDetail({ order }: { order: OwnerOrder }) {
           ) : (
             <>
               <div className="orders-contact">
-                <a className="btn-secondary" href={`tel:${dialPhone}`}><Phone size={18} aria-hidden="true" /> Call <span className="num">{order.phone}</span></a>
+                <a className="btn-secondary" href={`tel:${dialPhone}`}><Phone size={18} aria-hidden="true" /> Call <span className="num">{displayPhone(order.phone)}</span></a>
                 <a className="btn-secondary" href={`sms:${dialPhone}`}><MessageSquare size={18} aria-hidden="true" /> Text</a>
               </div>
               <dl className="orders-facts">

@@ -75,6 +75,14 @@ export function normalisePhone(raw: string): string | null {
   return null;
 }
 
+/** "+639171234567" as people write it: "0917 123 4567". Anything else is shown as given. */
+export function displayPhone(stored: string): string {
+  const phone = normalisePhone(stored);
+  if (!phone) return stored;
+  const local = `0${phone.slice(3)}`;
+  return `${local.slice(0, 4)} ${local.slice(4, 7)} ${local.slice(7)}`;
+}
+
 const MARKUP = /[<>]/;
 
 export function checkoutErrors(form: CheckoutForm, settings: PublicShopSettings, now: Date): Partial<Record<CheckoutField, string>> {
