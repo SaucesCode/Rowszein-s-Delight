@@ -27,8 +27,13 @@ type Cart = ReturnType<typeof useCart>;
 type Boxes = ReturnType<typeof useBoxOrder>;
 type View = "review" | "details" | "sent";
 
-const FIELDS: CheckoutField[] = ["customer_name", "phone", "town", "address", "delivery_date", "payment_method", "note"];
-const EMPTY_FORM: Form = { customer_name: "", phone: "", town: "", address: "", delivery_date: "", payment_method: "", note: "" };
+const FIELDS: CheckoutField[] = [
+  "customer_name", "phone", "meetup_place", "town", "address", "delivery_date", "meetup_time", "payment_method", "note",
+];
+const EMPTY_FORM: Form = {
+  fulfilment: "delivery", customer_name: "", phone: "", town: "", address: "", delivery_date: "", payment_method: "", note: "",
+  meetup_place: "", meetup_time: "",
+};
 const OFFLINE = "Couldn't send. Check your connection and try again.";
 
 interface OrderSheetProps {

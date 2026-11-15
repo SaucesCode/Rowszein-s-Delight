@@ -19,7 +19,15 @@ export interface OrderBox {
   contents: { product: number; product_name: string; quantity: number }[];
 }
 
+export type Fulfilment = "delivery" | "meetup";
+
 interface OrderLines {
+  fulfilment: Fulfilment;
+  /** "Meet-up: SM City Lucena, main entrance, Sat, Nov 21, 3:00 PM" or "Delivery: Wed, Nov 18, Lucena City". */
+  fulfilment_line: string;
+  meetup_place_name: string;
+  meetup_place_note: string;
+  meetup_time: string | null;
   number: string;
   status: OrderStatus;
   delivery_date: string;
@@ -46,6 +54,8 @@ export interface PublicOrder extends OrderLines {
 
 export interface OwnerOrderRow {
   id: number;
+  fulfilment: Fulfilment;
+  fulfilment_line: string;
   number: string;
   status: OrderStatus;
   customer_name: string;

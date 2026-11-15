@@ -24,21 +24,34 @@ export interface DraftDay {
   closes: string;
 }
 
-export interface Draft extends Omit<ShopSettingsPayload, "hours" | "towns" | "days_off" | "order_cutoff"> {
+export interface DraftMeetupPlace {
+  key: string;
+  id?: number;
+  name: string;
+  note: string;
+  is_active: boolean;
+  hours: DraftDay[];
+}
+
+export interface Draft extends Omit<ShopSettingsPayload, "hours" | "towns" | "days_off" | "order_cutoff" | "meetup_places"> {
   order_cutoff: string;
   hours: DraftDay[];
   towns: DraftTown[];
   days_off: DraftDayOff[];
+  meetup_places: DraftMeetupPlace[];
 }
 
 let nextKey = 0;
 export const rowKey = () => `row-${++nextKey}`;
 
+const draftDay = (day: DeliveryDay): DraftDay => ({ ...day, opens: day.opens ?? "", closes: day.closes ?? "" });
+
 export function toDraft(doc: ManagedShopSettings): Draft {
   return {
     ...doc,
     order_cutoff: doc.order_cutoff ?? "",
-    hours: doc.hours.map(day => ({ ...day, opens: day.opens ?? "", closes: day.closes ?? "" })),
+    hours: doc.hours.map(draftDay),
+    meetup_places: doc.meetup_places.map(place => ({ ...place, key: rowKey(), hours: place.hours.map(draftDay) })),
     towns: doc.towns.map(town => ({ ...town, key: rowKey(), fee: town.fee ?? "" })),
     days_off: doc.days_off.map(day => ({ ...day, key: rowKey() })),
   };
@@ -82,6 +95,13 @@ export function toPayload(draft: Draft): ShopSettingsPayload {
       fee: feeValue(town.fee),
     })),
     days_off: draft.days_off.map(({ starts, ends, note }) => ({ starts, ends, note: note.trim() })),
+    meetup_places: draft.meetup_places.map(place => ({
+      ...(place.id === undefined ? {} : { id: place.id }),
+      name: place.name.trim(),
+      note: place.note.trim(),
+      is_active: place.is_active,
+      hours: place.hours.map(hoursValue),
+    })),
   };
 }
 

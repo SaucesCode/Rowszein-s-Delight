@@ -79,6 +79,7 @@ const managed = {
   towns: [{id: 1, name: 'Lucena City', is_active: true, fee: '0.00'}, {id: 2, name: 'Tayabas', is_active: false, fee: null},
     {id: 3, name: 'Sariaya', is_active: true, fee: '50.00'}],
   days_off: [{starts: '2026-12-24', ends: '2026-12-26', note: 'Christmas break'}],
+  meetup_places: [{id: 5, name: 'SM City Lucena, main entrance', note: 'Look for the pink box', is_active: true, hours: week({0: day(0, null, null)})}],
 };
 tests.push(['a loaded document round-trips through the form unchanged', () => {
   const {updated_at: _updated, ...payload} = managed;

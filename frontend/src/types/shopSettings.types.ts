@@ -31,9 +31,27 @@ interface SettingsBase extends Contact {
   days_off: DayOff[];
 }
 
+/** A meet-up spot with its own week of hours (seven rows, 0 is Monday). */
+export interface MeetupPlace {
+  id: number;
+  name: string;
+  note: string;
+  hours: DeliveryDay[];
+}
+
+export interface ManagedMeetupPlace {
+  id?: number;
+  name: string;
+  note: string;
+  is_active: boolean;
+  hours: DeliveryDay[];
+}
+
 /** What the public shop reads. `hours` is empty while the owner keeps them hidden. */
 export interface PublicShopSettings extends SettingsBase {
   hours: DeliveryDay[];
+  /** Active meet-up places only. */
+  meetup_places: MeetupPlace[];
   /** A null fee means it's confirmed when the shop replies. */
   towns: { id: number; name: string; fee: string | null }[];
 }
@@ -54,6 +72,7 @@ export interface ManagedShopSettings extends SettingsBase {
   updated_at: string;
   hours: DeliveryDay[];
   towns: ManagedTown[];
+  meetup_places: ManagedMeetupPlace[];
 }
 
 export type ShopSettingsPayload = Omit<ManagedShopSettings, "updated_at">;

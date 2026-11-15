@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {
-  allowedDeliveryDates, checkoutErrors, deliveryDayLabel, displayPhone, lastOrder, normalisePhone, orderPayload, rememberLastOrder,
+  allowedDeliveryDates, allowedMeetupDates, checkoutErrors, deliveryDayLabel, displayPhone, lastOrder, meetupTimes, normalisePhone,
+  offerablePlaces, orderPayload, rememberLastOrder,
 } from '../../frontend/src/lib/orderCheckout.ts';
 
 const week = (closed = []) => Array.from({length: 7}, (_, weekday) =>
@@ -8,7 +9,7 @@ const week = (closed = []) => Array.from({length: 7}, (_, weekday) =>
 const settings = (changes = {}) => ({
   messenger_url: 'https://m.me/rowszeinsdelight', facebook_url: '', email: '', phone: '', notice: '', orders_paused: false,
   pause_message: '', lead_days: 1, order_cutoff: null, payment_methods: [], hours: [],
-  towns: [{id: 1, name: 'Lucena City', fee: null}], days_off: [], ...changes,
+  towns: [{id: 1, name: 'Lucena City', fee: null}], days_off: [], meetup_places: [], ...changes,
 });
 // Monday 16 Nov 2026 in Manila (UTC+8).
 const manila = (day, hour, minute = 0) => new Date(Date.UTC(2026, 10, day, hour - 8, minute));
@@ -56,7 +57,7 @@ tests.push(['stored numbers read the way people write them', () => {
   assert.equal(displayPhone(''), '');
 }]);
 tests.push(['the form explains each problem next to its field', () => {
-  const form = {customer_name: '', phone: '123', town: '', address: '<b>', delivery_date: '2026-11-16', payment_method: '', note: 'x'.repeat(301)};
+  const form = {fulfilment: 'delivery', meetup_place: '', meetup_time: '', customer_name: '', phone: '123', town: '', address: '<b>', delivery_date: '2026-11-16', payment_method: '', note: 'x'.repeat(301)};
   const errors = checkoutErrors(form, settings({payment_methods: ['gcash']}), manila(16, 10));
   assert.deepEqual(errors, {
     customer_name: 'Enter your name.',
@@ -67,7 +68,7 @@ tests.push(['the form explains each problem next to its field', () => {
     payment_method: "Pick how you'd like to pay.",
     note: 'Keep the note under 300 characters.',
   });
-  const good = {customer_name: 'Ana Cruz', phone: '0917 123 4567', town: '1', address: '12 Rizal St', delivery_date: '2026-11-18', payment_method: '', note: ''};
+  const good = {fulfilment: 'delivery', meetup_place: '', meetup_time: '', customer_name: 'Ana Cruz', phone: '0917 123 4567', town: '1', address: '12 Rizal St', delivery_date: '2026-11-18', payment_method: '', note: ''};
   assert.deepEqual(checkoutErrors(good, settings(), manila(16, 10)), {});
 }]);
 tests.push(['the order sends products and boxes, never prices', () => {
@@ -77,11 +78,11 @@ tests.push(['the order sends products and boxes, never prices', () => {
     {key: 'a', name: 'Box of 6', size: 6, boxPrice: 215, donuts: [donut(3), donut(3), donut(3), donut(5), donut(5), donut(5)]},
     {key: 'b', name: 'Classic six', size: 6, boxPrice: 200, donuts: [], assortmentId: 4},
   ];
-  const form = {customer_name: ' Ana Cruz ', phone: '0917 123 4567', town: '1', address: '12 Rizal St', delivery_date: '2026-11-18', payment_method: 'cod', note: ''};
+  const form = {fulfilment: 'delivery', meetup_place: '', meetup_time: '', customer_name: ' Ana Cruz ', phone: '0917 123 4567', town: '1', address: '12 Rizal St', delivery_date: '2026-11-18', payment_method: 'cod', note: ''};
   const payload = orderPayload(cart, boxes, [{id: 9, size: 6}], form, 'key-12345678');
   assert.deepEqual(payload, {
     client_key: 'key-12345678', customer_name: 'Ana Cruz', phone: '0917 123 4567', address: '12 Rizal St', note: '',
-    town: 1, delivery_date: '2026-11-18', payment_method: 'cod', website: '',
+    town: 1, delivery_date: '2026-11-18', payment_method: 'cod', website: '', fulfilment: 'delivery', meetup_place: null, meetup_time: null,
     items: [{product: 3, quantity: 2}],
     boxes: [{box_size: 9, contents: [{product: 3, quantity: 3}, {product: 5, quantity: 3}]}, {assortment: 4}],
   });
@@ -97,6 +98,48 @@ tests.push(['the last order is remembered, and missing storage is harmless', () 
   rememberLastOrder({number: 'x', token: 'y'});
   delete globalThis.localStorage;
   assert.equal(lastOrder(), null);
+}]);
+
+// A place open Saturday 2–5 PM and Wednesday 10 AM–12 PM.
+const day = (weekday, opens, closes) => ({weekday, is_open: opens !== null, opens, closes});
+const spot = {id: 7, name: 'SM City Lucena, main entrance', note: 'Look for the pink box',
+  hours: Array.from({length: 7}, (_, weekday) => weekday === 5 ? day(5, '14:00', '17:00') : weekday === 2 ? day(2, '10:00', '12:00') : day(weekday, null, null))};
+tests.push(['meet-up times step every 30 minutes up to half an hour before closing', () => {
+  assert.deepEqual(meetupTimes(spot, '2026-11-21', manila(16, 10)), ['14:00', '14:30', '15:00', '15:30', '16:00', '16:30']);
+  assert.deepEqual(meetupTimes(spot, '2026-11-19', manila(16, 10)), []);
+}]);
+tests.push(['today only offers times at least an hour away, in Manila time', () => {
+  assert.deepEqual(meetupTimes(spot, '2026-11-18', manila(18, 10, 20)), ['11:30']);
+  assert.deepEqual(meetupTimes(spot, '2026-11-18', manila(18, 11, 10)), []);
+  // 02:20 UTC is 10:20 in Manila.
+  assert.deepEqual(meetupTimes(spot, '2026-11-18', new Date(Date.UTC(2026, 10, 18, 2, 20))), ['11:30']);
+}]);
+tests.push(['meet-up days need a time left and follow the shop rules', () => {
+  assert.deepEqual(allowedMeetupDates(settings({meetup_places: [spot]}), spot, manila(16, 10), 3), ['2026-11-18', '2026-11-21', '2026-11-25']);
+  const sameDay = settings({lead_days: 0, meetup_places: [spot]});
+  assert.equal(allowedMeetupDates(sameDay, spot, manila(18, 11, 10))[0], '2026-11-21');
+  const off = settings({meetup_places: [spot], days_off: [{starts: '2026-11-21', ends: '2026-11-21', note: ''}]});
+  assert.deepEqual(allowedMeetupDates(off, spot, manila(16, 10), 2), ['2026-11-18', '2026-11-25']);
+}]);
+tests.push(['places with no day left are not offered', () => {
+  const closed = {...spot, id: 8, hours: Array.from({length: 7}, (_, weekday) => day(weekday, null, null))};
+  assert.deepEqual(offerablePlaces(settings({meetup_places: [spot, closed]}), manila(16, 10)).map(p => p.id), [7]);
+}]);
+tests.push(['meet-up checks and payload', () => {
+  const s = settings({meetup_places: [spot]});
+  const base = {fulfilment: 'meetup', customer_name: 'Ana Cruz', phone: '0917 123 4567', town: '', address: '', payment_method: '', note: ''};
+  assert.deepEqual(checkoutErrors({...base, meetup_place: '', delivery_date: '', meetup_time: ''}, s, manila(16, 10)),
+    {meetup_place: 'Pick where to meet.', delivery_date: 'Pick a day.', meetup_time: 'Pick a time.'});
+  assert.deepEqual(checkoutErrors({...base, meetup_place: '7', delivery_date: '2026-11-21', meetup_time: '17:00'}, s, manila(16, 10)),
+    {meetup_time: 'Pick a time.'});
+  const good = {...base, meetup_place: '7', delivery_date: '2026-11-21', meetup_time: '15:00', town: '1', address: 'ignored'};
+  assert.deepEqual(checkoutErrors(good, s, manila(16, 10)), {});
+  const payload = orderPayload([{product_id: 3, name: 'Glazed', price: 35, image_url: null, quantity: 1}], [], [], good, 'key-abcdefgh');
+  assert.equal(payload.fulfilment, 'meetup');
+  assert.equal(payload.meetup_place, 7);
+  assert.equal(payload.meetup_time, '15:00');
+  assert.equal(payload.town, null);
+  assert.equal(payload.address, '');
 }]);
 
 for (const [name, test] of tests) { test(); console.log('PASS: ' + name); }
