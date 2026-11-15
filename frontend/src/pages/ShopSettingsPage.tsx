@@ -253,7 +253,7 @@ function ShopSettingsForm({ settings }: { settings: ManagedShopSettings }) {
               label="New-order emails go to"
               htmlFor={fields.fid("order_email")}
               error={errors.order_email}
-              hint="Only you see this. Every order sent from the shop is emailed here."
+              hint="Only you see this. Every order sent from the shop is emailed here. With Resend's free plan, use your Resend account's email address."
             >
               <input
                 type="email"

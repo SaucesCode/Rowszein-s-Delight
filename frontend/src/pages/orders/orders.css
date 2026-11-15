@@ -109,3 +109,6 @@
 .home-new-orders strong { display: block; }
 .home-new-orders-sub { color: var(--color-ink-muted); font-size: var(--text-caption); }
 .home-new-orders-action { color: var(--color-accent-pressed); font-weight: 600; }
+
+.orders-detail-title:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 4px; border-radius: var(--radius-control); }
+.orders-detail-title:focus:not(:focus-visible) { outline: none; }

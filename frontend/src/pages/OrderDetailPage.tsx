@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, MessageSquare, Phone } from "lucide-react";
 import toast from "react-hot-toast";
@@ -43,12 +43,18 @@ function OrderDetail({ order }: { order: OwnerOrder }) {
   const [declining, setDeclining] = useState(false);
   const [message, setMessage] = useState("");
   const [messageError, setMessageError] = useState<string | null>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  // The action buttons disappear once the order is decided; keep the owner's place on the page.
+  const focusHeading = () => requestAnimationFrame(() => headingRef.current?.focus());
   const waiting = order.status === "waiting";
   const dialPhone = order.phone.replace(/[^+0-9]/g, "");
 
   const doConfirm = () =>
     confirm.mutate(order.id, {
-      onSuccess: () => toast.success(`Order ${order.number} confirmed and recorded as a sale.`),
+      onSuccess: () => {
+        toast.success(`Order ${order.number} confirmed and recorded as a sale.`);
+        focusHeading();
+      },
       onError: error => toast.error(actionMessage(error, "Couldn't confirm the order. Try again.")),
     });
 
@@ -63,6 +69,7 @@ function OrderDetail({ order }: { order: OwnerOrder }) {
         setDeclining(false);
         setMessage("");
         toast.success(`Order ${order.number} declined.`);
+        focusHeading();
       },
       onError: error => setMessageError(actionMessage(error, "Couldn't decline the order. Try again.")),
     });
@@ -73,7 +80,7 @@ function OrderDetail({ order }: { order: OwnerOrder }) {
       <Link to="/orders" className="orders-back"><ArrowLeft size={18} aria-hidden="true" /> All orders</Link>
       <header className="page-head orders-detail-head">
         <div>
-          <h1 className="type-page num">{order.number}</h1>
+          <h1 ref={headingRef} tabIndex={-1} className="type-page num orders-detail-title">{order.number}</h1>
           <p className="page-lede">{deliveryDayLabel(order.delivery_date)} · {order.town_name}</p>
         </div>
         <span className={`status-pill is-${order.status}`}>{STATUS_LABELS[order.status]}</span>

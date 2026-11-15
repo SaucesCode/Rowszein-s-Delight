@@ -121,12 +121,13 @@ Customers send their order from the shop, and it is saved in the app. Messenger 
 * **Confirm** records the sale through the same sales command as the register, so stock, reports and partner payouts all count it. The sale keeps the customer's prices and box contents even if the catalog changed since. If stock is short, the message says why and the order stays waiting.
 * **Decline** needs a short message, which the customer sees.
 * An order whose sale is later cancelled in Sales shows as Cancelled.
+* The Orders page warns when new-order emails aren't reaching the owner: no address set, the last send failed, or no `RESEND_API_KEY` on the server.
 
 **Behind the scenes:**
 
 * **Pricing:** the server prices every order from the current catalog; the customer's browser never sends prices.
 * **Duplicates:** a double tap or a retry sends the same order key, so only one order is saved.
-* **Spam protection:** a connection can send at most 5 orders in 10 minutes (only saved orders count), and a hidden field catches bots.
+* **Spam protection:** a connection can send at most 20 orders in 10 minutes (only saved orders count; set `OS` in `AUTH_RATE_LIMITS` to change it). The order endpoint accepts JSON only, so other websites can't submit orders through their visitors' browsers. If a retry changes an order that was already saved, the customer is told so instead of the changes being dropped.
 * **Emails:** every new order is emailed to the private "New-order emails go to" address in Shop settings, through Resend.
   * The email is sent after the order is saved, and is retried when the owner opens Orders. A failed email never loses an order.
   * The email leaves out the customer's phone, address and note.
@@ -206,7 +207,7 @@ Earlier checkpoint: Phase 1B.3 disposable database verification was completed fo
 ## Deployment
 
 * **Frontend:** Vercel, with `frontend` as the root directory. `frontend/vercel.json` sends `/api` to the backend and sets the security headers, including a Content-Security-Policy that only allows the site's own scripts and photos from Cloudinary. A new outside service (for example an analytics script) must be added to that policy, or the browser will block it.
-* **Backend:** Render. Every deploy must run `python manage.py migrate` (for example in the build command) so new database changes, such as `products/0005_boxes`, `products/0006_partners`, `products/0007_boxsize_max_flavors`, `products/0008_product_shape`, `sales/0004_sale_current_boxes`, `shop/0001_initial`, `shop/0002_seed_settings`, `shop/0003_shopsettings_order_email`, `accounts/0004_order_rate_limit_scope` and `orders/0001_initial`, are applied. Online orders also need `RESEND_API_KEY`, `ORDER_EMAIL_FROM` and `APP_URL` set on Render (see `backend/.env.example`); without the key, new-order emails are only logged.
+* **Backend:** Render. Every deploy must run `python manage.py migrate` (for example in the build command) so new database changes, such as `products/0005_boxes`, `products/0006_partners`, `products/0007_boxsize_max_flavors`, `products/0008_product_shape`, `sales/0004_sale_current_boxes`, `shop/0001_initial`, `shop/0002_seed_settings`, `shop/0003_shopsettings_order_email`, `accounts/0004_order_rate_limit_scope` and `orders/0001_initial` and `orders/0002_order_fingerprint`, are applied. Online orders also need `RESEND_API_KEY`, `ORDER_EMAIL_FROM` and `APP_URL` set on Render (see `backend/.env.example`); without the key, new-order emails are only logged. Before launch, check that `AUTH_PROXY_MODE` and `AUTH_TRUSTED_PROXY_CIDRS` let the backend see each customer's own address behind Vercel and Render; otherwise all customers share one order limit.
 * **Photos:** stored on Cloudinary in production. Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` on Render; without them, photos are saved to the server's disk, which Render wipes on redeploy. Photos must be JPG, PNG or WEBP and under 5 MB.
 * **Database backups:** the live database is on Supabase. Take and check a backup every week and before every deploy with a migration; see [Database backup and restore](docs/BACKUP_AND_RESTORE.md).
 * **Logs:** the backend writes one JSON line per event to stdout (Render's Logs tab), including every sign-in. Each response has an `X-Request-ID` header that matches its log lines.

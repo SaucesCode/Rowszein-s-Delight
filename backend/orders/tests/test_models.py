@@ -59,7 +59,8 @@ class OwnerCapabilityTests(TestCase):
 class OrderLimiterTests(TestCase):
     @override_settings(AUTH_RATE_LIMITS={'LA': 5, 'LI': 20, 'LR': 60, 'RR': 30})
     def test_order_scope_defaults_when_not_configured(self):
-        self.assertEqual(login_limiter.limit('OS'), 5)
+        # Customers can share one address behind the hosting proxies, so the default leaves room.
+        self.assertEqual(login_limiter.limit('OS'), 20)
 
     @override_settings(AUTH_RATE_LIMITS={'LI': 20, 'LR': 60, 'RR': 30})
     def test_sign_in_scopes_stay_strict(self):

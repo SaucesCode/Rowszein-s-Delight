@@ -10,7 +10,8 @@ import urllib.request
 from datetime import datetime, timedelta
 
 from django.conf import settings
-from django.db import transaction
+from django.db import connections
+from django.db.models import F
 from django.utils import timezone
 
 from shop.models import ShopSettings
@@ -57,26 +58,43 @@ def _message(order) -> tuple[str, str]:
     return f'New order {order.number} for {when}', body
 
 
+def email_problem() -> str:
+    """Why new-order emails aren't reaching the owner right now, in a line; '' when nothing is wrong."""
+    if not ShopSettings.load().order_email:
+        return 'No email address set'
+    if not settings.RESEND_API_KEY and not settings.DEBUG:
+        return "RESEND_API_KEY isn't set on the server, so new-order emails are only logged."
+    latest = OrderEmail.objects.order_by('-updated_at', '-id').first()
+    if latest is not None and latest.status == 'failed':
+        return latest.last_error or 'Sending failed'
+    return ''
+
+
 def _error_text(error: Exception) -> str:
     detail = str(error)
     return (f'{type(error).__name__}: {detail}' if detail else type(error).__name__)[:120]
 
 
-def deliver(email_id: int) -> str:
-    """Try to send one outbox row: 'sent', 'failed', or 'skipped' when it was already sent."""
-    with transaction.atomic():
-        email = OrderEmail.objects.select_for_update().select_related('order').get(pk=email_id)
-        if email.status == 'sent':
-            return 'skipped'
-        # Claiming the row moves updated_at, so a retry sweep won't pick it up while this send runs.
-        email.attempts += 1
-        email.save(update_fields=['attempts', 'updated_at'])
-    order, attempt = email.order, email.attempts
+def deliver(email_id: int, due_before: datetime | None = None) -> str:
+    """Try to send one outbox row: 'sent', 'failed', or 'skipped' when it was sent or claimed elsewhere.
+
+    The row is claimed with one conditional UPDATE (which also moves updated_at), so two sweeps holding the
+    same due list never both send it. `due_before` is the sweep's cutoff; a direct send passes None.
+    """
+    claim = OrderEmail.objects.filter(pk=email_id, status__in=('pending', 'failed'))
+    if due_before is not None:
+        claim = claim.filter(updated_at__lte=due_before, attempts__lt=MAX_ATTEMPTS)
     recipient = ShopSettings.load().order_email
-    outcome, error = 'sent', ''
     if not recipient:
-        outcome, error = 'failed', 'No email address set'
-    elif not settings.RESEND_API_KEY:
+        # Not an attempt: once the owner sets the address, the email still has all its tries.
+        marked = claim.update(status='failed', last_error='No email address set', updated_at=timezone.now())
+        return 'failed' if marked else 'skipped'
+    if not claim.update(attempts=F('attempts') + 1, updated_at=timezone.now()):
+        return 'skipped'
+    email = OrderEmail.objects.select_related('order').get(pk=email_id)
+    order, attempt = email.order, email.attempts
+    outcome, error = 'sent', ''
+    if not settings.RESEND_API_KEY:
         logger.info('New-order email would send (no RESEND_API_KEY)',
                     extra={'order_id': order.pk, 'attempt': attempt, 'outcome': 'logged'})
     else:
@@ -96,7 +114,17 @@ def send_due_emails(now: datetime | None = None, limit: int = 10) -> int:
     cutoff = (now or timezone.now()) - RETRY_AFTER
     due = list(OrderEmail.objects.filter(status__in=('pending', 'failed'), attempts__lt=MAX_ATTEMPTS,
                                          updated_at__lte=cutoff).order_by('updated_at').values_list('pk', flat=True)[:limit])
-    return sum(deliver(pk) == 'sent' for pk in due)
+    return sum(deliver(pk, due_before=cutoff) == 'sent' for pk in due)
+
+
+def in_background_thread(work, *args) -> None:
+    """Run email work off the request thread: log any failure, and always close this thread's connections."""
+    try:
+        work(*args)
+    except Exception:  # noqa: BLE001 - a failed send is retried by the next sweep; never lose the log
+        logger.exception('Background order email work failed')
+    finally:
+        connections.close_all()
 
 
 def queue_delivery(email_id: int) -> None:
@@ -104,7 +132,7 @@ def queue_delivery(email_id: int) -> None:
     if settings.ORDER_EMAIL_INLINE:
         deliver(email_id)
     else:
-        threading.Thread(target=deliver, args=(email_id,), daemon=True).start()
+        threading.Thread(target=in_background_thread, args=(deliver, email_id), daemon=True).start()
 
 
 def retry_due_emails_soon() -> None:
@@ -112,4 +140,4 @@ def retry_due_emails_soon() -> None:
     if settings.ORDER_EMAIL_INLINE:
         send_due_emails()
     else:
-        threading.Thread(target=send_due_emails, daemon=True).start()
+        threading.Thread(target=in_background_thread, args=(send_due_emails,), daemon=True).start()

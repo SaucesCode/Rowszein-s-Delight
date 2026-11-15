@@ -8,11 +8,17 @@ export type PlaceOrderPayload = ReturnType<typeof orderPayload>;
 export class OrderRequestError extends Error {
   readonly status: number;
   readonly fields: Record<string, string>;
+  /** "already_sent" when a retry changed an order that was already saved. */
+  readonly code: string;
+  /** The order already saved, when the server returns it with the refusal. */
+  readonly order: PlacedOrder | null;
 
-  constructor(status: number, message: string, fields: Record<string, string> = {}) {
+  constructor(status: number, message: string, fields: Record<string, string> = {}, code = "", order: PlacedOrder | null = null) {
     super(message);
     this.status = status;
     this.fields = fields;
+    this.code = code;
+    this.order = order;
   }
 }
 
@@ -30,7 +36,8 @@ async function publicRequest<T>(path: string, init: RequestInit = {}): Promise<{
     const message = (error && typeof error === "object" && typeof error.message === "string" && error.message)
       || fields.non_field_errors
       || "Something went wrong. Try again.";
-    throw new OrderRequestError(response.status, message, fields);
+    const code = error && typeof error === "object" && typeof error.code === "string" ? error.code : "";
+    throw new OrderRequestError(response.status, message, fields, code, body?.data ?? null);
   }
   return { data: body.data as T, status: response.status };
 }

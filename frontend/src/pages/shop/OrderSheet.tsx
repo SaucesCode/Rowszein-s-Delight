@@ -49,6 +49,8 @@ interface OrderSheetProps {
 
 interface Sent {
   order: PlacedOrder;
+  /** Set when a retry tried to change an order that was already saved. */
+  notice?: string;
   phone: string;
   name: string;
   singles: CartItem[];
@@ -183,6 +185,14 @@ export default function OrderSheet(props: OrderSheetProps) {
           showProblems({}, [OFFLINE]);
           return;
         }
+        if (error.code === "already_sent" && error.order) {
+          // The first version was saved; the customer's edited cart stays so they can message us or send it anew.
+          setSent({ order: error.order, phone: form.phone.trim(), name: form.customer_name.trim(), notice: error.message, ...snapshot });
+          rememberLastOrder({ number: error.order.number, token: error.order.token });
+          setClientKey(crypto.randomUUID());
+          setView("sent");
+          return;
+        }
         const fieldErrors: Partial<Record<CheckoutField, string>> = {};
         const others: string[] = [];
         for (const [key, message] of Object.entries(error.fields)) {
@@ -231,6 +241,7 @@ export default function OrderSheet(props: OrderSheetProps) {
                 setCard(true);
               }}
               onDone={close}
+              notice={sent.notice}
             />
           ) : view === "details" && settings ? (
             <form id={formId} noValidate onSubmit={event => {

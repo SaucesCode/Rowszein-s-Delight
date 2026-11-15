@@ -31,7 +31,14 @@ export default function OrdersPage() {
 
       {data?.email_problem && (
         <p className="orders-banner" role="status">
-          New-order emails can't be sent yet: set the address in <Link to="/settings">Shop settings</Link>, under Contact.
+          {data.email_problem_text === "No email address set" ? (
+            <>New-order emails can't be sent yet: set the address in <Link to="/settings">Shop settings</Link>, under Contact.</>
+          ) : (
+            <>
+              New-order emails aren't reaching you ({data.email_problem_text}). Check "New-order emails go to" in{" "}
+              <Link to="/settings">Shop settings</Link>; with Resend's free plan it must be your Resend account's address.
+            </>
+          )}
         </p>
       )}
 

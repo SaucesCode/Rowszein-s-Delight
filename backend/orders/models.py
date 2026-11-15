@@ -12,6 +12,8 @@ class OnlineOrder(models.Model):
     number = models.CharField(max_length=16, unique=True)
     token = models.CharField(max_length=64, unique=True)
     client_key = models.CharField(max_length=64, unique=True)
+    # What was sent with that key, so a retry with changes is answered honestly instead of ignored.
+    fingerprint = models.CharField(max_length=64, blank=True)
     status = models.CharField(max_length=10, default='waiting', choices=[(s, s.title()) for s in STATUSES])
 
     customer_name = models.CharField(max_length=80)

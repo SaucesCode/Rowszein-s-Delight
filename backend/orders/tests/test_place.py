@@ -4,7 +4,7 @@ from decimal import Decimal
 from unittest import mock
 from uuid import uuid4
 
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase, TransactionTestCase, override_settings
 from rest_framework.test import APIClient
 
 from products.models import Assortment, AssortmentItem, BoxSize, Category, Partner, Product
@@ -41,10 +41,9 @@ class OrderFixture:
         self.addCleanup(self.clock.stop)
         if not self.real_limiter:
             # The limiter refuses to run inside a test transaction; RateLimitTests covers it for real.
-            for name in ('orders.views.admit_order', 'orders.views.record_order'):
-                patcher = mock.patch(name)
-                patcher.start()
-                self.addCleanup(patcher.stop)
+            patcher = mock.patch('orders.views.OrderGate')
+            patcher.start()
+            self.addCleanup(patcher.stop)
 
     def body(self, **changes):
         data = {
@@ -105,6 +104,22 @@ class PlaceOrderTests(OrderFixture, TestCase):
         self.assertEqual(OnlineOrder.objects.count(), 1)
         self.assertEqual(OrderEmail.objects.count(), 1)
 
+    def test_same_client_key_with_changes_is_not_silently_ignored(self):
+        body = self.body()
+        first = self.client.post(PLACE_URL, body, format='json').json()['data']
+        changed = dict(body, items=[{'product': self.glazed.id, 'quantity': 5}])
+        response = self.client.post(PLACE_URL, changed, format='json')
+        self.assertEqual(response.status_code, 409)
+        error = response.json()['error']
+        self.assertEqual(error['code'], 'already_sent')
+        self.assertIn(first['number'], error['message'])
+        self.assertEqual(response.json()['data']['token'], first['token'])
+        self.assertEqual(OnlineOrder.objects.count(), 1)
+
+    def test_only_json_is_accepted(self):
+        response = self.client.post(PLACE_URL, {'customer_name': 'Ana'})  # form-encoded, as a cross-site form would send
+        self.assertEqual(response.status_code, 415)
+
     def test_unavailable_product_is_named(self):
         Product.objects.filter(pk=self.glazed.pk).update(is_available=False)
         errors = self.errors(self.place(boxes=[]))
@@ -151,6 +166,7 @@ class PlaceOrderTests(OrderFixture, TestCase):
         self.assertIn('payment_method', self.errors(self.place(payment_method='')))
         self.assertEqual(self.place(payment_method='cod').status_code, 201)
 
+@override_settings(AUTH_RATE_LIMITS={'LA': 5, 'LI': 20, 'LR': 60, 'RR': 30, 'OS': 5})
 class RateLimitTests(OrderFixture, TransactionTestCase):
     """The real database limiter, which needs real transactions."""
     real_limiter = True
@@ -174,6 +190,15 @@ class RateLimitTests(OrderFixture, TransactionTestCase):
         self.assertEqual(refused.status_code, 429)
         self.assertEqual(refused.json()['error']['message'], 'Too many orders from this connection. Try again in a few minutes.')
         self.assertEqual(OnlineOrder.objects.count(), 5)
+
+    def test_a_saved_order_is_returned_even_at_the_limit(self):
+        first = self.body()
+        self.assertEqual(self.client.post(PLACE_URL, first, format='json').status_code, 201)
+        for _ in range(4):
+            self.assertEqual(self.place().status_code, 201)
+        self.assertEqual(self.place().status_code, 429)
+        replay = self.client.post(PLACE_URL, first, format='json')
+        self.assertEqual(replay.status_code, 200)
 
     def test_corrected_mistakes_do_not_use_up_the_limit(self):
         for _ in range(6):

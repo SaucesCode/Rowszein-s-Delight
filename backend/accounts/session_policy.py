@@ -10,7 +10,7 @@ ACCESS = timedelta(minutes=15)
 IDLE = timedelta(minutes=30)
 ABSOLUTE = timedelta(hours=8)
 EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)
-SCOPES = {'LA': (5, 300), 'LI': (20, 300), 'LR': (60, 60), 'RR': (30, 60), 'OS': (5, 600)}
+SCOPES = {'LA': (5, 300), 'LI': (20, 300), 'LR': (60, 60), 'RR': (30, 60), 'OS': (20, 600)}
 # Scopes that fall back to their SCOPES default when AUTH_RATE_LIMITS leaves them out; sign-in scopes stay strict.
 DEFAULTED_SCOPES = frozenset({'OS'})
 EVENT_CEILING = 1000

@@ -4,21 +4,21 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.exceptions import APIException, Throttled
+from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.permissions import BusinessPermission
-from shop.models import ShopSettings
 from shop.serializers import flatten_errors
 
 from . import delivery
-from .emails import retry_due_emails_soon
-from .limits import TOO_MANY, admit_order, record_order
+from .emails import email_problem, retry_due_emails_soon
+from .limits import TOO_MANY, OrderGate
 from .models import OnlineOrder
 from .pricing import OrderRefused
 from .owner import clear_old_contacts, confirm_order, decline_order
 from .serializers import DeclineInput, PlaceOrderInput, owner_document, owner_row, placed_document, status_document
-from .services import place_order
+from .services import OrderAlreadySent, place_order
 
 
 def _ok(data, message='', status_code=status.HTTP_200_OK):
@@ -45,6 +45,8 @@ class PlaceOrderView(APIView):
     """
     independent_auth_session = True
     authentication_classes = ()
+    # JSON only: a cross-site form can't send it without a CORS preflight, which the API refuses.
+    parser_classes = [JSONParser]
     permission_classes = [BusinessPermission]
     business_actions = {'POST': 'catalog.public', 'OPTIONS': 'catalog.read'}
 
@@ -53,20 +55,21 @@ class PlaceOrderView(APIView):
         if not serializer.is_valid():
             return _refused(flatten_errors(serializer.errors))
         data = serializer.validated_data
-        try:
-            admit_order(request)
-        except Throttled as throttled:
-            return _too_many(throttled)
         if data['website']:
             # A bot filled the hidden field: answer like a success, keep nothing.
-            record_order(request)
             return _ok({'number': 'RD-000000-0000', 'status': 'waiting'}, 'Order sent.', status.HTTP_201_CREATED)
         try:
-            order, created = place_order(data, delivery.current_time())
+            order, created = place_order(data, delivery.current_time(), OrderGate(request))
+        except Throttled as throttled:
+            return _too_many(throttled)
         except OrderRefused as refused:
             return _refused(refused.errors)
-        if created:
-            record_order(request)
+        except OrderAlreadySent as sent:
+            return Response({'success': False, 'data': placed_document(sent.order), 'error': {
+                'code': 'already_sent',
+                'message': f"Your earlier order {sent.order.number} was already sent, so these changes weren't added. "
+                           'Message us to change it.',
+            }}, status=status.HTTP_409_CONFLICT)
         return _ok(placed_document(order), 'Order sent.', status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
 
@@ -106,13 +109,15 @@ class OwnerOrderListView(APIView):
         if wanted in LIST_FILTERS:
             orders = orders.filter(status=wanted)
         page = Paginator(orders, PAGE_SIZE).get_page(request.query_params.get('page'))
+        problem = email_problem()
         return _ok({
             'results': [owner_row(order) for order in page.object_list],
             'count': page.paginator.count,
             'next': page.next_page_number() if page.has_next() else None,
             'previous': page.previous_page_number() if page.has_previous() else None,
             'waiting_count': OnlineOrder.objects.filter(status='waiting').count(),
-            'email_problem': not ShopSettings.load().order_email,
+            'email_problem': bool(problem),
+            'email_problem_text': problem,
         })
 
 

@@ -73,8 +73,10 @@ export interface OwnerOrderList {
   next: number | null;
   previous: number | null;
   waiting_count: number;
-  /** True while no "New-order emails go to" address is set. */
+  /** True while new-order emails can't reach the owner. */
   email_problem: boolean;
+  /** Why, in a line: "No email address set", the last sending error, or a missing server key. */
+  email_problem_text: string;
 }
 
 export type OrderFilter = "waiting" | "confirmed" | "declined" | "all";

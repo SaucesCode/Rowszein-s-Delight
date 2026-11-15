@@ -103,3 +103,41 @@ class SendOrderEmailsCommandTests(TestCase):
         out = StringIO()
         call_command('send_order_emails', stdout=out)
         self.assertEqual(out.getvalue().strip(), 'Sent 0 new-order email(s).')
+
+
+@override_settings(RESEND_API_KEY=KEY, ORDER_EMAIL_INLINE=True)
+class OutboxSafetyTests(OrderFixture, TestCase):
+    def setUp(self):
+        super().setUp()
+        ShopSettings.objects.update(order_email='owner@example.com')
+        self.place()
+        self.email = OrderEmail.objects.get()
+
+    def test_two_sweeps_with_the_same_list_send_once(self):
+        old = timezone.now() - timedelta(minutes=10)
+        OrderEmail.objects.filter(pk=self.email.pk).update(status='failed', attempts=1, updated_at=old)
+        cutoff = timezone.now() - timedelta(minutes=5)
+        with mock.patch('orders.emails.post_to_resend', side_effect=RuntimeError('down')) as post:
+            self.assertEqual(deliver(self.email.pk, due_before=cutoff), 'failed')
+            # A second sweep that read the same due list a moment earlier finds the row already claimed.
+            self.assertEqual(deliver(self.email.pk, due_before=cutoff), 'skipped')
+        self.assertEqual(post.call_count, 1)
+        self.email.refresh_from_db()
+        self.assertEqual(self.email.attempts, 2)
+
+    def test_missing_address_does_not_use_up_attempts(self):
+        ShopSettings.objects.update(order_email='')
+        for _ in range(6):
+            deliver(self.email.pk)
+        self.email.refresh_from_db()
+        self.assertEqual((self.email.status, self.email.attempts), ('failed', 0))
+        ShopSettings.objects.update(order_email='owner@example.com')
+        with mock.patch('orders.emails.post_to_resend'):
+            self.assertEqual(deliver(self.email.pk), 'sent')
+
+    def test_background_work_closes_its_connections_and_logs_failures(self):
+        from ..emails import in_background_thread
+        with mock.patch('orders.emails.connections') as connections, self.assertLogs('orders', 'ERROR') as logs:
+            in_background_thread(mock.Mock(side_effect=RuntimeError('boom')))
+        connections.close_all.assert_called_once()
+        self.assertIn('Background order email work failed', logs.output[0])

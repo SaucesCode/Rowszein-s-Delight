@@ -2,6 +2,7 @@
 from datetime import date, timedelta
 from decimal import Decimal
 from io import StringIO
+from unittest import mock
 from uuid import uuid4
 
 from django.core.management import call_command
@@ -135,7 +136,7 @@ class DeclineTests(OwnerFixture, TestCase):
 
 
 class ListAndDetailTests(OwnerFixture, TestCase):
-    @override_settings(ORDER_EMAIL_INLINE=True)
+    @override_settings(ORDER_EMAIL_INLINE=True, RESEND_API_KEY='re_test')
     def test_list_counts_waiting_and_retries_due_emails(self):
         self.placed()
         declined = self.placed()
@@ -143,16 +144,38 @@ class ListAndDetailTests(OwnerFixture, TestCase):
         OrderEmail.objects.update(status='failed', last_error='TimeoutError',
                                   updated_at=timezone.now() - timedelta(minutes=10))
         ShopSettings.objects.update(order_email='owner@example.com')
-        with self.captureOnCommitCallbacks(execute=True):
+        with mock.patch('orders.emails.post_to_resend'), self.captureOnCommitCallbacks(execute=True):
             response = self.owner.get(MANAGE, {'status': 'waiting'})
         data = response.json()['data']
         self.assertEqual(data['waiting_count'], 1)
         self.assertEqual(data['count'], 1)
-        self.assertFalse(data['email_problem'])
+        self.assertTrue(data['email_problem'])  # the last tries had failed when the page loaded
         self.assertEqual(set(OrderEmail.objects.values_list('status', flat=True)), {'sent'})
+        self.assertFalse(self.owner.get(MANAGE).json()['data']['email_problem'])
 
+    @override_settings(RESEND_API_KEY='re_test')
     def test_list_flags_a_missing_email_address(self):
-        self.assertTrue(self.owner.get(MANAGE).json()['data']['email_problem'])
+        data = self.owner.get(MANAGE).json()['data']
+        self.assertTrue(data['email_problem'])
+        self.assertEqual(data['email_problem_text'], 'No email address set')
+
+    @override_settings(RESEND_API_KEY='re_test')
+    def test_list_flags_failing_emails_until_one_goes_through(self):
+        ShopSettings.objects.update(order_email='owner@example.com')
+        self.placed()
+        OrderEmail.objects.update(status='failed', last_error='RuntimeError: Resend answered 403')
+        data = self.owner.get(MANAGE).json()['data']
+        self.assertTrue(data['email_problem'])
+        self.assertEqual(data['email_problem_text'], 'RuntimeError: Resend answered 403')
+        OrderEmail.objects.update(status='sent')
+        self.assertFalse(self.owner.get(MANAGE).json()['data']['email_problem'])
+
+    @override_settings(RESEND_API_KEY='', DEBUG=False)
+    def test_list_flags_a_server_without_an_email_key(self):
+        ShopSettings.objects.update(order_email='owner@example.com')
+        data = self.owner.get(MANAGE).json()['data']
+        self.assertTrue(data['email_problem'])
+        self.assertIn('RESEND_API_KEY', data['email_problem_text'])
 
     def test_detail_shows_contact_details_to_the_owner(self):
         order = self.placed(note='Ring twice')
