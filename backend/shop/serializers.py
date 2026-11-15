@@ -5,7 +5,7 @@ from django.core.validators import RegexValidator
 from django.utils import timezone
 from rest_framework import serializers
 
-from .models import PAYMENT_METHODS, DayOff, DeliveryHours, DeliveryTown, ShopSettings
+from .models import PAYMENT_METHODS, DayOff, DeliveryHours, DeliveryTown, MeetupPlace, ShopSettings
 
 MESSENGER_LINK = RegexValidator(r'^https://(m\.me|www\.messenger\.com)/[^\s<>"]+$',
                                 'Use your Messenger link, like https://m.me/rowszeinsdelight.')
@@ -60,6 +60,44 @@ class DayOffRowSerializer(serializers.Serializer):
         return row
 
 
+MAX_MEETUP_PLACES = 10
+MEETUP_MIN_MINUTES = 30
+
+
+def _minutes(value):
+    return value.hour * 60 + value.minute
+
+
+def _seven_days(rows):
+    if sorted(row['weekday'] for row in rows) != list(range(7)):
+        raise serializers.ValidationError('Set hours for each day of the week, Monday to Sunday, once.')
+    return sorted(rows, key=lambda row: row['weekday'])
+
+
+class MeetupHoursRowSerializer(HoursRowSerializer):
+    def validate(self, row):
+        row = super().validate(row)
+        if row['is_open'] and _minutes(row['closes']) - _minutes(row['opens']) < MEETUP_MIN_MINUTES:
+            raise serializers.ValidationError({'closes': 'Leave at least 30 minutes between opening and closing.'})
+        return row
+
+
+class MeetupPlaceRowSerializer(serializers.Serializer):
+    id = serializers.IntegerField(required=False)
+    name = serializers.CharField(max_length=80, validators=[PLAIN_TEXT])
+    note = _text(160, required=False, default='')
+    is_active = serializers.BooleanField()
+    hours = MeetupHoursRowSerializer(many=True)
+
+    def validate_hours(self, rows):
+        return _seven_days(rows)
+
+    def validate(self, row):
+        if row['is_active'] and not any(day['is_open'] for day in row['hours']):
+            raise serializers.ValidationError({'hours': 'Open this place on at least one day, or switch it off.'})
+        return row
+
+
 class ShopSettingsInputSerializer(serializers.Serializer):
     revision = serializers.IntegerField(min_value=1)
     messenger_url = serializers.CharField(max_length=200, validators=[MESSENGER_LINK])
@@ -77,6 +115,8 @@ class ShopSettingsInputSerializer(serializers.Serializer):
     hours = HoursRowSerializer(many=True)
     towns = TownRowSerializer(many=True, max_length=MAX_TOWNS)
     days_off = DayOffRowSerializer(many=True, max_length=MAX_DAYS_OFF)
+    # Optional: a save from a page that predates meet-ups keeps the stored places.
+    meetup_places = MeetupPlaceRowSerializer(many=True, required=False, max_length=MAX_MEETUP_PLACES)
 
     def validate_messenger_url(self, value):
         return value.strip()
@@ -87,25 +127,31 @@ class ShopSettingsInputSerializer(serializers.Serializer):
         return [method for method in PAYMENT_METHODS if method in value]
 
     def validate_hours(self, rows):
-        if sorted(row['weekday'] for row in rows) != list(range(7)):
-            raise serializers.ValidationError('Set hours for each day of the week, Monday to Sunday, once.')
-        return sorted(rows, key=lambda row: row['weekday'])
+        return _seven_days(rows)
 
     def validate_towns(self, rows):
-        errors, seen, known = [{} for _ in rows], set(), set(DeliveryTown.objects.values_list('id', flat=True))
-        for index, row in enumerate(rows):
-            row['name'] = re.sub(r'\s+', ' ', row['name']).strip()
-            key = row['name'].casefold()
-            if not row['name']:
-                errors[index]['name'] = ['Enter the town name.']
-            elif key in seen:
-                errors[index]['name'] = ['This town is already in the list.']
-            if 'id' in row and row['id'] not in known:
-                errors[index]['id'] = ['This town was removed. Reload the page.']
-            seen.add(key)
-        if any(errors):
-            raise serializers.ValidationError(errors)
-        return rows
+        return _unique_rows(rows, DeliveryTown, 'town')
+
+    def validate_meetup_places(self, rows):
+        return _unique_rows(rows, MeetupPlace, 'place')
+
+
+def _unique_rows(rows, model, noun):
+    """Tidy names; each must be unique ignoring case, and any id must still exist."""
+    errors, seen, known = [{} for _ in rows], set(), set(model.objects.values_list('id', flat=True))
+    for index, row in enumerate(rows):
+        row['name'] = re.sub(r'\s+', ' ', row['name']).strip()
+        key = row['name'].casefold()
+        if not row['name']:
+            errors[index]['name'] = [f'Enter the {noun} name.']
+        elif key in seen:
+            errors[index]['name'] = [f'This {noun} is already in the list.']
+        if 'id' in row and row['id'] not in known:
+            errors[index]['id'] = [f'This {noun} was removed. Reload the page.']
+        seen.add(key)
+    if any(errors):
+        raise serializers.ValidationError(errors)
+    return rows
 
 
 def flatten_errors(errors, prefix=''):
@@ -166,6 +212,7 @@ def public_document():
                   for town in DeliveryTown.objects.filter(is_active=True)],
         'days_off': [{'starts': day.starts.isoformat(), 'ends': day.ends.isoformat(), 'note': day.note}
                      for day in _upcoming_days_off()[:PUBLIC_DAYS_OFF]],
+        'meetup_places': meetup_places_document(active_only=True),
     }
 
 
@@ -183,4 +230,19 @@ def managed_document():
                   for town in DeliveryTown.objects.all()],
         'days_off': [{'starts': day.starts.isoformat(), 'ends': day.ends.isoformat(), 'note': day.note}
                      for day in _upcoming_days_off()],
+        'meetup_places': meetup_places_document(active_only=False),
     }
+
+
+def _week(rows):
+    return [{'weekday': row.weekday, 'is_open': row.is_open, 'opens': _time(row.opens), 'closes': _time(row.closes)}
+            for row in rows]
+
+
+def meetup_places_document(active_only: bool) -> list[dict]:
+    places = MeetupPlace.objects.prefetch_related('hours')
+    if active_only:
+        return [{'id': place.id, 'name': place.name, 'note': place.note, 'hours': _week(place.hours.all())}
+                for place in places.filter(is_active=True)]
+    return [{'id': place.id, 'name': place.name, 'note': place.note, 'is_active': place.is_active,
+             'hours': _week(place.hours.all())} for place in places]

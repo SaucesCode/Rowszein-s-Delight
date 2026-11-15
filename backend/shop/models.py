@@ -80,3 +80,36 @@ class DayOff(models.Model):
     class Meta:
         ordering = ['starts', 'id']
         constraints = [models.CheckConstraint(condition=Q(starts__lte=models.F('ends')), name='day_off_order')]
+
+
+class MeetupPlace(models.Model):
+    """A spot the owner meets customers, with its own weekly hours (seven MeetupHours rows)."""
+    name = models.CharField(max_length=80)
+    note = models.CharField(max_length=160, blank=True)
+    is_active = models.BooleanField(default=True)
+    position = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        ordering = ['position', 'id']
+        constraints = [models.UniqueConstraint(Lower('name'), name='meetup_place_name_ci_unique')]
+
+
+class MeetupHours(models.Model):
+    """One weekday at a meet-up place; 0 is Monday."""
+    place = models.ForeignKey(MeetupPlace, on_delete=models.CASCADE, related_name='hours')
+    weekday = models.PositiveSmallIntegerField()
+    is_open = models.BooleanField(default=False)
+    opens = models.TimeField(null=True, blank=True)
+    closes = models.TimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['weekday']
+        constraints = [
+            models.UniqueConstraint(fields=['place', 'weekday'], name='meetup_hours_unique_day'),
+            models.CheckConstraint(condition=Q(weekday__lte=6), name='meetup_hours_weekday_range'),
+            models.CheckConstraint(
+                condition=Q(is_open=False) | Q(opens__isnull=False, closes__isnull=False, opens__lt=models.F('closes')),
+                name='meetup_hours_open_window',
+            ),
+        ]
+

@@ -3,7 +3,7 @@ import logging
 from django.db import transaction
 from django.utils import timezone
 
-from .models import DayOff, DeliveryHours, DeliveryTown, ShopSettings
+from .models import DayOff, DeliveryHours, DeliveryTown, MeetupHours, MeetupPlace, ShopSettings
 from .serializers import managed_document
 
 logger = logging.getLogger('shop.settings')
@@ -46,6 +46,9 @@ def save_settings(actor, data, revision):
             else:
                 DeliveryTown.objects.create(**values)
 
+        if 'meetup_places' in data:
+            _save_meetup_places(data['meetup_places'])
+
         today = timezone.localdate()
         DayOff.objects.all().delete()
         DayOff.objects.bulk_create(DayOff(starts=row['starts'], ends=row['ends'], note=row.get('note', ''))
@@ -57,3 +60,25 @@ def save_settings(actor, data, revision):
         transaction.on_commit(lambda: logger.info('Shop settings saved', extra={
             'actor_id': actor_id, 'revision': settings.revision, 'changed': changed}))
     return settings
+
+
+def _save_meetup_places(rows):
+    """Replace the meet-up places: rows keep their id, missing ones go, new ones are added."""
+    kept = [row['id'] for row in rows if 'id' in row]
+    MeetupPlace.objects.exclude(id__in=kept).delete()
+    # Placeholder names first, so two places can swap names without tripping the unique-name rule midway.
+    for place_id in kept:
+        MeetupPlace.objects.filter(id=place_id).update(name=f'~renaming~{place_id}')
+    for position, row in enumerate(rows):
+        values = {'name': row['name'], 'note': row.get('note', '').strip(), 'is_active': row['is_active'], 'position': position}
+        if 'id' in row:
+            MeetupPlace.objects.filter(id=row['id']).update(**values)
+            place = MeetupPlace.objects.get(id=row['id'])
+        else:
+            place = MeetupPlace.objects.create(**values)
+        place.hours.all().delete()
+        MeetupHours.objects.bulk_create(
+            MeetupHours(place=place, weekday=day['weekday'], is_open=day['is_open'],
+                        opens=day.get('opens') if day['is_open'] else None,
+                        closes=day.get('closes') if day['is_open'] else None)
+            for day in row['hours'])
