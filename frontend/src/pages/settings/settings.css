@@ -131,3 +131,17 @@
 }
 .settings-list-foot .field-hint { margin: 0; max-width: 65ch; }
 .settings-list-foot .link-button { text-align: left; line-height: 1.3; }
+
+/* Meet-up places: one card per place, with its own week of hours. */
+.meetup-places { display: grid; gap: var(--space-4); }
+.meetup-place { display: grid; gap: var(--space-3); padding-top: var(--space-4); }
+.meetup-place > .meetup-place-field,
+.meetup-place > .meetup-place-switch { padding: 0 var(--space-5); }
+.meetup-place-head { display: grid; grid-template-columns: minmax(0, 1fr) 44px; align-items: end; gap: var(--space-3); padding: 0 var(--space-5); }
+.meetup-place-field { display: grid; gap: var(--space-1); }
+.meetup-place-field .field-label { margin-bottom: 0; }
+.meetup-place-field .field-hint,
+.meetup-place-field .field-error { margin: 0; }
+.meetup-place-switch { display: grid; gap: var(--space-1); }
+.meetup-empty { padding: var(--space-4); border-radius: var(--radius-card); background: var(--color-surface); }
+

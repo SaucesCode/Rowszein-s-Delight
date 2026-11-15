@@ -14,6 +14,7 @@ import type { ManagedShopSettings, PaymentMethod } from "@/types/shopSettings.ty
 import DaysOffFields from "./settings/DaysOffFields";
 import FieldMessage from "./settings/FieldMessage";
 import HoursFields from "./settings/HoursFields";
+import MeetupPlacesFields from "./settings/MeetupPlacesFields";
 import TownsFields from "./settings/TownsFields";
 import { isDirty, toDraft, toPayload, type Draft } from "./settings/draft";
 import { invalidProps, type FieldErrors } from "./settings/fieldErrors";
@@ -127,6 +128,11 @@ function ShopSettingsForm({ settings }: { settings: ManagedShopSettings }) {
         <section className="settings-group" aria-labelledby={fields.fid("towns-title")}>
           <h2 id={fields.fid("towns-title")} className="settings-group-title">Delivery towns</h2>
           <TownsFields towns={draft.towns} onTowns={towns => set("towns", towns)} fields={fields} />
+        </section>
+
+        <section className="settings-group" aria-labelledby={fields.fid("meetups-title")}>
+          <h2 id={fields.fid("meetups-title")} className="settings-group-title">Meet-up places</h2>
+          <MeetupPlacesFields places={draft.meetup_places} onPlaces={places => set("meetup_places", places)} fields={fields} />
         </section>
 
         <section className="settings-group" aria-labelledby={fields.fid("ordering-title")}>
