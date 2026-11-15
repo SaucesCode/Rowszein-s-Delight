@@ -249,6 +249,21 @@ function ShopSettingsForm({ settings }: { settings: ManagedShopSettings }) {
                 {...invalidProps(fields, "email")}
               />
             </Row>
+            <Row
+              label="New-order emails go to"
+              htmlFor={fields.fid("order_email")}
+              error={errors.order_email}
+              hint="Only you see this. Every order sent from the shop is emailed here."
+            >
+              <input
+                type="email"
+                className="field-input"
+                autoComplete="email"
+                value={draft.order_email}
+                onChange={event => set("order_email", event.target.value)}
+                {...invalidProps(fields, "order_email")}
+              />
+            </Row>
             <Row label="Phone" htmlFor={fields.fid("phone")} error={errors.phone} hint="Optional. Leave blank to hide it.">
               <input
                 type="tel"

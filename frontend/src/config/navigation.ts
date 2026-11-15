@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   BookOpen,
   Donut,
+  Inbox,
   Receipt,
   Store,
   TrendingUp,
@@ -16,13 +17,22 @@ export interface OwnerSection {
   capability: string;
   newLabel?: string;
   editLabel?: string;
+  /** Shows the number of orders waiting next to the item. */
+  badge?: "waiting-orders";
 }
 
 /**
- * The seven owner sections, ordered by how often the counter uses them.
+ * The eight owner sections, ordered by how often the counter uses them.
  * Drives the sidebar, the hub's "Around the shop" list and the back link.
  */
 export const OWNER_SECTIONS: OwnerSection[] = [
+  {
+    to: "/orders",
+    title: "Orders",
+    icon: Inbox,
+    capability: "orders.manage",
+    badge: "waiting-orders",
+  },
   {
     to: "/sales",
     title: "Sales register",

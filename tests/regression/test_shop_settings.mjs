@@ -73,7 +73,7 @@ tests.push(['payment labels and the pause fallback', () => {
 }]);
 
 const managed = {
-  ...loaded, show_hours: true, revision: 4, updated_at: '2026-11-14T09:00:00+08:00', order_cutoff: '15:00',
+  ...loaded, order_email: 'owner@example.com', show_hours: true, revision: 4, updated_at: '2026-11-14T09:00:00+08:00', order_cutoff: '15:00',
   payment_methods: ['gcash', 'cod'], notice: 'No deliveries on Nov 30',
   hours: week({0: day(0, null, null)}),
   towns: [{id: 1, name: 'Lucena City', is_active: true, fee: '0.00'}, {id: 2, name: 'Tayabas', is_active: false, fee: null},

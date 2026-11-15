@@ -69,6 +69,7 @@ export function toPayload(draft: Draft): ShopSettingsPayload {
     messenger_url: draft.messenger_url.trim(),
     facebook_url: draft.facebook_url.trim(),
     email: draft.email.trim(),
+    order_email: draft.order_email.trim(),
     phone: draft.phone.trim(),
     notice: draft.notice.trim(),
     pause_message: draft.pause_message.trim(),

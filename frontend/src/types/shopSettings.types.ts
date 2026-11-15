@@ -47,6 +47,8 @@ export interface ManagedTown {
 
 /** The owner's Shop settings page. `hours` always has seven rows. */
 export interface ManagedShopSettings extends SettingsBase {
+  /** Private: where new-order emails go. Never in the public settings. */
+  order_email: string;
   show_hours: boolean;
   revision: number;
   updated_at: string;

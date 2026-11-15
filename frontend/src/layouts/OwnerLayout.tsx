@@ -1,4 +1,5 @@
 import { Suspense, useEffect, useRef, type ReactNode } from "react";
+import { useWaitingCount } from "@/hooks/useOrders";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { ArrowLeft, ExternalLink, House, LogOut, Menu, X } from "lucide-react";
 import { useMe, useLogout } from "@/hooks/useAuth";
@@ -39,7 +40,8 @@ function SidebarContent({ pathname }: { pathname: string }) {
   const name = displayName(user?.username);
   const activeTo = pathname === home ? home : ownerTrail(pathname)[0]?.to;
 
-  const items = [
+  const { data: waiting = 0 } = useWaitingCount();
+  const items: { to: string; title: string; icon: typeof House; badge?: string }[] = [
     ...(home === "/home" ? [{ to: "/home", title: "Home", icon: House }] : []),
     ...OWNER_SECTIONS.filter(section => can(user, section.capability)),
   ];
@@ -56,6 +58,12 @@ function SidebarContent({ pathname }: { pathname: string }) {
                 <Link to={item.to} className="shell-nav-link" aria-current={isActive ? "page" : undefined}>
                   <Icon size={20} strokeWidth={1.75} aria-hidden="true" />
                   <span>{item.title}</span>
+                  {item.badge === "waiting-orders" && waiting > 0 && (
+                    <>
+                      <span className="shell-nav-badge num" aria-hidden="true">{waiting}</span>
+                      <span className="sr-only">, {waiting} waiting</span>
+                    </>
+                  )}
                 </Link>
               </li>
             );
