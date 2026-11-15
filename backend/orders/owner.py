@@ -12,6 +12,7 @@ from sales.serializers import SaleSerializer
 from sales.services import execute_sale
 
 from .models import OnlineOrder
+from .serializers import fulfilment_line
 
 # Fixed namespace: the same order always maps to the same sales idempotency key, so a repeated
 # confirm can never record a second sale.
@@ -36,6 +37,13 @@ def _assortment_unchanged(box: dict) -> bool:
     return current == sorted((content['product'], content['quantity']) for content in box['contents'])
 
 
+def _sale_notes(order: OnlineOrder, fee: str) -> str:
+    if order.fulfilment == 'meetup':
+        line = fulfilment_line(order).removeprefix('Meet-up: ')
+        return f'Online order {order.number}, {order.customer_name}, meet-up at {line}'
+    return f'Online order {order.number}, {order.customer_name}, {order.town_name}; delivery fee: {fee}'
+
+
 def sale_payload(order: OnlineOrder) -> dict:
     """The sales command's input, built from what the customer saw: their prices and their donuts."""
     boxes = []
@@ -48,7 +56,7 @@ def sale_payload(order: OnlineOrder) -> dict:
     fee = f'₱{order.delivery_fee}' if order.delivery_fee is not None else 'to confirm'
     return {
         'date': order.delivery_date.isoformat(),
-        'notes': f'Online order {order.number}, {order.customer_name}, {order.town_name}; delivery fee: {fee}',
+        'notes': _sale_notes(order, fee),
         'sale_items': [{'product': line['product'], 'quantity': line['quantity'], 'unit_price': line['unit_price']}
                        for line in order.items],
         'boxes': boxes,

@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import Q
 
 STATUSES = ('waiting', 'confirmed', 'declined')
+FULFILMENTS = ('delivery', 'meetup')
 EMAIL_STATUSES = ('pending', 'sent', 'failed')
 
 
@@ -26,6 +27,12 @@ class OnlineOrder(models.Model):
     delivery_fee = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
     delivery_date = models.DateField()
     payment_method = models.CharField(max_length=20, blank=True)
+    fulfilment = models.CharField(max_length=8, default='delivery', choices=[(f, f.title()) for f in FULFILMENTS])
+    # A meet-up keeps the place's name and note as they were when the customer ordered.
+    meetup_place = models.ForeignKey('shop.MeetupPlace', null=True, blank=True, on_delete=models.SET_NULL, related_name='+')
+    meetup_place_name = models.CharField(max_length=80, blank=True)
+    meetup_place_note = models.CharField(max_length=160, blank=True)
+    meetup_time = models.TimeField(null=True, blank=True)
 
     items = models.JSONField(default=list)
     boxes = models.JSONField(default=list)
@@ -49,6 +56,11 @@ class OnlineOrder(models.Model):
                 name='online_order_sale_only_when_confirmed',
             ),
             models.CheckConstraint(condition=Q(subtotal__gte=0, total__gte=0), name='online_order_total_not_negative'),
+            models.CheckConstraint(
+                condition=(Q(fulfilment='delivery') & ~Q(town_name=''))
+                | (Q(fulfilment='meetup', meetup_time__isnull=False, delivery_fee=0) & ~Q(meetup_place_name='')),
+                name='online_order_fulfilment_complete',
+            ),
         ]
         indexes = [
             models.Index(fields=['status', 'created_at'], name='online_order_status_time'),

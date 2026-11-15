@@ -18,6 +18,7 @@ from shop.models import ShopSettings
 
 from .delivery import day_label
 from .models import OrderEmail
+from .serializers import fulfilment_line
 
 logger = logging.getLogger('orders')
 
@@ -46,7 +47,7 @@ def _message(order) -> tuple[str, str]:
     fee = f'₱{order.delivery_fee}' if order.delivery_fee is not None else 'to confirm'
     body = '\n'.join([
         f'New order {order.number} from {first_name}.',
-        f'Delivery: {when}, {order.town_name}.',
+        f'{fulfilment_line(order)}.',
         '',
         *lines,
         '',

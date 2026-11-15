@@ -45,9 +45,12 @@ class PlaceOrderInput(serializers.Serializer):
     client_key = serializers.RegexField(r'^[A-Za-z0-9_-]{8,64}$')
     customer_name = serializers.CharField(max_length=80, validators=[PLAIN_TEXT])
     phone = serializers.CharField(max_length=24)
-    address = serializers.CharField(max_length=200, validators=[PLAIN_TEXT])
+    fulfilment = serializers.ChoiceField(choices=['delivery', 'meetup'], required=False, default='delivery')
+    address = serializers.CharField(max_length=200, allow_blank=True, required=False, default='', validators=[PLAIN_TEXT])
     note = serializers.CharField(max_length=300, allow_blank=True, required=False, default='', validators=[PLAIN_TEXT])
-    town = serializers.IntegerField(min_value=1)
+    town = serializers.IntegerField(min_value=1, required=False, allow_null=True, default=None)
+    meetup_place = serializers.IntegerField(min_value=1, required=False, allow_null=True, default=None)
+    meetup_time = serializers.TimeField(required=False, allow_null=True, default=None)
     delivery_date = serializers.DateField()
     payment_method = serializers.CharField(max_length=20, allow_blank=True, required=False, default='')
     items = ItemInput(many=True, required=False, max_length=50, default=list)
@@ -70,6 +73,19 @@ class PlaceOrderInput(serializers.Serializer):
     def validate(self, attrs):
         if not attrs.get('items') and not attrs.get('boxes'):
             raise serializers.ValidationError('Add at least one item or box.')
+        errors = {}
+        if attrs['fulfilment'] == 'delivery':
+            if attrs.get('town') is None:
+                errors['town'] = 'Pick your town.'
+            if not attrs.get('address', '').strip():
+                errors['address'] = 'Enter your street address and a landmark.'
+        else:
+            if attrs.get('meetup_place') is None:
+                errors['meetup_place'] = 'Pick where to meet.'
+            if attrs.get('meetup_time') is None:
+                errors['meetup_time'] = 'Pick a time.'
+        if errors:
+            raise serializers.ValidationError(errors)
         return attrs
 
 
@@ -81,8 +97,21 @@ def _money(value):
     return None if value is None else format(value, '.2f')
 
 
+def fulfilment_line(order) -> str:
+    """"Meet-up: SM City Lucena, main entrance, Sat, Nov 21, 3:00 PM" or "Delivery: Wed, Nov 18, Lucena City"."""
+    from .meetups import time_label, weekday_label
+    if order.fulfilment == 'meetup':
+        return f'Meet-up: {order.meetup_place_name}, {weekday_label(order.delivery_date)}, {time_label(order.meetup_time)}'
+    return f'Delivery: {weekday_label(order.delivery_date)}, {order.town_name}'
+
+
 def order_lines(order) -> dict:
     return {
+        'fulfilment': order.fulfilment,
+        'fulfilment_line': fulfilment_line(order),
+        'meetup_place_name': order.meetup_place_name,
+        'meetup_place_note': order.meetup_place_note,
+        'meetup_time': order.meetup_time.strftime('%H:%M') if order.meetup_time else None,
         'number': order.number,
         'status': order.shown_status,
         'delivery_date': order.delivery_date.isoformat(),
@@ -110,6 +139,7 @@ def status_document(order) -> dict:
 def owner_row(order) -> dict:
     return {
         'id': order.pk, 'number': order.number, 'status': order.shown_status, 'customer_name': order.customer_name,
+        'fulfilment': order.fulfilment, 'fulfilment_line': fulfilment_line(order),
         'town_name': order.town_name, 'delivery_date': order.delivery_date.isoformat(), 'total': _money(order.total),
         'created_at': order.created_at.isoformat(),
     }
