@@ -8,6 +8,7 @@ from django.utils import timezone
 from shop.models import DeliveryTown, ShopSettings
 
 from .delivery import delivery_date_problem
+from .emails import queue_delivery
 from .models import OnlineOrder, OrderEmail
 from .pricing import OrderRefused, price_order
 
@@ -74,5 +75,6 @@ def place_order(data: dict, now: datetime) -> tuple[OnlineOrder, bool]:
         except IntegrityError:
             # Another request with the same client_key won the race.
             return OnlineOrder.objects.get(client_key=data['client_key']), False
-        OrderEmail.objects.create(order=order)
+        email = OrderEmail.objects.create(order=order)
+        transaction.on_commit(lambda: queue_delivery(email.pk))
     return order, True
