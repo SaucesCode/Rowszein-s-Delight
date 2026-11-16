@@ -60,3 +60,36 @@ scripts\django-local.cmd --check
 ```
 
 The original playground and the other Supabase projects remain separate from the development target. Phase 2B is the next UI/UX implementation phase.
+
+## PostgreSQL test suite
+
+The normal backend tests use an in-memory SQLite database and skip 17 tests that need real PostgreSQL behaviour: locking, concurrent transactions and full decimal precision. To run everything on PostgreSQL, start Docker Desktop and run this from the repository root:
+
+```cmd
+python scripts\test_postgres.py
+```
+
+The script:
+
+* starts a new `postgres:17-alpine` container named `rowszein-test-…`, published on `127.0.0.1` at a random free port, with a random database name and password;
+* runs the full suite against it using the backend virtualenv;
+* stops the container, which removes it, even if the tests fail or you press Ctrl+C.
+
+It never uses `rowszein-playground`, `backend/.env` or Supabase.
+
+If Docker isn't running, it says so and exits with code 2. The runner's own tests run with `python scripts\test_test_postgres.py`. The same script runs in the GitHub `backend-postgres` check.
+
+## New-order emails
+
+Online orders email the owner through Resend. Locally, leave `RESEND_API_KEY` empty: the email is written to the Django log as "New-order email would send", and the order is still saved.
+
+To try real emails:
+
+1. Create a free Resend account with the owner's email address.
+2. Put its API key in `backend/.env` as `RESEND_API_KEY`.
+3. In Shop settings, set "New-order emails go to" to that same address.
+
+On the free plan without a verified domain, Resend only delivers from `onboarding@resend.dev` to the account's own address.
+
+To retry waiting emails by hand, run `manage.py send_order_emails`.
+

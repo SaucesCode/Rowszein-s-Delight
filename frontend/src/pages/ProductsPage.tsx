@@ -5,6 +5,7 @@ import { useCategories, useProducts, useUpdateProduct } from "@/hooks/useProduct
 import { useListingPageRecovery } from "@/hooks/useListingPageRecovery";
 import type { Category, Product, ProductPayload } from "@/types/product.types";
 import DonutArt from "@/components/DonutArt";
+import ProductArt from "@/components/ProductArt";
 import Pagination from "@/components/Pagination";
 import Switch from "@/components/ui/Switch";
 import { flavorOf, flavorTint } from "@/lib/flavor";
@@ -35,7 +36,7 @@ function MenuLine({ product }: { product: Product }) {
   return (
     <li className="menu-line" data-resting={!product.is_available || undefined}>
       <span className="menu-line-art" style={{ background: flavorTint(flavor) }} aria-hidden="true">
-        {product.image_url ? <img src={product.image_url} alt="" loading="lazy" /> : <DonutArt flavor={flavor} size={44} />}
+        {product.image_url ? <img src={product.image_url} alt="" loading="lazy" /> : <ProductArt shape={product.shape} flavor={flavor} size={44} />}
       </span>
       <Link to={`/products/${product.id}/edit`} className="menu-line-main">
         <span className="menu-line-top">

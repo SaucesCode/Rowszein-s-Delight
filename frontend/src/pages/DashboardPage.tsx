@@ -45,6 +45,12 @@ function BottomLine({ report, phrase }: { report: DashboardReport; phrase: strin
         )}{" "}
         and <strong className="num">{formatPeso(spent)}</strong> spent.
       </p>
+      {report.boxes && report.boxes.count > 0 && (
+        <p className="analytics-boxes">
+          <strong className="num">{report.boxes.count}</strong> {report.boxes.count === 1 ? "box" : "boxes"} sold ·{" "}
+          <span className="num">{formatPeso(Number(report.boxes.revenue))}</span>
+        </p>
+      )}
       <p className="analytics-note">Sold counts sales after cancellations and changes, on the day they were made.</p>
     </section>
   );
@@ -116,7 +122,8 @@ function BestSellers({ products }: { products: DashboardReport["best_selling"] }
               </span>
               <span className="ranking-value num">
                 {formatUnits(product.total_quantity)} sold
-                <small>{formatPeso(product.total_revenue)}</small>
+                {/* Donuts in boxes count here, but a box's price isn't split between its donuts. */}
+                {product.total_revenue > 0 && <small>{formatPeso(product.total_revenue)} single sales</small>}
               </span>
             </li>
           ))}

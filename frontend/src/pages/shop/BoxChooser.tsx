@@ -63,6 +63,7 @@ export default function BoxChooser({ sizes, assortments, onStart, onAddReadyMade
               <BoxArt size={size.size} units={[]} compact />
               <span className="box-size-card-name">Box of {size.size}</span>
               <span className="box-size-card-price num">{formatPeso(Number(size.price))}</span>
+              <span className="box-size-card-flavours">Up to {size.max_flavors} {size.max_flavors === 1 ? "flavour" : "flavours"}</span>
               <span className="box-size-card-action">Fill it yourself</span>
             </button>
           </li>

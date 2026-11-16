@@ -2,9 +2,6 @@ import type { CartItem } from "@/hooks/useCart";
 import { formatPeso } from "../dashboard/report-format.ts";
 import { boxPrice, describeBox, type BoxLine } from "./useBoxOrder.ts";
 
-export const SHOP_MESSENGER = "https://m.me/rowszeinsdelight";
-export const SHOP_EMAIL = "hello@rowszeinsdelight.com";
-
 const manilaDateTime = new Intl.DateTimeFormat("en-PH", {
   dateStyle: "medium",
   timeStyle: "short",
@@ -16,17 +13,6 @@ export const formatOrderTime = (date: Date) => manilaDateTime.format(date);
 /** One donut per unit, in box order, for drawing a box that fills up. */
 export function boxUnits(items: CartItem[]): CartItem[] {
   return items.flatMap(item => Array.from({ length: item.quantity }, () => item));
-}
-
-/**
- * A short label the customer can quote in Messenger, e.g. "RD-1113-4F8K".
- * It is not stored anywhere; the shop confirms orders by replying.
- */
-export function cardNumber(date: Date): string {
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const random = Math.random().toString(36).slice(2, 6).toUpperCase();
-  return `RD-${month}${day}-${random}`;
 }
 
 const plural = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;

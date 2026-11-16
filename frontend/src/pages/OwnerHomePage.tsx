@@ -6,6 +6,7 @@ import { can } from "@/lib/permissions";
 import { displayName } from "@/lib/utils";
 import { useHubSnapshot } from "./owner-home/useHubSnapshot";
 import { AttentionSection, TodaySection, WeekStrip } from "./owner-home/HubParts";
+import NewOrdersCard from "./orders/NewOrdersCard";
 import "./owner-home/owner-home.css";
 
 const manilaHour = new Intl.DateTimeFormat("en-US", { hour: "numeric", hourCycle: "h23", timeZone: "Asia/Manila" });
@@ -44,6 +45,7 @@ export default function OwnerHomePage() {
         </div>
       </header>
 
+      {can(user, "orders.manage") && <NewOrdersCard />}
       <div className="home-grid">
         <TodaySection snapshot={snapshot} />
         <AttentionSection snapshot={snapshot} />

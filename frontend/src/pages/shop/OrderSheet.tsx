@@ -1,16 +1,40 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { Download, Minus, Plus, Trash2, X } from "lucide-react";
-import PatisserieDonut from "./PatisserieDonut";
+import { MessageCircle, Minus, Plus, Trash2, X } from "lucide-react";
+import TreatArt from "./treats/TreatArt";
 import type { CartItem, useCart } from "@/hooks/useCart";
+import { usePlaceOrder } from "@/hooks/useOrders";
 import { flavorOf } from "@/lib/flavor";
+import {
+  checkoutErrors,
+  orderPayload,
+  rememberLastOrder,
+  type CheckoutField,
+  type CheckoutForm as Form,
+} from "@/lib/orderCheckout";
 import BoxArt from "@/pages/boxes/BoxArt";
 import { formatPeso } from "@/pages/dashboard/report-format";
+import { OrderRequestError } from "@/services/order.service";
+import type { PlacedOrder } from "@/types/order.types";
+import type { PublicShopSettings } from "@/types/shopSettings.types";
+import CheckoutForm from "./CheckoutForm";
 import OrderCard from "./OrderCard";
-import { SHOP_MESSENGER, cardNumber, downloadNodeAsPng, orderSummary, orderText } from "./order";
+import OrderSent from "./OrderSent";
+import { downloadNodeAsPng, orderSummary, orderText } from "./order";
 import { boxPrice, describeBox, type BoxLine, type useBoxOrder } from "./useBoxOrder";
+import "./checkout.css";
 
 type Cart = ReturnType<typeof useCart>;
 type Boxes = ReturnType<typeof useBoxOrder>;
+type View = "review" | "details" | "sent";
+
+const FIELDS: CheckoutField[] = [
+  "customer_name", "phone", "meetup_place", "town", "address", "delivery_date", "meetup_time", "payment_method", "note",
+];
+const EMPTY_FORM: Form = {
+  fulfilment: "delivery", customer_name: "", phone: "", town: "", address: "", delivery_date: "", payment_method: "", note: "",
+  meetup_place: "", meetup_time: "",
+};
+const OFFLINE = "Couldn't send. Check your connection and try again.";
 
 interface OrderSheetProps {
   open: boolean;
@@ -18,21 +42,47 @@ interface OrderSheetProps {
   cart: Cart;
   boxes: Boxes;
   total: number;
+  messengerUrl: string;
+  /** The message to show while the owner has paused orders; null while orders are open. */
+  paused: string | null;
+  notice: string;
+  /** The shop's delivery rules; undefined while loading or after they failed to load. */
+  settings?: PublicShopSettings;
+  settingsFailed: boolean;
+  sizes: { id: number; size: number }[];
 }
 
-/** The order: boxes and single donuts, the customer's name, and how to send it. */
-export default function OrderSheet({ open, onClose, cart, boxes, total }: OrderSheetProps) {
+interface Sent {
+  order: PlacedOrder;
+  /** Set when a retry tried to change an order that was already saved. */
+  notice?: string;
+  phone: string;
+  name: string;
+  singles: CartItem[];
+  boxes: BoxLine[];
+}
+
+/** The order: review it, add delivery details, send it; then the order number and where to check on it. */
+export default function OrderSheet(props: OrderSheetProps) {
+  const { open, onClose, cart, boxes, total, messengerUrl, paused, notice, settings, settingsFailed, sizes } = props;
   const ids = useId();
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const nameRef = useRef<HTMLInputElement>(null);
+  const viewHeadingRef = useRef<HTMLHeadingElement>(null);
+  const problemsRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
-  const [name, setName] = useState("");
-  const [nameError, setNameError] = useState<string | null>(null);
-  const [card, setCard] = useState<{ number: string; madeAt: Date } | null>(null);
-  const [saving, setSaving] = useState(false);
+  const place = usePlaceOrder();
+  const [view, setView] = useState<View>("review");
+  const [form, setForm] = useState<Form>(EMPTY_FORM);
+  const [errors, setErrors] = useState<Partial<Record<CheckoutField, string>>>({});
+  const [problems, setProblems] = useState<string[]>([]);
+  // One key per order: a retry after a network failure reuses it, so the shop never saves the order twice.
+  const [clientKey, setClientKey] = useState(() => crypto.randomUUID());
+  const [sent, setSent] = useState<Sent | null>(null);
+  const [card, setCard] = useState(false);
   const [note, setNote] = useState<string | null>(null);
   const [cleared, setCleared] = useState<{ singles: CartItem[]; boxes: BoxLine[] } | null>(null);
   const empty = cart.items.length === 0 && boxes.boxes.length === 0;
+  const formId = `${ids}-checkout`;
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -41,51 +91,35 @@ export default function OrderSheet({ open, onClose, cart, boxes, total }: OrderS
     if (!open && dialog.open) dialog.close();
   }, [open]);
 
+  // Moving between steps moves focus to the new step's heading.
   useEffect(() => {
-    if (!card) return;
+    if (open && view !== "review") viewHeadingRef.current?.focus();
+  }, [view, open]);
+
+  useEffect(() => {
+    if (!card || !sent) return;
     const node = cardRef.current;
     if (!node) return;
     let cancelled = false;
-    downloadNodeAsPng(node, `${card.number}.png`)
-      .then(() => {
-        if (!cancelled) setNote("Order card saved. Now send it to us on Messenger.");
-      })
-      .catch(() => {
-        if (!cancelled) setNote("Couldn't save the card. Try again, or send your order on Messenger instead.");
-      })
-      .finally(() => {
-        if (cancelled) return;
-        setSaving(false);
-        setCard(null);
-      });
+    downloadNodeAsPng(node, `${sent.order.number}.png`)
+      .then(() => !cancelled && setNote("Picture saved."))
+      .catch(() => !cancelled && setNote("Couldn't save the picture. Your order is still sent."))
+      .finally(() => !cancelled && setCard(false));
     return () => {
       cancelled = true;
     };
-  }, [card]);
-
-  const saveCard = () => {
-    setNote(null);
-    if (!name.trim()) {
-      setNameError("Enter your name so we know whose order it is.");
-      nameRef.current?.focus();
-      return;
-    }
-    setNameError(null);
-    setSaving(true);
-    const madeAt = new Date();
-    setCard({ number: cardNumber(madeAt), madeAt });
-  };
+  }, [card, sent]);
 
   const openMessenger = () => {
-    const text = orderText(boxes.boxes, cart.items, total, name.trim());
-    window.open(SHOP_MESSENGER, "_blank", "noopener,noreferrer");
+    const text = orderText(boxes.boxes, cart.items, total, form.customer_name.trim());
+    window.open(messengerUrl, "_blank", "noopener,noreferrer");
     if (!navigator.clipboard) {
-      setNote("Type your order in the chat, or attach your saved order card.");
+      setNote("Type your order in the Messenger chat.");
       return;
     }
     navigator.clipboard.writeText(text).then(
       () => setNote("Your order is copied. Paste it into the Messenger chat."),
-      () => setNote("Type your order in the chat, or attach your saved order card."),
+      () => setNote("Type your order in the Messenger chat."),
     );
   };
 
@@ -106,8 +140,79 @@ export default function OrderSheet({ open, onClose, cart, boxes, total }: OrderS
 
   const close = () => {
     setCleared(null);
+    if (view === "sent") {
+      setView("review");
+      setSent(null);
+      setNote(null);
+    } else if (view === "details") {
+      setView("review");
+    }
     onClose();
   };
+
+  const change = (field: CheckoutField, value: string) => {
+    setForm(current => ({ ...current, [field]: value }));
+    if (errors[field]) setErrors(current => ({ ...current, [field]: undefined }));
+  };
+
+  const showProblems = (fieldErrors: Partial<Record<CheckoutField, string>>, others: string[]) => {
+    setErrors(fieldErrors);
+    setProblems(others);
+    requestAnimationFrame(() => {
+      const first = FIELDS.find(field => fieldErrors[field]);
+      if (first) document.getElementById(`${ids}-${first}`)?.focus();
+      else problemsRef.current?.focus();
+    });
+  };
+
+  const send = () => {
+    if (!settings || place.isPending) return;
+    const found = checkoutErrors(form, settings, new Date());
+    if (Object.keys(found).length) {
+      showProblems(found, []);
+      return;
+    }
+    setProblems([]);
+    const snapshot = { singles: cart.items, boxes: boxes.boxes };
+    place.mutate(orderPayload(cart.items, boxes.boxes, sizes, form, clientKey), {
+      onSuccess: order => {
+        setSent({ order, phone: form.phone.trim(), name: form.customer_name.trim(), ...snapshot });
+        rememberLastOrder({ number: order.number, token: order.token });
+        cart.clearCart();
+        boxes.clearBoxes();
+        setClientKey(crypto.randomUUID());
+        setForm(current => ({ ...current, delivery_date: "", note: "" }));
+        setNote(null);
+        setView("sent");
+      },
+      onError: error => {
+        if (!(error instanceof OrderRequestError)) {
+          showProblems({}, [OFFLINE]);
+          return;
+        }
+        if (error.code === "already_sent" && error.order) {
+          // The first version was saved; the customer's edited cart stays so they can message us or send it anew.
+          setSent({ order: error.order, phone: form.phone.trim(), name: form.customer_name.trim(), notice: error.message, ...snapshot });
+          rememberLastOrder({ number: error.order.number, token: error.order.token });
+          setClientKey(crypto.randomUUID());
+          setView("sent");
+          return;
+        }
+        const fieldErrors: Partial<Record<CheckoutField, string>> = {};
+        const others: string[] = [];
+        for (const [key, message] of Object.entries(error.fields)) {
+          if ((FIELDS as string[]).includes(key)) fieldErrors[key as CheckoutField] = message;
+          else others.push(message);
+        }
+        if (!Object.keys(error.fields).length) others.push(error.message);
+        showProblems(fieldErrors, others);
+      },
+    });
+  };
+
+  const continueBlocked = paused ?? (settingsFailed
+    ? "We can't take orders here right now. Send your order on Messenger instead."
+    : !settings ? "Loading delivery details…" : null);
 
   return (
     <dialog
@@ -129,7 +234,37 @@ export default function OrderSheet({ open, onClose, cart, boxes, total }: OrderS
         </header>
 
         <div className="box-sheet-scroll">
-          {empty ? (
+          {view === "sent" && sent ? (
+            <OrderSent
+              order={sent.order}
+              phone={sent.phone}
+              headingRef={viewHeadingRef}
+              savingCard={card}
+              cardNote={note}
+              onSaveCard={() => {
+                setNote(null);
+                setCard(true);
+              }}
+              onDone={close}
+              notice={sent.notice}
+            />
+          ) : view === "details" && settings ? (
+            <form id={formId} noValidate onSubmit={event => {
+              event.preventDefault();
+              send();
+            }}>
+              <h3 ref={viewHeadingRef} tabIndex={-1} className="checkout-title">Delivery details</h3>
+              <p className="checkout-lede">
+                {orderSummary(boxes.boxes.length, cart.totalItems, cart.items.some(item => item.partner))} · {formatPeso(total)}
+              </p>
+              {problems.length > 0 && (
+                <div ref={problemsRef} tabIndex={-1} role="alert" className="checkout-problems">
+                  <ul>{problems.map(problem => <li key={problem}>{problem}</li>)}</ul>
+                </div>
+              )}
+              <CheckoutForm ids={ids} form={form} errors={errors} settings={settings} now={new Date()} subtotal={total} onChange={change} />
+            </form>
+          ) : empty ? (
             <div className="box-sheet-empty">
               <p role="status">
                 {cleared ? "You cleared your order." : "Your order is empty. Choose a box, or tap a donut in the case."}
@@ -170,7 +305,7 @@ export default function OrderSheet({ open, onClose, cart, boxes, total }: OrderS
                         {item.image_url ? (
                           <img src={item.image_url} alt="" width={48} height={48} />
                         ) : (
-                          <PatisserieDonut flavor={flavorOf(item.name)} size={40} />
+                          <TreatArt shape={item.shape} flavor={flavorOf(item.name)} size={40} />
                         )}
                       </span>
                       <span className="box-line-text">
@@ -202,55 +337,66 @@ export default function OrderSheet({ open, onClose, cart, boxes, total }: OrderS
           )}
         </div>
 
-        {!empty && (
+        {view === "review" && !empty && (
           <footer className="box-sheet-foot">
-            <div className="box-name">
-              <label htmlFor={`${ids}-name`} className="field-label">Your name, for the order card</label>
-              <input
-                ref={nameRef}
-                id={`${ids}-name`}
-                className="field-input"
-                autoComplete="name"
-                maxLength={60}
-                value={name}
-                aria-invalid={!!nameError}
-                aria-describedby={nameError ? `${ids}-name-error` : undefined}
-                onChange={event => {
-                  setName(event.target.value);
-                  if (nameError && event.target.value.trim()) setNameError(null);
-                }}
-              />
-              {nameError && <p id={`${ids}-name-error`} className="field-error">{nameError}</p>}
-            </div>
             <p className="box-sheet-total">
               <span>{orderSummary(boxes.boxes.length, cart.totalItems, cart.items.some(item => item.partner))}</span>
               <strong className="num">{formatPeso(total)}</strong>
             </p>
             <div className="box-sheet-actions">
-              <button type="button" className="btn-primary" onClick={saveCard} disabled={saving} aria-busy={saving}>
-                <Download size={18} aria-hidden="true" />
-                {saving ? "Saving…" : "Save order card"}
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => {
+                  setNote(null);
+                  setView("details");
+                }}
+                disabled={!!continueBlocked}
+                aria-describedby={continueBlocked ? `${ids}-blocked` : undefined}
+              >
+                Continue to delivery details
               </button>
               <button type="button" className="btn-secondary" onClick={openMessenger}>
-                Send on Messenger
+                <MessageCircle size={18} aria-hidden="true" />
+                Or message us
               </button>
             </div>
-            <p className="box-sheet-help" role="status">
-              {note ?? "Save your card, then send it to us on Messenger. We'll reply to confirm your order."}
-            </p>
+            {continueBlocked ? (
+              <p id={`${ids}-blocked`} className={paused ? "box-sheet-paused" : "box-sheet-help"}>
+                {paused ? `${paused} Your order stays here for when we're back.` : continueBlocked}
+              </p>
+            ) : (
+              <p className="box-sheet-help" role="status">
+                {note ?? "Send your order here and we'll text or call you to confirm it."}
+              </p>
+            )}
+            {notice && <p className="box-sheet-notice">{notice}</p>}
+          </footer>
+        )}
+
+        {view === "details" && settings && (
+          <footer className="box-sheet-foot checkout-foot">
+            <div className="box-sheet-actions">
+              <button type="submit" form={formId} className="btn-primary" disabled={place.isPending} aria-busy={place.isPending}>
+                {place.isPending ? "Sending…" : "Send order"}
+              </button>
+              <button type="button" className="btn-secondary" onClick={() => setView("review")} disabled={place.isPending}>
+                Back to your order
+              </button>
+            </div>
           </footer>
         )}
       </div>
 
-      {card && (
+      {card && sent && (
         <OrderCard
           cardRef={cardRef}
-          boxes={boxes.boxes}
-          singles={cart.items}
-          total={total}
-          name={name.trim()}
-          number={card.number}
-          madeAt={card.madeAt}
+          boxes={sent.boxes}
+          singles={sent.singles}
+          total={Number(sent.order.total)}
+          name={sent.name}
+          number={sent.order.number}
+          madeAt={new Date(sent.order.created_at)}
         />
       )}
     </dialog>

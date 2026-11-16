@@ -1,6 +1,6 @@
-import { useId, useState } from "react";
+import { useId, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { CheckCircle2, Minus, Plus } from "lucide-react";
+import { CheckCircle2, Minus, Plus, X } from "lucide-react";
 import { formatPeso } from "@/pages/dashboard/report-format";
 import { formatBusinessDate } from "@/lib/dateRanges";
 import { countLabel, lineTotal, type Ticket } from "./useTicket";
@@ -28,6 +28,8 @@ interface TicketPanelProps {
   onSubmit: () => void;
   onClear: () => void;
   recorded?: Recorded | null;
+  /** "Add a box" or the box being filled, when they belong in the ticket (wide screens). */
+  boxTools?: ReactNode;
 }
 
 const timeFormatter = new Intl.DateTimeFormat("en-PH", { hour: "numeric", minute: "2-digit", timeZone: "Asia/Manila" });
@@ -38,7 +40,7 @@ export default function TicketPanel(props: TicketPanelProps) {
   const ids = useId();
   const [showNote, setShowNote] = useState(notes.length > 0);
   const [showDate, setShowDate] = useState(false);
-  const empty = ticket.lines.length === 0;
+  const empty = ticket.lines.length === 0 && ticket.boxes.length === 0 && !ticket.openBox;
 
   return (
     <div className="ticket">
@@ -52,6 +54,45 @@ export default function TicketPanel(props: TicketPanelProps) {
       </header>
 
       <div className="ticket-scroll">
+        {props.boxTools}
+
+        {ticket.boxes.length > 0 && (
+          <ol className="ticket-lines ticket-boxes" aria-label="Boxes in this order">
+            {ticket.boxes.map((box, index) => (
+              <li key={box.key ?? `new-${index}`} className="ticket-line ticket-box">
+                <div className="ticket-line-text">
+                  <span className="ticket-line-name">{box.name}</span>
+                  <span className="ticket-box-contents">
+                    {box.contents.map(donut => `${donut.quantity} ${donut.name}`).join(", ")}
+                  </span>
+                  {canEditPrice && !box.saved ? (
+                    <label className="ticket-line-price">
+                      <span className="sr-only">Price for {box.name}</span>
+                      <span aria-hidden="true">₱</span>
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        min="0.01"
+                        step="0.01"
+                        className="num"
+                        value={box.price}
+                        onChange={event => ticket.setBoxPrice(index, Number(event.target.value))}
+                      />
+                    </label>
+                  ) : (
+                    box.saved && <span className="ticket-line-each">Saved box</span>
+                  )}
+                </div>
+                <button type="button" className="icon-button ticket-box-remove" onClick={() => ticket.removeBox(index)}>
+                  <X size={18} aria-hidden="true" />
+                  <span className="sr-only">Remove {box.name}</span>
+                </button>
+                <span className="ticket-line-total num">{formatPeso(box.price)}</span>
+              </li>
+            ))}
+          </ol>
+        )}
+
         {empty ? (
           props.recorded ? (
             <div className="ticket-recorded" role="status">
@@ -63,10 +104,10 @@ export default function TicketPanel(props: TicketPanelProps) {
               <Link to="/sales" className="home-link">See today's sales</Link>
             </div>
           ) : (
-            <p className="ticket-empty">Tap a donut to add it to this order.</p>
+            <p className="ticket-empty">Tap a donut to add it to this order, or add a box.</p>
           )
         ) : (
-          <ol className="ticket-lines" aria-label="Items in this order">
+          ticket.lines.length > 0 && <ol className="ticket-lines" aria-label="Items in this order">
             {ticket.lines.map(line => (
               <li key={line.product} className="ticket-line">
                 <div className="ticket-line-text">
@@ -155,7 +196,7 @@ export default function TicketPanel(props: TicketPanelProps) {
 
       <footer className="ticket-foot">
         <p className="ticket-total">
-          <span>{countLabel(ticket.totals.pieces, ticket.lines.some(line => props.partnerOf(line.product)))}</span>
+          <span>{countLabel(ticket.totals.pieces, ticket.lines.some(line => props.partnerOf(line.product)), ticket.totals.boxes)}</span>
           <strong className="num">{formatPeso(ticket.totals.amount)}</strong>
         </p>
         {error && <p className="field-error" role="alert">{error}</p>}

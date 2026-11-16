@@ -1,11 +1,11 @@
-import { FileImage, MessageCircle } from "lucide-react";
+import { ClipboardList, Send } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
 import { BoxIcon, Ornament } from "./ShopIcons";
 
 const STEPS: { title: string; text: string; icon: ReactNode }[] = [
   { title: "Fill your box", text: "Tap the donuts you want. Change the amounts anytime before you send.", icon: <BoxIcon size={24} /> },
-  { title: "Save your order card", text: "Add your name and save the card. It lists every donut and the total.", icon: <FileImage size={24} aria-hidden="true" /> },
-  { title: "Send it on Messenger", text: "Send the card to us on Messenger. We reply to confirm your order.", icon: <MessageCircle size={24} aria-hidden="true" /> },
+  { title: "Add delivery details", text: "Your name, mobile number, town, address and the day you want it.", icon: <ClipboardList size={24} aria-hidden="true" /> },
+  { title: "Send your order", text: "We text or call to confirm it. You get a link to check on it any time.", icon: <Send size={24} aria-hidden="true" /> },
 ];
 
 /** Three steps, joined by the same dotted leader as a printed menu. */

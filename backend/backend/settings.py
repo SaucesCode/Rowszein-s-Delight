@@ -52,6 +52,8 @@ LOCAL_APPS = [
     "expenses",
     "sales",
     "dashboard",
+    "shop",
+    "orders",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -244,6 +246,12 @@ AUTH_SESSION_ENV = config('AUTH_SESSION_ENV', default='')
 AUTH_RATE_KEYS = json.loads(config('AUTH_RATE_KEYS', default='{}'))
 AUTH_RATE_LIMITS = json.loads(config('AUTH_RATE_LIMITS', default='{"LA":5,"LI":20,"LR":60,"RR":30}'))
 AUTH_MAX_BUCKET_ROWS = config('AUTH_MAX_BUCKET_ROWS', default=50000, cast=int)
+
+# New-order emails go through Resend's HTTPS API. Without a key they are only logged ("would send").
+RESEND_API_KEY = config('RESEND_API_KEY', default='')
+ORDER_EMAIL_FROM = config('ORDER_EMAIL_FROM', default="Rowszein's Delight <onboarding@resend.dev>")
+APP_URL = config('APP_URL', default='http://127.0.0.1:5174')
+ORDER_EMAIL_INLINE = False
 AUTH_PROXY_MODE = config('AUTH_PROXY_MODE', default='direct' if DEBUG else 'unconfigured')
 AUTH_TRUSTED_PROXY_CIDRS = [value.strip() for value in config('AUTH_TRUSTED_PROXY_CIDRS',default='').split(',') if value.strip()]
 
@@ -315,6 +323,8 @@ LOGGING = {
     },
     "loggers": {
         "accounts.security": {"level": "INFO", "filters": ["request_id"]},
+        "shop.settings": {"level": "INFO", "filters": ["request_id"]},
+        "orders": {"level": "INFO", "filters": ["request_id"]},
         "django.request": {"level": "WARNING", "filters": ["request_id"]},
         "django.security": {"level": "WARNING", "filters": ["request_id"]},
     },

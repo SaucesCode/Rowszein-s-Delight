@@ -1480,3 +1480,129 @@ html:has(.box-sheet[open]) { overflow: hidden; }
 .case-item.is-not-in-box .case-art { opacity: 0.45; filter: saturate(0.4); }
 .case-item.is-not-in-box .case-item-button { cursor: not-allowed; }
 .box-line-by { color: var(--color-ink-muted); font-size: var(--text-label); }
+
+/* Treat drawings: a small hover detail (a cherry bobs, steam lifts). Off under reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .case-item-button:hover .treat-detail-bob { animation: treat-bob 200ms var(--ease-out-soft); }
+  .case-item-button:hover .treat-detail-steam { animation: treat-steam 200ms var(--ease-out-soft) forwards; }
+}
+@keyframes treat-bob {
+  50% { transform: translateY(-2px); }
+}
+@keyframes treat-steam {
+  to { opacity: 0.7; transform: translateY(-3px); }
+}
+.treat-detail { transform-box: fill-box; transform-origin: center; }
+
+/* ── Delivery: towns, hours and payment, from the owner's Shop settings ── */
+.delivery { margin-top: var(--space-9); }
+.delivery-lede { max-width: 52ch; margin-top: var(--space-3); color: var(--color-ink-muted); }
+.delivery-cards {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+@media (min-width: 768px) {
+  .delivery-cards { grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); align-items: start; }
+}
+.delivery-card {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+.delivery-card p { margin: 0; }
+.delivery-card-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-title);
+  font-weight: 500;
+  font-variation-settings: var(--salon);
+}
+.delivery-card-title svg { color: var(--color-gilt-ink); }
+.delivery-list { display: grid; margin: 0; padding: 0; list-style: none; }
+.delivery-list li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-4);
+  padding: var(--space-2) 0;
+  border-bottom: 1px dotted var(--color-line);
+}
+.delivery-list li:last-child { border-bottom: 0; }
+.delivery-fee { color: var(--color-ink-muted); }
+.delivery-cutoff { font-weight: 600; }
+.delivery-subtitle { display: flex; align-items: center; gap: var(--space-2); font-weight: 600; }
+.delivery-days-off ul { margin: var(--space-1) 0 0; padding-left: var(--space-5); color: var(--color-ink-muted); }
+.delivery-fallback { margin-top: var(--space-5); text-align: center; }
+.delivery-fallback a { color: var(--color-accent-pressed); font-weight: 600; }
+.delivery-skeleton { display: block; height: 11rem; border-radius: var(--radius-card); }
+
+/* ── Order sheet: paused and notice lines beside the send actions ── */
+.box-sheet-paused,
+.box-sheet-notice {
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-control);
+  font-size: var(--text-caption);
+}
+.box-sheet-paused { background: var(--color-danger-tint); color: var(--color-ink); font-weight: 600; }
+.box-sheet-notice { background: var(--color-tint); color: var(--color-ink); }
+
+/* ── Notice strip: fixed to the bottom, so arriving settings never push the page ── */
+.shop-notice {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 40;
+  padding: 0 var(--gutter) max(var(--space-3), env(safe-area-inset-bottom));
+  pointer-events: none;
+}
+.shop.has-box .shop-notice,
+.shop.has-filling .shop-notice { display: none; }
+.shop:not(.has-box):not(.has-filling):has(> .shop-notice) { padding-bottom: var(--notice-space, 0px); }
+.shop-notice-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: var(--space-3) var(--space-2) var(--space-3) var(--space-4);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  border-left: 4px solid var(--color-gilt-ink);
+  pointer-events: auto;
+}
+.shop-notice.is-paused .shop-notice-inner { border-left-color: var(--color-danger); }
+.shop-notice-inner > svg { flex-shrink: 0; margin-top: 2px; color: var(--color-gilt-ink); }
+.shop-notice.is-paused .shop-notice-inner > svg { color: var(--color-danger); }
+.shop-notice-text { flex: 1; display: grid; gap: var(--space-1); }
+.shop-notice-text p { margin: 0; }
+.shop-notice-close {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: calc(var(--space-2) * -1) 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  transition: background-color var(--duration-micro) var(--ease-out-soft);
+}
+.shop-notice-close:hover { background: var(--color-canvas); color: var(--color-ink); }
+.shop-notice-close:active { transform: scale(0.96); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .shop-notice-inner { animation: notice-up var(--duration-page) var(--ease-out-soft) both; }
+}
+@keyframes notice-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: none; }
+}

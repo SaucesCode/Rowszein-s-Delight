@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { orderItemsText } from "./orderText";
 import { Link } from "react-router-dom";
 import { ArrowRight, Check } from "lucide-react";
 import LevelBar from "@/components/LevelBar";
@@ -29,8 +30,7 @@ function MetricSlot<T>({ metric, width, children }: { metric: Metric<T>; width: 
   return <>{children(metric.value)}</>;
 }
 
-const orderItems = (sale: Sale) =>
-  sale.sale_items.map(item => `${item.quantity}× ${item.product_name ?? "Donut"}`).join(", ");
+const orderItems = (sale: Sale) => orderItemsText(sale);
 
 function OrderFeed({ orders }: { orders: Sale[] }) {
   if (orders.length === 0) {

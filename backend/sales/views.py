@@ -17,6 +17,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from .models import Sale
 from .serializers import SaleSerializer, CancellationSerializer
 from .services import execute_sale, request_identity, current_items, sale_data
+from .reporting import describe_sale_lines
 from rest_framework.exceptions import APIException, PermissionDenied
 from django.utils import timezone
 from .reporting import financial_summary
@@ -124,7 +125,7 @@ class SaleExportCSVView(APIView):
         writer.writerow(['Sale ID', 'Original Date', 'Status', 'Current Items', 'Notes', 'Original Amount', 'Current Transaction Value (not net sales)'])
 
         for sale in queryset:
-            items_summary = ', '.join(f"{item['product_name']} x{item['quantity']}" for item in current_items(sale))
+            items_summary = describe_sale_lines(sale_data(sale))
             writer.writerow([
                 sale.id,
                 sale.date,
@@ -162,10 +163,7 @@ class SaleExportPDFView(APIView):
 
         total_revenue = Decimal('0.00')
         for sale in queryset:
-            items_summary = ', '.join(
-                f"{item.product.name} x{item.quantity}"
-                for item in sale.sale_items.all()
-            )
+            items_summary = describe_sale_lines(sale_data(sale))
             table_data.append([
                 f"{sale.id} ({sale.status})",
                 str(sale.date),

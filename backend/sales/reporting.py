@@ -8,7 +8,7 @@ from products.models import Partner, PartnerPayment
 
 from sales.financial_math import financial_totals
 from sales.models import Sale, SaleFinancialEntry
-from sales.services import payout_lines
+from sales.services import current_boxes, payout_lines
 
 
 def financial_summary(date_from, date_to):
@@ -99,3 +99,27 @@ def still_to_pay_all(today):
 def still_to_pay(partner_id, today):
     """One partner's balance; see still_to_pay_all."""
     return still_to_pay_all(today).get(partner_id, Decimal('0.00'))
+
+
+def boxes_summary(date_from, date_to):
+    """Boxes on recorded (not cancelled) orders dated in the range, and what they sold for."""
+    count, revenue = 0, Decimal('0.00')
+    sales = Sale.objects.filter(status='recorded', date__gte=date_from, date__lte=date_to, current_boxes__isnull=False)
+    with localcontext() as context:
+        context.prec = 50
+        for sale in sales.only('pk', 'current_boxes'):
+            for box in current_boxes(sale):
+                count += 1
+                revenue += Decimal(box['price'])
+    return {'count': count, 'revenue': format(revenue, '.2f')}
+
+
+def describe_sale_lines(sale_payload):
+    """'Glazed x2, Box of 12 (4 Glazed, 4 Ube, 4 Choco)' from a sale_data payload, for exports."""
+    items = [f"{item['product_name']} x{item['quantity']}" for item in sale_payload['sale_items']]
+    boxes = [f"{box['name']} ({_box_contents(box)})" for box in sale_payload.get('boxes', [])]
+    return ', '.join(items + boxes)
+
+
+def _box_contents(box):
+    return ', '.join(f"{content['quantity']} {content['product_name']}" for content in box['contents'])

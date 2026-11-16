@@ -8,7 +8,7 @@ from rest_framework.exceptions import Throttled
 from .models import AuthThrottleBucket
 from .session_database import database_time, set_transaction_bounds
 from .session_errors import AuthUnavailable
-from .session_policy import SCOPES, EVENT_CEILING, client_ip, normalized_account, subject_digest, prune_events, retry_seconds, micros
+from .session_policy import SCOPES, DEFAULTED_SCOPES, EVENT_CEILING, client_ip, normalized_account, subject_digest, prune_events, retry_seconds, micros
 logger = logging.getLogger('accounts.security')
 
 
@@ -36,6 +36,8 @@ def limit(scope):
     if not isinstance(settings.AUTH_RATE_LIMITS,dict):
         raise AuthUnavailable()
     value = settings.AUTH_RATE_LIMITS.get(scope)
+    if value is None and scope in DEFAULTED_SCOPES:
+        value = SCOPES[scope][0]
     if type(value) is not int or not 1 <= value <= EVENT_CEILING:
         raise AuthUnavailable()
     return value

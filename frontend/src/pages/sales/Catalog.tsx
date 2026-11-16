@@ -1,13 +1,15 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Search } from "lucide-react";
-import DonutArt from "@/components/DonutArt";
+import ProductArt from "@/components/ProductArt";
 import { flavorOf, flavorTint } from "@/lib/flavor";
 import { formatPeso } from "@/pages/dashboard/report-format";
 import type { Product } from "@/types/product.types";
 
 interface CatalogProps {
   products: Product[];
+  /** While a box is open: the flavours in it and its limit. */
+  boxPicking?: { picked: number[]; maxFlavors: number } | null;
   loading: boolean;
   error: boolean;
   onRetry: () => void;
@@ -18,7 +20,7 @@ interface CatalogProps {
 }
 
 /** Tap-to-add grid of everything in the shop, filterable by category and name. */
-export default function Catalog({ products, loading, error, onRetry, onAdd, quantityOf, canManageMenu }: CatalogProps) {
+export default function Catalog({ products, loading, error, onRetry, onAdd, quantityOf, canManageMenu, boxPicking = null }: CatalogProps) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
 
@@ -97,14 +99,32 @@ export default function Catalog({ products, loading, error, onRetry, onAdd, quan
             {visible.map(product => {
               const flavor = flavorOf(product.name, product.category?.name);
               const inOrder = quantityOf(product.id);
+              const picked = !!boxPicking?.picked.includes(product.id);
+              const boxNote = !boxPicking
+                ? null
+                : product.partner
+                  ? "Not in boxes"
+                  : picked
+                    ? "In the box"
+                    : boxPicking.picked.length >= boxPicking.maxFlavors
+                      ? `Up to ${boxPicking.maxFlavors} flavours`
+                      : null;
+              const unavailable = !!boxPicking && !picked && boxNote !== null;
               return (
                 <li key={product.id}>
-                  <button type="button" className="catalog-tile" onClick={() => onAdd(product)}>
+                  <button
+                    type="button"
+                    className={`catalog-tile${unavailable ? " is-unavailable" : ""}${picked ? " is-picked" : ""}`}
+                    aria-disabled={unavailable || undefined}
+                    aria-pressed={boxPicking && !product.partner ? picked : undefined}
+                    onClick={() => onAdd(product)}
+                  >
                     <span className="catalog-art" style={{ background: flavorTint(flavor) }} aria-hidden="true">
-                      {product.image_url ? <img src={product.image_url} alt="" loading="lazy" /> : <DonutArt flavor={flavor} size={64} />}
+                      {product.image_url ? <img src={product.image_url} alt="" loading="lazy" /> : <ProductArt shape={product.shape} flavor={flavor} size={64} />}
                     </span>
                     <span className="catalog-name">{product.name}</span>
                     {product.partner && <span className="catalog-by">by {product.partner.name}</span>}
+                    {boxNote && <span className="catalog-box-note">{boxNote}</span>}
                     <span className="catalog-price num">{formatPeso(Number(product.price))}</span>
                     {inOrder > 0 && (
                       <span key={inOrder} className="catalog-badge num">

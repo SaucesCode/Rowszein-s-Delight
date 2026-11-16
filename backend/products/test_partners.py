@@ -255,3 +255,30 @@ class PartnerPaymentApiTests(PartnerFixture, TestCase):
         self.assertEqual(data['total'], '0.00')
         self.assertEqual([(row['name'], row['owed'], row['still_to_pay'], row['items']) for row in data['partners']],
                          [('Cake Atelier', '0.00', '0.00', []), ('Kape Lokal', '0.00', '0.00', [])])
+
+
+class ProductShapeTests(PartnerFixture, TestCase):
+    def test_partner_item_stores_shape_and_public_sees_it(self):
+        response = self.owner.post('/api/products/', {
+            'name': 'Ube cheesecake slice', 'price': '120.00', 'category_id': self.category.pk, 'partner_id': self.kape.pk,
+            'partner_payout': '100.00', 'shape': 'cake_slice', 'is_available': True, 'is_featured': False}, format='json')
+        self.assertEqual(response.status_code, 201, response.data)
+        self.assertEqual(response.data['data']['shape'], 'cake_slice')
+        public = results(self.anonymous.get(f'/api/products/?partner={self.kape.pk}'))
+        self.assertEqual(public[0]['shape'], 'cake_slice')
+
+    def test_own_item_cannot_take_another_shape(self):
+        response = self.owner.post('/api/products/', {
+            'name': 'Glazed test', 'price': '35.00', 'category_id': self.category.pk, 'shape': 'muffin',
+            'is_available': True, 'is_featured': False}, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(messages(response.data['error'], 'shape'), ['Only partner items can be shown as another treat.'])
+
+    def test_partner_to_own_resets_shape_to_donut(self):
+        item = self.partner_item(shape='muffin')
+        response = self.owner.patch(f'/api/products/{item.pk}/', {'partner_id': None, 'partner_payout': '0.00'}, format='json')
+        self.assertEqual(response.status_code, 200, response.data)
+        self.assertEqual(Product.objects.get(pk=item.pk).shape, 'donut')
+
+    def test_existing_products_default_to_donut(self):
+        self.assertEqual(Product.objects.create(name='Plain test', price=Decimal('30.00'), category=self.category).shape, 'donut')

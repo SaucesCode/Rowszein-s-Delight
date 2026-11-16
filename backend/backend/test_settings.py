@@ -48,6 +48,9 @@ DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memor
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 # Keep test output readable; logging is still checked through assertLogs.
 LOGGING["handlers"]["console"]["level"] = "CRITICAL"  # noqa: F405
+# Order emails are sent in the request thread in tests, and never with a real key.
+ORDER_EMAIL_INLINE = True
+RESEND_API_KEY = ''
 
 if POSTGRES_OPT_IN:
     test_name = os.environ["ROWSZEIN_TEST_DB_NAME"]

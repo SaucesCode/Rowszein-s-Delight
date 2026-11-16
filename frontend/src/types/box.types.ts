@@ -3,6 +3,8 @@ export interface BoxSize {
   size: number;
   price: string;
   is_available: boolean;
+  /** Most different donuts in one box; a box always fills evenly between them. */
+  max_flavors: number;
 }
 
 export interface AssortmentItem {
@@ -23,6 +25,8 @@ export interface Assortment {
   items: AssortmentItem[];
   price: string;
   is_complete: boolean;
+  /** False when it breaks its size's flavour rule (the shop hides it). */
+  follows_rule: boolean;
   is_available: boolean;
   sort_order: number;
 }
@@ -39,11 +43,12 @@ export interface BoxSizePayload {
   size?: number;
   price?: number;
   is_available?: boolean;
+  max_flavors?: number;
 }
 
 /** What the online shop can sell right now. */
 export interface ShopBoxes {
-  sizes: { id: number; size: number; price: string }[];
+  sizes: { id: number; size: number; price: string; max_flavors: number }[];
   assortments: {
     id: number;
     name: string;

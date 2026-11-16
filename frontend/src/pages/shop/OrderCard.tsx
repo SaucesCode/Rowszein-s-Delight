@@ -15,7 +15,7 @@ interface OrderCardProps {
   madeAt: Date;
 }
 
-/** The picture the customer saves and sends on Messenger. Rendered off screen only while saving. */
+/** A picture of a sent order the customer can keep. Rendered off screen only while saving. */
 export default function OrderCard({ cardRef, boxes, singles, total, name, number, madeAt }: OrderCardProps) {
   return (
     <div className="order-card-stage" aria-hidden="true">
@@ -25,7 +25,7 @@ export default function OrderCard({ cardRef, boxes, singles, total, name, number
           <span>Rowszein's Delight</span>
         </div>
         <p className="order-card-title">Order for {name}</p>
-        <p className="order-card-meta">{formatOrderTime(madeAt)} · Card {number}</p>
+        <p className="order-card-meta">{formatOrderTime(madeAt)} · Order {number}</p>
         <ul className="order-card-lines">
           {boxes.map(box => (
             <li key={box.key} className="order-card-box">
@@ -48,7 +48,7 @@ export default function OrderCard({ cardRef, boxes, singles, total, name, number
           <strong className="num">{formatPeso(total)}</strong>
         </p>
         <p className="order-card-note">
-          Not confirmed yet. Send this card to Rowszein's Delight on Messenger and we'll reply to confirm.
+          Sent to Rowszein's Delight. We'll text or call you to confirm.
         </p>
       </div>
     </div>

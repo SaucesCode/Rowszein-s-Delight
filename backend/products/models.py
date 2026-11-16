@@ -66,6 +66,10 @@ class Product(models.Model):
     # for each one sold; the patong is always price - partner_payout.
     partner = models.ForeignKey(Partner, null=True, blank=True, on_delete=models.PROTECT, related_name='products')
     partner_payout = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    # How the shop draws the item without a photo. Rowszein's own items are always donuts.
+    shape = models.CharField(max_length=12, default='donut', choices=[
+        ('donut', 'Donut'), ('whole_cake', 'Whole cake'), ('cake_slice', 'Cake slice'), ('cupcake', 'Cupcake'),
+        ('muffin', 'Muffin'), ('brownie', 'Brownie'), ('cookie', 'Cookie'), ('bread', 'Bread')])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -89,12 +93,15 @@ class BoxSize(models.Model):
     size = models.PositiveSmallIntegerField(unique=True, validators=[MinValueValidator(2), MaxValueValidator(48)])
     price = models.DecimalField(max_digits=10, decimal_places=2)
     is_available = models.BooleanField(default=True)
+    # The most different donuts one box may hold; a box always fills evenly between them.
+    max_flavors = models.PositiveSmallIntegerField(default=2)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['size']
         constraints = [
+            models.CheckConstraint(condition=models.Q(max_flavors__gte=1, max_flavors__lte=12), name='box_size_max_flavors_range'),
             models.CheckConstraint(condition=models.Q(price__gt=0), name='box_size_price_positive'),
             models.CheckConstraint(condition=models.Q(size__gte=2, size__lte=48), name='box_size_range'),
         ]

@@ -16,6 +16,7 @@ const toFormData = (payload: ProductPayload): FormData => {
   // An empty partner_id means "made by Rowszein's Delight".
   if (payload.partner_id !== undefined) formData.append("partner_id", payload.partner_id === null ? "" : String(payload.partner_id));
   if (payload.partner_payout !== undefined) formData.append("partner_payout", String(payload.partner_payout));
+  if (payload.shape !== undefined) formData.append("shape", payload.shape);
   if (payload.image) {
     formData.append("image", payload.image);
   }

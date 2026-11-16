@@ -1,0 +1,147 @@
+/* Shop settings: weekly hours, towns and days off as list rows inside the settings cards. */
+.shop-settings-switch { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
+.shop-settings-switch .field-hint,
+.shop-settings-switch .field-error { margin: 0; padding-left: 56px; }
+
+.hours-list,
+.settings-list { margin: 0; padding: 0; list-style: none; }
+
+.hours-row,
+.settings-list-row {
+  display: grid;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--color-line);
+}
+
+.hours-row {
+  grid-template-columns: minmax(6.5rem, auto) 1fr;
+  align-items: center;
+}
+.hours-day { font-weight: 600; }
+.hours-times {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-ink-muted);
+}
+.hours-times .field-input { flex: 1 1 0; min-width: 0; max-width: 11rem; padding-inline: var(--space-2); }
+.hours-messages,
+.day-off-messages { grid-column: 1 / -1; }
+.hours-messages:empty,
+.day-off-messages:empty { display: none; }
+
+@media (min-width: 768px) {
+  .hours-row { grid-template-columns: 8rem 9rem 1fr; }
+  .hours-times { grid-column: auto; }
+}
+
+.town-row { grid-template-columns: minmax(0, 1fr) 44px; align-items: center; }
+.town-name,
+.town-fee { grid-column: 1 / -1; }
+.town-fee .settings-unit-input { max-width: 12rem; }
+.town-row .settings-remove { justify-self: end; }
+
+@media (min-width: 768px) {
+  .town-row { grid-template-columns: minmax(0, 1fr) 11rem 9rem 44px; align-items: start; }
+  .town-name,
+  .town-fee { grid-column: auto; }
+}
+
+/* Phones: From, To and the note stacked, the remove button beside the first. */
+.day-off-row { grid-template-columns: minmax(0, 1fr) 44px; align-items: end; }
+.day-off-field { grid-column: 1; min-width: 0; }
+.day-off-field .field-input { width: 100%; min-width: 0; }
+.day-off-row .settings-remove { grid-column: 2; grid-row: 1; }
+.day-off-field .field-label { margin-bottom: var(--space-1); }
+
+@media (min-width: 768px) {
+  .day-off-row { grid-template-columns: 10rem 10rem minmax(0, 1fr) 44px; }
+  .day-off-field { grid-column: auto; }
+  .day-off-row .settings-remove { grid-column: auto; grid-row: auto; }
+}
+
+.settings-remove {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: none;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  transition: background-color var(--duration-micro) var(--ease-out-soft), color var(--duration-micro) var(--ease-out-soft);
+}
+.settings-remove:hover { background: var(--color-danger-tint); color: var(--color-danger); }
+.settings-remove:active { transform: scale(0.96); }
+
+.settings-add { display: inline-flex; align-items: center; gap: var(--space-1); }
+.link-button:disabled { color: var(--color-ink-muted); text-decoration: none; cursor: not-allowed; }
+
+.settings-empty {
+  margin: 0;
+  padding: var(--space-4) var(--space-5) 0;
+  color: var(--color-ink-muted);
+}
+
+.payment-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  transition: border-color var(--duration-micro) var(--ease-out-soft), background-color var(--duration-micro) var(--ease-out-soft);
+}
+.payment-option:hover { background: var(--color-canvas); }
+.payment-option:has(input:checked) { border-color: var(--color-accent); background: var(--color-accent-tint); }
+.payment-option input { width: 18px; height: 18px; accent-color: var(--color-accent); }
+
+.settings-conflict {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+  margin-bottom: var(--space-5);
+  padding: var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--color-danger-tint);
+  color: var(--color-ink);
+}
+.settings-conflict p { margin: 0; max-width: 65ch; }
+
+/* Actions under a list ("Add town", "Copy Monday's hours"), full width with their hint. */
+.settings-list-foot {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-5) var(--space-4);
+  border-top: 1px solid var(--color-line);
+}
+.settings-list-foot .field-hint { margin: 0; max-width: 65ch; }
+.settings-list-foot .link-button { text-align: left; line-height: 1.3; }
+
+/* Meet-up places: one card per place, with its own week of hours. */
+.meetup-places { display: grid; gap: var(--space-4); }
+.meetup-place { display: grid; gap: var(--space-3); padding-top: var(--space-4); }
+.meetup-place > .meetup-place-field,
+.meetup-place > .meetup-place-switch { padding: 0 var(--space-5); }
+.meetup-place-head { display: grid; grid-template-columns: minmax(0, 1fr) 44px; align-items: end; gap: var(--space-3); padding: 0 var(--space-5); }
+.meetup-place-field { display: grid; gap: var(--space-1); }
+.meetup-place-field .field-label { margin-bottom: 0; }
+.meetup-place-field .field-hint,
+.meetup-place-field .field-error { margin: 0; }
+.meetup-place-switch { display: grid; gap: var(--space-1); }
+.meetup-empty { padding: var(--space-4); border-radius: var(--radius-card); background: var(--color-surface); }
+

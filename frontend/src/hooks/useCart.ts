@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import type { Product } from "@/types/product.types";
+import type { Shape } from "@/lib/treatShape";
 
 /* ─────────────────────────────────────────────
    TYPES
@@ -12,6 +13,7 @@ export interface CartItem {
   quantity: number;
   /** The partner's name for a collab partner's item. */
   partner?: string;
+  shape?: Shape;
 }
 
 const STORAGE_KEY = "rowszein_cart";
@@ -70,6 +72,7 @@ export function useCart() {
           image_url: product.image_url,
           quantity: 1,
           partner: product.partner?.name,
+          shape: product.shape,
         },
       ];
     });

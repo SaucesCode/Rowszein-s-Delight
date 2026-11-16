@@ -23,6 +23,7 @@ import DropdownMenu from "@/components/DropdownMenu";
 import Pagination from "@/components/Pagination";
 import { formatPeso } from "@/pages/dashboard/report-format";
 import Receipt from "./sales/Receipt";
+import { saleMatchesSearch } from "./sales/saleSearch";
 import "./sales/sales.css";
 
 const PAGE_SIZE = 20;
@@ -36,11 +37,7 @@ const PERIOD_PHRASE: Record<Period, string> = {
   custom: "In this range",
 };
 
-function matchesSearch(sale: Sale, query: string) {
-  const q = query.trim().toLowerCase();
-  if (!q) return true;
-  return !!sale.notes?.toLowerCase().includes(q) || sale.sale_items.some(item => item.product_name?.toLowerCase().includes(q));
-}
+const matchesSearch = (sale: Sale, query: string) => saleMatchesSearch(sale, query);
 
 function ReceiptsSkeleton() {
   return (

@@ -199,3 +199,7 @@
 @media (prefers-reduced-motion: reduce) {
   .analytics-kept { animation: none; }
 }
+
+/* Boxes sold in the period. */
+.analytics-boxes { margin-top: var(--space-2); color: var(--color-ink-muted); }
+.analytics-boxes strong { color: var(--color-ink); }

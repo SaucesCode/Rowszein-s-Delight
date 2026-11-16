@@ -1,12 +1,14 @@
 import type { CSSProperties } from "react";
 import { flavorOf } from "@/lib/flavor";
-import PatisserieDonut from "@/pages/shop/PatisserieDonut";
+import type { Shape } from "@/lib/treatShape";
+import TreatArt from "@/pages/shop/treats/TreatArt";
 import "./box-art.css";
 
 export interface BoxUnit {
   name: string;
   category?: string;
   image_url: string | null;
+  shape?: Shape;
 }
 
 const COLUMNS: Record<number, number> = { 8: 4, 12: 4, 24: 6 };
@@ -28,7 +30,7 @@ export default function BoxArt({ size, units, compact = false }: { size: number;
               (unit.image_url ? (
                 <img src={unit.image_url} alt="" />
               ) : (
-                <PatisserieDonut flavor={flavorOf(unit.name, unit.category)} size={compact ? 22 : 44} />
+                <TreatArt shape={unit.shape} flavor={flavorOf(unit.name, unit.category)} size={compact ? 22 : 44} />
               ))}
           </span>
         );

@@ -308,3 +308,15 @@
   .shell-brand-name { font-size: 1.125rem; }
   .shell-menu-button span { display: none; }
 }
+
+/* The waiting count on the sidebar's Orders item. */
+.shell-nav-badge {
+  margin-left: auto;
+  min-width: 22px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: #fff;
+  font: 600 var(--text-caption) / 22px var(--font-sans);
+  text-align: center;
+}

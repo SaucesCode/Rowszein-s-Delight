@@ -79,7 +79,7 @@ class DeviceSession(models.Model):
 
 
 class AuthThrottleBucket(models.Model):
-    scope = models.CharField(max_length=2, choices=[(value,value) for value in ['LA','LI','LR','RR']])
+    scope = models.CharField(max_length=2, choices=[(value,value) for value in ['LA','LI','LR','RR','OS']])
     key_version = models.PositiveSmallIntegerField()
     subject_digest = models.CharField(max_length=64)
     event_times = models.JSONField(default=list)
@@ -87,7 +87,7 @@ class AuthThrottleBucket(models.Model):
 
     class Meta:
         constraints = [
-            models.CheckConstraint(condition=Q(scope__in=['LA','LI','LR','RR']), name='at_scope_valid'),
+            models.CheckConstraint(condition=Q(scope__in=['LA','LI','LR','RR','OS']), name='at_scope_valid'),
             models.CheckConstraint(condition=Q(key_version__gte=1, key_version__lte=32767), name='at_keyver_pos'),
             models.CheckConstraint(condition=Q(subject_digest__regex=r'\A[0-9a-f]{64}\Z'), name='at_digest_hex'),
             models.CheckConstraint(condition=BucketEventsShape(F('event_times')), name='at_events_shape'),
